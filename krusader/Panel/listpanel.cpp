@@ -596,6 +596,8 @@ void ListPanel::slotFocusAndCDOther()
     func->openUrl(otherPanel()->func->files() ->vfs_getOrigin());
 }
 
+//TODO move this to panelfunc ?
+//FIXME how does this behave, when there are more than one items with the same name in one panel ?
 void ListPanel::compareDirs(bool otherPanelToo)
 {
     KConfigGroup pg(krConfig, "Private");
@@ -603,48 +605,57 @@ void ListPanel::compareDirs(bool otherPanelToo)
     KConfigGroup group(krConfig, "Look&Feel");
     bool selectDirs = group.readEntry("Mark Dirs", false);
 
-    KrViewItem *item, *otherItem;
+    FileItemList items = view->getItems();
+    FileItemList otherItems = otherPanel()->view->getItems();
 
-    for (item = view->getFirst(); item != 0; item = view->getNext(item)) {
-        if (item->name() == "..")
+    QHash<QString, FileItem> otherItemsDict;
+    foreach(FileItem item, otherItems)
+        otherItemsDict.insert(item.name(), item);
+
+    KUrl::List newSelection;
+
+    foreach(FileItem item, items) {
+        FileItem otherItem = otherItemsDict[item.name()];
+
+        bool isSingle = otherItem.isNull(), isDifferent = false, isNewer = false;
+
+        if (item.isDir() && !selectDirs)
             continue;
 
-        for (otherItem = otherPanel()->view->getFirst(); otherItem != 0 && otherItem->name() != item->name() ;
-                otherItem = otherPanel()->view->getNext(otherItem));
-
-        bool isSingle = (otherItem == 0), isDifferent = false, isNewer = false;
-
-        if (func->getVFile(item)->vfile_isDir() && !selectDirs) {
-            item->setSelected(false);
-            continue;
+        if (!otherItem.isNull()) {
+            if (item.isDir())
+                isDifferent = otherItem.size() != item.size();
+            isNewer = item.time(KFileItem::ModificationTime) > otherItem.time(KFileItem::ModificationTime);
         }
 
-        if (otherItem) {
-            if (!func->getVFile(item)->vfile_isDir())
-                isDifferent = ITEM2VFILE(otherPanel(), otherItem)->vfile_getSize() != func->getVFile(item)->vfile_getSize();
-            isNewer = func->getVFile(item)->vfile_getTime_t() > ITEM2VFILE(otherPanel(), otherItem)->vfile_getTime_t();
-        }
+        KUrl url = item.url();
 
+        //FIXME use a proper enumeration
         switch (compareMode) {
         case 0:
-            item->setSelected(isNewer || isSingle);
+            if (isNewer || isSingle)
+                newSelection << url;
             break;
         case 1:
-            item->setSelected(isNewer);
+            if (isNewer)
+                newSelection << url;
             break;
         case 2:
-            item->setSelected(isSingle);
+            if (isSingle)
+                newSelection << url;
             break;
         case 3:
-            item->setSelected(isDifferent || isSingle);
+            if (isDifferent || isSingle)
+                newSelection << url;
             break;
         case 4:
-            item->setSelected(isDifferent);
+            if (isDifferent)
+                newSelection << url;
             break;
         }
     }
 
-    view->updateView();
+    view->setSelection(newSelection);
 
     if(otherPanelToo)
         otherPanel()->gui->compareDirs(false);
