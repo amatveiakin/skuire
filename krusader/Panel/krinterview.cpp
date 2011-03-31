@@ -355,19 +355,19 @@ FileItemList KrInterView::getItems(KRQuery mask, bool dirs, bool files)
     return list;
 }
 
-FileItemList KrInterView::getSelectedItems()
+FileItemList KrInterView::getSelectedItems(bool currentIfNoSelection)
 {
     FileItemList list;
-    foreach(const vfile *vf, _selection)
-        list << vf->toFileItem();
-    return list;
-}
 
-KUrl::List KrInterView::selectedUrls()
-{
-    KUrl::List list;
-    foreach(const vfile *vf, _selection)
-        list << vf->vfile_getUrl();
+    if(_selection.count()) {
+        foreach(const vfile *vf, _selection)
+            list << vf->toFileItem();
+    } else if(currentIfNoSelection) {
+        vfile *vf = _model->vfileAt(_itemView->currentIndex());
+        if (vf && vf != _dummyVfile)
+            list << vf->toFileItem();
+    }
+
     return list;
 }
 

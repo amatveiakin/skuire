@@ -39,8 +39,7 @@ public:
     virtual ~KrInterView();
 
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
-    virtual FileItemList getSelectedItems();
-    virtual KUrl::List getSelectedUrls();
+    virtual FileItemList getSelectedItems(bool currentIfNoSelection);
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();

@@ -324,8 +324,7 @@ protected:
     ///////////////////////////////////////////////////////
 public:
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
-    virtual FileItemList getSelectedItems() = 0;
-    virtual KUrl::List getSelectedUrls() = 0;
+    virtual FileItemList getSelectedItems(bool currentIfNoSelection = false) = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
@@ -446,6 +445,10 @@ public:
     bool isFiltered(vfile *vf);
     void enableUpdateDefaultSettings(bool enable);
     void setSelected(const vfile* vf, bool select);
+    KUrl::List getSelectedUrls(bool currentUrlIfNoSelection = false) {
+        return getSelectedItems(currentUrlIfNoSelection).urlList();
+    }
+
 
     /////////////////////////////////////////////////////////////
     // the following functions have a default and minimalistic //
