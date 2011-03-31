@@ -104,9 +104,7 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent) : KMenu(parent), pa
     // ------------- Preview - normal vfs only ?
     if (panel->func->files()->vfs_getType() == vfs::VFS_NORMAL) {
         // create the preview popup
-        QStringList names;
-        panel->gui->getSelectedNames(&names);
-        preview.setUrls(panel->func->files() ->vfs_getFiles(&names));
+        preview.setUrls(&panel->view->getSelectedUrls(true));
         QAction *pAct = addMenu(&preview);
         pAct->setData(QVariant(PREVIEW_ID));
         pAct->setText(i18n("Preview"));
@@ -348,12 +346,9 @@ void KrPopupMenu::performAction(int id)
     case EMPTY_TRASH_ID :
         KrTrashHandler::emptyTrash();
         break;
-    case RESTORE_TRASHED_FILE_ID : {
-        QStringList fileNames;
-        panel->gui->getSelectedNames(&fileNames);
-        KrTrashHandler::restoreTrashedFiles(*panel->func->files() ->vfs_getFiles(&fileNames));
-    }
-    break;
+    case RESTORE_TRASHED_FILE_ID :
+        KrTrashHandler::restoreTrashedFiles(panel->view->getSelectedUrls(true));
+        break;
     case UNMOUNT_ID :
         krMtMan.unmount(panel->func->files() ->vfs_getFile(item->name()).path(KUrl::RemoveTrailingSlash));
         break;
@@ -366,12 +361,9 @@ void KrPopupMenu::performAction(int id)
     case PASTE_CLIP_ID :
         panel->func->pasteFromClipboard();
         break;
-    case SEND_BY_EMAIL_ID : {
-        QStringList fileNames;
-        panel->gui->getSelectedNames(&fileNames);
-        SLOTS->sendFileByEmail(*panel->func->files() ->vfs_getFiles(&fileNames));
+    case SEND_BY_EMAIL_ID :
+        SLOTS->sendFileByEmail(panel->view->getSelectedUrls(true));
         break;
-    }
     case MKDIR_ID :
         panel->func->mkdir();
         break;
@@ -407,10 +399,8 @@ void KrPopupMenu::performAction(int id)
 
     // check if something from the open-with-offered-services was selected
     if (id >= SERVICE_LIST_ID) {
-        QStringList names;
-        panel->gui->getSelectedNames(&names);
         panel->func->runService(*(offers[ id - SERVICE_LIST_ID ]),
-                                *(panel->func->files()->vfs_getFiles(&names)));
+                                panel->view->getSelectedUrls(true));
     }
 }
 
