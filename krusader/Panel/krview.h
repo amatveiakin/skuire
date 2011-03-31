@@ -142,9 +142,6 @@ public:
     void emitGotDrop(QDropEvent *e) {
         emit gotDrop(e);
     }
-    void emitLetsDrag(QStringList items, QPixmap icon) {
-        emit letsDrag(items, icon);
-    }
     void emitItemDescription(QString &desc) {
         emit itemDescription(desc);
     }
@@ -154,23 +151,8 @@ public:
     void emitEmptyContextMenu(const QPoint &point) {
         emit emptyContextMenu(point);
     }
-    void emitRenameItem(const QString &oldName, const QString &newName) {
-        emit renameItem(oldName, newName);
-    }
-    void emitExecuted(const QString &name) {
-        emit executed(name);
-    }
-    void emitGoInside(const QString &name) {
-        emit goInside(name);
-    }
     void emitNeedFocus() {
         emit needFocus();
-    }
-    void emitMiddleButtonClicked(KrViewItem *item) {
-        emit middleButtonClicked(item);
-    }
-    void emitCurrentChanged(KrViewItem *item) {
-        emit currentChanged(item);
     }
     void emitPreviewJobStarted(KJob *job) {
         emit previewJobStarted(job);
@@ -183,9 +165,6 @@ public:
     }
     void emitDeleteFiles(bool reallyDelete) {
         emit deleteFiles(reallyDelete);
-    }
-    void emitCalcSpace(KrViewItem *item) {
-        emit calcSpace(item);
     }
     void emitRefreshActions() {
         emit refreshActions();
@@ -222,21 +201,14 @@ public slots:
 signals:
     void selectionChanged();
     void gotDrop(QDropEvent *e);
-    void letsDrag(QStringList items, QPixmap icon);
     void itemDescription(QString &desc);
     void contextMenu(const QPoint &point);
     void emptyContextMenu(const QPoint& point);
-    void renameItem(const QString &oldName, const QString &newName);
-    void executed(const QString &name);
-    void goInside(const QString &name);
     void needFocus();
-    void middleButtonClicked(KrViewItem *item);
-    void currentChanged(KrViewItem *item);
     void previewJobStarted(KJob *job);
     void goHome();
     void deleteFiles(bool reallyDelete);
     void dirUp();
-    void calcSpace(KrViewItem *item);
     void refreshActions();
 
 protected slots:
@@ -244,10 +216,50 @@ protected slots:
     void saveDefaultSettings();
     void startUpdate();
     void cleared();
+
+    /////////////////////////////////////////////////////////////
+    // deprecated functions start                              //
+    /////////////////////////////////////////////////////////////
+public:
+    void emitLetsDrag(QStringList items, QPixmap icon) {
+        emit letsDrag(items, icon);
+    }
+    void emitRenameItem(const QString &oldName, const QString &newName) {
+        emit renameItem(oldName, newName);
+    }
+    void emitExecuted(const QString &name) {
+        emit executed(name);
+    }
+    void emitGoInside(const QString &name) {
+        emit goInside(name);
+    }
+    void emitMiddleButtonClicked(KrViewItem *item) {
+        emit middleButtonClicked(item);
+    }
+    void emitCurrentChanged(KrViewItem *item) {
+        emit currentChanged(item);
+    }
+    void emitCalcSpace(KrViewItem *item) {
+        emit calcSpace(item);
+    }
+
+signals:
+    void letsDrag(QStringList items, QPixmap icon);
+    void renameItem(const QString &oldName, const QString &newName);
+    void executed(const QString &name);
+    void goInside(const QString &name);
+    void middleButtonClicked(KrViewItem *item);
+    void currentChanged(KrViewItem *item);
+    void calcSpace(KrViewItem *item);
+protected slots:
     // for signals from vfs' dirwatch
     void fileAdded(vfile *vf);
     void fileDeleted(const QString& name);
     void fileUpdated(vfile *vf);
+    /////////////////////////////////////////////////////////////
+    // deprecated functions end                                //
+    /////////////////////////////////////////////////////////////
+
 
 protected:
     // never delete those
@@ -327,6 +339,7 @@ public:
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
     virtual FileItemList getSelectedItems(bool currentIfNoSelection) = 0;
 
+
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
         return QModelIndex();
@@ -337,18 +350,11 @@ public:
     virtual bool        ensureVisibilityAfterSelect()     {
         return true;
     }
-    virtual void        selectRegion(KrViewItem *, KrViewItem *, bool) = 0;
 
     virtual uint numSelected() const = 0;
     virtual void setSelection(const KUrl::List urls) = 0;
-    virtual KrViewItem *getCurrentKrViewItem() = 0;
-    virtual KrViewItem *getKrViewItemAt(const QPoint &vp) = 0;
-    virtual KrViewItem *findItemByName(const QString &name) = 0;
-    virtual KrViewItem *findItemByVfile(vfile *vf) = 0;
     virtual QString getCurrentItem() const = 0;
     virtual void setCurrentItem(const QString& name) = 0;
-    virtual void setCurrentKrViewItem(KrViewItem *item) = 0;
-    virtual void makeItemVisible(const KrViewItem *item) = 0;
     virtual void updateView() = 0;
     virtual void sort() = 0;
     virtual void refreshColors() = 0;
@@ -368,18 +374,9 @@ public:
     virtual void showContextMenu() = 0;
 
 protected:
-    virtual KrViewItem *preAddItem(vfile *vf) = 0;
-    virtual void preDelItem(KrViewItem *item) = 0;
-    virtual void preUpdateItem(vfile *vf) = 0;
     virtual void copySettingsFrom(KrView *other) = 0;
-    virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;
-    virtual void intSetSelected(const vfile* vf, bool select) = 0;
     virtual void updatePreviews();
     virtual void clear();
-
-    virtual void addItem(vfile *vf);
-    virtual void updateItem(vfile *vf);
-    virtual void delItem(const QString &name);
 
 public:
     //////////////////////////////////////////////////////
@@ -395,7 +392,6 @@ public:
     virtual uint count() const {
         return _count;
     }
-    virtual void getSelectedKrViewItems(KrViewItemList *items);
     virtual void selectAllIncludingDirs() {
         changeSelection(KRQuery("*"), true, true);
     }
@@ -437,9 +433,7 @@ public:
 
     void changeSelection(const KRQuery& filter, bool select);
     void changeSelection(const KRQuery& filter, bool select, bool includeDirs);
-    bool isFiltered(vfile *vf);
     void enableUpdateDefaultSettings(bool enable);
-    void setSelected(const vfile* vf, bool select);
     KUrl::List getSelectedUrls(bool currentUrlIfNoSelection) {
         return getSelectedItems(currentUrlIfNoSelection).urlList();
     }
@@ -483,8 +477,6 @@ public:
         return _focused;
     }
 
-    QPixmap getIcon(vfile *vf);
-
     void setMainWindow(QWidget *mainWindow) {
         _mainWindow = mainWindow;
     }
@@ -506,9 +498,45 @@ public:
     // todo: what about selection modes ???
     virtual ~KrView();
 
-    static QPixmap getIcon(vfile *vf, bool active, int size = 0);
     static QPixmap processIcon(const QPixmap &icon, bool dim, const QColor & dimColor, int dimFactor, bool symlink);
+
+
+
+    /////////////////////////////////////////////////////////////
+    // deprecated functions start                              //
+    /////////////////////////////////////////////////////////////
+public:
+    virtual void getSelectedKrViewItems(KrViewItemList *items);
+    virtual KrViewItem *getCurrentKrViewItem() = 0;
+    virtual KrViewItem *getKrViewItemAt(const QPoint &vp) = 0;
+    virtual KrViewItem *findItemByName(const QString &name) = 0;
+    virtual KrViewItem *findItemByVfile(vfile *vf) = 0;
+    virtual void        selectRegion(KrViewItem *, KrViewItem *, bool) = 0;
+    virtual void setCurrentKrViewItem(KrViewItem *item) = 0;
+    virtual void makeItemVisible(const KrViewItem *item) = 0;
+    QPixmap getIcon(vfile *vf);
+    bool isFiltered(vfile *vf);
+    void setSelected(const vfile* vf, bool select);
+    static QPixmap getIcon(vfile *vf, bool active, int size = 0);
     static QString krPermissionString(const vfile * vf);
+protected:
+    virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;
+    virtual void intSetSelected(const vfile* vf, bool select) = 0;
+    virtual void addItem(vfile *vf);
+    virtual void updateItem(vfile *vf);
+    virtual void delItem(const QString &name);
+    virtual KrViewItem *preAddItem(vfile *vf) = 0;
+    virtual void preDelItem(KrViewItem *item) = 0;
+    virtual void preUpdateItem(vfile *vf) = 0;
+    virtual void getSelectedItems(QStringList* names);
+    virtual void getItemsByMask(QString mask, QStringList* names, bool dirs = true, bool files = true);
+    virtual KrViewItem *getFirst() = 0;
+    virtual KrViewItem *getLast() = 0;
+    virtual KrViewItem *getNext(KrViewItem *current) = 0;
+    virtual KrViewItem *getPrev(KrViewItem *current) = 0;
+    /////////////////////////////////////////////////////////////
+    // deprecated functions end                                //
+    /////////////////////////////////////////////////////////////
 
 protected:
     KrView(KrViewInstance &instance, KConfig *cfg);
@@ -523,13 +551,6 @@ protected:
     inline void setWidget(QWidget *w) {
         _widget = w;
     }
-
-    virtual void getSelectedItems(QStringList* names);
-    virtual void getItemsByMask(QString mask, QStringList* names, bool dirs = true, bool files = true);
-    virtual KrViewItem *getFirst() = 0;
-    virtual KrViewItem *getLast() = 0;
-    virtual KrViewItem *getNext(KrViewItem *current) = 0;
-    virtual KrViewItem *getPrev(KrViewItem *current) = 0;
 
     KrViewInstance &_instance;
     VfileContainer *_files;
