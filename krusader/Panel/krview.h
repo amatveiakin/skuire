@@ -287,6 +287,7 @@ class KrView
 {
     friend class KrViewItem;
     friend class KrViewOperator;
+    friend class KrPreviews; //temporary HACK
 
 public:
     class IconSizes : public QVector<int>
@@ -340,10 +341,6 @@ public:
 
     virtual uint numSelected() const = 0;
     virtual void setSelection(const KUrl::List urls) = 0;
-    virtual KrViewItem *getFirst() = 0;
-    virtual KrViewItem *getLast() = 0;
-    virtual KrViewItem *getNext(KrViewItem *current) = 0;
-    virtual KrViewItem *getPrev(KrViewItem *current) = 0;
     virtual KrViewItem *getCurrentKrViewItem() = 0;
     virtual KrViewItem *getKrViewItemAt(const QPoint &vp) = 0;
     virtual KrViewItem *findItemByName(const QString &name) = 0;
@@ -529,6 +526,10 @@ protected:
 
     virtual void getSelectedItems(QStringList* names);
     virtual void getItemsByMask(QString mask, QStringList* names, bool dirs = true, bool files = true);
+    virtual KrViewItem *getFirst() = 0;
+    virtual KrViewItem *getLast() = 0;
+    virtual KrViewItem *getNext(KrViewItem *current) = 0;
+    virtual KrViewItem *getPrev(KrViewItem *current) = 0;
 
     KrViewInstance &_instance;
     VfileContainer *_files;
