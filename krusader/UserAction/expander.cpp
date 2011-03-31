@@ -75,7 +75,7 @@ QStringList exp_placeholder::fileList(const KrPanel* const panel, const QString&
     else if (type == "dirs")
         items = panel->view->getItems(mask, true, false);
     else if (type == "selected")
-        items = panel->view->getSelectedItems();
+        items = panel->view->getSelectedItems(true);
     else {
         setError(exp, Error(Error::exp_S_FATAL, Error::exp_C_ARGUMENT, i18n("Expander: Bad argument to %1: %2 is not valid item specifier", error, type)));
         return QStringList();
