@@ -523,10 +523,13 @@ void ListPanelFunc::moveFiles(bool enqueue)
     PreserveMode pmode = PM_DEFAULT;
     bool queue = enqueue;
 
-    QStringList fileNames;
-    panel->getSelectedNames(&fileNames);
-    if (fileNames.isEmpty())
+    KUrl::List urls = panel->view->getSelectedUrls(true);
+    if(urls.isEmpty())
         return ;  // safety
+
+    QStringList fileNames; //TODO: remove this
+    foreach(const KUrl &url, urls)
+        fileNames << url.fileName();
 
     KUrl dest = panel->otherPanel()->virtualPath();
     KUrl virtualBaseURL;
@@ -542,10 +545,10 @@ void ListPanelFunc::moveFiles(bool enqueue)
         bool preserveAttrs = group.readEntry("PreserveAttributes", _PreserveAttributes);
         QString s;
 
-        if (fileNames.count() == 1)
-            s = i18n("Move %1 to:", fileNames.first());
+        if (urls.count() == 1)
+            s = i18n("Move %1 to:", urls.first().fileName());
         else
-            s = i18np("Move %1 file to:", "Move %1 files to:", fileNames.count());
+            s = i18np("Move %1 file to:", "Move %1 files to:", urls.count());
 
         // ask the user for the copy dest
         virtualBaseURL = getVirtualBaseURL();
@@ -558,15 +561,9 @@ void ListPanelFunc::moveFiles(bool enqueue)
             pmode = PM_NONE;
     }
 
-    if (fileNames.isEmpty())
-        return ; // nothing to copy
-
-    KUrl::List* fileUrls = files() ->vfs_getFiles(&fileNames);
-
     // after the delete return the cursor to the first unmarked
     // file above the current item;
     panel->prepareToDelete();
-
     if (queue) {
         KIOJobWrapper *job = 0;
         if (!virtualBaseURL.isEmpty()) {
@@ -577,8 +574,8 @@ void ListPanelFunc::moveFiles(bool enqueue)
         } else {
             // you can rename only *one* file not a batch,
             // so a batch dest must alwayes be a directory
-            if (fileNames.count() > 1) dest.adjustPath(KUrl::AddTrailingSlash);
-            job = KIOJobWrapper::move(pmode, *fileUrls, dest, true);
+            if (urls.count() > 1) dest.adjustPath(KUrl::AddTrailingSlash);
+            job = KIOJobWrapper::move(pmode, urls, dest, true);
             job->setAutoErrorHandlingEnabled(true);
             // refresh our panel when done
             job->connectTo(SIGNAL(result(KJob*)), this, SLOT(refresh()));
@@ -599,8 +596,8 @@ void ListPanelFunc::moveFiles(bool enqueue)
     else if (!dest.equals(panel->otherPanel()->virtualPath(), KUrl::CompareWithoutTrailingSlash)) {
         // you can rename only *one* file not a batch,
         // so a batch dest must alwayes be a directory
-        if (fileNames.count() > 1) dest.adjustPath(KUrl::AddTrailingSlash);
-        KIO::Job* job = PreservingCopyJob::createCopyJob(pmode, *fileUrls, dest, KIO::CopyJob::Move, false, true);
+        if (urls.count() > 1) dest.adjustPath(KUrl::AddTrailingSlash);
+        KIO::Job* job = PreservingCopyJob::createCopyJob(pmode, urls, dest, KIO::CopyJob::Move, false, true);
         job->ui()->setAutoErrorHandlingEnabled(true);
         // refresh our panel when done
         connect(job, SIGNAL(result(KJob*)), this, SLOT(refresh()));
@@ -615,7 +612,7 @@ void ListPanelFunc::moveFiles(bool enqueue)
             return ;
         }
         // finally..
-        otherFunc() ->files() ->vfs_addFiles(fileUrls, KIO::CopyJob::Move, files(), "", pmode);
+        otherFunc() ->files() ->vfs_addFiles(&urls, KIO::CopyJob::Move, files(), "", pmode);
     }
     if(KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
         panel->view->saveSelection();
@@ -686,22 +683,19 @@ KUrl ListPanelFunc::getVirtualBaseURL()
     if (files()->vfs_getType() != vfs::VFS_VIRT || otherFunc()->files()->vfs_getType() == vfs::VFS_VIRT)
         return KUrl();
 
-    QStringList fileNames;
-    panel->getSelectedNames(&fileNames);
-
-    KUrl::List* fileUrls = files() ->vfs_getFiles(&fileNames);
-    if (fileUrls->count() == 0)
+    KUrl::List urls = panel->view->getSelectedUrls(true);
+    if (urls.isEmpty())
         return KUrl();
 
-    KUrl base = (*fileUrls)[ 0 ].upUrl();
+    KUrl base = urls[0].upUrl();
 
     if (base.protocol() == "virt")  // is it a virtual subfolder?
         return KUrl();          // --> cannot keep the directory structure
 
-    for (int i = 1; i < fileUrls->count(); i++) {
-        if (base.isParentOf((*fileUrls)[ i ]))
+    for (int i = 1; i < urls.count(); i++) {
+        if (base.isParentOf(urls[i]))
             continue;
-        if (base.protocol() != (*fileUrls)[ i ].protocol())
+        if (base.protocol() != urls[i].protocol())
             return KUrl();
 
         do {
@@ -709,7 +703,7 @@ KUrl ListPanelFunc::getVirtualBaseURL()
             base = base.upUrl();
             if (oldBase.equals(base, KUrl::CompareWithoutTrailingSlash))
                 return KUrl();
-            if (base.isParentOf((*fileUrls)[ i ]))
+            if (base.isParentOf(urls[i]))
                 break;
         } while (true);
     }
@@ -721,10 +715,13 @@ void ListPanelFunc::copyFiles(bool enqueue)
     PreserveMode pmode = PM_DEFAULT;
     bool queue = enqueue;
 
-    QStringList fileNames;
-    panel->getSelectedNames(&fileNames);
-    if (fileNames.isEmpty())
-        return ;  // safety
+    KUrl::List urls = panel->view->getSelectedUrls(true);
+    if (urls.isEmpty())
+        return;
+
+    QStringList fileNames; //TODO: remove this
+    foreach(const KUrl &url, urls)
+        fileNames << url.fileName();
 
     KUrl dest = panel->otherPanel()->virtualPath();
     KUrl virtualBaseURL;
@@ -751,8 +748,6 @@ void ListPanelFunc::copyFiles(bool enqueue)
             pmode = PM_NONE;
     }
 
-    KUrl::List* fileUrls = files() ->vfs_getFiles(&fileNames);
-
     if (queue) {
         KIOJobWrapper *job = 0;
         if (!virtualBaseURL.isEmpty()) {
@@ -764,7 +759,7 @@ void ListPanelFunc::copyFiles(bool enqueue)
             // you can rename only *one* file not a batch,
             // so a batch dest must alwayes be a directory
             if (fileNames.count() > 1) dest.adjustPath(KUrl::AddTrailingSlash);
-            job = KIOJobWrapper::copy(pmode, *fileUrls, dest, true);
+            job = KIOJobWrapper::copy(pmode, urls, dest, true);
             job->setAutoErrorHandlingEnabled(true);
             if (dest.equals(panel->virtualPath(), KUrl::CompareWithoutTrailingSlash) ||
                     dest.upUrl().equals(panel->virtualPath(), KUrl::CompareWithoutTrailingSlash))
@@ -784,7 +779,7 @@ void ListPanelFunc::copyFiles(bool enqueue)
         // you can rename only *one* file not a batch,
         // so a batch dest must alwayes be a directory
         if (fileNames.count() > 1) dest.adjustPath(KUrl::AddTrailingSlash);
-        KIO::Job* job = PreservingCopyJob::createCopyJob(pmode, *fileUrls, dest, KIO::CopyJob::Copy, false, true);
+        KIO::Job* job = PreservingCopyJob::createCopyJob(pmode, urls, dest, KIO::CopyJob::Copy, false, true);
         job->ui()->setAutoErrorHandlingEnabled(true);
         if (dest.equals(panel->virtualPath(), KUrl::CompareWithoutTrailingSlash) ||
                 dest.upUrl().equals(panel->virtualPath(), KUrl::CompareWithoutTrailingSlash))
@@ -798,7 +793,7 @@ void ListPanelFunc::copyFiles(bool enqueue)
             return ;
         }
         // finally..
-        otherFunc() ->files() ->vfs_addFiles(fileUrls, KIO::CopyJob::Copy, 0, "", pmode);
+        otherFunc() ->files() ->vfs_addFiles(&urls, KIO::CopyJob::Copy, 0, "", pmode);
     }
     if(KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
         panel->view->saveSelection();
@@ -814,11 +809,9 @@ void ListPanelFunc::deleteFiles(bool reallyDelete)
         return ;
     }
 
-    // first get the selected file names list
-    QStringList fileNames;
-    panel->getSelectedNames(&fileNames);
-    if (fileNames.isEmpty())
-        return ;
+    FileItemList items = panel->view->getSelectedItems(true);
+    if (items.isEmpty())
+        return;
 
     KConfigGroup gg(krConfig, "General");
     bool trash = gg.readEntry("Move To Trash", _MoveToTrash);
@@ -828,22 +821,25 @@ void ListPanelFunc::deleteFiles(bool reallyDelete)
         QString s, b;
 
         if (!reallyDelete && trash && files() ->vfs_getType() == vfs::VFS_NORMAL) {
-            s = i18np("Do you really want to move this item to the trash?", "Do you really want to move these %1 items to the trash?", fileNames.count());
+            s = i18np("Do you really want to move this item to the trash?", "Do you really want to move these %1 items to the trash?", items.count());
             b = i18n("&Trash");
         } else if (files() ->vfs_getType() == vfs::VFS_VIRT && files()->vfs_getOrigin().equals(KUrl("virt:/"), KUrl::CompareWithoutTrailingSlash)) {
-            s = i18np("Do you really want to delete this virtual item (physical files stay untouched)?", "Do you really want to delete these %1 virtual items (physical files stay untouched)?", fileNames.count());
+            s = i18np("Do you really want to delete this virtual item (physical files stay untouched)?", "Do you really want to delete these %1 virtual items (physical files stay untouched)?", items.count());
             b = i18n("&Delete");
         } else if (files() ->vfs_getType() == vfs::VFS_VIRT) {
-            s = i18np("<qt>Do you really want to delete this item <b>physically</b> (not just removing it from the virtual items)?</qt>", "<qt>Do you really want to delete these %1 items <b>physically</b> (not just removing them from the virtual items)?</qt>", fileNames.count());
+            s = i18np("<qt>Do you really want to delete this item <b>physically</b> (not just removing it from the virtual items)?</qt>", "<qt>Do you really want to delete these %1 items <b>physically</b> (not just removing them from the virtual items)?</qt>", items.count());
             b = i18n("&Delete");
         } else {
-            s = i18np("Do you really want to delete this item?", "Do you really want to delete these %1 items?", fileNames.count());
+            s = i18np("Do you really want to delete this item?", "Do you really want to delete these %1 items?", items.count());
             b = i18n("&Delete");
         }
 
         // show message
         // note: i'm using continue and not yes/no because the yes/no has cancel as default button
-        if (KMessageBox::warningContinueCancelList(krMainWindow, s, fileNames,
+        QStringList names;
+        foreach(const KFileItem &item, items)
+            names << item.name();
+        if (KMessageBox::warningContinueCancelList(krMainWindow, s, names,
                 i18n("Warning"), KGuiItem(b)) != KMessageBox::Continue)
             return ;
     }
@@ -853,15 +849,14 @@ void ListPanelFunc::deleteFiles(bool reallyDelete)
     emptyDirVerify = ((emptyDirVerify) && (files() ->vfs_getType() == vfs::VFS_NORMAL));
 
     QDir dir;
-    for (QStringList::Iterator name = fileNames.begin(); name != fileNames.end();) {
-        vfile * vf = files() ->vfs_search(*name);
-
+    for(FileItemList::Iterator it = items.begin(); it != items.end(); ) {
+        FileItem &item = *it;
         // verify non-empty dirs delete... (only for normal vfs)
-        if (emptyDirVerify && vf->vfile_isDir() && !vf->vfile_isSymLink()) {
-            dir.setPath(panel->virtualPath().path() + '/' + (*name));
+        if (emptyDirVerify && item.isDir() && !item.isLink()) {
+            dir.setPath(panel->virtualPath().path() + '/' + (item.name()));
             if (dir.entryList(QDir::TypeMask | QDir::System | QDir::Hidden).count() > 2) {
                 switch (KMessageBox::warningYesNoCancel(krMainWindow,
-                                                        i18n("<qt><p>Directory <b>%1</b> is not empty!</p><p>Skip this one or Delete All?</p></qt>", *name),
+                                                        i18n("<qt><p>Directory <b>%1</b> is not empty!</p><p>Skip this one or Delete All?</p></qt>", item.name()),
                                                         QString(), KGuiItem(i18n("&Skip")), KGuiItem(i18n("&Delete All")))) {
                 case KMessageBox::Cancel :
                     return ;
@@ -869,23 +864,27 @@ void ListPanelFunc::deleteFiles(bool reallyDelete)
                     emptyDirVerify = false;
                     break;
                 case KMessageBox::Yes :
-                    name = fileNames.erase(name);
+                    it = items.erase(it);
                     continue;
                 }
             }
         }
-        ++name;
+        it++;
     }
 
-    if (fileNames.count() == 0)
+    if (items.count() == 0)
         return ;  // nothing to delete
 
     // after the delete return the cursor to the first unmarked
     // file above the current item;
     panel->prepareToDelete();
 
+    //TODO: call KIO directly
     // let the vfs do the job...
-    files() ->vfs_delFiles(&fileNames, reallyDelete);
+    QStringList names;
+    foreach(const KFileItem &item, items)
+            names << item.name();
+    files()->vfs_delFiles(&names, reallyDelete);
 }
 
 void ListPanelFunc::goInside(const QString& name)
@@ -1007,13 +1006,13 @@ void ListPanelFunc::execute(const QString& name)
 
 void ListPanelFunc::pack()
 {
-    QStringList fileNames;
-    panel->getSelectedNames(&fileNames);
-    if (fileNames.isEmpty())
-        return ;  // safety
-
-    if (fileNames.count() == 0)
+    KUrl::List urls = panel->view->getSelectedUrls(true);
+    if (urls.isEmpty())
         return ; // nothing to pack
+
+    QStringList fileNames; //TODO remove this
+    foreach(const KUrl &url, urls)
+        fileNames << url.fileName();
 
     // choose the default name
     QString defaultName = panel->virtualPath().fileName();
@@ -1067,9 +1066,6 @@ void ListPanelFunc::pack()
             return ; // stop operation
     }
 
-    // get the files to be packed:
-    files() ->vfs_getFiles(&fileNames);
-
     if (PackGUI::queue) {
         KIOJobWrapper *job = KIOJobWrapper::pack(files()->vfs_getOrigin(), destURL, fileNames,
                              PackGUI::type, PackGUI::extraProps, true);
@@ -1092,10 +1088,13 @@ void ListPanelFunc::pack()
 
 void ListPanelFunc::testArchive()
 {
-    QStringList fileNames;
-    panel->getSelectedNames(&fileNames);
-    if (fileNames.isEmpty())
-        return ;  // safety
+    KUrl::List urls = panel->view->getSelectedUrls(true);
+    if (urls.isEmpty())
+        return;
+
+    QStringList fileNames; //TODO remove this
+    foreach(const KUrl &url, urls)
+        fileNames << url.fileName();
 
     TestArchiveJob * job = TestArchiveJob::testArchives(files()->vfs_getOrigin(), fileNames);
     job->setUiDelegate(new KIO::JobUiDelegate());
@@ -1105,11 +1104,13 @@ void ListPanelFunc::testArchive()
 
 void ListPanelFunc::unpack()
 {
+    KUrl::List urls = panel->view->getSelectedUrls(true);
+    if (urls.isEmpty())
+        return ; // nothing to unpack
 
-    QStringList fileNames;
-    panel->getSelectedNames(&fileNames);
-    if (fileNames.isEmpty())
-        return ;  // safety
+    QStringList fileNames; //TODO remove this
+    foreach(const KUrl &url, urls)
+        fileNames << url.fileName();
 
     QString s;
     if (fileNames.count() == 1)
@@ -1147,16 +1148,16 @@ void ListPanelFunc::unpack()
 // code (maybe except 3) from createChecksum and matchChecksum
 static void checksum_wrapper(ListPanel *panel, QStringList& args, bool &folders)
 {
-    KrViewItemList items;
-    panel->view->getSelectedKrViewItems(&items);
-    if (items.isEmpty()) return ;   // nothing to do
+    FileItemList items = panel->view->getSelectedItems(true);
+    if (items.isEmpty())
+        return ; // nothing to do
+
     // determine if we need recursive mode (md5deep)
     folders = false;
-    for (KrViewItemList::Iterator it = items.begin(); it != items.end(); ++it) {
-        if (panel->func->getVFile(*it)->vfile_isDir()) {
+    foreach(const FileItem &item, items) {
+        if (item.isDir())
             folders = true;
-            args << (*it)->name();
-        } else args << (*it)->name();
+        args << item.name();
     }
 }
 
@@ -1182,16 +1183,19 @@ void ListPanelFunc::matchChecksum()
 
 void ListPanelFunc::calcSpace()
 {
-    QStringList items;
-    panel->view->getSelectedItems(&items);
-    if (items.isEmpty()) {
+    KUrl::List urls = panel->view->getSelectedUrls(true);
+    if (urls.isEmpty()) {
         panel->view->selectAllIncludingDirs();
-        panel->view->getSelectedItems(&items);
-        if (items.isEmpty())
+        urls = panel->view->getSelectedUrls(true);
+        if (urls.isEmpty())
             return ; // nothing to do
     }
 
-    QPointer<KrCalcSpaceDialog> calc = new KrCalcSpaceDialog(krMainWindow, panel, items, false);
+    QStringList fileNames; //TODO remove this
+    foreach(const KUrl &url, urls)
+        fileNames << url.fileName();
+
+    QPointer<KrCalcSpaceDialog> calc = new KrCalcSpaceDialog(krMainWindow, panel, fileNames, false);
     calc->exec();
     panel->slotUpdateTotals();
 
@@ -1252,25 +1256,12 @@ void ListPanelFunc::newFTPconnection()
 
 void ListPanelFunc::properties()
 {
-    QStringList names;
-    panel->getSelectedNames(&names);
-    if (names.isEmpty())
-        return ;  // no names...
-    KFileItemList fi;
-
-    for (int i = 0 ; i < names.count() ; ++i) {
-        vfile* vf = files() ->vfs_search(names[ i ]);
-        if (!vf)
-            continue;
-        KUrl url = files()->vfs_getFile(names[i]);
-        fi.push_back(KFileItem(vf->vfile_getEntry(), url));
-    }
-
-    if (fi.isEmpty())
+    KFileItemList items = panel->view->getSelectedItems(true);
+    if (items.isEmpty())
         return ;
 
     // Show the properties dialog
-    KPropertiesDialog *dlg = new KPropertiesDialog(fi, krMainWindow);
+    KPropertiesDialog *dlg = new KPropertiesDialog(items, krMainWindow);
     connect(dlg, SIGNAL(applied()), SLOTS, SLOT(refresh()));
     dlg->show();
 }
@@ -1333,24 +1324,20 @@ void ListPanelFunc::copyToClipboard(bool move)
         return;
     }
 
-    QStringList fileNames;
+    KUrl::List urls = panel->view->getSelectedUrls(true);
+    if (urls.count()) {
+        QStringList fileNames; //TODO remove this
+        foreach(const KUrl &url, urls)
+            fileNames << url.fileName();
 
-    panel->getSelectedNames(&fileNames);
-    if (fileNames.isEmpty())
-        return ;  // safety
-
-    KUrl::List* fileUrls = files() ->vfs_getFiles(&fileNames);
-    if (fileUrls) {
         QMimeData *mimeData = new QMimeData;
         mimeData->setData("application/x-kde-cutselection", move ? "1" : "0");
-        fileUrls->populateMimeData(mimeData);
+        urls.populateMimeData(mimeData);
 
         QApplication::clipboard()->setMimeData(mimeData, QClipboard::Clipboard);
 
         if (move && files()->vfs_getType() == vfs::VFS_VIRT)
             (static_cast<virt_vfs*>(files()))->vfs_removeFiles(&fileNames);
-
-        delete fileUrls;
     }
 }
 
