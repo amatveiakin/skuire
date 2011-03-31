@@ -111,9 +111,6 @@ public:
     }
     QString realPath() const;
     QString getCurrentName();
-    void getSelectedNames(QStringList* fileNames) {
-        view->getSelectedItems(fileNames);
-    }
     void setButtons();
     void setJumpBack(KUrl url);
 
