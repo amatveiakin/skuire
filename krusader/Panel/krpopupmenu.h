@@ -92,9 +92,8 @@ private:
     KMenu openWith, linkPopup, createNewPopup;
     KrPreviewPopup preview;
     KActionCollection *actions;
-    KrViewItemList items; // list of selected items
-    KrViewItem *item; // the (first) selected item
-    KFileItemList _items;
+    KFileItemList items; // list of selected items
+    KFileItem item; // the (first) selected item
     KService::List offers;
 #ifdef __LIBKONQ__
     KonqPopupMenu *konqMenu;

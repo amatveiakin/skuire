@@ -40,7 +40,7 @@ KrPreviewPopup::KrPreviewPopup(): prevNotAvailAction(0), id(1), noPreview(true)
     maxXSize = (int)((1.5 * maxYSize) + 0.5);
 }
 
-void KrPreviewPopup::setUrls(const KUrl::List* urls)
+void KrPreviewPopup::setItems(KFileItemList items)
 {
     if (prevNotAvailAction) {
         removeAction(prevNotAvailAction);
@@ -51,9 +51,7 @@ void KrPreviewPopup::setUrls(const KUrl::List* urls)
     KIO::PreviewJob* pjob;
     QStringList plugins = KIO::PreviewJob::availablePlugins();
 
-    for (int i = 0; i < urls->count(); ++i) {
-        files.push_back(KFileItem(KFileItem::Unknown, KFileItem::Unknown, (*urls)[ i ]));
-    }
+    files = items;
 
     pjob = new KIO::PreviewJob(files, 200, 200, 200, 1, true, true, 0);
     connect(pjob, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)),

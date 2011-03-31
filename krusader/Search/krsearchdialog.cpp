@@ -569,12 +569,11 @@ void KrSearchDialog::viewCurrent()
 
 void KrSearchDialog::compareByContent()
 {
-    KrViewItemList list;
-    resultView->getSelectedKrViewItems(&list);
+    FileItemList list = resultView->getSelectedItems(true);
     if (list.count() != 2)
         return;
 
-    SLOTS->compareContent(list[0]->getVfile()->vfile_getUrl(), list[1]->getVfile()->vfile_getUrl());
+    SLOTS->compareContent(list[0].url(), list[1].url());
 }
 
 void KrSearchDialog::contextMenu(const QPoint &pos)

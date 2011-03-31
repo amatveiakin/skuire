@@ -538,21 +538,6 @@ void KrView::getSelectedItems(QStringList *names)
     }
 }
 
-void KrView::getSelectedKrViewItems(KrViewItemList *items)
-{
-    for (KrViewItem * it = getFirst(); it != 0; it = getNext(it))
-        if (it->isSelected() && (it->name() != "..")) items->append(it);
-
-    // if all else fails, take the current item
-    QString item = getCurrentItem();
-    if (items->empty() &&
-            !item.isEmpty() &&
-            item != ".." &&
-            getCurrentKrViewItem() != 0) {
-        items->append(getCurrentKrViewItem());
-    }
-}
-
 QString KrView::statistics()
 {
     KIO::filesize_t size = calcSize();

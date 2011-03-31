@@ -506,7 +506,6 @@ public:
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
 public:
-    virtual void getSelectedKrViewItems(KrViewItemList *items);
     virtual KrViewItem *getCurrentKrViewItem() = 0;
     virtual KrViewItem *getKrViewItemAt(const QPoint &vp) = 0;
     virtual KrViewItem *findItemByName(const QString &name) = 0;
