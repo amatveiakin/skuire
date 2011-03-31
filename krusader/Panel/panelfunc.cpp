@@ -932,6 +932,7 @@ void ListPanelFunc::goInside(const QString& name)
 
 void ListPanelFunc::runCommand(QString cmd)
 {
+    krOut<<cmd<<endl;
     QString workdir = panel->virtualPath().isLocalFile() ?
             panel->virtualPath().path() : QDir::homePath();
     if(!KRun::runCommand(cmd, krMainWindow, workdir))
@@ -940,6 +941,7 @@ void ListPanelFunc::runCommand(QString cmd)
 
 void ListPanelFunc::runService(const KService &service, KUrl::List urls)
 {
+    krOut<<service.name()<<endl;
     QStringList args = KRun::processDesktopExec(service, urls);
     if (args.count())
         runCommand(KShell::joinArgs(args));
@@ -967,6 +969,8 @@ void ListPanelFunc::execute(const QString& name)
         return ;
     }
 
+    krOut<<name<<endl;
+
     vfile *vf = files() ->vfs_search(name);
     if (vf == 0)
         return ;
@@ -992,7 +996,7 @@ void ListPanelFunc::execute(const QString& name)
         openUrl(path);
     } else {
         KUrl url = files() ->vfs_getFile(name);
-        if (vf->vfile_isExecutable() && url.isLocalFile())
+        if (KRun::isExecutableFile(url, vf->vfile_getMime()))
             runCommand(url.path());
         else {
             KService::Ptr service = KMimeTypeTrader::self()->preferredService(vf->vfile_getMime());
