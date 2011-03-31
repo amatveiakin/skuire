@@ -398,8 +398,6 @@ public:
     virtual uint count() const {
         return _count;
     }
-    virtual void getSelectedItems(QStringList* names);
-    virtual void getItemsByMask(QString mask, QStringList* names, bool dirs = true, bool files = true);
     virtual void getSelectedKrViewItems(KrViewItemList *items);
     virtual void selectAllIncludingDirs() {
         changeSelection(KRQuery("*"), true, true);
@@ -528,6 +526,9 @@ protected:
     inline void setWidget(QWidget *w) {
         _widget = w;
     }
+
+    virtual void getSelectedItems(QStringList* names);
+    virtual void getItemsByMask(QString mask, QStringList* names, bool dirs = true, bool files = true);
 
     KrViewInstance &_instance;
     VfileContainer *_files;
