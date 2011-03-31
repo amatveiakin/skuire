@@ -155,28 +155,27 @@ void KRslots::sendFileByEmail(const KUrl::List &urls)
         KMessageBox::error(0, i18n("Error executing %1!", mailProg));
 }
 
+//TODO move this to panelfunc ?
 void KRslots::compareContent()
 {
-    QStringList lstLeft, lstRight;
-    QStringList* lstActive;
-    KUrl name1, name2;
+    FileItemList lstLeft = LEFT_PANEL->view->getSelectedItems(true);
+    FileItemList lstRight = RIGHT_PANEL->view->getSelectedItems(true);
+    FileItemList* lstActive = (ACTIVE_PANEL->gui->isLeft() ? &lstLeft : &lstRight);
 
-    LEFT_PANEL->getSelectedNames(&lstLeft);
-    RIGHT_PANEL->getSelectedNames(&lstRight);
-    lstActive = (ACTIVE_PANEL->gui->isLeft() ? &lstLeft : &lstRight);
+    KUrl url1, url2;
 
     if (lstLeft.count() == 1 && lstRight.count() == 1) {
         // first, see if we've got exactly 1 selected file in each panel:
-        name1 = LEFT_PANEL->func->files()->vfs_getFile(lstLeft[0]);
-        name2 = RIGHT_PANEL->func->files()->vfs_getFile(lstRight[0]);
+        url1 = lstLeft[0].url();
+        url2 = lstRight[0].url();
     } else if (lstActive->count() == 2) {
         // next try: are in the current panel exacty 2 files selected?
-        name1 = ACTIVE_PANEL->func->files()->vfs_getFile((*lstActive)[0]);
-        name2 = ACTIVE_PANEL->func->files()->vfs_getFile((*lstActive)[1]);
+        url1 = (*lstActive)[0].url();
+        url2 = (*lstActive)[1].url();
     } else if (ACTIVE_PANEL->otherPanel()->func->files()->vfs_search(ACTIVE_VIEW->getCurrentItem())) {
         // next try: is in the other panel a file with the same name?
-        name1 = ACTIVE_PANEL->func->files()->vfs_getFile(ACTIVE_VIEW->getCurrentItem());
-        name2 = ACTIVE_PANEL->otherPanel()->func->files()->vfs_getFile(ACTIVE_VIEW->getCurrentItem());
+        url1 = ACTIVE_PANEL->func->files()->vfs_getFile(ACTIVE_VIEW->getCurrentItem());
+        url2 = ACTIVE_PANEL->otherPanel()->func->files()->vfs_getFile(ACTIVE_VIEW->getCurrentItem());
     } else  {
         // if we got here, then we can't be sure what file to diff
         KMessageBox::detailedError(0, i18n("Don't know which files to compare."), "<qt>" + i18n("To compare two files by content, you can either:<ul><li>Select one file in the left panel, and one in the right panel.</li><li>Select exactly two files in the active panel.</li><li>Make sure there is a file in the other panel, with the same name as the current file in the active panel.</li></ul>") + "</qt>");
@@ -186,9 +185,10 @@ void KRslots::compareContent()
 
     // else implied: all ok, let's call kdiff
     // but if one of the files isn't local, download them first
-    compareContent(name1, name2);
+    compareContent(url1, url2);
 }
 
+//TODO move this to panelfunc ?
 void KRslots::compareContent(KUrl url1, KUrl url2)
 {
     QString diffProg;
@@ -441,6 +441,7 @@ void KRslots::sysInfo()
     }
 }
 
+//TODO: move to panelfunc ?
 void KRslots::multiRename()
 {
     QStringList lst = Krusader::supportedTools();
@@ -451,26 +452,22 @@ void KRslots::multiRename()
     }
     QString pathToRename = lst[i+1];
 
-    QStringList names;
-    ACTIVE_PANEL->gui->getSelectedNames(&names);
-    KUrl::List* urls = ACTIVE_FUNC->files()->vfs_getFiles(&names);
+    FileItemList items = ACTIVE_VIEW->getSelectedItems(true);
 
-    if (urls->isEmpty()) {
-        delete urls;
+    if (items.isEmpty())
         return;
-    }
 
     KProcess proc;
     proc << pathToRename;
 
-    for (KUrl::List::iterator u = urls->begin(); u != urls->end(); ++u) {
-        if (QFileInfo((*u).path()).isDir()) proc << "-r";
-        proc << (*u).path();
+    foreach(const FileItem &item, items) {
+        if (item.isDir())
+            proc << "-r";
+        proc << item.url().pathOrUrl();
     }
 
     if (!proc.startDetached())
         KMessageBox::error(0, i18n("Error executing %1!", pathToRename));
-    delete urls;
 }
 
 void KRslots::rootKrusader()
@@ -530,39 +527,35 @@ void KRslots::changeTrashIcon()
 #endif
 }
 
+//TODO: move to panelfunc ?
 void KRslots::slotSplit()
 {
-    QStringList list;
-    QString name;
+    FileItem item;
 
-    ACTIVE_PANEL->gui->getSelectedNames(&list);
+    FileItemList selection = ACTIVE_VIEW->getSelectedItems(true);
 
     // first, see if we've got exactly 1 selected file, if not, try the current one
-    if (list.count() == 1) name = list[0];
-
-    if (name.isEmpty()) {
+    if (selection.count() == 1)
+        item = selection[0];
+    else {
         // if we got here, then one of the panel can't be sure what file to diff
         KMessageBox::error(0, i18n("Don't know which file to split."));
         return;
     }
 
-    KUrl fileURL = ACTIVE_FUNC->files()->vfs_getFile(name);
-    if (fileURL.isEmpty())
-        return;
-
-    if (ACTIVE_FUNC->files()->vfs_search(name)->vfile_isDir()) {
+    if (item.isDir()) {
         KMessageBox::sorry(krApp, i18n("You can't split a directory!"));
         return ;
     }
 
     KUrl destDir  = ACTIVE_PANEL->otherPanel()->func->files()->vfs_getOrigin();
 
-    SplitterGUI splitterGUI(MAIN_VIEW, fileURL, destDir);
+    SplitterGUI splitterGUI(MAIN_VIEW, item.url(), destDir);
 
     if (splitterGUI.result() == QDialog::Accepted) {
         bool splitToOtherPanel = (splitterGUI.getDestinationDir().equals(ACTIVE_PANEL->otherPanel()->virtualPath(), KUrl::CompareWithoutTrailingSlash));
 
-        Splitter split(MAIN_VIEW, fileURL, splitterGUI.getDestinationDir());
+        Splitter split(MAIN_VIEW, item.url(), splitterGUI.getDestinationDir());
         split.split(splitterGUI.getSplitSize());
 
         if (splitToOtherPanel)
@@ -570,28 +563,26 @@ void KRslots::slotSplit()
     }
 }
 
+//TODO: move to panelfunc ?
 void KRslots::slotCombine()
 {
-    QStringList   list;
     KUrl          baseURL;
     bool          unixStyle = false;
     bool          windowsStyle = false;
     QString       commonName;
     int           commonLength = 0;
 
-    ACTIVE_PANEL->gui->getSelectedNames(&list);
-    if (list.isEmpty()) {
+    FileItemList items = ACTIVE_VIEW->getSelectedItems(true);
+    if (items.isEmpty()) {
         KMessageBox::error(0, i18n("Don't know which files to combine."));
         return;
     }
 
     /* checking splitter names */
-    for (QStringList::Iterator it = list.begin(); it != list.end(); ++it) {
-        KUrl url = ACTIVE_FUNC->files()->vfs_getFile(*it);
-        if (url.isEmpty())
-            return;
+    foreach(FileItem item, items) {
+        KUrl url = item.url();
 
-        if (ACTIVE_FUNC->files()->vfs_search(*it)->vfile_isDir()) {
+        if (item.isDir()) {
             KMessageBox::sorry(krApp, i18n("You can't combine a directory!"));
             return ;
         }
@@ -630,7 +621,7 @@ void KRslots::slotCombine()
             bool error = true;
 
             do {
-                QString shortName   = *it;
+                QString shortName = item.name();
                 QChar   lastChar  = shortName.at(shortName.length() - 1);
 
                 if (lastChar.isLetter()) {
