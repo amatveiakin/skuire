@@ -454,7 +454,7 @@ void ListPanel::changeType(int type)
 {
     if (panelType != type) {
         QString current = view->getCurrentItem();
-        KUrl::List selection = view->selectedUrls();
+        KUrl::List selection = view->getSelectedUrls();
         bool filterApplysToDirs = view->properties()->filterApplysToDirs;
         KrViewProperties::FilterSpec filter = view->filter();
         FilterSettings filterSettings = view->properties()->filterSettings;

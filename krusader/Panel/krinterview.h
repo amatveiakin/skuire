@@ -40,6 +40,7 @@ public:
 
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
     virtual FileItemList getSelectedItems();
+    virtual KUrl::List getSelectedUrls();
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();
@@ -48,7 +49,6 @@ public:
     virtual uint numSelected() const {
         return _selection.count();
     }
-    virtual KUrl::List selectedUrls();
     virtual void setSelection(const KUrl::List urls);
     virtual KrViewItem* getFirst();
     virtual KrViewItem* getLast();

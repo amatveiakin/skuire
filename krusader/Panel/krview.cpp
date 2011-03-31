@@ -1259,7 +1259,7 @@ void KrView::customSelection(bool select)
 void KrView::refresh()
 {
     QString current = getCurrentItem();
-    KUrl::List selection = selectedUrls();
+    KUrl::List selection = getSelectedUrls();
 
     clear();
 
@@ -1312,7 +1312,7 @@ void KrView::setSelected(const vfile* vf, bool select)
 
 void KrView::saveSelection()
 {
-    _savedSelection = selectedUrls();
+    _savedSelection = getSelectedUrls();
     op()->emitRefreshActions();
 }
 

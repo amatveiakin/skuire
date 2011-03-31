@@ -325,6 +325,7 @@ protected:
 public:
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
     virtual FileItemList getSelectedItems() = 0;
+    virtual KUrl::List getSelectedUrls() = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
@@ -339,7 +340,6 @@ public:
     virtual void        selectRegion(KrViewItem *, KrViewItem *, bool) = 0;
 
     virtual uint numSelected() const = 0;
-    virtual KUrl::List selectedUrls() = 0;
     virtual void setSelection(const KUrl::List urls) = 0;
     virtual KrViewItem *getFirst() = 0;
     virtual KrViewItem *getLast() = 0;
