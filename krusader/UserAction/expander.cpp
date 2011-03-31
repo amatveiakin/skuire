@@ -67,31 +67,28 @@ void exp_placeholder::panelMissingError(const QString &s, Expander& exp)
 
 QStringList exp_placeholder::fileList(const KrPanel* const panel, const QString& type, const QString& mask, const bool omitPath, const bool useUrl, Expander& exp, const QString& error)
 {
-    QStringList items;
+    FileItemList items;
     if (type.isEmpty() || type == "all")
-        panel->view->getItemsByMask(mask, &items);
+        items = panel->view->getItems(mask);
     else if (type == "files")
-        panel->view->getItemsByMask(mask, &items, false, true);
+        items = panel->view->getItems(mask, false, true);
     else if (type == "dirs")
-        panel->view->getItemsByMask(mask, &items, true, false);
+        items = panel->view->getItems(mask, true, false);
     else if (type == "selected")
-        panel->view->getSelectedItems(&items);
+        items = panel->view->getSelectedItems();
     else {
         setError(exp, Error(Error::exp_S_FATAL, Error::exp_C_ARGUMENT, i18n("Expander: Bad argument to %1: %2 is not valid item specifier", error, type)));
         return QStringList();
     }
-    if (!omitPath) {    // add the current path
-        // translate to urls using vfs
-        KUrl::List* list = panel->func->files()->vfs_getFiles(&items);
-        items.clear();
-        // parse everything to a single qstring
-        for (KUrl::List::Iterator it = list->begin(); it != list->end(); ++it) {
-            items.push_back(useUrl ? (*it).url() : (*it).path());
-        }
-        delete list;
-    }
 
-    return items;
+    QStringList list;
+    foreach(KFileItem item, items) {
+        if(omitPath)
+            list << item.name();
+        else
+            list << (useUrl ? item.url().url() : item.url().path());
+    }
+    return list;
 }
 
 namespace
