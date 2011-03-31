@@ -37,6 +37,10 @@ class KrInterView : public KrView
 public:
     KrInterView(KrViewInstance &instance, KConfig *cfg, QAbstractItemView *itemView);
     virtual ~KrInterView();
+
+    virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
+    virtual FileItemList getSelectedItems();
+
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();
     }

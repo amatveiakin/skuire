@@ -38,6 +38,7 @@
 #include <kio/global.h>
 #include <kio/udsentry.h>
 #include <kmimetype.h>
+#include <kfileitem.h>
 
 #define PERM_ALL          -2
 
@@ -92,6 +93,8 @@ public:
     inline bool operator!=(const vfile& vf) {
         return !((*this) == vf);
     }
+
+    KFileItem toFileItem() const;
 
     // following functions give-out file details
     inline const QString&   vfile_getName()    const {

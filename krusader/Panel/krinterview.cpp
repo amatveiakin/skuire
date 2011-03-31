@@ -343,12 +343,31 @@ KIO::filesize_t KrInterView::calcSelectedSize()
     return size;
 }
 
+FileItemList KrInterView::getItems(KRQuery mask, bool dirs, bool files)
+{
+    FileItemList list;
+    foreach(vfile *vf, _model->vfiles()) {
+        if (vf != _dummyVfile)
+            if ((!vf->vfile_isDir() && files) || (vf->vfile_isDir() && dirs))
+                if(mask.isNull() || mask.match(vf))
+                    list << vf->toFileItem();
+    }
+    return list;
+}
+
+FileItemList KrInterView::getSelectedItems()
+{
+    FileItemList list;
+    foreach(const vfile *vf, _selection)
+        list << vf->toFileItem();
+    return list;
+}
+
 KUrl::List KrInterView::selectedUrls()
 {
     KUrl::List list;
-    foreach(const vfile *vf, _selection) {
+    foreach(const vfile *vf, _selection)
         list << vf->vfile_getUrl();
-    }
     return list;
 }
 

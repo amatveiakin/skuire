@@ -123,6 +123,11 @@ vfile::vfile(const QString& name,                   // useful construtor
     vfile_rwx = rwx;
 }
 
+KFileItem vfile::toFileItem() const
+{
+    return KFileItem(vfile_getMode(), vfile_getMode(), vfile_getUrl(), true);
+}
+
 char vfile::vfile_isReadable() const
 {
     if (vfile_rwx == PERM_ALL)

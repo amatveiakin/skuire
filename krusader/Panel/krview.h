@@ -38,6 +38,7 @@
 #include <QList>
 #include <QModelIndex>
 #include <QTimer>
+#include <kfileitem.h>
 #include "../krglobal.h"
 #include "../VFS/vfile.h"
 #include "../VFS/krquery.h"
@@ -57,6 +58,9 @@ class QuickFilter;
 class VfileContainer;
 
 typedef QList<KrViewItem*> KrViewItemList;
+
+typedef KFileItem FileItem;
+typedef KFileItemList FileItemList;
 
 // KrViewProperties
 // This class is an interface class between KrView and KrViewItem
@@ -283,8 +287,8 @@ class KrView
 {
     friend class KrViewItem;
     friend class KrViewOperator;
-public:
 
+public:
     class IconSizes : public QVector<int>
     {
     public:
@@ -319,6 +323,9 @@ protected:
     // Every view must implement the following functions //
     ///////////////////////////////////////////////////////
 public:
+    virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
+    virtual FileItemList getSelectedItems() = 0;
+
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
         return QModelIndex();
@@ -534,10 +541,10 @@ protected:
     int _fileIconSize;
     bool _updateDefaultSettings;
     QRegExp _quickFilterMask;
+    vfile *_dummyVfile;
 
 private:
     uint _count, _numDirs;
-    vfile *_dummyVfile;
 };
 
 
