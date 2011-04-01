@@ -338,6 +338,7 @@ protected:
 public:
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
     virtual FileItemList getSelectedItems(bool currentIfNoSelection) = 0;
+    virtual void makeItemVisible(KUrl url) = 0;
 
 
     // interview related functions

@@ -40,6 +40,7 @@ public:
 
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
     virtual FileItemList getSelectedItems(bool currentIfNoSelection);
+    virtual void makeItemVisible(KUrl url);
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();

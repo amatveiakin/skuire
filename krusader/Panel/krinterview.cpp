@@ -385,3 +385,10 @@ void KrInterView::setSelection(const KUrl::List urls)
 
     op()->setMassSelectionUpdate(false);
 }
+
+void KrInterView::makeItemVisible(KUrl url)
+{
+    QModelIndex ndx = _model->indexFromUrl(url);
+    if (ndx.isValid())
+        _itemView->scrollTo(ndx);
+}

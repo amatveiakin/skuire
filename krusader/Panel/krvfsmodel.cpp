@@ -534,6 +534,8 @@ const QModelIndex & KrVfsModel::indexFromUrl(const KUrl &url)
 {
     //TODO: use url index instead of name index
     //HACK
+    if(!url.isValid())
+        return QModelIndex();
     return nameIndex(url.fileName());
 }
 
