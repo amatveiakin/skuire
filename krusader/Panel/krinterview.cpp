@@ -447,3 +447,9 @@ QRect KrInterView::itemRect(KUrl itemUrl)
     vfile *vf = _model->vfileAt(_model->indexFromUrl(itemUrl));
     return vf ? itemRect(vf) : QRect();
 }
+
+FileItem KrInterView::itemAt(const QPoint &vp)
+{
+    vfile *vf = _model->vfileAt(_itemView->indexAt(vp));
+    return vf ? vf->toFileItem() : FileItem();
+}

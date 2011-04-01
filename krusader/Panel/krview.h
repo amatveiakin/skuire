@@ -344,6 +344,7 @@ public:
     virtual bool currentItemIsUpUrl() = 0;
     virtual QRect itemRect(KUrl itemUrl) = 0;
     virtual void selectRegion(KUrl item1, KUrl item2, bool select) = 0;
+    virtual FileItem itemAt(const QPoint &vp) = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
