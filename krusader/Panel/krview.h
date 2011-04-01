@@ -462,6 +462,12 @@ public:
     void selectItem(KUrl url, bool select) {
         changeSelection(KUrl::List(url), select, false);
     }
+    void toggleSelected(KUrl url) {
+        selectItem(url, !isItemSelected(url));
+    }
+    void toggleSelected(FileItem item) {
+        selectItem(item, !isItemSelected(item));
+    }
     bool isItemSelected(FileItem item) {
         return item.isNull() ? false : isItemSelected(item.url());
     }
