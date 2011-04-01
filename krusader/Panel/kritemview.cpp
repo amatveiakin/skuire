@@ -67,10 +67,7 @@ void KrItemView::setFileIconSize(int size)
 
 void KrItemView::currentChanged(const QModelIndex & current, const QModelIndex & previous)
 {
-    if (_model->ready()) {
-        KrViewItem * item = getKrInterViewItem(currentIndex());
-        op()->emitCurrentChanged(item);
-    }
+    KrInterView::currentChanged(current);
     QAbstractItemView::currentChanged(current, previous);
 }
 

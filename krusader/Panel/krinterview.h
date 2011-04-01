@@ -107,6 +107,7 @@ protected:
         return _selection.contains(vf);
     }
     void makeCurrentVisible();
+    void currentChanged(const QModelIndex &current);
 
 
     KrVfsModel *_model;

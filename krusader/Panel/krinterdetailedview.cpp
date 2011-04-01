@@ -95,10 +95,7 @@ KrInterDetailedView::~KrInterDetailedView()
 
 void KrInterDetailedView::currentChanged(const QModelIndex & current, const QModelIndex & previous)
 {
-    if (_model->ready()) {
-        KrViewItem * item = getKrInterViewItem(currentIndex());
-        op()->emitCurrentChanged(item);
-    }
+    KrInterView::currentChanged(current);
     QTreeView::currentChanged(current, previous);
 }
 

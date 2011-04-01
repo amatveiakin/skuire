@@ -139,6 +139,9 @@ public:
     }
     void startDrag();
 
+    void emitCurrentChanged(FileItem item) {
+        emit currentChanged(item);
+    }
     void emitGotDrop(QDropEvent *e) {
         emit gotDrop(e);
     }
@@ -199,6 +202,7 @@ public slots:
     void stopQuickFilter(bool refreshView = true);
 
 signals:
+    void currentChanged(FileItem item);
     void selectionChanged();
     void gotDrop(QDropEvent *e);
     void itemDescription(QString &desc);
@@ -236,9 +240,6 @@ public:
     void emitMiddleButtonClicked(KrViewItem *item) {
         emit middleButtonClicked(item);
     }
-    void emitCurrentChanged(KrViewItem *item) {
-        emit currentChanged(item);
-    }
     void emitCalcSpace(KrViewItem *item) {
         emit calcSpace(item);
     }
@@ -249,7 +250,6 @@ signals:
     void executed(const QString &name);
     void goInside(const QString &name);
     void middleButtonClicked(KrViewItem *item);
-    void currentChanged(KrViewItem *item);
     void calcSpace(KrViewItem *item);
 protected slots:
     // for signals from vfs' dirwatch

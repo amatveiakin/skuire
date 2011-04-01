@@ -406,3 +406,10 @@ bool KrInterView::currentItemIsUpUrl()
 {
     _model->vfileAt(_itemView->currentIndex()) == _dummyVfile;
 }
+
+void KrInterView::currentChanged(const QModelIndex &current)
+{
+    vfile *vf =_model->vfileAt(_itemView->currentIndex());
+    FileItem item = vf ? vf->toFileItem() : FileItem();
+    op()->emitCurrentChanged(item);
+}
