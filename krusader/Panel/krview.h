@@ -338,7 +338,7 @@ protected:
 public:
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
     virtual FileItemList getSelectedItems(bool currentIfNoSelection) = 0;
-    virtual void changeSelection(const KUrl::List urls, bool select, bool clearFirst) = 0;
+    virtual void changeSelection(KUrl::List urls, bool select, bool clearFirst) = 0;
     virtual FileItem currentItem() = 0;
     // indicates that ".." is the current item
     // in this case currentItem() return a null item
@@ -451,14 +451,14 @@ public:
     KUrl::List getSelectedUrls(bool currentUrlIfNoSelection) {
         return getSelectedItems(currentUrlIfNoSelection).urlList();
     }
-    void setSelection(const KUrl::List urls) {
+    void setSelection(KUrl::List urls) {
         changeSelection(urls, true, true);
     }
-    void selectItem(const FileItem item, bool select) {
+    void selectItem(FileItem item, bool select) {
         if(!item.isNull())
             selectItem(item.url(), select);
     }
-    void selectItem(const KUrl url, bool select) {
+    void selectItem(KUrl url, bool select) {
         changeSelection(KUrl::List(url), select, false);
     }
     void selectRegion(FileItem item1, FileItem item2, bool select);

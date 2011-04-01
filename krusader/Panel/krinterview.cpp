@@ -447,7 +447,7 @@ void KrInterView::setCurrentIndex(QModelIndex index)
     }
 }
 
-void KrInterView::changeSelection(const KUrl::List urls, bool select, bool clearFirst)
+void KrInterView::changeSelection(KUrl::List urls, bool select, bool clearFirst)
 {
     op()->setMassSelectionUpdate(true);
 
