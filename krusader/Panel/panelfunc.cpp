@@ -298,7 +298,7 @@ void ListPanelFunc::doRefresh()
             // partial refresh will not generate the needed signals to actually allow the
             // view to use nameToMakeCurrent. do it here instead (patch by Thomas Jarosch)
             panel->view->setCurrentItem(history->currentItem());
-            panel->view->makeItemVisible(panel->view->getCurrentKrViewItem());
+            panel->view->makeItemVisible(panel->view->currentUrl());
         }
         panel->view->setNameToMakeCurrent(history->currentItem());
 
