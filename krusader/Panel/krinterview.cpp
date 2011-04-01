@@ -393,21 +393,6 @@ FileItemList KrInterView::getSelectedItems(bool currentIfNoSelection)
     return list;
 }
 
-void KrInterView::setSelection(const KUrl::List urls)
-{
-    op()->setMassSelectionUpdate(true);
-
-    _selection.clear();
-
-    foreach(const KUrl &url, urls) {
-        QModelIndex idx = _model->indexFromUrl(url);
-        if(idx.isValid())
-            setSelected(_model->vfileAt(idx), true);
-    }
-
-    op()->setMassSelectionUpdate(false);
-}
-
 void KrInterView::makeItemVisible(KUrl url)
 {
     QModelIndex ndx = _model->indexFromUrl(url);
@@ -460,4 +445,20 @@ void KrInterView::setCurrentIndex(QModelIndex index)
         _mouseHandler->cancelTwoClickRename();
         _itemView->setCurrentIndex(index);
     }
+}
+
+void KrInterView::changeSelection(const KUrl::List urls, bool select, bool clearFirst)
+{
+    op()->setMassSelectionUpdate(true);
+
+    if(clearFirst)
+        _selection.clear();
+
+    foreach(const KUrl &url, urls) {
+        QModelIndex idx = _model->indexFromUrl(url);
+        if(idx.isValid())
+            setSelected(_model->vfileAt(idx), select);
+    }
+
+    op()->setMassSelectionUpdate(false);
 }

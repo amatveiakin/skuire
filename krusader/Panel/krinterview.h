@@ -40,6 +40,7 @@ public:
 
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
     virtual FileItemList getSelectedItems(bool currentIfNoSelection);
+    virtual void changeSelection(const KUrl::List urls, bool select, bool clearFirst);
     virtual FileItem currentItem();
     virtual bool currentItemIsUpUrl();
     virtual void setCurrentItem(KUrl url);
@@ -55,7 +56,6 @@ public:
     virtual uint numSelected() const {
         return _selection.count();
     }
-    virtual void setSelection(const KUrl::List urls);
     virtual KrViewItem* getFirst();
     virtual KrViewItem* getLast();
     virtual KrViewItem* getNext(KrViewItem *current);
