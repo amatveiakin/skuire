@@ -240,23 +240,17 @@ void KrInterView::makeItemVisible(const KrViewItem *item)
 
 void KrInterView::setCurrentItem(const QString& name)
 {
-    QModelIndex ndx = _model->nameIndex(name);
-    if (ndx.isValid())
-        _itemView->setCurrentIndex(ndx);
+    setCurrentIndex(_model->nameIndex(name));
 }
 
 void KrInterView::setCurrentKrViewItem(KrViewItem *item)
 {
     if (item == 0) {
-        _itemView->setCurrentIndex(QModelIndex());
+        setCurrentIndex(QModelIndex());
         return;
     }
     vfile* vf = (vfile *)item->getVfile();
-    QModelIndex ndx = _model->vfileIndex(vf);
-    if (ndx.isValid() && ndx.row() != _itemView->currentIndex().row()) {
-        _mouseHandler->cancelTwoClickRename();
-        _itemView->setCurrentIndex(ndx);
-    }
+    setCurrentIndex(_model->vfileIndex(vf));
 }
 
 void KrInterView::sort()
@@ -432,7 +426,7 @@ FileItem KrInterView::currentItem()
 
 bool KrInterView::currentItemIsUpUrl()
 {
-    _model->vfileAt(_itemView->currentIndex()) == _dummyVfile;
+    return _model->vfileAt(_itemView->currentIndex()) == _dummyVfile;
 }
 
 void KrInterView::currentChanged(const QModelIndex &current)
@@ -452,4 +446,18 @@ FileItem KrInterView::itemAt(const QPoint &vp)
 {
     vfile *vf = _model->vfileAt(_itemView->indexAt(vp));
     return vf ? vf->toFileItem() : FileItem();
+}
+
+void KrInterView::setCurrentItem(KUrl url)
+{
+    setCurrentIndex(_model->indexFromUrl(url));
+}
+
+void KrInterView::setCurrentIndex(QModelIndex index)
+{
+    if((index.isValid() && index.row() != _itemView->currentIndex().row()) ||
+            !index.isValid()) {
+        _mouseHandler->cancelTwoClickRename();
+        _itemView->setCurrentIndex(index);
+    }
 }

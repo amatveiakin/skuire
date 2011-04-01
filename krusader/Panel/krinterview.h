@@ -41,8 +41,9 @@ public:
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
     virtual FileItemList getSelectedItems(bool currentIfNoSelection);
     virtual FileItem currentItem();
-    virtual void makeItemVisible(KUrl url);
     virtual bool currentItemIsUpUrl();
+    virtual void setCurrentItem(KUrl url);
+    virtual void makeItemVisible(KUrl url);
     virtual void selectRegion(KUrl item1, KUrl item2, bool select);
     virtual QRect itemRect(KUrl itemUrl);
     virtual FileItem itemAt(const QPoint &vp);
@@ -112,6 +113,7 @@ protected:
         return _selection.contains(vf);
     }
     void currentChanged(const QModelIndex &current);
+    void setCurrentIndex(QModelIndex index);
 
 
     KrVfsModel *_model;

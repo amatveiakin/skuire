@@ -342,6 +342,7 @@ public:
     // indicates that ".." is the current item
     // in this case currentItem() return a null item
     virtual bool currentItemIsUpUrl() = 0;
+    virtual void setCurrentItem(KUrl url) = 0;
     virtual void makeItemVisible(KUrl url) = 0;
     virtual QRect itemRect(KUrl itemUrl) = 0;
     virtual void selectRegion(KUrl item1, KUrl item2, bool select) = 0;
@@ -443,6 +444,9 @@ public:
     void enableUpdateDefaultSettings(bool enable);
     KUrl currentUrl() {
         return currentItem().isNull() ? KUrl() : currentItem().url();
+    }
+    void setCurrentItem(FileItem item) {
+        setCurrentItem(item.isNull() ? KUrl() : item.url());
     }
     KUrl::List getSelectedUrls(bool currentUrlIfNoSelection) {
         return getSelectedItems(currentUrlIfNoSelection).urlList();
