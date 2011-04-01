@@ -401,3 +401,8 @@ FileItem KrInterView::currentItem()
     else
         return FileItem();
 }
+
+bool KrInterView::currentItemIsUpUrl()
+{
+    _model->vfileAt(_itemView->currentIndex()) == _dummyVfile;
+}

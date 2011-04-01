@@ -340,6 +340,8 @@ public:
     virtual FileItemList getSelectedItems(bool currentIfNoSelection) = 0;
     virtual FileItem currentItem() = 0;
     virtual void makeItemVisible(KUrl url) = 0;
+    // indicates that ".." is the current item
+    virtual bool currentItemIsUpUrl() = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
@@ -436,7 +438,7 @@ public:
     void changeSelection(const KRQuery& filter, bool select, bool includeDirs);
     void enableUpdateDefaultSettings(bool enable);
     KUrl currentUrl() {
-        return currentItem().url();
+        return currentItem().isNull() ? KUrl() : currentItem().url();
     }
     KUrl::List getSelectedUrls(bool currentUrlIfNoSelection) {
         return getSelectedItems(currentUrlIfNoSelection).urlList();

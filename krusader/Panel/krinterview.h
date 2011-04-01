@@ -42,6 +42,7 @@ public:
     virtual FileItemList getSelectedItems(bool currentIfNoSelection);
     virtual FileItem currentItem();
     virtual void makeItemVisible(KUrl url);
+    virtual bool currentItemIsUpUrl();
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();
