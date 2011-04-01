@@ -72,12 +72,15 @@ public:
     virtual void prepareForPassive();
     virtual void showContextMenu();
     virtual void selectRegion(KrViewItem *i1, KrViewItem *i2, bool select);
+    virtual QRect itemRect(KUrl itemUrl);
 
     void sortModeUpdated(int column, Qt::SortOrder order);
 
     void redrawItem(vfile *vf) {
         _itemView->viewport()->update(itemRect(vf));
     }
+
+    void makeCurrentVisible();
 
 protected:
     class DummySelectionModel : public QItemSelectionModel
@@ -106,7 +109,6 @@ protected:
     bool isSelected(const vfile *vf) const {
         return _selection.contains(vf);
     }
-    void makeCurrentVisible();
     void currentChanged(const QModelIndex &current);
 
 

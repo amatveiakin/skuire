@@ -342,6 +342,7 @@ public:
     virtual void makeItemVisible(KUrl url) = 0;
     // indicates that ".." is the current item
     virtual bool currentItemIsUpUrl() = 0;
+    virtual QRect itemRect(KUrl itemUrl) = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {

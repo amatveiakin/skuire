@@ -413,3 +413,9 @@ void KrInterView::currentChanged(const QModelIndex &current)
     FileItem item = vf ? vf->toFileItem() : FileItem();
     op()->emitCurrentChanged(item);
 }
+
+QRect KrInterView::itemRect(KUrl itemUrl)
+{
+    vfile *vf = _model->vfileAt(_model->indexFromUrl(itemUrl));
+    return vf ? itemRect(vf) : QRect();
+}
