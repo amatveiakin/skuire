@@ -43,6 +43,8 @@ public:
     virtual FileItem currentItem();
     virtual void makeItemVisible(KUrl url);
     virtual bool currentItemIsUpUrl();
+    virtual void selectRegion(KUrl item1, KUrl item2, bool select);
+    virtual QRect itemRect(KUrl itemUrl);
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();
@@ -72,7 +74,6 @@ public:
     virtual void prepareForPassive();
     virtual void showContextMenu();
     virtual void selectRegion(KrViewItem *i1, KrViewItem *i2, bool select);
-    virtual QRect itemRect(KUrl itemUrl);
 
     void sortModeUpdated(int column, Qt::SortOrder order);
 

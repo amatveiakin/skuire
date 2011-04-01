@@ -84,6 +84,34 @@ void KrInterView::selectRegion(KrViewItem *i1, KrViewItem *i2, bool select)
         i2->setSelected(select);
 }
 
+void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select)
+{
+    QModelIndex mi1 = _model->indexFromUrl(item1);
+    QModelIndex mi2 = _model->indexFromUrl(item2);
+
+    if (mi1.isValid() && mi2.isValid()) {
+        int r1 = mi1.row();
+        int r2 = mi2.row();
+
+        if (r1 > r2) {
+            int t = r1;
+            r1 = r2;
+            r2 = t;
+        }
+
+        op()->setMassSelectionUpdate(true);
+        for (int row = r1; row <= r2; row++)
+            setSelected(_model->vfileAt(_model->index(row, 0)), select);
+        op()->setMassSelectionUpdate(false);
+
+        redraw();
+
+    } else if (mi1.isValid() && !mi2.isValid())
+        setSelected(_model->vfileAt(mi1), select);
+    else if (mi2.isValid() && !mi1.isValid())
+        setSelected(_model->vfileAt(mi1), (select));
+}
+
 void KrInterView::intSetSelected(const vfile* vf, bool select)
 {
     if(select)

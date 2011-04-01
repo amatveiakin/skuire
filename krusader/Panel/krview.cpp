@@ -1311,3 +1311,13 @@ void KrView::clearSavedSelection() {
     _savedSelection.clear();
     op()->emitRefreshActions();
 }
+
+void KrView::selectRegion(FileItem item1, FileItem item2, bool select)
+{
+    KUrl url1, url2;
+    if(!item1.isNull())
+        url1 = item1.url();
+    if(!item2.isNull())
+        url2 = item2.url();
+    selectRegion(url1, url2, select);
+}

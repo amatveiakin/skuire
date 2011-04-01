@@ -343,6 +343,7 @@ public:
     // indicates that ".." is the current item
     virtual bool currentItemIsUpUrl() = 0;
     virtual QRect itemRect(KUrl itemUrl) = 0;
+    virtual void selectRegion(KUrl item1, KUrl item2, bool select) = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
@@ -444,7 +445,7 @@ public:
     KUrl::List getSelectedUrls(bool currentUrlIfNoSelection) {
         return getSelectedItems(currentUrlIfNoSelection).urlList();
     }
-
+    void selectRegion(FileItem item1, FileItem item2, bool select);
 
     /////////////////////////////////////////////////////////////
     // the following functions have a default and minimalistic //
