@@ -454,6 +454,13 @@ public:
     void setSelection(const KUrl::List urls) {
         changeSelection(urls, true, true);
     }
+    void selectItem(const FileItem item, bool select) {
+        if(!item.isNull())
+            selectItem(item.url(), select);
+    }
+    void selectItem(const KUrl url, bool select) {
+        changeSelection(KUrl::List(url), select, false);
+    }
     void selectRegion(FileItem item1, FileItem item2, bool select);
 
     /////////////////////////////////////////////////////////////
