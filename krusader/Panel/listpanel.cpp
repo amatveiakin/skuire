@@ -597,7 +597,6 @@ void ListPanel::slotFocusAndCDOther()
 }
 
 //TODO move this to panelfunc ?
-//FIXME how does this behave, when there are more than one items with the same name in one panel ?
 void ListPanel::compareDirs(bool otherPanelToo)
 {
     KConfigGroup pg(krConfig, "Private");
@@ -609,8 +608,18 @@ void ListPanel::compareDirs(bool otherPanelToo)
     FileItemList otherItems = otherPanel()->view->getItems();
 
     QHash<QString, FileItem> otherItemsDict;
-    foreach(FileItem item, otherItems)
-        otherItemsDict.insert(item.name(), item);
+    foreach(FileItem otherItem, otherItems) {
+        // check for duplicate file names in the other panel
+        if(otherItemsDict.contains(otherItem.name())) {
+            KMessageBox::error(0,
+                i18n("\"%1\" contains multiple files with the name \"%2\"",
+                     otherPanel()->virtualPath().pathOrUrl(), otherItem.name()),
+                i18n("Can't compare %1 with %2", virtualPath().pathOrUrl(),
+                     otherPanel()->virtualPath().pathOrUrl()));
+            return;
+        } else
+            otherItemsDict.insert(otherItem.name(), otherItem);
+    }
 
     KUrl::List newSelection;
 
@@ -623,9 +632,9 @@ void ListPanel::compareDirs(bool otherPanelToo)
             continue;
 
         if (!otherItem.isNull()) {
-            if (item.isDir())
+            if (!item.isDir())
                 isDifferent = otherItem.size() != item.size();
-            isNewer = item.time(KFileItem::ModificationTime) > otherItem.time(KFileItem::ModificationTime);
+            isNewer = item.time(KFileItem::ModificationTime) > otherItem.time(KFileItem::ModificationTime); //FIXME can this be made faster ?
         }
 
         KUrl url = item.url();
