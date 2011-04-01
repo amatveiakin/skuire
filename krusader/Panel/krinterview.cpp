@@ -462,3 +462,9 @@ void KrInterView::changeSelection(KUrl::List urls, bool select, bool clearFirst)
 
     op()->setMassSelectionUpdate(false);
 }
+
+bool KrInterView::isItemSelected(KUrl url)
+{
+    vfile *vf = _model->vfileAt(_model->indexFromUrl(url));
+    return vf ? _selection.contains(vf) : false;
+}
