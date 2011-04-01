@@ -555,16 +555,16 @@ void KrSearchDialog::keyPressEvent(QKeyEvent *e)
 
 void KrSearchDialog::editCurrent()
 {
-    KrViewItem *current = resultView->getCurrentKrViewItem();
-    if (current) 
-        KrViewer::edit(current->getVfile()->vfile_getUrl(), this);
+    KUrl url = resultView->currentUrl();
+    if (url.isValid())
+        KrViewer::edit(url, this);
 }
 
 void KrSearchDialog::viewCurrent()
 {
-    KrViewItem *current = resultView->getCurrentKrViewItem();
-    if (current) 
-        KrViewer::view(current->getVfile()->vfile_getUrl(), this);
+    KUrl url = resultView->currentUrl();
+    if (url.isValid())
+        KrViewer::view(url, this);
 }
 
 void KrSearchDialog::compareByContent()
