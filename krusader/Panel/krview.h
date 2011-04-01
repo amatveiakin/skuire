@@ -339,9 +339,10 @@ public:
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
     virtual FileItemList getSelectedItems(bool currentIfNoSelection) = 0;
     virtual FileItem currentItem() = 0;
-    virtual void makeItemVisible(KUrl url) = 0;
     // indicates that ".." is the current item
+    // in this case currentItem() return a null item
     virtual bool currentItemIsUpUrl() = 0;
+    virtual void makeItemVisible(KUrl url) = 0;
     virtual QRect itemRect(KUrl itemUrl) = 0;
     virtual void selectRegion(KUrl item1, KUrl item2, bool select) = 0;
     virtual FileItem itemAt(const QPoint &vp) = 0;
