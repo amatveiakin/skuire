@@ -338,8 +338,8 @@ protected:
 public:
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
     virtual FileItemList getSelectedItems(bool currentIfNoSelection) = 0;
+    virtual FileItem currentItem() = 0;
     virtual void makeItemVisible(KUrl url) = 0;
-
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
@@ -435,6 +435,9 @@ public:
     void changeSelection(const KRQuery& filter, bool select);
     void changeSelection(const KRQuery& filter, bool select, bool includeDirs);
     void enableUpdateDefaultSettings(bool enable);
+    KUrl currentUrl() {
+        return currentItem().url();
+    }
     KUrl::List getSelectedUrls(bool currentUrlIfNoSelection) {
         return getSelectedItems(currentUrlIfNoSelection).urlList();
     }

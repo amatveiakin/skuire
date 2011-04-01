@@ -392,3 +392,12 @@ void KrInterView::makeItemVisible(KUrl url)
     if (ndx.isValid())
         _itemView->scrollTo(ndx);
 }
+
+FileItem KrInterView::currentItem()
+{
+    vfile *vf = _model->vfileAt(_itemView->currentIndex());
+    if(vf && vf != _dummyVfile)
+        return vf->toFileItem();
+    else
+        return FileItem();
+}
