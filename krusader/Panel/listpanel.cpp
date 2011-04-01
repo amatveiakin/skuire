@@ -428,7 +428,7 @@ void ListPanel::createView()
     connect(view->op(), SIGNAL(dirUp()), func, SLOT(dirUp()));
     connect(view->op(), SIGNAL(deleteFiles(bool)), func, SLOT(deleteFiles(bool)));
     connect(view->op(), SIGNAL(middleButtonClicked(KrViewItem *)), SLOT(newTab(KrViewItem *)));
-    connect(view->op(), SIGNAL(currentChanged(KrViewItem *)), SLOT(updatePopupPanel(KrViewItem*)));
+    connect(view->op(), SIGNAL(currentChanged(FileItem)), SLOT(updatePopupPanel(FileItem)));
     connect(view->op(), SIGNAL(renameItem(const QString &, const QString &)),
             func, SLOT(rename(const QString &, const QString &)));
     connect(view->op(), SIGNAL(executed(const QString&)), func, SLOT(execute(const QString&)));
@@ -443,7 +443,7 @@ void ListPanel::createView()
     connect(view->op(), SIGNAL(gotDrop(QDropEvent *)), this, SLOT(handleDropOnView(QDropEvent *)));
     connect(view->op(), SIGNAL(previewJobStarted(KJob*)), this, SLOT(slotPreviewJobStarted(KJob*)));
     connect(view->op(), SIGNAL(refreshActions()), krApp->viewActions(), SLOT(refreshActions()));
-    connect(view->op(), SIGNAL(currentChanged(KrViewItem*)), func->history, SLOT(saveCurrentItem()));
+    connect(view->op(), SIGNAL(currentChanged(FileItem)), func->history, SLOT(saveCurrentItem()));
 
     view->setFiles(func->files());
 
@@ -467,7 +467,7 @@ void ListPanel::changeType(int type)
         view->setFilter(filter, filterSettings, filterApplysToDirs);
         view->setSelection(selection);
         view->setCurrentItem(current);
-        view->makeItemVisible(view->getCurrentKrViewItem());
+        view->makeItemVisible(view->currentUrl());
     }
 }
 
@@ -676,7 +676,7 @@ void ListPanel::slotFocusOnMe(bool focus)
         emit activate();
         _actions->activePanelChanged();
         func->refreshActions();
-        updatePopupPanel(view->getCurrentKrViewItem());
+        updatePopupPanel(view->currentItem());
         view->prepareForActive();
         otherPanel()->gui->slotFocusOnMe(false);
     } else
@@ -978,9 +978,12 @@ void ListPanel::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Return :
         if (e->modifiers() & Qt::ControlModifier) {
             if (e->modifiers() & Qt::AltModifier) {
-                vfile *vf = func->files()->vfs_search(view->getCurrentKrViewItem()->name());
-                if (vf && vf->vfile_isDir())
-                    newTab(vf->vfile_getUrl(), true);
+                FileItem item = view->currentItem();
+                if (!item.isNull()) {
+                    if (item.isDir())
+                        newTab(item.url(), true);
+                } else if (view->currentItemIsUpUrl())
+                    newTab(func->files()->vfs_getOrigin().upUrl(), true);
             } else {
                 SLOTS->insertFileName((e->modifiers() & Qt::ShiftModifier) != 0);
             }
@@ -993,20 +996,17 @@ void ListPanel::keyPressEvent(QKeyEvent *e)
             // directory otherwise as this one
             if ((isLeft() && e->key() == Qt::Key_Right) || (!isLeft() && e->key() == Qt::Key_Left)) {
                 KUrl newPath;
-                KrViewItem *it = view->getCurrentKrViewItem();
-
-                if (it->name() == "..") {
-                    newPath = func->files()->vfs_getOrigin().upUrl();
-                } else {
-                    vfile *v = func->getVFile(it);
-                    if (v && v->vfile_isDir() && v->vfile_getName() != "..") {
-                        newPath = v->vfile_getUrl();
-                    } else {
+                FileItem item = view->currentItem();
+                if (!item.isNull()) {
+                    if (item.isDir())
+                        newPath = item.url();
+                    else
                         newPath = func->files() ->vfs_getOrigin();
-                    }
-                }
+                } else if (view->currentItemIsUpUrl())
+                    newPath = func->files()->vfs_getOrigin().upUrl();
                 otherPanel()->func->openUrl(newPath);
-            } else func->openUrl(otherPanel()->func->files() ->vfs_getOrigin());
+            } else
+                func->openUrl(otherPanel()->func->files() ->vfs_getOrigin());
             return ;
         } else
             e->ignore();
@@ -1222,8 +1222,9 @@ void ListPanel::openMedia()
 
 void ListPanel::rightclickMenu()
 {
-    if (view->getCurrentKrViewItem())
-        popRightClickMenu(mapToGlobal(view->getCurrentKrViewItem()->itemRect().topLeft()));
+    FileItem item = view->currentItem();
+    if (!item.isNull())
+        popRightClickMenu(view->itemRect(item.url()).topLeft());
 }
 
 void ListPanel::toggleSyncBrowse()
@@ -1275,7 +1276,7 @@ void ListPanel::restoreSettings(KConfigGroup cfg)
     setJumpBack(func->history->currentUrl());
 }
 
-void ListPanel::updatePopupPanel(KrViewItem *item)
+void ListPanel::updatePopupPanel(FileItem item)
 {
     // which panel to display on?
     PanelPopup *p = 0;
@@ -1286,10 +1287,7 @@ void ListPanel::updatePopupPanel(KrViewItem *item)
     else
         return;
 
-    if(item)
-        p->update(func->files()->vfs_search(item->name()));
-    else
-        p->update(0);
+    p->update(item);
 }
 
 void ListPanel::otherPanelChanged()

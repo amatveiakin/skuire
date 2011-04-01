@@ -169,7 +169,7 @@ protected:
     static int defaultPanelType();
 
 protected slots:
-    void updatePopupPanel(KrViewItem *item);
+    void updatePopupPanel(FileItem item);
     void handleDropOnView(QDropEvent *, QWidget *destWidget = 0); // handles drops on the view only
     void startDragging(QStringList, QPixmap);
     void slotPreviewJobStarted(KJob *job);

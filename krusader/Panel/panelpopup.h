@@ -64,7 +64,7 @@ public:
     void saveSizes();
 
 public slots:
-    void update(const vfile *vf);
+    void update(KFileItem item);
     void show();
     void hide();
 
