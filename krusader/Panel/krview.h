@@ -455,6 +455,12 @@ public:
     void setSelection(KUrl::List urls) {
         changeSelection(urls, true, true);
     }
+    void setSelection(KUrl url) {
+        setSelection(KUrl::List(url));
+    }
+    void setSelection(FileItem item) {
+        setSelection(item.isNull() ? KUrl() : item.url());
+    }
     void selectItem(FileItem item, bool select) {
         if(!item.isNull())
             selectItem(item.url(), select);
