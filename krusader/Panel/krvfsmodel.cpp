@@ -302,7 +302,7 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
 
     emit layoutChanged();
     if (sortOrderChanged)
-        _view->makeItemVisible(_view->getCurrentKrViewItem());
+        _view->makeCurrentVisible();
 }
 
 QModelIndex KrVfsModel::addItem(vfile * vf)
@@ -343,7 +343,7 @@ QModelIndex KrVfsModel::addItem(vfile * vf)
 
     changePersistentIndexList(oldPersistentList, newPersistentList);
     emit layoutChanged();
-    _view->makeItemVisible(_view->getCurrentKrViewItem());
+    _view->makeCurrentVisible();
 
     return index(insertIndex, 0);
 }
@@ -391,7 +391,7 @@ QModelIndex KrVfsModel::removeItem(vfile * vf)
     }
     changePersistentIndexList(oldPersistentList, newPersistentList);
     emit layoutChanged();
-    _view->makeItemVisible(_view->getCurrentKrViewItem());
+    _view->makeCurrentVisible();
 
     return currIndex;
 }
@@ -453,7 +453,7 @@ void KrVfsModel::updateItem(vfile * vf)
     changePersistentIndexList(oldPersistentList, newPersistentList);
     emit layoutChanged();
     if (newIndex != oldIndex)
-        _view->makeItemVisible(_view->getCurrentKrViewItem());
+        _view->makeCurrentVisible();
 }
 
 QVariant KrVfsModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -534,8 +534,10 @@ const QModelIndex & KrVfsModel::indexFromUrl(const KUrl &url)
 {
     //TODO: use url index instead of name index
     //HACK
-    if(!url.isValid())
-        return QModelIndex();
+    if(!url.isValid()) {
+        static QModelIndex invalidIndex;
+        return invalidIndex;
+    }
     return nameIndex(url.fileName());
 }
 
