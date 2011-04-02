@@ -142,7 +142,7 @@ void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
     case Qt::Key_Home: {
         KrViewItem * item = _view->getLast();
         if (item) {
-            _view->setCurrentKrViewItem(_view->getLast());
+            _view->setCurrentItem(KrView::Last);
             quickSearch(_quickSearch->text(), 1);
         }
         break;
@@ -150,7 +150,7 @@ void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
     case Qt::Key_End: {
         KrViewItem * item = _view->getFirst();
         if (item) {
-            _view->setCurrentKrViewItem(_view->getFirst());
+            _view->setCurrentItem(KrView::First);
             quickSearch(_quickSearch->text(), -1);
         }
         break;
@@ -773,13 +773,8 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         if (!i)
             return true;
         i->setSelected(!i->isSelected());
-        if (KrSelectionMode::getSelectionHandler()->insertMovesDown()) {
-            KrViewItem * next = getNext(i);
-            if (next) {
-                setCurrentKrViewItem(next);
-                makeItemVisible(next);
-            }
-        }
+        if (KrSelectionMode::getSelectionHandler()->insertMovesDown())
+            setCurrentItem(Next);
         op()->emitSelectionChanged();
         return true;
     }
@@ -793,13 +788,8 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
                     KrSelectionMode::getSelectionHandler()->spaceCalculatesDiskSpace()) {
                 op()->emitCalcSpace(item);
             }
-            if (KrSelectionMode::getSelectionHandler()->spaceMovesDown()) {
-                KrViewItem * next = getNext(viewItem);
-                if (next) {
-                    setCurrentKrViewItem(next);
-                    makeItemVisible(next);
-                }
-            }
+            if (KrSelectionMode::getSelectionHandler()->spaceMovesDown())
+                setCurrentItem(Next);
             op()->emitSelectionChanged();
         }
         return true;
@@ -835,12 +825,8 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
                     item->setSelected(!item->isSelected());
                     op()->emitSelectionChanged();
                 }
-                item = getPrev(item);
-                if (item) {
-                    setCurrentKrViewItem(item);
-                    makeItemVisible(item);
-                }
             }
+            setCurrentItem(Prev);
         }
         return true;
     case Qt::Key_Down :
@@ -853,12 +839,8 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
                     item->setSelected(!item->isSelected());
                     op()->emitSelectionChanged();
                 }
-                item = getNext(item);
-                if (item) {
-                    setCurrentKrViewItem(item);
-                    makeItemVisible(item);
-                }
             }
+            setCurrentItem(Next);
         }
         return true;
     case Qt::Key_Home: {
@@ -877,11 +859,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
             }
             op()->setMassSelectionUpdate(false);
         }
-        KrViewItem * first = getFirst();
-        if (first) {
-            setCurrentKrViewItem(first);
-            makeItemVisible(first);
-        }
+        setCurrentItem(First);
     }
     return true;
     case Qt::Key_End:
@@ -899,13 +877,8 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
                 item = getNext(item);
             }
             op()->setMassSelectionUpdate(false);
-        } else {
-            KrViewItem *last = getLast();
-            if (last) {
-                setCurrentKrViewItem(last);
-                makeItemVisible(last);
-            }
-        }
+        } else
+            setCurrentItem(Last);
         return true;
     case Qt::Key_PageDown: {
         KrViewItem * current = getCurrentKrViewItem();
