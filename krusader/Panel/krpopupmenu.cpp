@@ -294,7 +294,7 @@ void KrPopupMenu::performAction(int id)
         break;
     case OPEN_ID :
         foreach(FileItem item, items)
-            panel->func->execute(item.name());
+            panel->func->execute(item);
         break;
     case COPY_ID :
         panel->func->copyFiles();

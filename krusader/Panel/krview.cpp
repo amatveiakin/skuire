@@ -712,22 +712,18 @@ void KrView::clear()
 // good old dialog box
 void KrView::renameCurrentItem()
 {
-    QString newName, fileName;
+    FileItem item = currentItem();
 
-    KrViewItem *it = getCurrentKrViewItem();
-    if (it) fileName = it->name();
-    else return ; // quit if no current item available
-
-    // don't allow anyone to rename ..
-    if (fileName == "..") return ;
+    if (item.isNull())
+        return;
 
     bool ok = false;
-    newName = KInputDialog::getText(i18n("Rename"), i18n("Rename %1 to:", fileName),
-                                    fileName, &ok, _mainWindow);
+    QString newName = KInputDialog::getText(i18n("Rename"), i18n("Rename %1 to:", item.name()),
+                                    item.name(), &ok, _mainWindow);
     // if the user canceled - quit
-    if (!ok || newName == fileName)
+    if (!ok || newName == item.name())
         return ;
-    op()->emitRenameItem(it->name(), newName);
+    op()->emitRenameItem(item, newName);
 }
 
 bool KrView::handleKeyEvent(QKeyEvent *e)
@@ -754,11 +750,11 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         if (e->modifiers() & Qt::ControlModifier)           // let the panel handle it
             e->ignore();
         else {
-            KrViewItem * i = getCurrentKrViewItem();
-            if (i == 0)
-                return true;
-            QString tmp = i->name();
-            op()->emitExecuted(tmp);
+            FileItem item = currentItem();
+            if (!item.isNull())
+                op()->emitExecuted(item);
+            else if (currentItemIsUpUrl())
+                op()->emitDirUp();
         }
         return true;
     }
@@ -822,9 +818,11 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
                 e->modifiers() == Qt::AltModifier) {   // let the panel handle it
             e->ignore();
         } else { // just a normal click - do a lynx-like moving thing
-            KrViewItem *i = getCurrentKrViewItem();
-            if (i)
-                op()->emitGoInside(i->name());
+            FileItem item = currentItem();
+            if (!item.isNull())
+                op()->emitGoInside(item);
+            else if (currentItemIsUpUrl())
+                op()->emitDirUp();
         }
         return true;
     case Qt::Key_Up :

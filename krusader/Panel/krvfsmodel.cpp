@@ -255,7 +255,7 @@ bool KrVfsModel::setData(const QModelIndex & index, const QVariant & value, int 
             vfile *vf = _vfiles.at(index.row());
             if (vf == 0)
                 return false;
-            _view->op()->emitRenameItem(vf->vfile_getName(), value.toString());
+            _view->op()->emitRenameItem(vf->toFileItem(), value.toString());
         }
     }
     if (role == Qt::UserRole && index.isValid()) {

@@ -627,13 +627,13 @@ void ListPanelFunc::rename()
 }
 
 // called by signal itemRenamed() from the view to complete the renaming process
-void ListPanelFunc::rename(const QString &oldname, const QString &newname)
+void ListPanelFunc::rename(FileItem item, QString newname)
 {
-    if (oldname == newname)
+    if (item.name() == newname)
         return ; // do nothing
     panel->view->setNameToMakeCurrentIfAdded(newname);
     // as always - the vfs do the job
-    files() ->vfs_rename(oldname, newname);
+    files() ->vfs_rename(item.name(), newname);
 }
 
 void ListPanelFunc::mkdir()
@@ -887,24 +887,18 @@ void ListPanelFunc::deleteFiles(bool reallyDelete)
     files()->vfs_delFiles(&names, reallyDelete);
 }
 
-void ListPanelFunc::goInside(const QString& name)
+void ListPanelFunc::goInside(FileItem item)
 {
-    if (name == "..") {
-        dirUp();
-        return ;
-    }
-    vfile *vf = files() ->vfs_search(name);
-    if (vf == 0)
-        return ;
+    if(item.isNull())
+        return;
 
-    KUrl origin = files() ->vfs_getOrigin();
-    KUrl url = vf->vfile_getUrl();
+    KUrl url = item.url();
 
-    if (vf->vfile_isDir()) {               // we create a return-pressed event,
-        execute(name); // thereby emulating a chdir
+    if (item.isDir()) {               // we create a return-pressed event,
+        execute(item); // thereby emulating a chdir
     } else if (url.isLocalFile()) {
         bool encrypted;
-        QString mime = vf->vfile_getMime();
+        QString mime = item.mimetype();
         QString type = KRarcHandler::getType(encrypted, url.path(), mime, false);
 
         if (KRarcHandler::arcSupported(type)) {    // archive autodetection
@@ -962,44 +956,35 @@ void ListPanelFunc::displayOpenWithDialog(KUrl::List urls)
 }
 
 // this is done when you double click on a file
-void ListPanelFunc::execute(const QString& name)
+void ListPanelFunc::execute(FileItem item)
 {
-    if (name == "..") {
-        dirUp();
-        return ;
-    }
+    if(item.isNull())
+        return;
 
-    krOut<<name<<endl;
+    krOut<<item.name()<<endl;
 
-    vfile *vf = files() ->vfs_search(name);
-    if (vf == 0)
-        return ;
-
-    KUrl origin = files() ->vfs_getOrigin();
-
-    QString protocol = origin.isLocalFile() ? KrServices::registerdProtocol(vf->vfile_getMime()) : "";
+    KUrl url = item.url();
+    QString mime = item.mimetype();
+    QString protocol = url.isLocalFile() ? KrServices::registerdProtocol(mime) : "";
 
     if (protocol == "tar" || protocol == "krarc") {
         bool encrypted;
-        QString type = KRarcHandler::getType(encrypted, vf->vfile_getUrl().path(), vf->vfile_getMime(), false);
+        QString type = KRarcHandler::getType(encrypted, url.path(), mime, false);
         if (!KRarcHandler::arcHandled(type))       // if the specified archive is disabled delete the protocol
             protocol = "";
     }
 
-    if (vf->vfile_isDir()) {
-        origin = files() ->vfs_getFile(name);
+    if (item.isDir()) {
         panel->view->setNameToMakeCurrent(QString());
-        openUrl(origin);
+        openUrl(url);
     } else if (!protocol.isEmpty()) {
-        KUrl path = files() ->vfs_getFile(vf->vfile_getName());
-        path.setProtocol(protocol);
-        openUrl(path);
+        url.setProtocol(protocol);
+        openUrl(url);
     } else {
-        KUrl url = files() ->vfs_getFile(name);
-        if (KRun::isExecutableFile(url, vf->vfile_getMime()))
+        if (KRun::isExecutableFile(url, mime))
             runCommand(url.path());
         else {
-            KService::Ptr service = KMimeTypeTrader::self()->preferredService(vf->vfile_getMime());
+            KService::Ptr service = KMimeTypeTrader::self()->preferredService(mime);
             if(service)
                 runService(*service, KUrl::List(url));
             else

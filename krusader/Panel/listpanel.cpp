@@ -429,10 +429,10 @@ void ListPanel::createView()
     connect(view->op(), SIGNAL(deleteFiles(bool)), func, SLOT(deleteFiles(bool)));
     connect(view->op(), SIGNAL(middleButtonClicked(FileItem, bool)), SLOT(newTab(FileItem, bool)));
     connect(view->op(), SIGNAL(currentChanged(FileItem)), SLOT(updatePopupPanel(FileItem)));
-    connect(view->op(), SIGNAL(renameItem(const QString &, const QString &)),
-            func, SLOT(rename(const QString &, const QString &)));
-    connect(view->op(), SIGNAL(executed(const QString&)), func, SLOT(execute(const QString&)));
-    connect(view->op(), SIGNAL(goInside(const QString&)), func, SLOT(goInside(const QString&)));
+    connect(view->op(), SIGNAL(renameItem(FileItem, QString)),
+            func, SLOT(rename(FileItem, QString)));
+    connect(view->op(), SIGNAL(executed(FileItem)), func, SLOT(execute(FileItem)));
+    connect(view->op(), SIGNAL(goInside(FileItem)), func, SLOT(goInside(FileItem)));
     connect(view->op(), SIGNAL(needFocus()), this, SLOT(slotFocusOnMe()));
     connect(view->op(), SIGNAL(selectionChanged()), this, SLOT(slotUpdateTotals()));
     connect(view->op(), SIGNAL(itemDescription(QString&)), krApp, SLOT(statusBarUpdate(QString&)));

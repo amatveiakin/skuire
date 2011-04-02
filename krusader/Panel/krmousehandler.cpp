@@ -163,9 +163,10 @@ bool KrMouseHandler::mouseReleaseEvent(QMouseEvent *e)
     if (_singleClick && e->button() == Qt::LeftButton && e->modifiers() == Qt::NoModifier) {
         CANCEL_TWO_CLICK_RENAME;
         e->accept();
-        if (item.isNull())
-            return true;
-        _view->op()->emitExecuted(item.name());
+        if (!item.isNull())
+            _view->op()->emitExecuted(item);
+        else if(itemIsUpUrl)
+            _view->op()->emitDirUp();
         return true;
     } else if (!_singleClick && e->button() == Qt::LeftButton) {
         if (!item.isNull() && e->modifiers() == Qt::NoModifier) {
@@ -209,12 +210,16 @@ bool KrMouseHandler::mouseDoubleClickEvent(QMouseEvent *e)
 {
     CANCEL_TWO_CLICK_RENAME;
 
-    KFileItem item = _view->itemAt(e->pos());
+    bool itemIsUpUrl = false;
+    KFileItem item = _view->itemAt(e->pos(), &itemIsUpUrl);
     if (_singleClick)
         return false;
-    if (e->button() == Qt::LeftButton && !item.isNull()) {
+    if (e->button() == Qt::LeftButton) {
         e->accept();
-        _view->op()->emitExecuted(item.name());
+        if(!item.isNull())
+            _view->op()->emitExecuted(item);
+        else if (itemIsUpUrl)
+            _view->op()->emitDirUp();
         return true;
     }
     return false;
