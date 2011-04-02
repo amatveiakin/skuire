@@ -1,3 +1,4 @@
+#if 1
 /*****************************************************************************
  * Copyright (C) 2009 Csaba Karai <cskarai@freemail.hu>                      *
  *                                                                           *
@@ -27,7 +28,7 @@
 
 #define CANCEL_TWO_CLICK_RENAME {_singleClicked = false;_renameTimer.stop();}
 
-KrMouseHandler::KrMouseHandler(KrView * view, int contextMenuShift) : _view(view), _rightClickedItem(0),
+KrMouseHandler::KrMouseHandler(KrView * view, int contextMenuShift) : _view(view),
         _contextMenuTimer(), _contextMenuShift(contextMenuShift), _singleClicked(false), _singleClickTime(),
         _renameTimer(), _dragStartPos(-1, -1), _emptyContextMenu(false)
 {
@@ -40,49 +41,48 @@ KrMouseHandler::KrMouseHandler(KrView * view, int contextMenuShift) : _view(view
 
 bool KrMouseHandler::mousePressEvent(QMouseEvent *e)
 {
-    _rightClickedItem = _clickedItem = 0;
-    KrViewItem * item = _view->getKrViewItemAt(e->pos());
+    _rightClickedItem = _clickedItem = KFileItem();
+    KFileItem item = _view->itemAt(e->pos());
     if (!_view->isFocused())
         _view->op()->emitNeedFocus();
     if (e->button() == Qt::LeftButton) {
         _dragStartPos = e->pos();
         if (e->modifiers() == Qt::NoModifier) {
-            if (item) {
+            if (!item.isNull()) {
                 if (KrSelectionMode::getSelectionHandler()->leftButtonSelects()) {
                     if (KrSelectionMode::getSelectionHandler()->leftButtonPreservesSelection())
-                        item->setSelected(!item->isSelected());
+                        _view->toggleSelected(item);
                     else {
-                        if (item->isSelected())
+                        if (_view->isItemSelected(item))
                             _clickedItem = item;
                         else {
                             // clear the current selection
-                            _view->changeSelection(KRQuery("*"), false, true);
-                            item->setSelected(true);
+                            _view->setSelection(item);
                         }
                     }
                 }
-                _view->setCurrentKrViewItem(item);
+                _view->setCurrentItem(item);
             }
             e->accept();
             return true;
         } else if (e->modifiers() == Qt::ControlModifier) {
-            if (item && (KrSelectionMode::getSelectionHandler()->shiftCtrlLeftButtonSelects() ||
+            if (!item.isNull() && (KrSelectionMode::getSelectionHandler()->shiftCtrlLeftButtonSelects() ||
                          KrSelectionMode::getSelectionHandler()->leftButtonSelects())) {
-                item->setSelected(!item->isSelected());
+                _view->toggleSelected(item);
             }
-            if (item)
-                _view->setCurrentKrViewItem(item);
+            if (!item.isNull())
+                _view->setCurrentItem(item);
             e->accept();
             return true;
         } else if (e->modifiers() == Qt::ShiftModifier) {
-            if (item && (KrSelectionMode::getSelectionHandler()->shiftCtrlLeftButtonSelects() ||
+            if (!item.isNull() && (KrSelectionMode::getSelectionHandler()->shiftCtrlLeftButtonSelects() ||
                          KrSelectionMode::getSelectionHandler()->leftButtonSelects())) {
-                KrViewItem * current = _view->getCurrentKrViewItem();
-                if (current != 0)
+                KFileItem current = _view->currentItem();
+                if (!current.isNull())
                     _view->selectRegion(item, current, true);
             }
-            if (item)
-                _view->setCurrentKrViewItem(item);
+            if (!item.isNull())
+                _view->setCurrentItem(item);
             e->accept();
             return true;
         }
@@ -90,47 +90,46 @@ bool KrMouseHandler::mousePressEvent(QMouseEvent *e)
     if (e->button() == Qt::RightButton) {
         //dragStartPos = e->pos();
         if (e->modifiers() == Qt::NoModifier) {
-            if (item) {
+            if (!item.isNull()) {
                 if (KrSelectionMode::getSelectionHandler()->rightButtonSelects()) {
                     if (KrSelectionMode::getSelectionHandler()->rightButtonPreservesSelection()) {
                         if (KrSelectionMode::getSelectionHandler()->showContextMenu() >= 0) {
-                            _rightClickSelects = !item->isSelected();
+                            _rightClickSelects = !_view->isItemSelected(item);
                             _rightClickedItem = item;
                         }
-                        item->setSelected(!item->isSelected());
+                        _view->toggleSelected(item);
                     } else {
-                        if (item->isSelected()) {
+                        if (_view->isItemSelected(item)) {
                             _clickedItem = item;
                         } else {
                             // clear the current selection
-                            _view->changeSelection(KRQuery("*"), false, true);
-                            item->setSelected(true);
+                            _view->setSelection(item);
                         }
                     }
                 }
-                _view->setCurrentKrViewItem(item);
+                _view->setCurrentItem(item);
             }
             handleContextMenu(item, e->globalPos());
             e->accept();
             return true;
         } else if (e->modifiers() == Qt::ControlModifier) {
-            if (item && (KrSelectionMode::getSelectionHandler()->shiftCtrlRightButtonSelects() ||
+            if (!item.isNull() && (KrSelectionMode::getSelectionHandler()->shiftCtrlRightButtonSelects() ||
                          KrSelectionMode::getSelectionHandler()->rightButtonSelects())) {
-                item->setSelected(!item->isSelected());
+                _view->toggleSelected(item);
             }
-            if (item)
-                _view->setCurrentKrViewItem(item);
+            if (!item.isNull())
+                _view->setCurrentItem(item);
             e->accept();
             return true;
         } else if (e->modifiers() == Qt::ShiftModifier) {
-            if (item && (KrSelectionMode::getSelectionHandler()->shiftCtrlRightButtonSelects() ||
+            if (!item.isNull() && (KrSelectionMode::getSelectionHandler()->shiftCtrlRightButtonSelects() ||
                          KrSelectionMode::getSelectionHandler()->rightButtonSelects())) {
-                KrViewItem * current = _view->getCurrentKrViewItem();
-                if (current != 0)
+                KFileItem current = _view->currentItem();
+                if (!current.isNull())
                     _view->selectRegion(item, current, true);
             }
-            if (item)
-                _view->setCurrentKrViewItem(item);
+            if (!item.isNull())
+                _view->setCurrentItem(item);
             e->accept();
             return true;
         }
@@ -142,9 +141,10 @@ bool KrMouseHandler::mouseReleaseEvent(QMouseEvent *e)
 {
     if (e->button() == Qt::LeftButton)
         _dragStartPos = QPoint(-1, -1);
-    KrViewItem * item = _view->getKrViewItemAt(e->pos());
+    bool itemIsUpUrl = false;
+    KFileItem item = _view->itemAt(e->pos(), &itemIsUpUrl);
 
-    if (item && item == _clickedItem) {
+    if (!item.isNull() && item == _clickedItem) {
         if (((e->button() == Qt::LeftButton) && (e->modifiers() == Qt::NoModifier) &&
                 (KrSelectionMode::getSelectionHandler()->leftButtonSelects()) &&
                 !(KrSelectionMode::getSelectionHandler()->leftButtonPreservesSelection())) ||
@@ -152,25 +152,23 @@ bool KrMouseHandler::mouseReleaseEvent(QMouseEvent *e)
                  (KrSelectionMode::getSelectionHandler()->rightButtonSelects()) &&
                  !(KrSelectionMode::getSelectionHandler()->rightButtonPreservesSelection()))) {
             // clear the current selection
-            _view->changeSelection(KRQuery("*"), false, true);
-            item->setSelected(true);
+            _view->setSelection(item);
         }
     }
 
     if (e->button() == Qt::RightButton) {
-        _rightClickedItem = 0;
+        _rightClickedItem = KFileItem();
         _contextMenuTimer.stop();
     }
     if (_singleClick && e->button() == Qt::LeftButton && e->modifiers() == Qt::NoModifier) {
         CANCEL_TWO_CLICK_RENAME;
         e->accept();
-        if (item == 0)
+        if (item.isNull())
             return true;
-        QString tmp = item->name();
-        _view->op()->emitExecuted(tmp);
+        _view->op()->emitExecuted(item.name());
         return true;
     } else if (!_singleClick && e->button() == Qt::LeftButton) {
-        if (item && e->modifiers() == Qt::NoModifier) {
+        if (!item.isNull() && e->modifiers() == Qt::NoModifier) {
             if (_singleClicked && !_renameTimer.isActive() && _singleClickedItem == item) {
                 KSharedConfigPtr config = KGlobal::config();
                 KConfigGroup group(krConfig, "KDE");
@@ -197,11 +195,11 @@ bool KrMouseHandler::mouseReleaseEvent(QMouseEvent *e)
 
     CANCEL_TWO_CLICK_RENAME;
 
-    if (e->button() == Qt::MidButton && item != 0) {
+    if (e->button() == Qt::MidButton && !item.isNull()) {
         e->accept();
-        if (item == 0)
+        if (item.isNull())
             return true;
-        _view->op()->emitMiddleButtonClicked(item);
+        _view->op()->emitMiddleButtonClicked(item, itemIsUpUrl);
         return true;
     }
     return false;
@@ -211,13 +209,12 @@ bool KrMouseHandler::mouseDoubleClickEvent(QMouseEvent *e)
 {
     CANCEL_TWO_CLICK_RENAME;
 
-    KrViewItem * item = _view->getKrViewItemAt(e->pos());
+    KFileItem item = _view->itemAt(e->pos());
     if (_singleClick)
         return false;
-    if (e->button() == Qt::LeftButton && item != 0) {
+    if (e->button() == Qt::LeftButton && !item.isNull()) {
         e->accept();
-        QString tmp = item->name();
-        _view->op()->emitExecuted(tmp);
+        _view->op()->emitExecuted(item.name());
         return true;
     }
     return false;
@@ -225,14 +222,15 @@ bool KrMouseHandler::mouseDoubleClickEvent(QMouseEvent *e)
 
 bool KrMouseHandler::mouseMoveEvent(QMouseEvent *e)
 {
-    KrViewItem * item =  _view->getKrViewItemAt(e->pos());
+    KFileItem item =  _view->itemAt(e->pos());
     if ((_singleClicked || _renameTimer.isActive()) && item != _singleClickedItem)
         CANCEL_TWO_CLICK_RENAME;
 
-    if (!item)
+    if (item.isNull())
         return false;
 
-    QString desc = item->description();
+    //FIXME
+    QString desc = "FIXME: add KrView::itemDescription()";
     _view->op()->emitItemDescription(desc);
 
     if (_dragStartPos != QPoint(-1, -1) &&
@@ -245,10 +243,10 @@ bool KrMouseHandler::mouseMoveEvent(QMouseEvent *e)
             && KrSelectionMode::getSelectionHandler()->rightButtonSelects()
             && KrSelectionMode::getSelectionHandler()->showContextMenu() >= 0 && e->buttons() == Qt::RightButton) {
         e->accept();
-        if (item != _rightClickedItem && item && _rightClickedItem) {
+        if (!item.isNull() && !_rightClickedItem.isNull() && item != _rightClickedItem) {
             _view->selectRegion(item, _rightClickedItem, _rightClickSelects);
             _rightClickedItem = item;
-            _view->setCurrentKrViewItem(item);
+            _view->setCurrentItem(item);
             _contextMenuTimer.stop();
         }
         return true;
@@ -265,29 +263,29 @@ bool KrMouseHandler::wheelEvent(QWheelEvent *)
 
 void KrMouseHandler::showContextMenu()
 {
-    if (_rightClickedItem)
-        _rightClickedItem->setSelected(true);
+    if (!_rightClickedItem.isNull())
+        _view->selectItem(_rightClickedItem, true);
     if (_emptyContextMenu)
         _view->op()->emitEmptyContextMenu(_contextMenuPoint);
     else
         _view->op()->emitContextMenu(_contextMenuPoint);
 }
 
-void KrMouseHandler::handleContextMenu(KrViewItem * it, const QPoint & pos)
+void KrMouseHandler::handleContextMenu(KFileItem item, const QPoint & pos)
 {
     if (!_view->isFocused())
         _view->op()->emitNeedFocus();
     int i = KrSelectionMode::getSelectionHandler()->showContextMenu();
     _contextMenuPoint = QPoint(pos.x(), pos.y() - _contextMenuShift);
     if (i < 0) {
-        if (!it || it->isDummy())
+        if (item.isNull())
             _view->op()->emitEmptyContextMenu(_contextMenuPoint);
         else {
-            _view->setCurrentKrViewItem(it);
+            _view->setCurrentItem(item);
             _view->op()->emitContextMenu(_contextMenuPoint);
         }
     } else if (i > 0) {
-        _emptyContextMenu = !it || it->isDummy();
+        _emptyContextMenu = item.isNull();
         _contextMenuTimer.setSingleShot(true);
         _contextMenuTimer.start(i);
     }
@@ -335,3 +333,4 @@ bool KrMouseHandler::dropEvent(QDropEvent *e)
     _view->op()->emitGotDrop(e);
     return true;
 }
+#endif

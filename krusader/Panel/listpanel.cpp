@@ -427,7 +427,7 @@ void ListPanel::createView()
     connect(view->op(), SIGNAL(goHome()), func, SLOT(home()));
     connect(view->op(), SIGNAL(dirUp()), func, SLOT(dirUp()));
     connect(view->op(), SIGNAL(deleteFiles(bool)), func, SLOT(deleteFiles(bool)));
-    connect(view->op(), SIGNAL(middleButtonClicked(KrViewItem *)), SLOT(newTab(KrViewItem *)));
+    connect(view->op(), SIGNAL(middleButtonClicked(FileItem, bool)), SLOT(newTab(FileItem, bool)));
     connect(view->op(), SIGNAL(currentChanged(FileItem)), SLOT(updatePopupPanel(FileItem)));
     connect(view->op(), SIGNAL(renameItem(const QString &, const QString &)),
             func, SLOT(rename(const QString &, const QString &)));
@@ -1324,15 +1324,12 @@ void ListPanel::updateButtons()
     cdHomeButton->setEnabled(!func->atHome());
 }
 
-void ListPanel::newTab(KrViewItem *it)
+void ListPanel::newTab(FileItem item, bool itemIsUpUrl)
 {
-    if (!it)
-        return;
-    else if (it->name() == "..") {
+    if(itemIsUpUrl)
         newTab(virtualPath().upUrl(), true);
-    } else if (ITEM2VFILE(this, it)->vfile_isDir()) {
-        KUrl url = virtualPath();
-        url.addPath(it->name());
-        newTab(url, true);
-    }
+    else if (item.isNull())
+        return;
+    else if (item.isDir())
+        newTab(item.url(), true);
 }

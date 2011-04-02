@@ -22,6 +22,7 @@
 #include <QPoint>
 #include <QTimer>
 #include <QTime>
+#include "kfileitem.h"
 
 class QMouseEvent;
 class QWheelEvent;
@@ -48,7 +49,7 @@ public:
     bool dragMoveEvent(QDragMoveEvent *e);
     bool dragLeaveEvent(QDragLeaveEvent *e);
     bool dropEvent(QDropEvent *e);
-    void handleContextMenu(KrViewItem * it, const QPoint & pos);
+    void handleContextMenu(KFileItem item, const QPoint & pos);
     void otherEvent(QEvent * e);
     void cancelTwoClickRename();
 
@@ -60,15 +61,15 @@ signals:
 
 protected:
     KrView     * _view;
-    KrViewItem * _rightClickedItem;
-    KrViewItem * _clickedItem;
+    KFileItem    _rightClickedItem;
+    KFileItem    _clickedItem;
     bool         _rightClickSelects;
     bool         _singleClick;
     QPoint       _contextMenuPoint;
     QTimer       _contextMenuTimer;
     int          _contextMenuShift;
     bool         _singleClicked;
-    KrViewItem * _singleClickedItem;
+    KFileItem    _singleClickedItem;
     QTime        _singleClickTime;
     QTimer       _renameTimer;
     QPoint       _dragStartPos;

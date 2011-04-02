@@ -181,7 +181,7 @@ protected slots:
     void inlineRefreshListResult(KJob* job);
     void inlineRefreshPercent(KJob*, unsigned long);
     void slotVfsError(QString msg);
-    void newTab(KrViewItem *item);
+    void newTab(FileItem item, bool itemIsUpUrl);
     void newTab(const KUrl &url, bool nextToThis = false) {
         _manager->newTab(url, nextToThis ? this : 0);
     }

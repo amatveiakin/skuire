@@ -48,7 +48,7 @@ public:
     virtual void makeItemVisible(KUrl url);
     virtual void selectRegion(KUrl item1, KUrl item2, bool select);
     virtual QRect itemRect(KUrl itemUrl);
-    virtual FileItem itemAt(const QPoint &vp);
+    virtual FileItem itemAt(const QPoint &vp, bool *isUpUrl);
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();

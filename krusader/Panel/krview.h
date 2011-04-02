@@ -169,6 +169,9 @@ public:
     void emitDeleteFiles(bool reallyDelete) {
         emit deleteFiles(reallyDelete);
     }
+    void emitMiddleButtonClicked(FileItem item, bool itemIsUpUrl) {
+        emit middleButtonClicked(item, itemIsUpUrl);
+    }
     void emitRefreshActions() {
         emit refreshActions();
     }
@@ -203,6 +206,7 @@ public slots:
 
 signals:
     void currentChanged(FileItem item);
+    void middleButtonClicked(FileItem item, bool itemIsUpUrl);
     void selectionChanged();
     void gotDrop(QDropEvent *e);
     void itemDescription(QString &desc);
@@ -237,9 +241,6 @@ public:
     void emitGoInside(const QString &name) {
         emit goInside(name);
     }
-    void emitMiddleButtonClicked(KrViewItem *item) {
-        emit middleButtonClicked(item);
-    }
     void emitCalcSpace(KrViewItem *item) {
         emit calcSpace(item);
     }
@@ -249,7 +250,6 @@ signals:
     void renameItem(const QString &oldName, const QString &newName);
     void executed(const QString &name);
     void goInside(const QString &name);
-    void middleButtonClicked(KrViewItem *item);
     void calcSpace(KrViewItem *item);
 protected slots:
     // for signals from vfs' dirwatch
@@ -348,7 +348,7 @@ public:
     virtual void makeItemVisible(KUrl url) = 0;
     virtual QRect itemRect(KUrl itemUrl) = 0;
     virtual void selectRegion(KUrl item1, KUrl item2, bool select) = 0;
-    virtual FileItem itemAt(const QPoint &vp) = 0;
+    virtual FileItem itemAt(const QPoint &vp, bool *isUpUrl = 0) = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
