@@ -57,7 +57,7 @@ public slots:
 //     void popErronousUrl();
     void immediateOpenUrl(const KUrl &url, bool disableLock = false);
     void rename(const QString &oldname, const QString &newname);
-    void calcSpace(KrViewItem *item);
+    void calcSpace(FileItem item);
     void trashJobStarted(KIO::Job *job);
 
     // actions
@@ -118,10 +118,6 @@ public:
     void runService(const KService &service, KUrl::List urls);
     void displayOpenWithDialog(KUrl::List urls);
 
-    // calculate the occupied space. A dialog appears, if calculation lasts more than 3 seconds
-    // and disappears, if the calculation is done. Returns true, if the result is ok and false
-    // otherwise (Cancel was pressed).
-    bool calcSpace(const QStringList & items, KIO::filesize_t & totalSize, unsigned long & totalFiles, unsigned long & totalDirs);
     ListPanelFunc* otherFunc();
     bool atHome();
 

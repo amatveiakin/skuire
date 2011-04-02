@@ -1194,42 +1194,23 @@ void ListPanelFunc::calcSpace()
             return ; // nothing to do
     }
 
-    QPointer<KrCalcSpaceDialog> calc = new KrCalcSpaceDialog(krMainWindow, panel, urls, false);
-    calc->exec();
+    KrCalcSpaceDialog dlg(krMainWindow, panel, urls, false);
+    dlg.exec();
     panel->slotUpdateTotals();
-
-    delete calc;
 }
 
-bool ListPanelFunc::calcSpace(const QStringList & items, KIO::filesize_t & totalSize, unsigned long & totalFiles, unsigned long & totalDirs)
+void ListPanelFunc::calcSpace(FileItem item)
 {
-    QPointer<KrCalcSpaceDialog> calc = new KrCalcSpaceDialog(krMainWindow, panel, items, true);
-    calc->exec();
-    calc->getStats(totalSize, totalFiles, totalDirs);
-    bool calcWasCanceled = calc->wasCanceled();
-    delete calc;
-
-    return !calcWasCanceled;
-}
-
-void ListPanelFunc::calcSpace(KrViewItem *item)
-{
+    if(item.isNull())
+        return;
     //
     // NOTE: this is buggy incase somewhere down in the folder we're calculating,
     // there's a folder we can't enter (permissions). in that case, the returned
     // size will not be correct.
     //
-    KIO::filesize_t totalSize = 0;
-    unsigned long totalFiles = 0, totalDirs = 0;
-    QStringList items;
-    items.push_back(item->name());
-    if (calcSpace(items, totalSize, totalFiles, totalDirs)) {
-        // did we succeed to calcSpace? we'll fail if we don't have permissions
-        if (totalSize != 0) {   // just mark it, and bail out
-            item->setSize(totalSize);
-            item->redraw();
-        }
-    }
+    KrCalcSpaceDialog dlg(krMainWindow, panel, KUrl::List(item.url()), true);
+    dlg.exec();
+    panel->slotUpdateTotals();
 }
 
 void ListPanelFunc::FTPDisconnect()

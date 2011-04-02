@@ -789,12 +789,13 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
     }
     case Qt::Key_Space: {
         KrViewItem * viewItem = getCurrentKrViewItem();
+        FileItem item = currentItem();
         if (viewItem != 0) {
             viewItem->setSelected(!viewItem->isSelected());
 
             if (viewItem->name() != ".." && viewItem->getVfile()->vfile_isDir() && viewItem->getVfile()->vfile_getSize() <= 0 &&
                     KrSelectionMode::getSelectionHandler()->spaceCalculatesDiskSpace()) {
-                op()->emitCalcSpace(viewItem);
+                op()->emitCalcSpace(item);
             }
             if (KrSelectionMode::getSelectionHandler()->spaceMovesDown()) {
                 KrViewItem * next = getNext(viewItem);

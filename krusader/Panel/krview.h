@@ -173,6 +173,9 @@ public:
     void emitMiddleButtonClicked(FileItem item, bool itemIsUpUrl) {
         emit middleButtonClicked(item, itemIsUpUrl);
     }
+    void emitCalcSpace(FileItem item) {
+        emit calcSpace(item);
+    }
     void emitRefreshActions() {
         emit refreshActions();
     }
@@ -208,6 +211,7 @@ public slots:
 signals:
     void currentChanged(FileItem item);
     void middleButtonClicked(FileItem item, bool itemIsUpUrl);
+    void calcSpace(FileItem item);
     void selectionChanged();
     void gotDrop(QDropEvent *e);
     void itemDescription(QString &desc);
@@ -242,16 +246,12 @@ public:
     void emitGoInside(const QString &name) {
         emit goInside(name);
     }
-    void emitCalcSpace(KrViewItem *item) {
-        emit calcSpace(item);
-    }
 
 signals:
     void letsDrag(QStringList items, QPixmap icon);
     void renameItem(const QString &oldName, const QString &newName);
     void executed(const QString &name);
     void goInside(const QString &name);
-    void calcSpace(KrViewItem *item);
 protected slots:
     // for signals from vfs' dirwatch
     void fileAdded(vfile *vf);
