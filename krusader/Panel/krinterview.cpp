@@ -431,8 +431,8 @@ FileItem KrInterView::itemAt(const QPoint &vp, bool *isUpUrl)
 {
     vfile *vf = _model->vfileAt(_itemView->indexAt(vp));
     if(isUpUrl)
-        *isUpUrl = (vf == _dummyVfile);
-    return vf ? vf->toFileItem() : FileItem();
+        *isUpUrl = (vf && (vf == _dummyVfile));
+    return (vf && (vf != _dummyVfile)) ? vf->toFileItem() : FileItem();
 }
 
 void KrInterView::setCurrentItem(KUrl url)
