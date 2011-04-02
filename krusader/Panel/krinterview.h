@@ -25,18 +25,23 @@
 #include <QAbstractItemView>
 
 #include "krview.h"
+#include "calcspacethread.h"
 
 class KrInterViewItem;
 class KrVfsModel;
 class KrMouseHandler;
 class KrViewItem;
 
-class KrInterView : public KrView
+class KrInterView : public KrView, public CalcSpaceClient
 {
     friend class KrInterViewItem;
 public:
     KrInterView(KrViewInstance &instance, KConfig *cfg, QAbstractItemView *itemView);
     virtual ~KrInterView();
+
+    virtual CalcSpaceClient *calcSpaceClient() {
+        return this;
+    }
 
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
     virtual FileItemList getSelectedItems(bool currentIfNoSelection);
@@ -96,6 +101,9 @@ protected:
         virtual void select (const QModelIndex & index, QItemSelectionModel::SelectionFlags command) {}
         virtual void select(const QItemSelection & selection, QItemSelectionModel::SelectionFlags command) {}
     };
+
+    // KrCalcSpaceDialog::Client implementation
+    virtual void updateItemSize(KUrl url, KIO::filesize_t newSize);
 
     virtual KIO::filesize_t calcSize();
     virtual KIO::filesize_t calcSelectedSize();

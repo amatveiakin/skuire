@@ -475,3 +475,12 @@ vfile *KrInterView::vfileFromUrl(KUrl url)
 {
     return _model->vfileAt(_model->indexFromUrl(url));
 }
+
+void KrInterView::updateItemSize(KUrl url, KIO::filesize_t newSize)
+{
+    vfile *vf = vfileFromUrl(url);
+    if(vf) {
+        vf->vfile_setSize(newSize);
+        _itemView->viewport()->update(itemRect(vf));
+    }
+}

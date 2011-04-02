@@ -56,6 +56,7 @@ class QModelIndex;
 class KrViewInstance;
 class QuickFilter;
 class VfileContainer;
+class CalcSpaceClient;
 
 typedef QList<KrViewItem*> KrViewItemList;
 
@@ -336,6 +337,8 @@ protected:
     // Every view must implement the following functions //
     ///////////////////////////////////////////////////////
 public:
+    virtual CalcSpaceClient *calcSpaceClient() = 0;
+
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
     virtual FileItemList getSelectedItems(bool currentIfNoSelection) = 0;
     virtual void changeSelection(KUrl::List urls, bool select, bool clearFirst) = 0;
