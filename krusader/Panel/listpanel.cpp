@@ -819,10 +819,10 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
     bool isWritable = func->files() ->vfs_isWritable();
 
     vfs* tempFiles = func->files();
-    vfile *file;
-    KrViewItem *i = 0;
-    if (widget == 0) {
-        i = view->getKrViewItemAt(e->pos());
+    FileItem item;
+    bool itemIsUpUrl = false;
+    if (!widget) {
+        item = view->itemAt(e->pos(), &itemIsUpUrl);
         widget = this;
     }
 
@@ -831,15 +831,13 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
     if (e->source() == this)
         dragFromThisPanel = true;
 
-    if (i) {
-        file = func->files() ->vfs_search(i->name());
-
-        if (!file) {   // trying to drop on the ".."
+    if (!item.isNull() || itemIsUpUrl) {
+        if (itemIsUpUrl) {   // trying to drop on the ".."
             copyToDirInPanel = true;
-        } else {
-            if (file->vfile_isDir()) {
+        } else if (!item.isNull()) {
+            if (item.isDir()) {
                 copyToDirInPanel = true;
-                isWritable = file->vfile_isWriteable();
+                isWritable = item.isWritable();
                 if (isWritable) {
                     // keep the folder_open icon until we're finished, do it only
                     // if the folder is writeable, to avoid flicker
@@ -917,7 +915,7 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
 
     QString dir = "";
     if (copyToDirInPanel) {
-        dir = i->name();
+        dir = item.name();
     }
     QWidget *notify = (!e->source() ? 0 : e->source());
     tempFiles->vfs_addFiles(&URLs, mode, notify, dir);
