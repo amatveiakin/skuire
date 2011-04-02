@@ -470,3 +470,8 @@ bool KrInterView::isItemSelected(KUrl url)
     vfile *vf = _model->vfileAt(_model->indexFromUrl(url));
     return vf ? _selection.contains(vf) : false;
 }
+
+vfile *KrInterView::vfileFromUrl(KUrl url)
+{
+    return _model->vfileAt(_model->indexFromUrl(url));
+}

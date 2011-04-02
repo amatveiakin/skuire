@@ -1321,3 +1321,56 @@ void KrView::selectRegion(FileItem item1, FileItem item2, bool select)
         url2 = item2.url();
     selectRegion(url1, url2, select);
 }
+
+QString KrView::itemDescription(KUrl url, bool itemIsUpUrl)
+{
+    if (itemIsUpUrl)
+        return i18n("Climb up the directory tree");
+
+    vfile *vf = vfileFromUrl(url);
+    if(!vf)
+        return QString();
+
+    // else is implied
+    QString text = vf->vfile_getName();
+    QString comment;
+    KMimeType::Ptr mt = KMimeType::mimeType(vf->vfile_getMime());
+    if (mt)
+        comment = mt->comment(vf->vfile_getUrl());
+    QString myLinkDest = vf->vfile_getSymDest();
+    KIO::filesize_t mySize = vf->vfile_getSize();
+
+    QString text2 = text;
+    mode_t m_fileMode = vf->vfile_getMode();
+
+    if (vf->vfile_isSymLink()) {
+        QString tmp;
+        if (vf->vfile_isBrokenLink())
+            tmp = i18n("(Broken Link!)");
+        else if (comment.isEmpty())
+            tmp = i18n("Symbolic Link") ;
+        else
+            tmp = i18n("%1 (Link)", comment);
+
+        text += "->";
+        text += myLinkDest;
+        text += "  ";
+        text += tmp;
+    } else if (S_ISREG(m_fileMode)) {
+        text = QString("%1").arg(text2) + QString(" (%1)").arg(properties()->humanReadableSize ?
+                KRpermHandler::parseSize(vf->vfile_getSize()) : KIO::convertSize(mySize));
+        text += "  ";
+        text += comment;
+    } else if (S_ISDIR(m_fileMode)) {
+        text += "/  ";
+        if (vf->vfile_getSize() != 0) {
+            text += '(' +
+                    (properties()->humanReadableSize ? KRpermHandler::parseSize(vf->vfile_getSize()) : KIO::convertSize(mySize)) + ") ";
+        }
+        text += comment;
+    } else {
+        text += "  ";
+        text += comment;
+    }
+    return text;
+}

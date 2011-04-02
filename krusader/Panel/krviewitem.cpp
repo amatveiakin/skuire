@@ -61,54 +61,6 @@ const QString& KrViewItem::name(bool withExtension) const
     else return _vf->vfile_getName();
 }
 
-QString KrViewItem::description() const
-{
-    if (dummyVfile)
-        return i18n("Climb up the directory tree");
-    // else is implied
-    QString text = _vf->vfile_getName();
-    QString comment;
-    KMimeType::Ptr mt = KMimeType::mimeType(_vf->vfile_getMime());
-    if (mt)
-        comment = mt->comment(_vf->vfile_getUrl());
-    QString myLinkDest = _vf->vfile_getSymDest();
-    KIO::filesize_t mySize = _vf->vfile_getSize();
-
-    QString text2 = text;
-    mode_t m_fileMode = _vf->vfile_getMode();
-
-    if (_vf->vfile_isSymLink()) {
-        QString tmp;
-        if (_vf->vfile_isBrokenLink())
-            tmp = i18n("(Broken Link!)");
-        else if (comment.isEmpty())
-            tmp = i18n("Symbolic Link") ;
-        else
-            tmp = i18n("%1 (Link)", comment);
-
-        text += "->";
-        text += myLinkDest;
-        text += "  ";
-        text += tmp;
-    } else if (S_ISREG(m_fileMode)) {
-        text = QString("%1").arg(text2) + QString(" (%1)").arg(PROPS->humanReadableSize ?
-                KRpermHandler::parseSize(_vf->vfile_getSize()) : KIO::convertSize(mySize));
-        text += "  ";
-        text += comment;
-    } else if (S_ISDIR(m_fileMode)) {
-        text += "/  ";
-        if (_vf->vfile_getSize() != 0) {
-            text += '(' +
-                    (PROPS->humanReadableSize ? KRpermHandler::parseSize(_vf->vfile_getSize()) : KIO::convertSize(mySize)) + ") ";
-        }
-        text += comment;
-    } else {
-        text += "  ";
-        text += comment;
-    }
-    return text;
-}
-
 QString KrViewItem::dateTime() const
 {
     // convert the time_t to struct tm

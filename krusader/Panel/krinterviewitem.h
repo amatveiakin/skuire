@@ -53,6 +53,10 @@ public:
         _view->_itemView->viewport()->update(itemRect());
     }
 
+    virtual QString description() const {
+        return _view->itemDescription(_vf->vfile_getUrl(), dummyVfile);
+    }
+
 private:
     KrInterView * _view;
 };

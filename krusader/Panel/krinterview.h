@@ -105,6 +105,7 @@ protected:
     virtual void preUpdateItem(vfile *vf);
     virtual void intSetSelected(const vfile* vf, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;
+    virtual vfile *vfileFromUrl(KUrl url);
 
     virtual QRect itemRect(const vfile *vf) = 0;
 

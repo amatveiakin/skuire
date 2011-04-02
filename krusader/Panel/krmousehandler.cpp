@@ -222,16 +222,17 @@ bool KrMouseHandler::mouseDoubleClickEvent(QMouseEvent *e)
 
 bool KrMouseHandler::mouseMoveEvent(QMouseEvent *e)
 {
-    KFileItem item =  _view->itemAt(e->pos());
+    bool itemIsUpUrl = false;
+    KFileItem item = _view->itemAt(e->pos(), &itemIsUpUrl);
     if ((_singleClicked || _renameTimer.isActive()) && item != _singleClickedItem)
         CANCEL_TWO_CLICK_RENAME;
 
+    QString desc = _view->itemDescription(item.isNull() ? KUrl() : item.url(), itemIsUpUrl);
+    if(!desc.isEmpty())
+        _view->op()->emitItemDescription(desc);
+
     if (item.isNull())
         return false;
-
-    //FIXME
-    QString desc = "FIXME: add KrView::itemDescription()";
-    _view->op()->emitItemDescription(desc);
 
     if (_dragStartPos != QPoint(-1, -1) &&
             (e->buttons() & Qt::LeftButton) && (_dragStartPos - e->pos()).manhattanLength() > QApplication::startDragDistance()) {

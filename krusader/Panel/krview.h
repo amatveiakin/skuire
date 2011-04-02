@@ -478,6 +478,7 @@ public:
         return item.isNull() ? false : isItemSelected(item.url());
     }
     void selectRegion(FileItem item1, FileItem item2, bool select);
+    QString itemDescription(KUrl url, bool itemIsUpUrl);
 
     /////////////////////////////////////////////////////////////
     // the following functions have a default and minimalistic //
@@ -573,6 +574,7 @@ protected:
     virtual KrViewItem *getLast() = 0;
     virtual KrViewItem *getNext(KrViewItem *current) = 0;
     virtual KrViewItem *getPrev(KrViewItem *current) = 0;
+    virtual vfile *vfileFromUrl(KUrl url) = 0;
     /////////////////////////////////////////////////////////////
     // deprecated functions end                                //
     /////////////////////////////////////////////////////////////

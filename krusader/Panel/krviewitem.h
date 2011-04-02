@@ -43,7 +43,7 @@ public:
         return _extension;
     }
     virtual QString dateTime() const;
-    virtual QString description() const;
+    virtual QString description() const = 0;
     virtual bool isSelected() const = 0;
     virtual void setSelected(bool s) = 0;
     virtual QPixmap icon();
