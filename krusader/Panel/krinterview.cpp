@@ -484,3 +484,35 @@ void KrInterView::updateItemSize(KUrl url, KIO::filesize_t newSize)
         _itemView->viewport()->update(itemRect(vf));
     }
 }
+
+void KrInterView::setCurrentItem(ItemSpec item)
+{
+    QModelIndex newIndex, currentIndex = _itemView->currentIndex();
+    switch (item) {
+        case First:
+            newIndex = _model->index(0, 0, QModelIndex());
+            break;
+        case Last:
+            newIndex = _model->index(_model->rowCount() - 1, 0, QModelIndex());
+            break;
+        case Prev:
+            if (currentIndex.row() <= 0)
+                return;
+            newIndex = _model->index(currentIndex.row() - 1, 0, QModelIndex());
+            break;
+        case Next:
+            if (currentIndex.row() >= _model->rowCount() - 1)
+                return;
+            newIndex = _model->index(currentIndex.row() + 1, 0, QModelIndex());
+            break;
+        case UpUrl:
+            if(!_dummyVfile)
+                return;
+            newIndex = _model->vfileIndex(_dummyVfile);
+            break;
+        default:
+            return;
+    }
+    setCurrentIndex(newIndex);
+    _itemView->scrollTo(newIndex);
+}

@@ -583,11 +583,15 @@ protected:
     /////////////////////////////////////////////////////////////
 
 protected:
+    enum ItemSpec { First, Last, Prev, Next, UpUrl };
+
     KrView(KrViewInstance &instance, KConfig *cfg);
 
     virtual void doRestoreSettings(KConfigGroup grp);
     virtual KIO::filesize_t calcSize() = 0;
     virtual KIO::filesize_t calcSelectedSize() = 0;
+    virtual void setCurrentItem(ItemSpec item) = 0;
+
     bool handleKeyEventInt(QKeyEvent *e);
     void sortModeUpdated(KrViewProperties::ColumnType sortColumn, bool descending);
     void saveSortMode(KConfigGroup &group);
