@@ -28,6 +28,7 @@ class CalcSpaceClient;
 
 class CalcSpaceThread : public QThread
 {
+public:
     CalcSpaceThread(KUrl url, KUrl::List items);
 
     void updateItems(CalcSpaceClient *client) const;

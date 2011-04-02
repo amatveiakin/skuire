@@ -1187,19 +1187,14 @@ void ListPanelFunc::matchChecksum()
 
 void ListPanelFunc::calcSpace()
 {
-    KUrl::List urls = panel->view->getSelectedUrls(true);
+    KUrl::List urls = panel->view->getSelectedUrls(false);
     if (urls.isEmpty()) {
-        panel->view->selectAllIncludingDirs();
-        urls = panel->view->getSelectedUrls(true);
+        urls = panel->view->getItems().urlList();
         if (urls.isEmpty())
             return ; // nothing to do
     }
 
-    QStringList fileNames; //TODO remove this
-    foreach(const KUrl &url, urls)
-        fileNames << url.fileName();
-
-    QPointer<KrCalcSpaceDialog> calc = new KrCalcSpaceDialog(krMainWindow, panel, fileNames, false);
+    QPointer<KrCalcSpaceDialog> calc = new KrCalcSpaceDialog(krMainWindow, panel, urls, false);
     calc->exec();
     panel->slotUpdateTotals();
 

@@ -43,6 +43,8 @@
 #include <QLabel>
 // Krusader Includes
 #include "../VFS/vfs.h"
+#include "calcspacethread.h"
+
 class KrPanel;
 class KrView;
 
@@ -57,39 +59,15 @@ class KrCalcSpaceDialog : public KDialog
 {
     Q_OBJECT
 
-    friend class CalcThread;
     class QTimer * m_pollTimer;
 
-    class CalcThread : public QThread
-    {
-        KIO::filesize_t m_totalSize;
-        KIO::filesize_t  m_currentSize;
-        unsigned long m_totalFiles;
-        unsigned long m_totalDirs;
-        const QStringList &m_items;
-        QHash <QString, KIO::filesize_t> m_sizes;
-        KUrl m_url;
-        KrCalcSpaceDialog * m_parent;
-        mutable QMutex m_mutex;
-        bool m_stop;
-
-    public:
-        CalcThread(KrCalcSpaceDialog * parent, KUrl url, const QStringList & items);
-
-        KIO::filesize_t getItemSize(QString item) const;
-        void updateItems(KrView *view) const;
-        void getStats(KIO::filesize_t  &totalSize,
-                      unsigned long &totalFiles,
-                      unsigned long &totalDirs) const;
-        void run(); // start calculation
-        void stop(); // stop it. Thread continues until vfs_calcSpace returns
-    } * m_thread;
+    CalcSpaceThread *m_thread;
 
     QLabel * m_label;
     bool m_autoClose; // true: wait 3 sec. before showing the dialog. Close it, when done
     bool m_canceled; // true: cancel was pressed
     int m_timerCounter; // internal counter. The timer runs faster as the rehresh (see comment there)
-    const QStringList m_items;
+    const KUrl::List m_items;
     KrView *m_view;
 
     void calculationFinished(); // called if the calculation is done
@@ -101,7 +79,7 @@ protected slots:
 
 public:
     // autoclose: wait 3 sec. before showing the dialog. Close it, when done
-    KrCalcSpaceDialog(QWidget *parent, KrPanel * panel, const QStringList & items, bool autoclose);
+    KrCalcSpaceDialog(QWidget *parent, KrPanel * panel, const KUrl::List items, bool autoclose);
     ~KrCalcSpaceDialog();
 
     void getStats(KIO::filesize_t  &totalSize,
