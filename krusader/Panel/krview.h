@@ -547,7 +547,6 @@ public:
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
 public:
-    virtual KrViewItem *getCurrentKrViewItem() = 0;
     virtual KrViewItem *getKrViewItemAt(const QPoint &vp) = 0;
     virtual KrViewItem *findItemByName(const QString &name) = 0;
     virtual KrViewItem *findItemByVfile(vfile *vf) = 0;
@@ -560,6 +559,7 @@ public:
     static QPixmap getIcon(vfile *vf, bool active, int size = 0);
     static QString krPermissionString(const vfile * vf);
 protected:
+    virtual KrViewItem *getCurrentKrViewItem() = 0;
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;
     virtual void intSetSelected(const vfile* vf, bool select) = 0;
     virtual void addItem(vfile *vf);
