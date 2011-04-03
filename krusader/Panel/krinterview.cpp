@@ -463,6 +463,8 @@ void KrInterView::changeSelection(KUrl::List urls, bool select, bool clearFirst)
     }
 
     op()->setMassSelectionUpdate(false);
+
+    redraw();
 }
 
 bool KrInterView::isItemSelected(KUrl url)
