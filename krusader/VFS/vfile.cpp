@@ -125,7 +125,7 @@ vfile::vfile(const QString& name,                   // useful construtor
 
 KFileItem vfile::toFileItem() const
 {
-    return KFileItem(vfile_getMode(), vfile_getMode(), vfile_getUrl(), true);
+    return KFileItem(vfile_getUrl(), ((vfile*)this)->vfile_getMime(), vfile_getMode());
 }
 
 char vfile::vfile_isReadable() const
