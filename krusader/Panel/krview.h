@@ -341,6 +341,7 @@ public:
 
     virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
     virtual FileItemList getSelectedItems(bool currentIfNoSelection) = 0;
+    virtual FileItemList getVisibleItems() = 0;
     virtual void changeSelection(KUrl::List urls, bool select, bool clearFirst) = 0;
     virtual bool isItemSelected(KUrl url) = 0;
     virtual FileItem currentItem() = 0;

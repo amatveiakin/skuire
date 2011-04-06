@@ -390,6 +390,18 @@ FileItemList KrInterView::getSelectedItems(bool currentIfNoSelection)
     return list;
 }
 
+FileItemList KrInterView::getVisibleItems()
+{
+    //TODO: more efficient implementation in the subclasses
+    FileItemList list;
+    foreach(vfile *vf, _model->vfiles()) {
+        if (vf != _dummyVfile)
+            if(_itemView->viewport()->rect().intersects(itemRect(vf)))
+                list << vf->toFileItem();
+    }
+    return list;
+}
+
 void KrInterView::makeItemVisible(KUrl url)
 {
     QModelIndex ndx = _model->indexFromUrl(url);
