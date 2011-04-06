@@ -955,6 +955,13 @@ void ListPanelFunc::displayOpenWithDialog(KUrl::List urls)
     }
 }
 
+void ListPanelFunc::openWith()
+{
+    KUrl::List urls = panel->view->getSelectedUrls(true);
+    if(urls.count())
+        displayOpenWithDialog(urls);
+}
+
 // this is done when you double click on a file
 void ListPanelFunc::execute(FileItem item)
 {

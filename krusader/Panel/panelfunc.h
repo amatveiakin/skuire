@@ -74,6 +74,7 @@ public slots:
     void viewDlg();
     void edit();
     void editNew(); // create a new textfile and edit it
+    void openWith();
     void copyFiles(bool enqueue = false);
     void moveFiles(bool enqueue = false);
     void copyFilesByQueue() {

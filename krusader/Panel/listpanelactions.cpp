@@ -92,6 +92,7 @@ ListPanelActions::ListPanelActions(QObject *parent, FileManagerWindow *mainWindo
 
     // file operations
     action(i18n("Right-click Menu"), 0, Qt::Key_Menu, _gui, SLOT(rightclickMenu()), "rightclick menu");
+    action(i18n("Open With..."), 0, Qt::CTRL + Qt::Key_O, _func, SLOT(openWith()), "open_with");
     actProperties = action(i18n("&Properties..."), 0, Qt::ALT + Qt::Key_Enter, _func, SLOT(properties()), "properties");
     actCompDirs = action(i18n("&Compare Directories"), "view_left_right", Qt::ALT + Qt::SHIFT + Qt::Key_C, _gui, SLOT(compareDirs()), "compare dirs");
     actCalculate = action(i18n("Calculate &Occupied Space"), "kcalc", 0, _func, SLOT(calcSpace()), "calculate");
