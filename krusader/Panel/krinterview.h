@@ -52,8 +52,9 @@ public:
     virtual void setCurrentItem(KUrl url);
     virtual void makeItemVisible(KUrl url);
     virtual void selectRegion(KUrl item1, KUrl item2, bool select);
-    virtual QRect itemRect(KUrl itemUrl);
     virtual FileItem itemAt(const QPoint &vp, bool *isUpUrl);
+    virtual bool isItemVisible(KUrl url);
+    virtual QRect itemRectGlobal(KUrl url);
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();
@@ -115,6 +116,7 @@ protected:
     virtual void intSetSelected(const vfile* vf, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;
     virtual vfile *vfileFromUrl(KUrl url);
+    virtual QRect itemRect(KUrl itemUrl);
 
     virtual QRect itemRect(const vfile *vf) = 0;
 

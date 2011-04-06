@@ -31,10 +31,7 @@ KrInterView::KrInterView(KrViewInstance &instance, KConfig *cfg,
         KrView(instance, cfg), _itemView(itemView), _mouseHandler(0)
 {
     _model = new KrVfsModel(this);
-
-    // fix the context menu problem
-    int j = QFontMetrics(_itemView->font()).height() * 2;
-    _mouseHandler = new KrMouseHandler(this, j);
+    _mouseHandler = new KrMouseHandler(this);
 }
 
 KrInterView::~KrInterView()
@@ -517,4 +514,16 @@ void KrInterView::setCurrentItem(ItemSpec item)
     }
     setCurrentIndex(newIndex);
     _itemView->scrollTo(newIndex);
+}
+
+bool KrInterView::isItemVisible(KUrl url)
+{
+    return _itemView->viewport()->rect().intersects(itemRect(url));
+}
+
+QRect KrInterView::itemRectGlobal(KUrl url)
+{
+    QRect rect = itemRect(url);
+    rect.moveTo(_itemView->viewport()->mapToGlobal(rect.topLeft()));
+    return rect;
 }

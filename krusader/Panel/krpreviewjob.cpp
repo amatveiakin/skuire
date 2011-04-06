@@ -140,9 +140,11 @@ void KrPreviewJob::slotJobResult(KJob *job)
 // move currently visible items to beginning of the list
 void KrPreviewJob::sort()
 {
+//TODO:     QSet<KFileItem> visibleSet(_parent->_view->getVisibleItems());
     for(int i = 0, visible_end = 0; i < _scheduled.count(); i++) {
         KrViewItem *item = _scheduled[i];
-        if(_parent->_view->widget()->rect().intersects(item->itemRect())) {
+        KFileItem fi = item->getVfile()->toFileItem();
+        if(_parent->_view->isItemVisible(fi.url())) { //TODO: replace with visibleSet.contains(fi)
             if(i != visible_end)
                 _scheduled.move(i, visible_end);
             visible_end++;

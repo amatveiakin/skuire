@@ -20,6 +20,7 @@
 #include "krpopupmenu.h"
 
 #include <QPixmap>
+#include <QDesktopWidget>
 
 #include <klocale.h>
 #include <kprocess.h>
@@ -50,16 +51,51 @@
 #include <konq_popupmenuinformation.h>
 #endif
 
-void KrPopupMenu::run(const QPoint &pos, KrPanel *panel, bool onlyOpenWith)
-{
-    KrPopupMenu menu(panel, panel->gui, onlyOpenWith);
 
-    QAction *res = menu.exec(pos);
+void KrPopupMenu::execMenu(KrPopupMenu *menu, QPoint pos)
+{
+    QAction *res = menu->exec(pos);
 
     int result = -1;
     if (res && res->data().canConvert<int>())
         result = res->data().toInt();
-    menu.performAction(result);
+    menu->performAction(result);
+}
+
+void KrPopupMenu::run(KrPanel *panel, bool onlyOpenWith)
+{
+    KrPopupMenu menu(panel, panel->gui, onlyOpenWith);
+    if(menu.item.isNull())
+        return;
+
+    QRect itemRect = panel->view->itemRectGlobal(menu.item.url());
+    QPoint pos = itemRect.bottomLeft();
+
+    QSize menuSize = menu.sizeHint();
+    QSize screenSize = QApplication::desktop()->size();
+
+    if ((screenSize.height() - pos.y()) < menuSize.height()) {
+        // the menu doesn't fit below the item
+        pos = itemRect.topLeft();
+        pos.setY(pos.y() - menuSize.height());
+    }
+
+    execMenu(&menu, pos);
+}
+
+void KrPopupMenu::run(QPoint pos, KrPanel *panel, bool onlyOpenWith)
+{
+    KrPopupMenu menu(panel, panel->gui, onlyOpenWith);
+
+    QSize menuSize = menu.sizeHint();
+    QSize screenSize = QApplication::desktop()->size();
+
+    if ((screenSize.height() - pos.y()) < menuSize.height()) {
+        // the menu doesn't fit below the item
+        pos.setY(pos.y() - menuSize.height());
+    }
+
+    execMenu(&menu, pos);
 }
 
 KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) : KMenu(parent), panel(thePanel), empty(false),

@@ -28,8 +28,8 @@
 
 #define CANCEL_TWO_CLICK_RENAME {_singleClicked = false;_renameTimer.stop();}
 
-KrMouseHandler::KrMouseHandler(KrView * view, int contextMenuShift) : _view(view),
-        _contextMenuTimer(), _contextMenuShift(contextMenuShift), _singleClicked(false), _singleClickTime(),
+KrMouseHandler::KrMouseHandler(KrView * view) : _view(view),
+        _contextMenuTimer(), _singleClicked(false), _singleClickTime(),
         _renameTimer(), _dragStartPos(-1, -1), _emptyContextMenu(false)
 {
     KConfigGroup grpSvr(krConfig, "Look&Feel");
@@ -282,7 +282,7 @@ void KrMouseHandler::handleContextMenu(KFileItem item, const QPoint & pos)
     if (!_view->isFocused())
         _view->op()->emitNeedFocus();
     int i = KrSelectionMode::getSelectionHandler()->showContextMenu();
-    _contextMenuPoint = QPoint(pos.x(), pos.y() - _contextMenuShift);
+    _contextMenuPoint = pos;
     if (i < 0) {
         if (item.isNull())
             _view->op()->emitEmptyContextMenu(_contextMenuPoint);
@@ -329,7 +329,7 @@ bool KrMouseHandler::dragMoveEvent(QDragMoveEvent *e)
     return true;
 }
 
-bool KrMouseHandler::dragLeaveEvent(QDragLeaveEvent *e)
+bool KrMouseHandler::dragLeaveEvent(QDragLeaveEvent*)
 {
     return false;
 }

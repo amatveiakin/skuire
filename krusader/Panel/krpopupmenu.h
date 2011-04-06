@@ -42,7 +42,8 @@ class KrPopupMenu : public KMenu
 {
     Q_OBJECT
 public:
-    static void run(const QPoint &pos, KrPanel *panel, bool onlyOpenWith = false);
+    static void run(QPoint pos, KrPanel *panel, bool onlyOpenWith = false);
+    static void run(KrPanel *panel, bool onlyOpenWith = false);
 
 protected:
     KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith);
@@ -88,6 +89,8 @@ protected:
     };
 
 private:
+    static void execMenu(KrPopupMenu *menu, QPoint pos);
+
     KrPanel *panel;
     bool empty, multipleSelections;
     KMenu linkPopup, createNewPopup;

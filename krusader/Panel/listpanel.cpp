@@ -954,9 +954,7 @@ void ListPanel::startDragging(QStringList names, QPixmap px)
 // pops a right-click menu for items
 void ListPanel::popRightClickMenu(const QPoint &loc)
 {
-    // run it, on the mouse location
-    int j = QFontMetrics(font()).height() * 2;
-    KrPopupMenu::run(QPoint(loc.x() + 5, loc.y() + j), this);
+    KrPopupMenu::run(loc, this);
 }
 
 void ListPanel::popEmptyRightClickMenu(const QPoint &loc)
@@ -1229,16 +1227,12 @@ void ListPanel::openMedia()
 
 void ListPanel::rightclickMenu()
 {
-    FileItem item = view->currentItem();
-    if (!item.isNull())
-        popRightClickMenu(view->itemRect(item.url()).topLeft());
+    KrPopupMenu::run(this);
 }
 
 void ListPanel::openWithMenu()
 {
-    FileItem item = view->currentItem();
-    if (!item.isNull())
-        KrPopupMenu::run(view->itemRect(item.url()).topLeft(), this, true);
+    KrPopupMenu::run(this, true);
 }
 
 void ListPanel::toggleSyncBrowse()

@@ -348,8 +348,9 @@ public:
     // in this case currentItem() return a null item
     virtual bool currentItemIsUpUrl() = 0;
     virtual void setCurrentItem(KUrl url) = 0;
+    virtual bool isItemVisible(KUrl url) = 0;
+    virtual QRect itemRectGlobal(KUrl url) = 0;
     virtual void makeItemVisible(KUrl url) = 0;
-    virtual QRect itemRect(KUrl itemUrl) = 0;
     virtual void selectRegion(KUrl item1, KUrl item2, bool select) = 0;
     virtual FileItem itemAt(const QPoint &vp, bool *isUpUrl = 0) = 0;
 

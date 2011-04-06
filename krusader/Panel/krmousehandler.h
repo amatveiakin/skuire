@@ -38,7 +38,7 @@ class KrMouseHandler : public QObject
     Q_OBJECT
 
 public:
-    KrMouseHandler(KrView * view, int contextMenuShift);
+    KrMouseHandler(KrView * view);
 
     bool mousePressEvent(QMouseEvent *e);
     bool mouseReleaseEvent(QMouseEvent *e);
