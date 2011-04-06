@@ -143,6 +143,7 @@ public slots:
     void openHistory();
     void openBookmarks();
     void rightclickMenu();
+    void openWithMenu();
     void toggleSyncBrowse();
     void editLocation();
     void jumpBack();

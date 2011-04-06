@@ -42,14 +42,15 @@ class KrPopupMenu : public KMenu
 {
     Q_OBJECT
 public:
-    static void run(const QPoint &pos, KrPanel *panel);
+    static void run(const QPoint &pos, KrPanel *panel, bool onlyOpenWith = false);
 
 protected:
-    KrPopupMenu(KrPanel *thePanel, QWidget *parent = 0);
+    KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith);
     ~KrPopupMenu();
     void performAction(int id);
     void addEmptyMenuEntries(); // adds the choices for a menu without selected items
     void addCreateNewMenu(); // adds a "create new" submenu
+    void addOpenWithEntries(KMenu *menu); // adds a "open with" submenu
 
     enum ID {
         OPEN_ID,
@@ -89,7 +90,7 @@ protected:
 private:
     KrPanel *panel;
     bool empty, multipleSelections;
-    KMenu openWith, linkPopup, createNewPopup;
+    KMenu linkPopup, createNewPopup;
     KrPreviewPopup preview;
     KActionCollection *actions;
     KFileItemList items; // list of selected items

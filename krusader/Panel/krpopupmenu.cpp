@@ -50,17 +50,19 @@
 #include <konq_popupmenuinformation.h>
 #endif
 
-void KrPopupMenu::run(const QPoint &pos, KrPanel *panel)
+void KrPopupMenu::run(const QPoint &pos, KrPanel *panel, bool onlyOpenWith)
 {
-    KrPopupMenu menu(panel);
-    QAction * res = menu.exec(pos);
+    KrPopupMenu menu(panel, panel->gui, onlyOpenWith);
+
+    QAction *res = menu.exec(pos);
+
     int result = -1;
     if (res && res->data().canConvert<int>())
         result = res->data().toInt();
     menu.performAction(result);
 }
 
-KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent) : KMenu(parent), panel(thePanel), empty(false),
+KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) : KMenu(parent), panel(thePanel), empty(false),
         multipleSelections(false), actions(0)
 {
 #ifdef __LIBKONQ__
@@ -73,7 +75,9 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent) : KMenu(parent), pa
         addSeparator();
         addEmptyMenuEntries();
         return;
-    } else if (items.count() > 1)
+    }
+
+    if (items.count() > 1)
         multipleSelections = true;
 
     bool inTrash = false, trashOnly = false;
@@ -88,6 +92,11 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent) : KMenu(parent), pa
     }
 
     item = items.first();
+
+    if(onlyOpenWith) {
+        addOpenWithEntries(this);
+        return;
+    }
 
     // ------------ the OPEN option - open preferred service
     QAction * openAct = addAction(i18n("Open/Run"));
@@ -115,34 +124,13 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent) : KMenu(parent), pa
         pAct->setText(i18n("Preview"));
     }
 
-    // -------------- Open with: try to find-out which apps can open the file
-    // this too, is meaningful only if one file is selected or if all the files
-    // have the same mimetype !
-    QString mime = item.mimetype();
-    // check if all the list have the same mimetype
-    for (int i = 1; i < items.count(); ++i) {
-        if (items[i].mimetype() != mime) {
-            mime.clear();
-            break;
-        }
-    }
-    if (!mime.isEmpty()) {
-        offers = KMimeTypeTrader::self()->query(mime);
-        for (int i = 0; i < offers.count(); ++i) {
-            KSharedPtr<KService> service = offers[ i ];
-            if (service->isValid() && service->isApplication()) {
-                openWith.addAction(krLoader->loadIcon(service->icon(), KIconLoader::Small), service->name())->setData(QVariant(SERVICE_LIST_ID + i));
-            }
-        }
-        openWith.addSeparator();
-        if (item.isDir())
-            openWith.addAction(krLoader->loadIcon("konsole", KIconLoader::Small), i18n("Terminal"))->setData(QVariant(OPEN_TERM_ID));
-        openWith.addAction(i18n("Other..."))->setData(QVariant(CHOOSE_ID));
-        QAction *owAct = addMenu(&openWith);
-        owAct->setData(QVariant(OPEN_WITH_ID));
-        owAct->setText(i18n("Open With"));
-        addSeparator();
-    }
+    // -------------- Open with
+    KMenu *openWith = new KMenu(this);
+    addOpenWithEntries(openWith);
+    QAction *owAct = addMenu(openWith);
+    owAct->setData(QVariant(OPEN_WITH_ID));
+    owAct->setText(i18n("Open With"));
+    addSeparator();
 
     // --------------- user actions
     QAction *uAct = new UserActionPopupMenu(item.url());
@@ -279,6 +267,34 @@ void KrPopupMenu::addCreateNewMenu()
     newAct->setData(QVariant(CREATE_NEW_ID));
     newAct->setText(i18n("Create New"));
 
+}
+
+void KrPopupMenu::addOpenWithEntries(KMenu *menu)
+{
+    // -------------- Open with: try to find-out which apps can open the file
+    // this too, is meaningful only if one file is selected or if all the files
+    // have the same mimetype !
+    QString mime = item.mimetype();
+    // check if all the list have the same mimetype
+    for (int i = 1; i < items.count(); ++i) {
+        if (items[i].mimetype() != mime) {
+            mime.clear();
+            break;
+        }
+    }
+    if (!mime.isEmpty()) {
+        offers = KMimeTypeTrader::self()->query(mime);
+        for (int i = 0; i < offers.count(); ++i) {
+            KSharedPtr<KService> service = offers[ i ];
+            if (service->isValid() && service->isApplication()) {
+                menu->addAction(krLoader->loadIcon(service->icon(), KIconLoader::Small), service->name())->setData(QVariant(SERVICE_LIST_ID + i));
+            }
+        }
+        menu->addSeparator();
+        if (item.isDir())
+            menu->addAction(krLoader->loadIcon("konsole", KIconLoader::Small), i18n("Terminal"))->setData(QVariant(OPEN_TERM_ID));
+        menu->addAction(i18n("Other..."))->setData(QVariant(CHOOSE_ID));
+    }
 }
 
 void KrPopupMenu::performAction(int id)

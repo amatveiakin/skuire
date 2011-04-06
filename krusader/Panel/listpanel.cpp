@@ -1234,6 +1234,13 @@ void ListPanel::rightclickMenu()
         popRightClickMenu(view->itemRect(item.url()).topLeft());
 }
 
+void ListPanel::openWithMenu()
+{
+    FileItem item = view->currentItem();
+    if (!item.isNull())
+        KrPopupMenu::run(view->itemRect(item.url()).topLeft(), this, true);
+}
+
 void ListPanel::toggleSyncBrowse()
 {
     syncBrowseButton->toggle();
