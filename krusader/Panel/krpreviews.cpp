@@ -67,10 +67,11 @@ void KrPreviews::update()
 {
     if(_job)
         return;
-    for (KrViewItem *it = _view->getFirst(); it != 0; it = _view->getNext(it)) {
-        if(!_previews.contains(it->getVfile()))
-            updatePreview(it);
-    }
+    //FIXME
+//     for (KrViewItem *it = _view->getFirst(); it != 0; it = _view->getNext(it)) {
+//         if(!_previews.contains(it->getVfile()))
+//             updatePreview(it);
+//     }
 }
 
 void KrPreviews::deletePreview(KrViewItem *item)
