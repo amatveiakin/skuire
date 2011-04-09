@@ -984,7 +984,6 @@ void KrView::setFileIconSize(int size)
         _previews->update();
     }
     redraw();
-    op()->settingsChanged(KrViewProperties::PropIconSize);
     op()->emitRefreshActions();
 }
 
