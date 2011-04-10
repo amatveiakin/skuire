@@ -48,8 +48,8 @@ void KrVfsModel::populate(const QList<vfile*> &files, vfile *dummy)
 
         if(vf == dummy)
             _dummyItem = item;
-        else
-            item->file = vf->toFileItem();
+//         else
+        item->file = vf->toFileItem();
 
         _items << item;
     }
@@ -297,29 +297,33 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
     if(lastSortOrder() == KrViewProperties::NoColumn)
         return;
 
-    abort();
-#if 0
     emit layoutAboutToBeChanged();
+
+    int count = _items.count();
 
     QModelIndexList oldPersistentList = persistentIndexList();
 
-    KrSort::Sorter sorter(createSorter());
+    KrSort::Sorter sorter = createSorter();
     sorter.sort();
 
-    _vfiles.clear();
-    _vfileNdx.clear();
+    _items.clear();
+    _itemIndex.clear();
     _nameNdx.clear();
+
+    _items.reserve(count);
+    _itemIndex.reserve(count);
+    _nameNdx.reserve(count);
 
     bool sortOrderChanged = false;
     QHash<int, int> changeMap;
     for (int i = 0; i < sorter.items().count(); ++i) {
         const KrSort::SortProps *props = sorter.items()[i];
-        _vfiles.append(props->vf());
+        _items << const_cast<KrView::Item*>(props->viewItem());
         changeMap[ props->originalIndex() ] = i;
         if (i != props->originalIndex())
             sortOrderChanged = true;
-        _vfileNdx[ props->vf()] = index(i, 0);
-        _nameNdx[ props->vf()->vfile_getName()] = index(i, 0);
+        _itemIndex[ props->viewItem()] = index(i, 0);
+        _nameNdx[ props->viewItem()->file.name()] = index(i, 0);
     }
 
     QModelIndexList newPersistentList;
@@ -331,8 +335,6 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
     emit layoutChanged();
     if (sortOrderChanged)
         _view->makeCurrentVisible();
-#endif
-
 }
 
 QModelIndex KrVfsModel::addItem(vfile * vf)
@@ -513,14 +515,6 @@ QVariant KrVfsModel::headerData(int section, Qt::Orientation orientation, int ro
     return QString();
 }
 
-
-KrView::Item *KrVfsModel::itemAt(const QModelIndex &index)
-{
-    if (!index.isValid() || index.row() < 0 || index.row() >= _items.count())
-        return 0;
-    return _items[index.row()];
-}
-
 vfile * KrVfsModel::vfileAt(const QModelIndex &index)
 {
     KrView::Item *item = itemAt(index);
@@ -532,7 +526,7 @@ vfile * KrVfsModel::vfileAt(const QModelIndex &index)
 
 const QModelIndex & KrVfsModel::itemIndex(const KrView::Item *item)
 {
-    return _itemIndex[(KrView::Item*)item];
+    return _itemIndex[item];
 }
 
 const QModelIndex & KrVfsModel::vfileIndex(const vfile * vf)
@@ -547,22 +541,18 @@ const QModelIndex & KrVfsModel::nameIndex(const QString & st)
 
 Qt::ItemFlags KrVfsModel::flags(const QModelIndex & index) const
 {
-    abort();
-#if 0
     Qt::ItemFlags flags = QAbstractListModel::flags(index);
 
-    if (!index.isValid())
+    const KrView::Item *item = itemAt(index);
+    if (!item)
         return flags;
 
-    if (index.row() >= rowCount())
-        return flags;
-    vfile *vf = _vfiles.at(index.row());
-    if (vf == _dummyVfile) {
+    if (item == _dummyItem) {
         flags = (flags & (~Qt::ItemIsSelectable)) | Qt::ItemIsDropEnabled;
     } else
         flags = flags | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
+
     return flags;
-#endif
 }
 
 QString KrVfsModel::nameWithoutExtension(const vfile * vf, bool checkEnabled) const
@@ -598,11 +588,8 @@ const QModelIndex & KrVfsModel::indexFromUrl(const KUrl &url)
 
 KrSort::Sorter KrVfsModel::createSorter()
 {
-    abort();
-#if 0
-    KrSort::Sorter sorter(_vfiles.count(), properties(), lessThanFunc(), greaterThanFunc());
-    for(int i = 0; i < _vfiles.count(); i++)
-        sorter.addItem(_vfiles[i], _vfiles[i] == _dummyVfile, i, customSortData(_vfiles[i]));
+    KrSort::Sorter sorter(_items.count(), properties(), lessThanFunc(), greaterThanFunc());
+    for(int i = 0; i < _items.count(); i++)
+        sorter.addItem(_items[i], _items[i] == _dummyItem, i, customSortData(_items[i]));
     return sorter;
-#endif
 }
