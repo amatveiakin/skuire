@@ -87,7 +87,7 @@ public:
         _alternatingTable = altTable;
     }
     const KrView::Item *itemAt(const QModelIndex &index) const {
-        return itemAt(index);
+        return const_cast<KrVfsModel*>(this)->itemAt(index);
     }
 
 public slots:

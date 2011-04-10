@@ -19,6 +19,7 @@
 
 #include "krvfsmodel.h"
 #include "../VFS/vfile.h"
+#include "../VFS/vfilecontainer.h"
 #include <klocale.h>
 #include <QtDebug>
 #include <QtAlgorithms>
@@ -273,21 +274,15 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
 
 bool KrVfsModel::setData(const QModelIndex & index, const QVariant & value, int role)
 {
-    abort();
-#if 0
-    if (role == Qt::EditRole && index.isValid()) {
-        if (index.row() < rowCount() && index.row() > 0) {
-            vfile *vf = _vfiles.at(index.row());
-            if (vf == 0)
-                return false;
-            _view->op()->emitRenameItem(vf->toFileItem(), value.toString());
-        }
-    }
-    if (role == Qt::UserRole && index.isValid()) {
+    if (role == Qt::EditRole) {
+        KrView::Item *item = itemAt(index);
+        if (!item)
+            return false;
+        _view->op()->emitRenameItem(item->file, value.toString());
+    } else if (role == Qt::UserRole && index.isValid())
         _justForSizeHint = value.toBool();
-    }
+
     return QAbstractListModel::setData(index, value, role);
-#endif
 }
 
 void KrVfsModel::sort(int column, Qt::SortOrder order)
@@ -519,9 +514,13 @@ vfile * KrVfsModel::vfileAt(const QModelIndex &index)
 {
     KrView::Item *item = itemAt(index);
     if(item) {
-        //FIXME
-        abort();
-    }
+        if(item == _dummyItem)
+            return _view->_dummyVfile;
+        else
+            return _view->_files->search(item->file.name());
+
+    } else
+        return 0;
 }
 
 const QModelIndex & KrVfsModel::itemIndex(const KrView::Item *item)

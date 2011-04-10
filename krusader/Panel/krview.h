@@ -300,6 +300,7 @@ class KrView
 {
     friend class KrViewItem;
     friend class KrViewOperator;
+    friend class KrVfsModel; //HACK
 
 public:
     class IconSizes : public QVector<int>
