@@ -114,88 +114,90 @@ int KrVfsModel::columnCount(const QModelIndex &parent) const
 
 QVariant KrVfsModel::data(const QModelIndex& index, int role) const
 {
-    abort();
-#if 0
-    if (!index.isValid() || index.row() >= rowCount())
+    const KrView::Item *item = itemAt(index);
+    if(!item)
         return QVariant();
-    vfile *vf = _vfiles.at(index.row());
-    if (vf == 0)
-        return QVariant();
+
+    bool isDummy = (item == _dummyItem);
+    const FileItem &file = item->file;
 
     switch (role) {
     case Qt::FontRole:
         return _defaultFont;
     case Qt::EditRole: {
-        if (index.column() == 0) {
-            return vf->vfile_getName();
-        }
-        return QVariant();
+        if (index.column() == 0)
+            return file.name();
+        else
+            return QVariant();
     }
     case Qt::UserRole: {
-        if (index.column() == 0) {
-            return nameWithoutExtension(vf, false);
-        }
-        return QVariant();
+        if (index.column() == 0)
+            return nameWithoutExtension(item, false);
+        else
+            return QVariant();
     }
     case Qt::ToolTipRole:
     case Qt::DisplayRole: {
         switch (index.column()) {
         case KrViewProperties::Name: {
-            return nameWithoutExtension(vf);
+            //FIXME: cache name/ext
+            return nameWithoutExtension(item);
         }
         case KrViewProperties::Ext: {
-            QString nameOnly = nameWithoutExtension(vf);
-            const QString& vfName = vf->vfile_getName();
-            return vfName.mid(nameOnly.length() + 1);
+            //FIXME: cache name/ext
+            QString nameOnly = nameWithoutExtension(item);
+            return file.name().mid(nameOnly.length() + 1);
         }
         case KrViewProperties::Size: {
-            if (vf->vfile_isDir() && vf->vfile_getSize() <= 0)
+            if (file.isDir() && file.size() <= 0)
                 return i18n("<DIR>");
-            else
+            else //FIXME: cache this
                 return (properties()->humanReadableSize) ?
-                       KIO::convertSize(vf->vfile_getSize()) + "  " :
-                       KRpermHandler::parseSize(vf->vfile_getSize()) + ' ';
+                       KIO::convertSize(file.size()) + "  " :
+                       KRpermHandler::parseSize(file.size()) + ' ';
         }
         case KrViewProperties::Type: {
-            if (vf == _dummyVfile)
+            if (isDummy)
                 return QVariant();
-            KMimeType::Ptr mt = KMimeType::mimeType(vf->vfile_getMime());
+            KMimeType::Ptr mt = KMimeType::mimeType(file.mimetype());
             if (mt)
-                return mt->comment();
+                return mt->comment(); //FIXME: cache this
             return QVariant();
         }
         case KrViewProperties::Modified: {
-            if (vf == _dummyVfile)
+            if (isDummy)
                 return QVariant();
-            time_t time = vf->vfile_getTime_t();
-            struct tm* t = localtime((time_t *) & time);
-
-            QDateTime tmp(QDate(t->tm_year + 1900, t->tm_mon + 1, t->tm_mday), QTime(t->tm_hour, t->tm_min));
-            return KGlobal::locale()->formatDateTime(tmp);
+            else //FIXME: cache this
+                return file.time(KFileItem::ModificationTime).toString(KDateTime::LocalDate);
         }
         case KrViewProperties::Permissions: {
-            if (vf == _dummyVfile)
+            if (isDummy)
                 return QVariant();
-            if (properties()->numericPermissions) {
-                QString perm;
-                return perm.sprintf("%.4o", vf->vfile_getMode() & PERM_BITMASK);
-            }
-            return vf->vfile_getPerm();
+            else if (properties()->numericPermissions) {
+                QString perm; //FIXME: cache this
+                return perm.sprintf("%.4o", file.mode() & PERM_BITMASK);
+            } else
+                return file.permissionsString();
         }
         case KrViewProperties::KrPermissions: {
-            if (vf == _dummyVfile)
+            if (isDummy)
                 return QVariant();
-            return KrView::krPermissionString(vf);
+            else {
+                vfile vf(file); //FIXME: cache this
+                return KrView::krPermissionString(&vf);
+            }
         }
         case KrViewProperties::Owner: {
-            if (vf == _dummyVfile)
+            if (isDummy)
                 return QVariant();
-            return vf->vfile_getOwner();
+            else
+                return file.user();
         }
         case KrViewProperties::Group: {
-            if (vf == _dummyVfile)
+            if (isDummy)
                 return QVariant();
-            return vf->vfile_getGroup();
+            else
+                return file.group();
         }
         default: return QString();
         }
@@ -206,8 +208,12 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
         case KrViewProperties::Name: {
             if (properties()->displayIcons) {
                 if (_justForSizeHint)
+                    //FIXME: cache this
                     return QPixmap(_view->fileIconSize(), _view->fileIconSize());
-                return _view->getIcon(vf);
+                else {
+                    vfile vf(file);
+                    return _view->getIcon(&vf);
+                }
             }
             break;
         }
@@ -240,15 +246,17 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
         colorItemType.m_alternateBackgroundColor = (actRow & 1);
         colorItemType.m_currentItem = _view->getCurrentIndex().row() == index.row();
         colorItemType.m_selectedItem = _view->isSelected(index);
-        if (vf->vfile_isSymLink()) {
-            if (vf->vfile_isBrokenLink())
-                colorItemType.m_fileType = KrColorItemType::InvalidSymlink;
-            else
+        if (file.isLink()) {
+            //FIXME
+//             if (vf->vfile_isBrokenLink())
+//                 colorItemType.m_fileType = KrColorItemType::InvalidSymlink;
+//             else
                 colorItemType.m_fileType = KrColorItemType::Symlink;
-        } else if (vf->vfile_isDir())
+        } else if (file.isDir())
             colorItemType.m_fileType = KrColorItemType::Directory;
-        else if (vf->vfile_isExecutable())
-            colorItemType.m_fileType = KrColorItemType::Executable;
+        //FIXME
+//         else if (file.isExecutable())
+//             colorItemType.m_fileType = KrColorItemType::Executable;
         else
             colorItemType.m_fileType = KrColorItemType::File;
 
@@ -269,7 +277,6 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
     default:
         return QVariant();
     }
-#endif
 }
 
 bool KrVfsModel::setData(const QModelIndex & index, const QVariant & value, int role)
@@ -554,12 +561,13 @@ Qt::ItemFlags KrVfsModel::flags(const QModelIndex & index) const
     return flags;
 }
 
-QString KrVfsModel::nameWithoutExtension(const vfile * vf, bool checkEnabled) const
+QString KrVfsModel::nameWithoutExtension(const KrView::Item *item, bool checkEnabled) const
 {
-    if ((checkEnabled && !_extensionEnabled) || vf->vfile_isDir())
-        return vf->vfile_getName();
+    //FIXME: cache name/ext
+    if ((checkEnabled && !_extensionEnabled) || item->file.isDir())
+        return item->file.name();
     // check if the file has an extension
-    const QString& vfName = vf->vfile_getName();
+    const QString& vfName = item->file.name();
     int loc = vfName.lastIndexOf('.');
     if (loc > 0) { // avoid mishandling of .bashrc and friend
         // check if it has one of the predefined 'atomic extensions'

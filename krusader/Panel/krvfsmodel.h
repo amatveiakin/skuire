@@ -111,7 +111,7 @@ protected:
     }
     const QModelIndex & itemIndex(const KrView::Item*);
     KrSort::Sorter createSorter();
-    QString nameWithoutExtension(const vfile * vf, bool checkEnabled = true) const;
+    QString nameWithoutExtension(const KrView::Item *item, bool checkEnabled = true) const;
 
 
     QList<KrView::Item*>                _items;
