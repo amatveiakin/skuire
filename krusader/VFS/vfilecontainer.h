@@ -33,6 +33,7 @@ public:
     virtual QList<vfile*> vfiles() = 0;
     virtual unsigned long numVfiles() = 0;
     virtual bool isRoot() = 0;
+    virtual vfile* search(QString name) = 0;
 
 signals:
     void startUpdate(); // emitted when the container has refreshed its list of vfiles.

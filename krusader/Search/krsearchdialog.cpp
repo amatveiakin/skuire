@@ -96,6 +96,13 @@ public:
     virtual bool isRoot() {
         return true;
     }
+    virtual vfile* search(QString name) {
+        foreach(vfile *vf, _vfiles) {
+            if(vf->vfile_getName() == name)
+                return vf;
+        }
+        return 0;
+    }
 
     void clear() {
         emit cleared();

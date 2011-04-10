@@ -76,6 +76,9 @@ public:
         return vfs_filesP->count();
     }
     virtual bool isRoot();
+    virtual vfile* search(QString name) {
+        return vfs_search(name);
+    }
 
     /// Copy a file to the vfs (physical).
     virtual void vfs_addFiles(KUrl::List *fileUrls, KIO::CopyJob::CopyMode mode, QObject* toNotify, QString dir = "", PreserveMode pmode = PM_DEFAULT) = 0;
