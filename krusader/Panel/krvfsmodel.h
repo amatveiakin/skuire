@@ -62,11 +62,13 @@ public:
     }
     void clear();
     QList<vfile*> vfiles() {
-        return _vfiles;
+        abort();
+//         return _vfiles;
     }
     vfile * vfileAt(const QModelIndex &index);
     vfile *dummyVfile() const {
-        return _dummyVfile;
+//         return _dummyVfile;
+        abort();
     }
     const QModelIndex & vfileIndex(const vfile *);
     const QModelIndex & nameIndex(const QString &);
@@ -98,17 +100,20 @@ protected:
     virtual QVariant customSortData(vfile *vf) const {
         return QVariant();
     }
+
+    KrView::Item *itemAt(const QModelIndex &index);
+    const QModelIndex & itemIndex(const KrView::Item*);
     KrSort::Sorter createSorter();
     QString nameWithoutExtension(const vfile * vf, bool checkEnabled = true) const;
 
 
-    QList<vfile*>               _vfiles;
-    QHash<vfile *, QModelIndex> _vfileNdx;
+    QList<KrView::Item*>                _items;
+    QHash<KrView::Item*, QModelIndex>   _itemIndex;
     //TODO: use url index instead of name index
     QHash<QString, QModelIndex> _nameNdx;
     bool                        _extensionEnabled;
     KrInterView                 * _view;
-    vfile *                     _dummyVfile;
+    KrView::Item                *_dummyItem;
     bool                        _ready;
     QFont                       _defaultFont;
     bool                        _justForSizeHint;

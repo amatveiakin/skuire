@@ -310,6 +310,11 @@ public:
         }
     };
 
+    struct Item
+    {
+        FileItem file;
+    };
+
     // instantiating a new view
     // 1. new KrView
     // 2. view->init()
