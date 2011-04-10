@@ -25,26 +25,28 @@
 
 namespace KrSort {
 
-void SortProps::init(vfile *vf, int col, const KrViewProperties * props, bool isDummy, bool asc, int origNdx, QVariant customData) {
+void SortProps::init(const KrView::Item *item, int col, const KrViewProperties * props, bool isDummy, bool asc, int origNdx, QVariant customData) {
+    _viewItem = item;
     _col = col;
     _prop = props;
     _isdummy = isDummy;
     _ascending = asc;
-    _vfile = vf;
     _index = origNdx;
-    _name = vf->vfile_getName();
     _customData = customData;
+    const FileItem &file = item->file;
+    _name = file.name();
+    _time = file.time(KFileItem::ModificationTime).toTime_t();
 
     if(_prop->sortOptions & KrViewProperties::IgnoreCase)
         _name = _name.toLower();
 
     switch (_col) {
     case KrViewProperties::Ext: {
-        if (vf->vfile_isDir()) {
+        if (file.isDir()) {
             _ext = "";
         } else {
             // check if the file has an extension
-            const QString& vfName = vf->vfile_getName();
+            const QString& vfName = file.name();
             int loc = vfName.lastIndexOf('.');
             if (loc > 0) { // avoid mishandling of .bashrc and friend
                 // check if it has one of the predefined 'atomic extensions'
@@ -64,7 +66,7 @@ void SortProps::init(vfile *vf, int col, const KrViewProperties * props, bool is
         if (isDummy)
             _data = "";
         else {
-            KMimeType::Ptr mt = KMimeType::mimeType(vf->vfile_getMime());
+            KMimeType::Ptr mt = KMimeType::mimeType(file.mimetype());
             if (mt)
                 _data = mt->comment();
         }
@@ -76,9 +78,9 @@ void SortProps::init(vfile *vf, int col, const KrViewProperties * props, bool is
         else {
             if (properties()->numericPermissions) {
                 QString perm;
-                _data = perm.sprintf("%.4o", vf->vfile_getMode() & PERM_BITMASK);
+                _data = perm.sprintf("%.4o", file.mode() & PERM_BITMASK);
             } else
-                _data = vf->vfile_getPerm();
+                _data = file.permissionsString();
         }
         break;
     }
@@ -86,7 +88,9 @@ void SortProps::init(vfile *vf, int col, const KrViewProperties * props, bool is
         if (isDummy)
             _data = "";
         else {
-            _data = KrView::krPermissionString(vf);
+            //FIXME: change to item->krPermissionString()
+            vfile vf(file);
+            _data = KrView::krPermissionString(&vf);
         }
         break;
     }
@@ -94,13 +98,13 @@ void SortProps::init(vfile *vf, int col, const KrViewProperties * props, bool is
         if (isDummy)
             _data = "";
         else
-            _data = vf->vfile_getOwner();
+            _data = file.user();
     }
     case KrViewProperties::Group: {
         if (isDummy)
             _data = "";
         else
-            _data = vf->vfile_getGroup();
+            _data = file.group();
     }
     default:
         break;
@@ -178,6 +182,7 @@ bool compareTextsAlphabetical(QString& aS1, QString& aS2, const KrViewProperties
 
 bool compareTextsCharacterCode(QString& aS1, QString& aS2, const KrViewProperties * _viewProperties, bool aNumbers)
 {
+    (void)_viewProperties;
     int lPositionS1 = 0;
     int lPositionS2 = 0;
     while (true) {
@@ -252,10 +257,11 @@ bool compareTexts(QString aS1, QString aS2, const KrViewProperties * _viewProper
 
 bool itemLessThan(SortProps *sp, SortProps *sp2)
 {
-    vfile * file1 = sp->vf();
-    vfile * file2 = sp2->vf();
-    bool isdir1 = file1->vfile_isDir();
-    bool isdir2 = file2->vfile_isDir();
+    const FileItem &file1 = sp->viewItem()->file;
+    const FileItem &file2 = sp2->viewItem()->file;
+
+    bool isdir1 = file1.isDir();
+    bool isdir2 = file2.isDir();
 
     if(sp->properties()->sortOptions  & KrViewProperties::DirsFirst) {
         if (isdir1 && !isdir2)
@@ -282,13 +288,13 @@ bool itemLessThan(SortProps *sp, SortProps *sp2)
             return compareTexts(sp->name(), sp2->name(), sp->properties(), sp->isAscending(), true);
         return compareTexts(sp->extension(), sp2->extension(), sp->properties(), sp->isAscending(), true);
     case KrViewProperties::Size:
-        if (file1->vfile_getSize() == file2->vfile_getSize())
+        if (file1.size() == file2.size())
             return compareTexts(sp->name(), sp2->name(), sp->properties(), sp->isAscending(), true);
-        return file1->vfile_getSize() < file2->vfile_getSize();
+        return file1.size() < file2.size();
     case KrViewProperties::Modified:
-        if (file1->vfile_getTime_t() == file2->vfile_getTime_t())
+        if (sp->time() == sp2->time())
             return compareTexts(sp->name(), sp2->name(), sp->properties(), sp->isAscending(), true);
-        return file1->vfile_getTime_t() < file2->vfile_getTime_t();
+        return sp->time() < sp2->time();
     case KrViewProperties::Type:
     case KrViewProperties::Permissions:
     case KrViewProperties::KrPermissions:
@@ -313,6 +319,7 @@ void sort(QVector<SortProps*> &sorting, bool descending)
                 descending ? &itemGreaterThan : &itemLessThan);
 }
 
+
 Sorter::Sorter(int reserveItems, const KrViewProperties *viewProperties,
         LessThanFunc lessThanFunc, LessThanFunc greaterThanFunc) :
     _viewProperties(viewProperties),
@@ -323,9 +330,10 @@ Sorter::Sorter(int reserveItems, const KrViewProperties *viewProperties,
     _itemStore.reserve(reserveItems);
  }
  
-void Sorter::addItem(vfile *vf, bool isDummy, int idx, QVariant customData)
+
+void Sorter::addItem(const KrView::Item *item, bool isDummy, int idx, QVariant customData)
 {
-    _itemStore << SortProps(vf, _viewProperties->sortColumn, _viewProperties, isDummy, !descending(), idx, customData);
+    _itemStore << SortProps(item, _viewProperties->sortColumn, _viewProperties, isDummy, !descending(), idx, customData);
     _items << &_itemStore.last();
 }
 
@@ -335,9 +343,9 @@ void Sorter::sort()
                 descending() ? _greaterThanFunc : _lessThanFunc);
 }
 
-int Sorter::insertIndex(vfile *vf, bool isDummy, QVariant customData)
+int Sorter::insertIndex(const KrView::Item *item, bool isDummy, QVariant customData)
 {
-    SortProps props(vf,  _viewProperties->sortColumn, _viewProperties, isDummy, !descending(), -1, customData);
+    SortProps props(item, _viewProperties->sortColumn, _viewProperties, isDummy, !descending(), -1, customData);
     const QVector<SortProps*>::iterator it =
         qLowerBound(_items.begin(), _items.end(), &props,
                         descending() ? _greaterThanFunc : _lessThanFunc);

@@ -35,11 +35,11 @@ class SortProps
 public:
     SortProps() {}
     SortProps(const SortProps& other) {
-        init(other.vf(), other.column(), other.properties(), other.isDummy(),
+        init(other.viewItem(), other.column(), other.properties(), other.isDummy(),
              other.isAscending(), other.originalIndex(), other.customData());
     }
-    SortProps(vfile *vf, int col, const KrViewProperties * props, bool isDummy, bool asc, int origNdx, QVariant customData) {
-        init(vf, col, props, isDummy, asc, origNdx, customData);
+    SortProps(const KrView::Item *item, int col, const KrViewProperties * props, bool isDummy, bool asc, int origNdx, QVariant customData) {
+        init(item, col, props, isDummy, asc, origNdx, customData);
     }
 
     inline int column() const {
@@ -60,8 +60,11 @@ public:
     inline QString extension() const {
         return _ext;
     }
-    inline vfile * vf() const {
-        return _vfile;
+    inline time_t time() const {
+        return _time;
+    }
+    inline const KrView::Item *viewItem() const {
+        return _viewItem;
     }
     inline int originalIndex() const {
         return _index;
@@ -74,12 +77,13 @@ public:
     }
 
 private:
-    void init(vfile *vf, int col, const KrViewProperties * props, bool isDummy, bool asc, int origNdx, QVariant customData);
+    void init(const KrView::Item *item, int col, const KrViewProperties * props, bool isDummy, bool asc, int origNdx, QVariant customData);
 
     int _col;
     const KrViewProperties * _prop;
     bool _isdummy;
-    vfile * _vfile;
+    const KrView::Item *_viewItem;
+    time_t _time;
     bool _ascending;
     QString _name;
     QString _ext;
@@ -105,8 +109,8 @@ public:
         return _items;
     }
     void sort();
-    void addItem(vfile *vf, bool isDummy, int idx, QVariant customData);
-    int insertIndex(vfile *vf, bool isDummy, QVariant customData);
+    void addItem(const KrView::Item *item, bool isDummy, int idx, QVariant customData);
+    int insertIndex(const KrView::Item *item, bool isDummy, QVariant customData);
 
 private:
     bool descending() const {
