@@ -123,6 +123,29 @@ vfile::vfile(const QString& name,                   // useful construtor
     vfile_rwx = rwx;
 }
 
+vfile::vfile(const KFileItem &item)
+{
+    vfile_name = item.name();
+    vfile_size = item.size();
+    vfile_owner.clear();
+    vfile_ownerId = 65534; // nobody
+    vfile_group.clear();
+    vfile_groupId = 65534; // nogroup
+    vfile_userName.clear();
+    vfile_perm = item.permissionsString();
+    vfile_time_t = item.time(KIO::UDSEntry::UDS_MODIFICATION_TIME);
+    vfile_symLink = item.isLink();
+    vfile_brokenLink = false,
+    vfile_mimeType = item.mimetype();
+    vfile_symDest = item.linkDest();
+    vfile_mode = item.mode();
+    vfile_isdir = (vfile_perm[ 0 ] == 'd');
+    if (vfile_isDir() && !vfile_symLink)
+        vfile_size = 0;
+    vfile_rwx = PERM_ALL;
+    vfile_acl_loaded = false;
+}
+
 KFileItem vfile::toFileItem() const
 {
     return KFileItem(vfile_getUrl(), ((vfile*)this)->vfile_getMime(), vfile_getMode());

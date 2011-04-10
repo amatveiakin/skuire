@@ -55,6 +55,8 @@ class vfile : public QObject
 public:
     vfile() {}
 
+    vfile(const KFileItem &item);
+
     /**
     * Use this constructor when you know the following files properties: \n
     * file name, file size, file permissions,is the file a link,owner uid & group uid.
