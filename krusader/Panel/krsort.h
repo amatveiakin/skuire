@@ -104,6 +104,7 @@ class Sorter
 public:
     Sorter(int reserveItems, const KrViewProperties *viewProperties, LessThanFunc lessThanFunc, LessThanFunc greaterThanFunc);
     Sorter(const Sorter &other);
+    const Sorter& operator=(const Sorter &other);
 
     const QVector<SortProps*> &items() const {
         return _items;
