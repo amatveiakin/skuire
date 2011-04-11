@@ -448,19 +448,6 @@ public:
     virtual void unselect(const KRQuery& filter = KRQuery("*")) {
         changeSelection(filter, false);
     }
-    virtual QString nameToMakeCurrent() const {
-        return _nameToMakeCurrent;
-    }
-    virtual void setNameToMakeCurrent(const QString name) {
-        _nameToMakeCurrent = name;
-    }
-    virtual QString nameToMakeCurrentIfAdded() const {
-        return _nameToMakeCurrentIfAdded;
-    }
-    virtual void setNameToMakeCurrentIfAdded(const QString name) {
-        _nameToMakeCurrentIfAdded = name;
-    }
-    virtual QString firstUnmarkedBelowCurrent();
     virtual QString statistics();
     virtual const KrViewProperties* properties() const {
         return _properties;
@@ -582,6 +569,19 @@ public:
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
 public:
+    virtual QString firstUnmarkedBelowCurrent();
+    virtual QString nameToMakeCurrent() const {
+        return _nameToMakeCurrent;
+    }
+    virtual void setNameToMakeCurrent(const QString name) {
+        _nameToMakeCurrent = name;
+    }
+    virtual QString nameToMakeCurrentIfAdded() const {
+        return _nameToMakeCurrentIfAdded;
+    }
+    virtual void setNameToMakeCurrentIfAdded(const QString name) {
+        _nameToMakeCurrentIfAdded = name;
+    }
     QPixmap getIcon(vfile *vf);
     static QPixmap getIcon(vfile *vf, bool active, int size = 0);
     static QString krPermissionString(const vfile * vf);
