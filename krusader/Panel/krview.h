@@ -594,7 +594,6 @@ protected:
     virtual void setCurrentKrViewItem(KrViewItem *item) = 0;
     virtual FileItem findItemByName(const QString &name) = 0;
     virtual KrViewItem *findItemByVfile(vfile *vf) = 0;
-    virtual void        selectRegion(KrViewItem *, KrViewItem *, bool) = 0;
     virtual KrViewItem *getKrViewItemAt(const QPoint &vp) = 0;
     virtual KrViewItem *getCurrentKrViewItem() = 0;
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;

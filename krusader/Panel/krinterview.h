@@ -91,7 +91,6 @@ public:
     virtual void prepareForActive();
     virtual void prepareForPassive();
     virtual void showContextMenu();
-    virtual void selectRegion(KrViewItem *i1, KrViewItem *i2, bool select);
     virtual void makeCurrentVisible();
 
     void sortModeUpdated(int column, Qt::SortOrder order);
