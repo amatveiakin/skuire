@@ -569,7 +569,6 @@ public:
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
 public:
-    virtual QString firstUnmarkedBelowCurrent();
     virtual QString nameToMakeCurrent() const {
         return _nameToMakeCurrent;
     }

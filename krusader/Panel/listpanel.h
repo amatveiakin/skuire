@@ -152,7 +152,6 @@ public slots:
     }
 
     ///////////////////////// service functions - called internally ////////////////////////
-    void prepareToDelete();                   // internal use only
 
 protected:
     virtual void keyPressEvent(QKeyEvent *e);

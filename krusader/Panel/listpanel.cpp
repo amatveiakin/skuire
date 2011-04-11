@@ -962,11 +962,6 @@ QString ListPanel::getCurrentName()
         return QString();
 }
 
-void ListPanel::prepareToDelete()
-{
-    view->setNameToMakeCurrent(view->firstUnmarkedBelowCurrent());
-}
-
 void ListPanel::keyPressEvent(QKeyEvent *e)
 {
     switch (e->key()) {

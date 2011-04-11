@@ -585,23 +585,6 @@ void KrView::changeSelection(const KRQuery& filter, bool select)
     changeSelection(filter, select, grpSvr.readEntry("Mark Dirs", _MarkDirs));
 }
 
-QString KrView::firstUnmarkedBelowCurrent()
-{
-    if (getCurrentKrViewItem() == 0)
-        return QString();
-
-    KrViewItem * iterator = getNext(getCurrentKrViewItem());
-    while (iterator && iterator->isSelected())
-        iterator = getNext(iterator);
-    if (!iterator) {
-        iterator = getPrev(getCurrentKrViewItem());
-        while (iterator && iterator->isSelected())
-            iterator = getPrev(iterator);
-    }
-    if (!iterator) return QString();
-    return iterator->name();
-}
-
 void KrView::delItem(const QString &name)
 {
     FileItem it = findItemByName(name);

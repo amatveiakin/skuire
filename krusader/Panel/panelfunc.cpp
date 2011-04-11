@@ -561,9 +561,6 @@ void ListPanelFunc::moveFiles(bool enqueue)
             pmode = PM_NONE;
     }
 
-    // after the delete return the cursor to the first unmarked
-    // file above the current item;
-    panel->prepareToDelete();
     if (queue) {
         KIOJobWrapper *job = 0;
         if (!virtualBaseURL.isEmpty()) {
@@ -874,10 +871,6 @@ void ListPanelFunc::deleteFiles(bool reallyDelete)
 
     if (items.count() == 0)
         return ;  // nothing to delete
-
-    // after the delete return the cursor to the first unmarked
-    // file above the current item;
-    panel->prepareToDelete();
 
     //TODO: call KIO directly
     // let the vfs do the job...
