@@ -49,7 +49,6 @@ void KrVfsModel::populate(const QList<vfile*> &files, vfile *dummy)
 
         if(vf == dummy)
             _dummyItem = item;
-//         else
         item->file = vf->toFileItem();
 
         _items << item;
@@ -60,15 +59,12 @@ void KrVfsModel::populate(const QList<vfile*> &files, vfile *dummy)
     if(lastSortOrder() != KrViewProperties::NoColumn)
         sort();
     else {
-        abort();
-#if 0
         emit layoutAboutToBeChanged();
-        for(int i = 0; i < _vfiles.count(); i++) {
-            _vfileNdx[_vfiles[i]] = index(i, 0);
-            _nameNdx[_vfiles[i]->vfile_getName()] = index(i, 0);
+        for(int i = 0; i < _items.count(); i++) {
+            _itemIndex[_items[i]] = index(i, 0);
+            _nameNdx[_items[i]->file.name()] = index(i, 0);
         }
         emit layoutChanged();
-#endif
     }
 }
 
