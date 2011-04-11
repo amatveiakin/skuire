@@ -550,37 +550,6 @@ QPixmap KrView::getIcon(vfile *vf)
     return getIcon(vf, _focused, _fileIconSize);
 }
 
-/**
- * this function ADDs a list of selected item names into 'names'.
- * it assumes the list is ready and doesn't initialize it, or clears it
- */
-void KrView::getItemsByMask(QString mask, QStringList* names, bool dirs, bool files)
-{
-    for (KrViewItem * it = getFirst(); it != 0; it = getNext(it)) {
-        if ((it->name() == "..") || !QDir::match(mask, it->name())) continue;
-        // if we got here, than the item fits the mask
-        if (it->getVfile()->vfile_isDir() && !dirs) continue;   // do we need to skip folders?
-        if (!it->getVfile()->vfile_isDir() && !files) continue;   // do we need to skip files
-        names->append(it->name());
-    }
-}
-
-/**
- * this function ADDs a list of selected item names into 'names'.
- * it assumes the list is ready and doesn't initialize it, or clears it
- */
-void KrView::getSelectedItems(QStringList *names)
-{
-    for (KrViewItem * it = getFirst(); it != 0; it = getNext(it))
-        if (it->isSelected() && (it->name() != "..")) names->append(it->name());
-
-    // if all else fails, take the current item
-    QString item = getCurrentItem();
-    if (names->empty() && !item.isEmpty() && item != "..") {
-        names->append(item);
-    }
-}
-
 QString KrView::statistics()
 {
     KIO::filesize_t size = calcSize();

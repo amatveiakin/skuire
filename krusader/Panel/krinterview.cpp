@@ -155,18 +155,6 @@ KrViewItem* KrInterView::getPrev(KrViewItem *current)
     return getKrInterViewItem(_model->index(ndx.row() - 1, 0, QModelIndex()));
 }
 
-KrViewItem* KrInterView::getKrViewItemAt(const QPoint &vp)
-{
-    if (!_model->ready())
-        return 0;
-
-    return getKrInterViewItem(_itemView->indexAt(vp));
-}
-
-KrViewItem *KrInterView::findItemByVfile(vfile *vf) {
-    return getKrInterViewItem(vf);
-}
-
 KrInterViewItem * KrInterView::getKrInterViewItem(vfile *vf)
 {
     QHash<vfile *, KrInterViewItem*>::iterator it = _itemHash.find(vf);

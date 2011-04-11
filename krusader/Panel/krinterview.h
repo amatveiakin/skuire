@@ -78,9 +78,7 @@ public:
     virtual KrViewItem* getPrev(KrViewItem *current);
     virtual KrViewItem* getCurrentKrViewItem();
     virtual FileItem findItemByName(const QString &name);
-    virtual KrViewItem *findItemByVfile(vfile *vf);
     virtual QString getCurrentItem() const;
-    virtual KrViewItem* getKrViewItemAt(const QPoint &vp);
     virtual void setCurrentItem(const QString& name);
     virtual void setCurrentKrViewItem(KrViewItem *item);
     virtual void makeItemVisible(const KrViewItem *item);

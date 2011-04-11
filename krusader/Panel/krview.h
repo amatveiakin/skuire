@@ -591,16 +591,12 @@ protected:
     virtual void makeItemVisible(const KrViewItem *item) = 0;
     virtual void setCurrentKrViewItem(KrViewItem *item) = 0;
     virtual FileItem findItemByName(const QString &name) = 0;
-    virtual KrViewItem *findItemByVfile(vfile *vf) = 0;
-    virtual KrViewItem *getKrViewItemAt(const QPoint &vp) = 0;
     virtual KrViewItem *getCurrentKrViewItem() = 0;
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;
     virtual void intSetSelected(const vfile* vf, bool select) = 0;
     virtual void addItem(vfile *vf);
     virtual void updateItem(vfile *vf);
     virtual void delItem(const QString &name);
-    virtual void getSelectedItems(QStringList* names);
-    virtual void getItemsByMask(QString mask, QStringList* names, bool dirs = true, bool files = true);
     virtual KrViewItem *getFirst() = 0;
     virtual KrViewItem *getLast() = 0;
     virtual KrViewItem *getNext(KrViewItem *current) = 0;
