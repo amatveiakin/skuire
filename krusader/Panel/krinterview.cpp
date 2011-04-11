@@ -104,10 +104,10 @@ void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select, bool clearFi
         for (int row = r1; row <= r2; row++)
             setSelected(_model->vfileAt(_model->index(row, 0)), select);
 
-    } else if (mi1.isValid() && !mi2.isValid())
+    } else if (mi1.isValid())
         setSelected(_model->vfileAt(mi1), select);
-    else if (mi2.isValid() && !mi1.isValid())
-        setSelected(_model->vfileAt(mi1), (select));
+    else if (mi2.isValid())
+        setSelected(_model->vfileAt(mi2), (select));
 
     redraw();
     op()->setMassSelectionUpdate(false);
@@ -438,9 +438,9 @@ FileItem KrInterView::lastItem()
 
 FileItem KrInterView::currentItem()
 {
-    vfile *vf = _model->vfileAt(_itemView->currentIndex());
-    if(vf && vf != _dummyVfile)
-        return vf->toFileItem();
+    KrView::Item *item = _model->itemAt(_itemView->currentIndex());
+    if(item && item != _model->dummyItem())
+        return item->file;
     else
         return FileItem();
 }
