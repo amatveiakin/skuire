@@ -166,6 +166,7 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
             if (isDummy)
                 return QVariant();
             else //FIXME: cache this
+                //FIXME: this doesn't return the correct locale format
                 return file.time(KFileItem::ModificationTime).toString(KDateTime::LocalDate);
         }
         case KrViewProperties::Permissions: {
@@ -536,7 +537,10 @@ const QModelIndex & KrVfsModel::itemIndex(const KrView::Item *item)
 
 const QModelIndex & KrVfsModel::vfileIndex(const vfile * vf)
 {
-    return indexFromUrl(vf->vfile_getUrl());
+    if(vf == _view->_dummyVfile)
+        return itemIndex(_dummyItem);
+    else
+        return indexFromUrl(vf->vfile_getUrl());
 }
 
 const QModelIndex & KrVfsModel::nameIndex(const QString & st)

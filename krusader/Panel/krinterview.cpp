@@ -172,7 +172,7 @@ KrViewItem* KrInterView::getNext(KrViewItem *current)
 {
     vfile* vf = (vfile *)current->getVfile();
     QModelIndex ndx = _model->vfileIndex(vf);
-    if (ndx.row() >= _model->rowCount() - 1)
+    if (!ndx.isValid() || ndx.row() >= _model->rowCount() - 1)
         return 0;
     return getKrInterViewItem(_model->index(ndx.row() + 1, 0, QModelIndex()));
 }
