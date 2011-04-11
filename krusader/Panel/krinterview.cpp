@@ -417,6 +417,11 @@ void KrInterView::makeItemVisible(KUrl url)
         _itemView->scrollTo(ndx);
 }
 
+inline KrView::Item *KrInterView::currentViewItem()
+{
+    return _model->itemAt(_itemView->currentIndex());
+}
+
 FileItem KrInterView::firstItem()
 {
     int index = _model->dummyItem() ? 1 : 0;
@@ -438,7 +443,7 @@ FileItem KrInterView::lastItem()
 
 FileItem KrInterView::currentItem()
 {
-    KrView::Item *item = _model->itemAt(_itemView->currentIndex());
+    KrView::Item *item = currentViewItem();
     if(item && item != _model->dummyItem())
         return item->file;
     else
@@ -607,4 +612,14 @@ void KrInterView::pageUp()
 
     setCurrentIndex(_model->index(newIndex, 0));
     makeCurrentVisible();
+}
+
+
+QString KrInterView::currentDescription()
+{
+    KrView::Item *item = currentViewItem();
+    if (item)
+        return itemDescription(item->file.url(), item == _model->dummyItem());
+    else
+        return QString();
 }

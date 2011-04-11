@@ -63,6 +63,7 @@ public:
     virtual void selectCurrentItem(bool select);
     virtual void pageDown();
     virtual void pageUp();
+    virtual QString currentDescription();
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();
@@ -135,6 +136,7 @@ protected:
     }
     void currentChanged(const QModelIndex &current);
     void setCurrentIndex(QModelIndex index);
+    inline KrView::Item *currentViewItem();
 
 
     KrVfsModel *_model;

@@ -777,11 +777,9 @@ bool KrView::handleKeyEvent(QKeyEvent *e)
     bool res = handleKeyEventInt(e);
 
     // emit the new item description
-    KrViewItem * current = getCurrentKrViewItem();
-    if (current != 0) {
-        QString desc = current->description();
+    QString desc = currentDescription();
+    if(!desc.isEmpty())
         op()->emitItemDescription(desc);
-    }
 
     return res;
 }

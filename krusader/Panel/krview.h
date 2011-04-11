@@ -383,6 +383,7 @@ public:
     virtual void selectCurrentItem(bool select) = 0;
     virtual void pageDown() = 0;
     virtual void pageUp() = 0;
+    virtual QString currentDescription() = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
