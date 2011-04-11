@@ -48,11 +48,13 @@ public:
     virtual FileItemList getVisibleItems();
     virtual void changeSelection(KUrl::List urls, bool select, bool clearFirst);
     virtual bool isItemSelected(KUrl url);
+    virtual FileItem firstItem();
+    virtual FileItem lastItem();
     virtual FileItem currentItem();
     virtual bool currentItemIsUpUrl();
     virtual void setCurrentItem(KUrl url);
     virtual void makeItemVisible(KUrl url);
-    virtual void selectRegion(KUrl item1, KUrl item2, bool select);
+    virtual void selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst);
     virtual FileItem itemAt(const QPoint &vp, bool *isUpUrl);
     virtual bool isItemVisible(KUrl url);
     virtual QRect itemRectGlobal(KUrl url);

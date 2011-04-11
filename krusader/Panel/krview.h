@@ -365,6 +365,9 @@ public:
     virtual FileItemList getVisibleItems() = 0;
     virtual void changeSelection(KUrl::List urls, bool select, bool clearFirst) = 0;
     virtual bool isItemSelected(KUrl url) = 0;
+    // first item after ".."
+    virtual FileItem firstItem() = 0;
+    virtual FileItem lastItem() = 0;
     virtual FileItem currentItem() = 0;
     // indicates that ".." is the current item
     // in this case currentItem() return a null item
@@ -373,7 +376,7 @@ public:
     virtual bool isItemVisible(KUrl url) = 0;
     virtual QRect itemRectGlobal(KUrl url) = 0;
     virtual void makeItemVisible(KUrl url) = 0;
-    virtual void selectRegion(KUrl item1, KUrl item2, bool select) = 0;
+    virtual void selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst = false) = 0;
     virtual FileItem itemAt(const QPoint &vp, bool *isUpUrl = 0) = 0;
     virtual QPixmap icon(KUrl url) = 0;
     virtual bool isCurrentItemSelected() = 0;
@@ -506,7 +509,7 @@ public:
     bool isItemSelected(FileItem item) {
         return item.isNull() ? false : isItemSelected(item.url());
     }
-    void selectRegion(FileItem item1, FileItem item2, bool select);
+    void selectRegion(FileItem item1, FileItem item2, bool select, bool clearFirst = false);
     QString itemDescription(KUrl url, bool itemIsUpUrl);
 
     /////////////////////////////////////////////////////////////

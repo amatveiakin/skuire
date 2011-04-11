@@ -81,8 +81,13 @@ void KrInterView::selectRegion(KrViewItem *i1, KrViewItem *i2, bool select)
         i2->setSelected(select);
 }
 
-void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select)
+void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst)
 {
+    op()->setMassSelectionUpdate(true);
+
+    if(clearFirst)
+        _selection.clear();
+
     QModelIndex mi1 = _model->indexFromUrl(item1);
     QModelIndex mi2 = _model->indexFromUrl(item2);
 
@@ -96,17 +101,16 @@ void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select)
             r2 = t;
         }
 
-        op()->setMassSelectionUpdate(true);
         for (int row = r1; row <= r2; row++)
             setSelected(_model->vfileAt(_model->index(row, 0)), select);
-        op()->setMassSelectionUpdate(false);
-
-        redraw();
 
     } else if (mi1.isValid() && !mi2.isValid())
         setSelected(_model->vfileAt(mi1), select);
     else if (mi2.isValid() && !mi1.isValid())
         setSelected(_model->vfileAt(mi1), (select));
+
+    redraw();
+    op()->setMassSelectionUpdate(false);
 }
 
 void KrInterView::intSetSelected(const vfile* vf, bool select)
@@ -411,6 +415,25 @@ void KrInterView::makeItemVisible(KUrl url)
     QModelIndex ndx = _model->indexFromUrl(url);
     if (ndx.isValid())
         _itemView->scrollTo(ndx);
+}
+
+FileItem KrInterView::firstItem()
+{
+    int index = _model->dummyItem() ? 1 : 0;
+    if (index < _model->rowCount())
+        return _model->items()[index]->file;
+    else
+        return FileItem();
+}
+
+FileItem KrInterView::lastItem()
+{
+    if (_model->rowCount()) {
+        KrView::Item *item = _model->items().last();
+        if (item != _model->dummyItem())
+            return item->file;
+    }
+    return FileItem();
 }
 
 FileItem KrInterView::currentItem()
