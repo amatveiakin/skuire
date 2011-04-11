@@ -376,6 +376,8 @@ public:
     virtual void selectRegion(KUrl item1, KUrl item2, bool select) = 0;
     virtual FileItem itemAt(const QPoint &vp, bool *isUpUrl = 0) = 0;
     virtual QPixmap icon(KUrl url) = 0;
+    virtual bool isCurrentItemSelected() = 0;
+    virtual void selectCurrentItem(bool select) = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {

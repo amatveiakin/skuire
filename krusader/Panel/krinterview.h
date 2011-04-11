@@ -57,6 +57,8 @@ public:
     virtual bool isItemVisible(KUrl url);
     virtual QRect itemRectGlobal(KUrl url);
     virtual QPixmap icon(KUrl url);
+    virtual bool isCurrentItemSelected();
+    virtual void selectCurrentItem(bool select);
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();

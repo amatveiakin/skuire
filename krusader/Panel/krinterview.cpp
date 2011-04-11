@@ -552,3 +552,16 @@ QPixmap KrInterView::icon(KUrl url)
     else
         return QPixmap();
 }
+
+bool KrInterView::isCurrentItemSelected()
+{
+    vfile *vf = _model->vfileAt(_itemView->currentIndex());
+    return vf ? _selection.contains(vf) : false;
+}
+
+void KrInterView::selectCurrentItem(bool select)
+{
+    vfile *vf = _model->vfileAt(_itemView->currentIndex());
+    if(vf && vf != _dummyVfile)
+        setSelected(vf, select);
+}
