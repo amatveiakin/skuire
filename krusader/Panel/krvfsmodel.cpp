@@ -373,15 +373,15 @@ QModelIndex KrVfsModel::addItem(FileItem fileItem)
     return index(insertIndex, 0);
 }
 
-QModelIndex KrVfsModel::removeItem(vfile * vf)
+QModelIndex KrVfsModel::removeItem(FileItem fileItem)
 {
     QModelIndex currIndex = _view->getCurrentIndex();
 
-    QModelIndex vfIdx = vfileIndex(vf);
-    if(!vfIdx.isValid())
+    QModelIndex itemIdx = indexFromUrl(fileItem.url());
+    if(!itemIdx.isValid())
         return currIndex;
 
-    int removeIdx = vfIdx.row();
+    int removeIdx = itemIdx.row();
     KrView::Item *item = _items[removeIdx];
 
     emit layoutAboutToBeChanged();

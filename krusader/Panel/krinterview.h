@@ -77,7 +77,7 @@ public:
     virtual KrViewItem* getNext(KrViewItem *current);
     virtual KrViewItem* getPrev(KrViewItem *current);
     virtual KrViewItem* getCurrentKrViewItem();
-    virtual KrViewItem* findItemByName(const QString &name);
+    virtual FileItem findItemByName(const QString &name);
     virtual KrViewItem *findItemByVfile(vfile *vf);
     virtual QString getCurrentItem() const;
     virtual KrViewItem* getKrViewItemAt(const QPoint &vp);
@@ -119,7 +119,7 @@ protected:
     virtual KIO::filesize_t calcSelectedSize();
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy);
     virtual void intAddItem(FileItem item);
-    virtual void preDelItem(KrViewItem *item);
+    virtual void intDelItem(FileItem item);
     virtual void preUpdateItem(vfile *vf);
     virtual void intSetSelected(const vfile* vf, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;

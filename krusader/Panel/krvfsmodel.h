@@ -43,7 +43,7 @@ public:
     }
     void populate(const QList<vfile*> &files, vfile *dummy);
     QModelIndex addItem(FileItem);
-    QModelIndex removeItem(vfile *);
+    QModelIndex removeItem(FileItem);
     void updateItem(vfile *vf);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;

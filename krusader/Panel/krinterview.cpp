@@ -126,15 +126,10 @@ bool KrInterView::isSelected(const QModelIndex &ndx)
     return isSelected(_model->vfileAt(ndx));
 }
 
-KrViewItem* KrInterView::findItemByName(const QString &name)
+FileItem KrInterView::findItemByName(const QString &name)
 {
-    if (!_model->ready())
-        return 0;
-
-    QModelIndex ndx = _model->nameIndex(name);
-    if (!ndx.isValid())
-        return 0;
-    return getKrInterViewItem(ndx);
+    KrView::Item *item = _model->itemAt(_model->nameIndex(name));
+    return item ? item->file : FileItem();
 }
 
 QString KrInterView::getCurrentItem() const
@@ -286,13 +281,20 @@ void KrInterView::intAddItem(FileItem item)
         _itemView->setCurrentIndex(idx);
 }
 
-void KrInterView::preDelItem(KrViewItem *item)
+void KrInterView::intDelItem(FileItem item)
 {
-    setSelected(item->getVfile(), false);
-    QModelIndex ndx = _model->removeItem((vfile *)item->getVfile());
-    if (ndx.isValid())
-        _itemView->setCurrentIndex(ndx);
-    _itemHash.remove((vfile *)item->getVfile());
+    QModelIndex index = _model->indexFromUrl(item.url());
+    if(!index.isValid())
+        return;
+
+    vfile *vf = _model->vfileAt(index);
+    if(vf)
+        setSelected(vf, false);
+
+    QModelIndex newIndex = _model->removeItem(item);
+
+    if (newIndex.isValid())
+        _itemView->setCurrentIndex(newIndex);
 }
 
 void KrInterView::preUpdateItem(vfile *vf)

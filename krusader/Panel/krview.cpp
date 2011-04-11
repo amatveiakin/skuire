@@ -682,21 +682,19 @@ QString KrView::firstUnmarkedBelowCurrent()
 
 void KrView::delItem(const QString &name)
 {
-    KrViewItem *it = findItemByName(name);
-    if(!it)
+    FileItem it = findItemByName(name);
+    if(it.isNull())
         return;
 
-    if(_previews)
-        _previews->deletePreview(it);
+//     if(_previews) //FIXME
+//         _previews->deletePreview(it);
 
-    preDelItem(it);
+    intDelItem(it);
 
-    if (it->VF->vfile_isDir()) {
+    if (it.isDir())
         --_numDirs;
-    }
 
     --_count;
-    delete it;
 
     op()->emitSelectionChanged();
 }
