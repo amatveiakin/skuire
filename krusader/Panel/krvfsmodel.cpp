@@ -74,7 +74,7 @@ void KrVfsModel::populate(const QList<vfile*> &files, vfile *dummy)
 
 KrVfsModel::~KrVfsModel()
 {
-    //TODO: clear items
+    clear();
 }
 
 void KrVfsModel::clear()
@@ -82,8 +82,6 @@ void KrVfsModel::clear()
     if(!_items.count())
         return;
 
-    abort();
-#if 0
     emit layoutAboutToBeChanged();
     // clear persistent indexes
     QModelIndexList oldPersistentList = persistentIndexList();
@@ -92,20 +90,20 @@ void KrVfsModel::clear()
         newPersistentList << QModelIndex();
     changePersistentIndexList(oldPersistentList, newPersistentList);
 
-    _vfiles.clear();
-    _vfileNdx.clear();
+    foreach(KrView::Item *item, _items)
+        delete item;
+    _items.clear();
+    _itemIndex.clear();
     _nameNdx.clear();
-    _dummyVfile = 0;
+    _dummyItem = 0;
 
     emit layoutChanged();
-#endif
 }
 
 int KrVfsModel::rowCount(const QModelIndex& parent) const
 {
     return _items.count();
 }
-
 
 int KrVfsModel::columnCount(const QModelIndex &parent) const
 {
@@ -245,6 +243,7 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
         }
         colorItemType.m_alternateBackgroundColor = (actRow & 1);
         colorItemType.m_currentItem = _view->getCurrentIndex().row() == index.row();
+        //FIXME: replace with isSelected(item);
         colorItemType.m_selectedItem = _view->isSelected(index);
         if (file.isLink()) {
             //FIXME

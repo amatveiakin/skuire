@@ -347,8 +347,8 @@ void KrInterView::sortModeUpdated(int column, Qt::SortOrder order)
 KIO::filesize_t KrInterView::calcSize()
 {
     KIO::filesize_t size = 0;
-    foreach(vfile *vf, _model->vfiles()) {
-        size += vf->vfile_getSize();
+    foreach(KrView::Item *item, _model->items()) {
+        size += item->file.size();
     }
     return size;
 }

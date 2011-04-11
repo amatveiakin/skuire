@@ -65,10 +65,12 @@ public:
         abort();
 //         return _vfiles;
     }
+    const QList<KrView::Item*> items() {
+        return _items;
+    }
     vfile * vfileAt(const QModelIndex &index);
     vfile *dummyVfile() const {
-//         return _dummyVfile;
-        abort();
+        return _view->_dummyVfile;
     }
     const QModelIndex & vfileIndex(const vfile *);
     const QModelIndex & nameIndex(const QString &);
