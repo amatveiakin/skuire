@@ -381,6 +381,8 @@ public:
     virtual QPixmap icon(KUrl url) = 0;
     virtual bool isCurrentItemSelected() = 0;
     virtual void selectCurrentItem(bool select) = 0;
+    virtual void pageDown() = 0;
+    virtual void pageUp() = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {

@@ -61,6 +61,8 @@ public:
     virtual QPixmap icon(KUrl url);
     virtual bool isCurrentItemSelected();
     virtual void selectCurrentItem(bool select);
+    virtual void pageDown();
+    virtual void pageUp();
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();

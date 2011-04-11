@@ -588,3 +588,23 @@ void KrInterView::selectCurrentItem(bool select)
     if(vf && vf != _dummyVfile)
         setSelected(vf, select);
 }
+
+void KrInterView::pageDown()
+{
+    int newIndex = _itemView->currentIndex().row() + itemsPerPage();
+    if (newIndex >= _model->rowCount())
+        newIndex = _model->rowCount() - 1;
+
+    setCurrentIndex(_model->index(newIndex, 0));
+    makeCurrentVisible();
+}
+
+void KrInterView::pageUp()
+{
+    int newIndex = _itemView->currentIndex().row() - itemsPerPage();
+    if (newIndex < 0)
+        newIndex = 0;
+
+    setCurrentIndex(_model->index(newIndex, 0));
+    makeCurrentVisible();
+}

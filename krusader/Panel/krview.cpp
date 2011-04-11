@@ -890,38 +890,12 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         } else
             setCurrentItem(Last);
         return true;
-    case Qt::Key_PageDown: {
-        KrViewItem * current = getCurrentKrViewItem();
-        int downStep = itemsPerPage();
-        while (downStep != 0 && current) {
-            KrViewItem * newCurrent = getNext(current);
-            if (newCurrent == 0)
-                break;
-            current = newCurrent;
-            downStep--;
-        }
-        if (current) {
-            setCurrentKrViewItem(current);
-            makeItemVisible(current);
-        }
+    case Qt::Key_PageDown:
+        pageDown();
         return true;
-    }
-    case Qt::Key_PageUp: {
-        KrViewItem * current = getCurrentKrViewItem();
-        int upStep = itemsPerPage();
-        while (upStep != 0 && current) {
-            KrViewItem * newCurrent = getPrev(current);
-            if (newCurrent == 0)
-                break;
-            current = newCurrent;
-            upStep--;
-        }
-        if (current) {
-            setCurrentKrViewItem(current);
-            makeItemVisible(current);
-        }
+    case Qt::Key_PageUp:
+        pageUp();
         return true;
-    }
     case Qt::Key_Escape:
         e->ignore();
         return true; // otherwise the selection gets lost??!??
