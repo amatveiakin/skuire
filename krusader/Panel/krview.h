@@ -362,6 +362,7 @@ public:
     virtual FileItemList getVisibleItems() = 0;
     virtual void changeSelection(KUrl::List urls, bool select, bool clearFirst) = 0;
     virtual void changeSelection(const KRQuery& filter, bool select, bool includeDirs) = 0;
+    virtual void invertSelection() = 0;
     virtual bool isItemSelected(KUrl url) = 0;
     // first item after ".."
     virtual FileItem firstItem() = 0;
@@ -447,7 +448,6 @@ public:
     virtual void unselect(const KRQuery& filter = KRQuery("*")) {
         changeSelection(filter, false);
     }
-    virtual void invertSelection();
     virtual QString nameToMakeCurrent() const {
         return _nameToMakeCurrent;
     }

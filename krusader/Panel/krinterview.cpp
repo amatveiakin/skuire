@@ -24,6 +24,7 @@
 #include "krcolorcache.h"
 #include "krmousehandler.h"
 #include "krpreviews.h"
+#include "../defaults.h"
 #include "../VFS/vfilecontainer.h"
 
 KrInterView::KrInterView(KrViewInstance &instance, KConfig *cfg,
@@ -483,6 +484,29 @@ void KrInterView::changeSelection(const KRQuery& filter, bool select, bool inclu
 
         if (filter.match(file))
             setSelected(file, select);
+    }
+
+    op()->setMassSelectionUpdate(false);
+
+    redraw();
+}
+
+void KrInterView::invertSelection()
+{
+    op()->setMassSelectionUpdate(true);
+
+    KConfigGroup grpSvr(_config, "Look&Feel");
+    bool markDirs = grpSvr.readEntry("Mark Dirs", _MarkDirs);
+
+    foreach(KrView::Item *item, _model->items()) {
+        if (item == _model->dummyItem())
+            continue;
+        vfile *vf = _files->search(item->file.name());
+        if(vf) {
+            if (item->file.isDir() && !markDirs && !isSelected(vf))
+                continue;
+            setSelected(vf, !isSelected(vf));
+        }
     }
 
     op()->setMassSelectionUpdate(false);

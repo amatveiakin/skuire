@@ -585,26 +585,6 @@ void KrView::changeSelection(const KRQuery& filter, bool select)
     changeSelection(filter, select, grpSvr.readEntry("Mark Dirs", _MarkDirs));
 }
 
-void KrView::invertSelection()
-{
-    if (op()) op()->setMassSelectionUpdate(true);
-    KConfigGroup grpSvr(_config, "Look&Feel");
-    bool markDirs = grpSvr.readEntry("Mark Dirs", _MarkDirs);
-
-    KrViewItem *temp = getCurrentKrViewItem();
-    for (KrViewItem * it = getFirst(); it != 0; it = getNext(it)) {
-        if (it->name() == "..")
-            continue;
-        if (it->getVfile()->vfile_isDir() && !markDirs && !it->isSelected())
-            continue;
-        it->setSelected(!it->isSelected());
-    }
-    if (op()) op()->setMassSelectionUpdate(false);
-    updateView();
-    if (ensureVisibilityAfterSelect() && temp != 0)
-        makeItemVisible(temp);
-}
-
 QString KrView::firstUnmarkedBelowCurrent()
 {
     if (getCurrentKrViewItem() == 0)
