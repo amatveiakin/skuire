@@ -137,7 +137,10 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
         switch (index.column()) {
         case KrViewProperties::Name: {
             //FIXME: cache name/ext
-            return nameWithoutExtension(item);
+            if(isDummy)
+                return "..";
+            else
+                return nameWithoutExtension(item);
         }
         case KrViewProperties::Ext: {
             //FIXME: cache name/ext
@@ -145,7 +148,7 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
             return file.name().mid(nameOnly.length() + 1);
         }
         case KrViewProperties::Size: {
-            if (file.isDir() && file.size() <= 0)
+            if ((file.isDir() && file.size() <= 0) || isDummy)
                 return i18n("<DIR>");
             else //FIXME: cache this
                 return (properties()->humanReadableSize) ?
@@ -208,8 +211,12 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
                     //FIXME: cache this
                     return QPixmap(_view->fileIconSize(), _view->fileIconSize());
                 else {
-                    vfile vf(file);
-                    return _view->getIcon(&vf);
+                    if(isDummy)
+                        return _view->getIcon(_view->_dummyVfile);
+                    else {
+                        vfile vf(file);
+                        return _view->getIcon(&vf);
+                    }
                 }
             }
             break;
