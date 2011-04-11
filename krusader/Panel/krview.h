@@ -313,8 +313,23 @@ public:
 
     struct Item
     {
+        Item(bool isDummy = false);
+
+        const QString &iconName() const {
+            if(_iconName.isNull())
+                getIconName();
+            return _iconName;
+        }
+
         FileItem file;
+
+    private:
+        void getIconName() const;
+
+        mutable QString _iconName;
     };
+
+    virtual ~KrView();
 
     // instantiating a new view
     // 1. new KrView
@@ -546,12 +561,11 @@ public:
     }
     void clearSavedSelection();
 
-    // todo: what about selection modes ???
-    virtual ~KrView();
+    QPixmap getIcon(const Item *item);
 
     static QPixmap processIcon(const QPixmap &icon, bool dim, const QColor & dimColor, int dimFactor, bool symlink);
 
-
+    static QPixmap getIcon(const Item *item, bool active, int size = 0);
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //

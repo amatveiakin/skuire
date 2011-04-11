@@ -318,6 +318,19 @@ bool KrViewOperator::eventFilter(QObject *watched, QEvent *event)
 const KrView::IconSizes KrView::iconSizes;
 
 
+KrView::Item::Item(bool isDummy)
+{
+    if(isDummy)
+        _iconName = "go-up";
+}
+
+void KrView::Item::getIconName() const
+{
+    //FIXME: port vfile::vfile_getIcon()
+    _iconName = file.iconName();
+}
+
+
 KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
     _instance(instance), _files(0), _config(cfg), _mainWindow(0), _widget(0),
     _nameToMakeCurrent(QString()), _nameToMakeCurrentIfAdded(QString()),
@@ -461,10 +474,17 @@ QPixmap KrView::processIcon(const QPixmap &icon, bool dim, const QColor & dimCol
 
 QPixmap KrView::getIcon(vfile *vf, bool active, int size/*, KRListItem::cmpColor color*/)
 {
+    Item item;
+    item.file = vf->toFileItem();
+    return getIcon(&item, active, size);
+}
+
+QPixmap KrView::getIcon(const Item *item, bool active, int size/*, KRListItem::cmpColor color*/)
+{
     // KConfigGroup ag( krConfig, "Advanced");
     //////////////////////////////
     QPixmap icon;
-    QString icon_name = vf->vfile_getIcon();
+    QString icon_name = item->iconName();
     QString cacheName;
 
     if(!size)
@@ -478,7 +498,7 @@ QPixmap KrView::getIcon(vfile *vf, bool active, int size/*, KRListItem::cmpColor
         icon_name = "";
 
     cacheName.append(QString::number(size));
-    if(vf->vfile_isSymLink())
+    if(item->file.isLink())
         cacheName.append("LINK_");
     if(dim)
         cacheName.append("DIM_");
@@ -489,12 +509,23 @@ QPixmap KrView::getIcon(vfile *vf, bool active, int size/*, KRListItem::cmpColor
     // first try the cache
     if (!QPixmapCache::find(cacheName, icon)) {
         icon = processIcon(krLoader->loadIcon(icon_name, KIconLoader::Desktop, size),
-                           dim, dimColor, dimFactor, vf->vfile_isSymLink());
+                           dim, dimColor, dimFactor, item->file.isLink());
         // insert it into the cache
         QPixmapCache::insert(cacheName, icon);
     }
 
     return icon;
+}
+
+QPixmap KrView::getIcon(const Item *item)
+{
+    if(_previews) {
+        //FIXME
+//         QPixmap icon;
+//         if(_previews->getPreview(vf, icon, _focused))
+//             return icon;
+    }
+    return getIcon(item, _focused, _fileIconSize);
 }
 
 QPixmap KrView::getIcon(vfile *vf)

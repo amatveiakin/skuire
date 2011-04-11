@@ -45,7 +45,7 @@ void KrVfsModel::populate(const QList<vfile*> &files, vfile *dummy)
 
     foreach(vfile *vf, files) {
         //TODO: more efficient allocation
-        KrView::Item *item = new KrView::Item;
+        KrView::Item *item = new KrView::Item(vf == dummy);
 
         if(vf == dummy)
             _dummyItem = item;
@@ -199,14 +199,8 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
                 if (_justForSizeHint)
                     //FIXME: cache this
                     return QPixmap(_view->fileIconSize(), _view->fileIconSize());
-                else {
-                    if(isDummy)
-                        return _view->getIcon(_view->_dummyVfile);
-                    else {
-                        vfile vf(file);
-                        return _view->getIcon(&vf);
-                    }
-                }
+                else //FIXME: and maybe cache this too
+                    return _view->getIcon(item);
             }
             break;
         }
