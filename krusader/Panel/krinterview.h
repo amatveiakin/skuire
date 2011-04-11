@@ -92,14 +92,13 @@ public:
     virtual void prepareForPassive();
     virtual void showContextMenu();
     virtual void selectRegion(KrViewItem *i1, KrViewItem *i2, bool select);
+    virtual void makeCurrentVisible();
 
     void sortModeUpdated(int column, Qt::SortOrder order);
 
     void redrawItem(vfile *vf) {
         _itemView->viewport()->update(itemRect(vf));
     }
-
-    void makeCurrentVisible();
 
 protected:
     class DummySelectionModel : public QItemSelectionModel
@@ -119,7 +118,7 @@ protected:
     virtual KIO::filesize_t calcSize();
     virtual KIO::filesize_t calcSelectedSize();
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy);
-    virtual KrViewItem* preAddItem(vfile *vf);
+    virtual void intAddItem(FileItem item);
     virtual void preDelItem(KrViewItem *item);
     virtual void preUpdateItem(vfile *vf);
     virtual void intSetSelected(const vfile* vf, bool select);

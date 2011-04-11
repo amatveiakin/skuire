@@ -279,12 +279,11 @@ void KrInterView::populate(const QList<vfile*> &vfiles, vfile *dummy)
     _itemView->setCurrentIndex(_model->index(0, 0));
 }
 
-KrViewItem* KrInterView::preAddItem(vfile *vf)
+void KrInterView::intAddItem(FileItem item)
 {
-    QModelIndex idx = _model->addItem(vf);
+    QModelIndex idx = _model->addItem(item);
     if(_model->rowCount() == 1) // if this is the fist item to be added, make it current
         _itemView->setCurrentIndex(idx);
-    return getKrInterViewItem(idx);
 }
 
 void KrInterView::preDelItem(KrViewItem *item)

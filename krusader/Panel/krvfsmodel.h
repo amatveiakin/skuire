@@ -42,7 +42,7 @@ public:
         return _ready;
     }
     void populate(const QList<vfile*> &files, vfile *dummy);
-    QModelIndex addItem(vfile *);
+    QModelIndex addItem(FileItem);
     QModelIndex removeItem(vfile *);
     void updateItem(vfile *vf);
 

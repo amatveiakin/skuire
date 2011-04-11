@@ -384,6 +384,8 @@ public:
     virtual void pageDown() = 0;
     virtual void pageUp() = 0;
     virtual QString currentDescription() = 0;
+    virtual void intAddItem(FileItem item) = 0;
+    virtual void makeCurrentVisible() = 0;
 
     // interview related functions
     virtual QModelIndex getCurrentIndex()                 {
@@ -599,7 +601,6 @@ protected:
     virtual void addItem(vfile *vf);
     virtual void updateItem(vfile *vf);
     virtual void delItem(const QString &name);
-    virtual KrViewItem *preAddItem(vfile *vf) = 0;
     virtual void preDelItem(KrViewItem *item) = 0;
     virtual void preUpdateItem(vfile *vf) = 0;
     virtual void getSelectedItems(QStringList* names);

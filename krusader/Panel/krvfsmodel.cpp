@@ -326,13 +326,13 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
         _view->makeCurrentVisible();
 }
 
-QModelIndex KrVfsModel::addItem(vfile * vf)
+QModelIndex KrVfsModel::addItem(FileItem fileItem)
 {
     //FIXME: make sure this wasn't  already added
 
     emit layoutAboutToBeChanged();
 
-    KrView::Item *newItem = new KrView::Item(vf->toFileItem());
+    KrView::Item *newItem = new KrView::Item(fileItem);
 
     if(lastSortOrder() == KrViewProperties::NoColumn) {
         int idx = _items.count();
@@ -347,7 +347,7 @@ QModelIndex KrVfsModel::addItem(vfile * vf)
 
     KrSort::Sorter sorter = createSorter();
 
-    int insertIndex = sorter.insertIndex(newItem, vf == _view->_dummyVfile, customSortData(newItem));
+    int insertIndex = sorter.insertIndex(newItem, false, customSortData(newItem));
     if (insertIndex != _items.count())
         _items.insert(insertIndex, newItem);
     else
@@ -433,7 +433,7 @@ void KrVfsModel::updateItem(vfile * vf)
     QModelIndex oldModelIndex = vfileIndex(vf);
 
     if (!oldModelIndex.isValid()) {
-        addItem(vf);
+        addItem(vf->toFileItem());
         return;
     }
     if(lastSortOrder() == KrViewProperties::NoColumn) {

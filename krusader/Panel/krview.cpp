@@ -705,26 +705,27 @@ void KrView::addItem(vfile *vf)
 {
     if (isFiltered(vf))
         return;
-    KrViewItem *item = preAddItem(vf);
-    if (!item) 
-        return; // don't add it after all
 
-    if(_previews)
-        _previews->updatePreview(item);
+    FileItem item = vf->toFileItem();
 
-    if (vf->vfile_isDir())
+    intAddItem(item);
+
+//     if(_previews) //FIXME
+//         _previews->updatePreview(item);
+
+    if (item.isDir())
         ++_numDirs;
 
     ++_count;
 
-    if (item->name() == nameToMakeCurrent()) {
-        setCurrentKrViewItem(item); // dictionary based - quick
-        makeItemVisible(item);
+    if (item.name() == nameToMakeCurrent()) {
+        setCurrentItem(item);
+        makeCurrentVisible();
     }
-    if (item->name() == nameToMakeCurrentIfAdded()) {
-        setCurrentKrViewItem(item);
+    if (item.name() == nameToMakeCurrentIfAdded()) {
+        setCurrentItem(item);
         setNameToMakeCurrentIfAdded(QString());
-        makeItemVisible(item);
+        makeCurrentVisible();
     }
 
     op()->emitSelectionChanged();
