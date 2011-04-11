@@ -132,10 +132,9 @@ void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
 {
     switch (e->key()) {
     case Qt::Key_Insert: {
-        //FIXME: this is slow
         FileItem item = _view->currentItem();
         if(!item.isNull()) {
-            _view->toggleSelected(item);
+            _view->selectCurrentItem(!_view->isCurrentItemSelected());
             quickSearch(_quickSearch->text(), 1);
         }
         break;
@@ -737,8 +736,8 @@ void KrView::updateItem(vfile *vf)
         delItem(vf->vfile_getName());
     else {
         preUpdateItem(vf);
-        if(_previews)
-            _previews->updatePreview(findItemByVfile(vf));
+//         if(_previews) //FIXME
+//             _previews->updatePreview(findItemByVfile(vf));
     }
 
     op()->emitSelectionChanged();
@@ -814,22 +813,18 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         op()->emitDeleteFiles(e->modifiers() == Qt::ShiftModifier || e->modifiers() == Qt::ControlModifier);
         return true;
     case Qt::Key_Insert: {
-        KrViewItem * i = getCurrentKrViewItem();
-        if (!i)
-            return true;
-        i->setSelected(!i->isSelected());
+        selectCurrentItem(!isCurrentItemSelected());
         if (KrSelectionMode::getSelectionHandler()->insertMovesDown())
             setCurrentItem(Next);
         op()->emitSelectionChanged();
         return true;
     }
     case Qt::Key_Space: {
-        KrViewItem * viewItem = getCurrentKrViewItem();
         FileItem item = currentItem();
-        if (viewItem != 0) {
-            viewItem->setSelected(!viewItem->isSelected());
+        if (!item.isNull()) {
+            selectCurrentItem(!isCurrentItemSelected());
 
-            if (viewItem->name() != ".." && viewItem->getVfile()->vfile_isDir() && viewItem->getVfile()->vfile_getSize() <= 0 &&
+            if (item.isDir() && item.size() <= 0 &&
                     KrSelectionMode::getSelectionHandler()->spaceCalculatesDiskSpace()) {
                 op()->emitCalcSpace(item);
             }
@@ -864,12 +859,9 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         if (e->modifiers() == Qt::ControlModifier) {   // let the panel handle it - jump to the Location Bar
             e->ignore();
         } else {
-            KrViewItem *item = getCurrentKrViewItem();
-            if (item) {
-                if (e->modifiers() == Qt::ShiftModifier) {
-                    item->setSelected(!item->isSelected());
-                    op()->emitSelectionChanged();
-                }
+            if (e->modifiers() == Qt::ShiftModifier) {
+                selectCurrentItem(!isCurrentItemSelected());
+                op()->emitSelectionChanged();
             }
             setCurrentItem(Prev);
         }
@@ -878,50 +870,23 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         if (e->modifiers() == Qt::ControlModifier || e->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier)) {     // let the panel handle it - jump to command line
             e->ignore();
         } else {
-            KrViewItem *item = getCurrentKrViewItem();
-            if (item) {
-                if (e->modifiers() == Qt::ShiftModifier) {
-                    item->setSelected(!item->isSelected());
-                    op()->emitSelectionChanged();
-                }
+            if (e->modifiers() == Qt::ShiftModifier) {
+                selectCurrentItem(!isCurrentItemSelected());
+                op()->emitSelectionChanged();
             }
             setCurrentItem(Next);
         }
         return true;
     case Qt::Key_Home: {
-        if (e->modifiers() & Qt::ShiftModifier) {  /* Shift+Home */
-            bool select = true;
-            KrViewItem *pos = getCurrentKrViewItem();
-            if (pos == 0)
-                pos = getLast();
-            KrViewItem *item = getFirst();
-            op()->setMassSelectionUpdate(true);
-            while (item) {
-                item->setSelected(select);
-                if (item == pos)
-                    select = false;
-                item = getNext(item);
-            }
-            op()->setMassSelectionUpdate(false);
-        }
+        if ((e->modifiers() & Qt::ShiftModifier) && !currentItemIsUpUrl()) /* Shift+Home */
+            selectRegion(firstItem(), currentItem(), true, true);
         setCurrentItem(First);
     }
     return true;
     case Qt::Key_End:
         if (e->modifiers() & Qt::ShiftModifier) {
-            bool select = false;
-            KrViewItem *pos = getCurrentKrViewItem();
-            if (pos == 0)
-                pos = getFirst();
-            op()->setMassSelectionUpdate(true);
-            KrViewItem *item = getFirst();
-            while (item) {
-                if (item == pos)
-                    select = true;
-                item->setSelected(select);
-                item = getNext(item);
-            }
-            op()->setMassSelectionUpdate(false);
+            FileItem first = currentItemIsUpUrl() ? firstItem() : currentItem();
+            selectRegion(first, lastItem(), true, true);
         } else
             setCurrentItem(Last);
         return true;
@@ -1328,14 +1293,14 @@ void KrView::clearSavedSelection() {
     op()->emitRefreshActions();
 }
 
-void KrView::selectRegion(FileItem item1, FileItem item2, bool select)
+void KrView::selectRegion(FileItem item1, FileItem item2, bool select, bool clearFirst)
 {
     KUrl url1, url2;
     if(!item1.isNull())
         url1 = item1.url();
     if(!item2.isNull())
         url2 = item2.url();
-    selectRegion(url1, url2, select);
+    selectRegion(url1, url2, select, clearFirst);
 }
 
 QString KrView::itemDescription(KUrl url, bool itemIsUpUrl)
