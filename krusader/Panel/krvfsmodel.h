@@ -61,16 +61,15 @@ public:
         sort(lastSortOrder(), lastSortDir());
     }
     void clear();
-    QList<vfile*> vfiles() {
-        abort();
-//         return _vfiles;
-    }
     const QList<KrView::Item*> items() {
         return _items;
     }
     vfile * vfileAt(const QModelIndex &index);
     vfile *dummyVfile() const {
         return _view->_dummyVfile;
+    }
+    const KrView::Item *dummyItem() {
+        return _dummyItem;
     }
     const QModelIndex & vfileIndex(const vfile *);
     const QModelIndex & nameIndex(const QString &);

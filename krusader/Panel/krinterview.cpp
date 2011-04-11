@@ -365,11 +365,13 @@ KIO::filesize_t KrInterView::calcSelectedSize()
 FileItemList KrInterView::getItems(KRQuery mask, bool dirs, bool files)
 {
     FileItemList list;
-    foreach(vfile *vf, _model->vfiles()) {
-        if (vf != _dummyVfile)
-            if ((!vf->vfile_isDir() && files) || (vf->vfile_isDir() && dirs))
-                if(mask.isNull() || mask.match(vf))
-                    list << vf->toFileItem();
+    foreach(KrView::Item *item, _model->items()) {
+        if (item != _model->dummyItem())
+            if ((!item->file.isDir() && files) || (item->file.isDir() && dirs)) {
+                vfile vf(item->file);
+                if(mask.isNull() || mask.match(&vf))
+                    list << item->file;
+            }
     }
     return list;
 }
@@ -394,10 +396,12 @@ FileItemList KrInterView::getVisibleItems()
 {
     //TODO: more efficient implementation in the subclasses
     FileItemList list;
-    foreach(vfile *vf, _model->vfiles()) {
-        if (vf != _dummyVfile)
-            if(_itemView->viewport()->rect().intersects(itemRect(vf)))
-                list << vf->toFileItem();
+    foreach(const KrView::Item *item, _model->items()) {
+        if (item != _model->dummyItem()) {
+            vfile vf(item->file);
+            if(_itemView->viewport()->rect().intersects(itemRect(&vf)))
+                list << item->file;
+        }
     }
     return list;
 }
