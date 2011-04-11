@@ -543,3 +543,12 @@ QRect KrInterView::itemRectGlobal(KUrl url)
     rect.moveTo(_itemView->viewport()->mapToGlobal(rect.topLeft()));
     return rect;
 }
+
+QPixmap KrInterView::icon(KUrl url)
+{
+    const Item *item = _model->itemAt(_model->indexFromUrl(url));
+    if(item)
+        return getIcon(item);
+    else
+        return QPixmap();
+}

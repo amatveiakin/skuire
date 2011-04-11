@@ -90,6 +90,11 @@ public:
     const KrView::Item *itemAt(const QModelIndex &index) const {
         return const_cast<KrVfsModel*>(this)->itemAt(index);
     }
+    KrView::Item *itemAt(const QModelIndex &index) {
+        if (!index.isValid() || index.row() >= _items.count() || index.row() < 0)
+            return 0;
+        return _items[index.row()];
+    }
 
 public slots:
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
@@ -105,11 +110,6 @@ protected:
         return QVariant();
     }
 
-    KrView::Item *itemAt(const QModelIndex &index) {
-        if (!index.isValid() || index.row() >= _items.count() || index.row() < 0)
-            return 0;
-        return _items[index.row()];
-    }
     const QModelIndex & itemIndex(const KrView::Item*);
     KrSort::Sorter createSorter();
     QString nameWithoutExtension(const KrView::Item *item, bool checkEnabled = true) const;

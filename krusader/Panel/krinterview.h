@@ -56,6 +56,7 @@ public:
     virtual FileItem itemAt(const QPoint &vp, bool *isUpUrl);
     virtual bool isItemVisible(KUrl url);
     virtual QRect itemRectGlobal(KUrl url);
+    virtual QPixmap icon(KUrl url);
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();

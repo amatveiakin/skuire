@@ -109,10 +109,10 @@ void KrViewOperator::startDrag()
     if (items.empty())
         return ; // don't drag an empty thing
     QPixmap px;
-    if (items.count() > 1 || _view->getCurrentKrViewItem() == 0)
+    if (items.count() > 1 || _view->currentItem().isNull())
         px = FL_LOADICON("queue");   // how much are we dragging
     else
-        px = _view->getCurrentKrViewItem() ->icon();
+        px = _view->icon(_view->currentUrl());
     emit letsDrag(items, px);
 }
 
@@ -132,36 +132,31 @@ void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
 {
     switch (e->key()) {
     case Qt::Key_Insert: {
-        KrViewItem * item = _view->getCurrentKrViewItem();
-        if (item) {
-            item->setSelected(!item->isSelected());
+        //FIXME: this is slow
+        FileItem item = _view->currentItem();
+        if(!item.isNull()) {
+            _view->toggleSelected(item);
             quickSearch(_quickSearch->text(), 1);
         }
         break;
     }
-    case Qt::Key_Home: {
-        KrViewItem * item = _view->getLast();
-        if (item) {
-            _view->setCurrentItem(KrView::Last);
+    case Qt::Key_Home:
+        _view->setCurrentItem(KrView::Last);
+        if (!_view->currentItem().isNull())
             quickSearch(_quickSearch->text(), 1);
-        }
         break;
-    }
-    case Qt::Key_End: {
-        KrViewItem * item = _view->getFirst();
-        if (item) {
-            _view->setCurrentItem(KrView::First);
+    case Qt::Key_End:
+        _view->setCurrentItem(KrView::First);
+        if (!_view->currentItem().isNull())
             quickSearch(_quickSearch->text(), -1);
-        }
         break;
-    }
     }
 }
 
 void KrViewOperator::quickSearch(const QString & str, int direction)
 {
-    KrViewItem * item = _view->getCurrentKrViewItem();
-    if (!item) {
+    FileItem item = _view->currentItem();
+    if (item.isNull()) {
         _quickSearch->setMatch(false);
         return;
     }
@@ -169,13 +164,15 @@ void KrViewOperator::quickSearch(const QString & str, int direction)
     bool caseSensitive = grpSvr.readEntry("Case Sensitive Quicksearch", _CaseSensitiveQuicksearch);
     QRegExp rx(str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive, QRegExp::Wildcard);
     if (!direction) {
-        if (rx.indexIn(item->name()) == 0) {
+        if (rx.indexIn(item.name()) == 0) {
             _quickSearch->setMatch(true);
             return ;
         }
         direction = 1;
     }
-    KrViewItem * startItem = item;
+#if 0
+    //FIXME
+    FileItem startItem = item;
     while (true) {
         item = (direction > 0) ? _view->getNext(item) : _view->getPrev(item);
         if (!item)
@@ -191,6 +188,7 @@ void KrViewOperator::quickSearch(const QString & str, int direction)
             return ;
         }
     }
+#endif
 }
 
 void KrViewOperator::stopQuickSearch(QKeyEvent * e)
