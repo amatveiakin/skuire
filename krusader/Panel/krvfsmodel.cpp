@@ -82,7 +82,7 @@ void KrVfsModel::clear()
     // clear persistent indexes
     QModelIndexList oldPersistentList = persistentIndexList();
     QModelIndexList newPersistentList;
-    foreach(const QModelIndex &mndx, oldPersistentList)
+    for(int i = 0; i < oldPersistentList.count(); i++)
         newPersistentList << QModelIndex();
     changePersistentIndexList(oldPersistentList, newPersistentList);
 
@@ -98,11 +98,13 @@ void KrVfsModel::clear()
 
 int KrVfsModel::rowCount(const QModelIndex& parent) const
 {
+    (void)parent;
     return _items.count();
 }
 
 int KrVfsModel::columnCount(const QModelIndex &parent) const
 {
+    (void)parent;
     return KrViewProperties::MAX_COLUMNS;
 }
 
