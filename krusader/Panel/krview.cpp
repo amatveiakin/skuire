@@ -104,16 +104,15 @@ void KrViewOperator::fileUpdated(vfile *vf)
 
 void KrViewOperator::startDrag()
 {
-    QStringList items;
-    _view->getSelectedItems(&items);
-    if (items.empty())
+    KUrl::List urls = _view->getSelectedUrls(true);
+    if (urls.empty())
         return ; // don't drag an empty thing
     QPixmap px;
-    if (items.count() > 1 || _view->currentItem().isNull())
+    if (urls.count() > 1 || _view->currentItem().isNull())
         px = FL_LOADICON("queue");   // how much are we dragging
     else
         px = _view->icon(_view->currentUrl());
-    emit letsDrag(items, px);
+    emit letsDrag(urls, px);
 }
 
 void KrViewOperator::setQuickSearch(KrQuickSearch *quickSearch)

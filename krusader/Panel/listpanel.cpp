@@ -439,7 +439,7 @@ void ListPanel::createView()
     connect(view->op(), SIGNAL(contextMenu(const QPoint &)), this, SLOT(popRightClickMenu(const QPoint &)));
     connect(view->op(), SIGNAL(emptyContextMenu(const QPoint &)),
             this, SLOT(popEmptyRightClickMenu(const QPoint &)));
-    connect(view->op(), SIGNAL(letsDrag(QStringList, QPixmap)), this, SLOT(startDragging(QStringList, QPixmap)));
+    connect(view->op(), SIGNAL(letsDrag(KUrl::List, QPixmap)), this, SLOT(startDragging(KUrl::List, QPixmap)));
     connect(view->op(), SIGNAL(gotDrop(QDropEvent *)), this, SLOT(handleDropOnView(QDropEvent *)));
     connect(view->op(), SIGNAL(previewJobStarted(KJob*)), this, SLOT(slotPreviewJobStarted(KJob*)));
     connect(view->op(), SIGNAL(refreshActions()), krApp->viewActions(), SLOT(refreshActions()));
@@ -931,24 +931,15 @@ void ListPanel::vfs_refresh(KJob *job)
         func->refresh();
 }
 
-void ListPanel::startDragging(QStringList names, QPixmap px)
+void ListPanel::startDragging(KUrl::List urls, QPixmap px)
 {
-    KUrl::List * urls = func->files() ->vfs_getFiles(&names);
-
-    if (urls->isEmpty()) {   // avoid dragging empty urls
-        delete urls;
-        return ;
-    }
-
     QDrag *drag = new QDrag(this);
     QMimeData *mimeData = new QMimeData;
     drag->setPixmap(px);
-    urls->populateMimeData(mimeData);
+    urls.populateMimeData(mimeData);
     drag->setMimeData(mimeData);
 
     drag->start();
-
-    delete urls; // free memory
 }
 
 // pops a right-click menu for items

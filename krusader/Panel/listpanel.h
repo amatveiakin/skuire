@@ -172,7 +172,7 @@ protected:
 protected slots:
     void updatePopupPanel(FileItem item);
     void handleDropOnView(QDropEvent *, QWidget *destWidget = 0); // handles drops on the view only
-    void startDragging(QStringList, QPixmap);
+    void startDragging(KUrl::List, QPixmap);
     void slotPreviewJobStarted(KJob *job);
     void slotPreviewJobPercent(KJob *job, unsigned long percent);
     void slotPreviewJobResult(KJob *job);

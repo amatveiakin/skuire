@@ -188,6 +188,9 @@ public:
     void emitRefreshActions() {
         emit refreshActions();
     }
+    void emitLetsDrag(KUrl::List urls, QPixmap icon) {
+        emit letsDrag(urls, icon);
+    }
 
     void prepareForPassive();
 
@@ -226,6 +229,7 @@ signals:
     void calcSpace(FileItem item);
     void selectionChanged();
     void gotDrop(QDropEvent *e);
+    void letsDrag(KUrl::List urls, QPixmap icon);
     void itemDescription(QString &desc);
     void contextMenu(const QPoint &point);
     void emptyContextMenu(const QPoint& point);
@@ -245,13 +249,6 @@ protected slots:
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
-public:
-    void emitLetsDrag(QStringList items, QPixmap icon) {
-        emit letsDrag(items, icon);
-    }
-
-signals:
-    void letsDrag(QStringList items, QPixmap icon);
 protected slots:
     // for signals from vfs' dirwatch
     void fileAdded(vfile *vf);
