@@ -467,6 +467,29 @@ void KrInterView::changeSelection(KUrl::List urls, bool select, bool clearFirst)
     redraw();
 }
 
+void KrInterView::changeSelection(const KRQuery& filter, bool select, bool includeDirs)
+{
+    op()->setMassSelectionUpdate(true);
+
+    foreach(KrView::Item *item, _model->items()) {
+        if (item == _model->dummyItem())
+            continue;
+        if (item->file.isDir() && !includeDirs)
+            continue;
+
+        vfile * file = _files->search(item->file.name());
+        if (file == 0)
+            continue;
+
+        if (filter.match(file))
+            setSelected(file, select);
+    }
+
+    op()->setMassSelectionUpdate(false);
+
+    redraw();
+}
+
 bool KrInterView::isItemSelected(KUrl url)
 {
     vfile *vf = _model->vfileAt(_model->indexFromUrl(url));

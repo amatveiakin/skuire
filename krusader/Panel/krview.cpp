@@ -585,32 +585,6 @@ void KrView::changeSelection(const KRQuery& filter, bool select)
     changeSelection(filter, select, grpSvr.readEntry("Mark Dirs", _MarkDirs));
 }
 
-void KrView::changeSelection(const KRQuery& filter, bool select, bool includeDirs)
-{
-    if (op()) op()->setMassSelectionUpdate(true);
-
-    KrViewItem *temp = getCurrentKrViewItem();
-    for (KrViewItem * it = getFirst(); it != 0; it = getNext(it)) {
-        if (it->name() == "..")
-            continue;
-        if (it->getVfile()->vfile_isDir() && !includeDirs)
-            continue;
-
-        vfile * file = it->getMutableVfile(); // filter::match calls getMimetype which isn't const
-        if (file == 0)
-            continue;
-
-        if (filter.match(file))
-            it->setSelected(select);
-    }
-
-    if (op()) op()->setMassSelectionUpdate(false);
-    updateView();
-    if (ensureVisibilityAfterSelect() && temp != 0)
-        makeItemVisible(temp);
-    redraw();
-}
-
 void KrView::invertSelection()
 {
     if (op()) op()->setMassSelectionUpdate(true);

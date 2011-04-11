@@ -47,6 +47,7 @@ public:
     virtual FileItemList getSelectedItems(bool currentIfNoSelection);
     virtual FileItemList getVisibleItems();
     virtual void changeSelection(KUrl::List urls, bool select, bool clearFirst);
+    virtual void changeSelection(const KRQuery& filter, bool select, bool includeDirs);
     virtual bool isItemSelected(KUrl url);
     virtual FileItem firstItem();
     virtual FileItem lastItem();
