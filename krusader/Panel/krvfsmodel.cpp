@@ -45,11 +45,10 @@ void KrVfsModel::populate(const QList<vfile*> &files, vfile *dummy)
 
     foreach(vfile *vf, files) {
         //TODO: more efficient allocation
-        KrView::Item *item = new KrView::Item(vf == dummy);
+        KrView::Item *item = new KrView::Item(vf->toFileItem(), vf == dummy);
 
         if(vf == dummy)
             _dummyItem = item;
-        item->file = vf->toFileItem();
 
         _items << item;
     }
@@ -333,8 +332,7 @@ QModelIndex KrVfsModel::addItem(vfile * vf)
 
     emit layoutAboutToBeChanged();
 
-    KrView::Item *newItem = new KrView::Item;
-    newItem->file = vf->toFileItem();
+    KrView::Item *newItem = new KrView::Item(vf->toFileItem());
 
     if(lastSortOrder() == KrViewProperties::NoColumn) {
         int idx = _items.count();

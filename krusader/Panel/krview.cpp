@@ -318,15 +318,32 @@ bool KrViewOperator::eventFilter(QObject *watched, QEvent *event)
 const KrView::IconSizes KrView::iconSizes;
 
 
-KrView::Item::Item(bool isDummy)
+KrView::Item::Item(const FileItem &fileItem, bool isDummy) :
+    file(fileItem),
+    _brokenLink(false)
 {
     if(isDummy)
         _iconName = "go-up";
+
+    if(file.isLink() && file.url().isLocalFile()) {
+        //FIXME: dirs are not recognized
+
+        QString dest = file.linkDest();
+
+        if(QDir::isRelativePath(dest)) {
+            KUrl destUrl = file.url().upUrl();
+            destUrl.addPath(dest);
+            dest = destUrl.path();
+        }
+        if(!QFile::exists(dest)) {
+            _brokenLink = true;
+            _iconName = "file-broken";
+        }
+    }
 }
 
 void KrView::Item::getIconName() const
 {
-    //FIXME: port vfile::vfile_getIcon()
     _iconName = file.iconName();
 }
 
@@ -474,8 +491,7 @@ QPixmap KrView::processIcon(const QPixmap &icon, bool dim, const QColor & dimCol
 
 QPixmap KrView::getIcon(vfile *vf, bool active, int size/*, KRListItem::cmpColor color*/)
 {
-    Item item;
-    item.file = vf->toFileItem();
+    Item item(vf->toFileItem());
     return getIcon(&item, active, size);
 }
 

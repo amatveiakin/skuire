@@ -313,7 +313,7 @@ public:
 
     struct Item
     {
-        Item(bool isDummy = false);
+        Item(const FileItem &fileItem, bool isDummy = false);
 
         const QString &iconName() const {
             if(_iconName.isNull())
@@ -327,6 +327,7 @@ public:
         void getIconName() const;
 
         mutable QString _iconName;
+        bool _brokenLink;
     };
 
     virtual ~KrView();
