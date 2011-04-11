@@ -337,31 +337,35 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
 
 QModelIndex KrVfsModel::addItem(vfile * vf)
 {
-#if 0
+    //FIXME: make sure this wasn't  already added
+
     emit layoutAboutToBeChanged();
 
+    KrView::Item *newItem = new KrView::Item;
+    newItem->file = vf->toFileItem();
+
     if(lastSortOrder() == KrViewProperties::NoColumn) {
-        int idx = _vfiles.count();
-        _vfiles.append(vf);
-        _vfileNdx[vf] = index(idx, 0);
-        _nameNdx[vf->vfile_getName()] = index(idx, 0);
+        int idx = _items.count();
+        _items << newItem;
+        _itemIndex[newItem] = index(idx, 0);
+        _nameNdx[newItem->file.name()] = index(idx, 0);
         emit layoutChanged();
         return index(idx, 0);
     }
 
     QModelIndexList oldPersistentList = persistentIndexList();
 
-    KrSort::Sorter sorter(createSorter());
+    KrSort::Sorter sorter = createSorter();
 
-    int insertIndex = sorter.insertIndex(vf, vf == _dummyVfile, customSortData(vf));
-    if (insertIndex != _vfiles.count())
-        _vfiles.insert(insertIndex, vf);
+    int insertIndex = sorter.insertIndex(newItem, vf == _view->_dummyVfile, customSortData(newItem));
+    if (insertIndex != _items.count())
+        _items.insert(insertIndex, newItem);
     else
-        _vfiles.append(vf);
+        _items << newItem;
 
-    for (int i = insertIndex; i < _vfiles.count(); ++i) {
-        _vfileNdx[ _vfiles[ i ] ] = index(i, 0);
-        _nameNdx[ _vfiles[ i ]->vfile_getName()] = index(i, 0);
+    for (int i = insertIndex; i < _items.count(); ++i) {
+        _itemIndex[ _items[i] ] = index(i, 0);
+        _nameNdx[ _items[ i ]->file.name()] = index(i, 0);
     }
 
     QModelIndexList newPersistentList;
@@ -377,7 +381,6 @@ QModelIndex KrVfsModel::addItem(vfile * vf)
     _view->makeCurrentVisible();
 
     return index(insertIndex, 0);
-#endif
 }
 
 QModelIndex KrVfsModel::removeItem(vfile * vf)
