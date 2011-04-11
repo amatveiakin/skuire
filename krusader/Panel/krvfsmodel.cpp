@@ -440,7 +440,6 @@ QModelIndex KrVfsModel::removeItem(vfile * vf)
 
 void KrVfsModel::updateItem(vfile * vf)
 {
-#if 0
     QModelIndex oldModelIndex = vfileIndex(vf);
 
     if (!oldModelIndex.isValid()) {
@@ -448,6 +447,7 @@ void KrVfsModel::updateItem(vfile * vf)
         return;
     }
     if(lastSortOrder() == KrViewProperties::NoColumn) {
+        //FIXME refresh item data
         _view->redrawItem(vf);
         return;
     }
@@ -456,27 +456,28 @@ void KrVfsModel::updateItem(vfile * vf)
 
     emit layoutAboutToBeChanged();
 
-    _vfiles.removeAt(oldIndex);
+    KrView::Item *item = _items[oldIndex];
+    _items.removeAt(oldIndex);
 
     KrSort::Sorter sorter(createSorter());
 
     QModelIndexList oldPersistentList = persistentIndexList();
 
-    int newIndex = sorter.insertIndex(vf, vf == _dummyVfile, customSortData(vf));
-    if (newIndex != _vfiles.count()) {
+    int newIndex = sorter.insertIndex(item, item == _dummyItem, customSortData(item));
+    if (newIndex != _items.count()) {
         if (newIndex > oldIndex)
             newIndex--;
-        _vfiles.insert(newIndex, vf);
+        _items.insert(newIndex, item);
     } else
-        _vfiles.append(vf);
+        _items << item;
 
 
     int i = newIndex;
     if (oldIndex < i)
         i = oldIndex;
-    for (; i < _vfiles.count(); ++i) {
-        _vfileNdx[ _vfiles[ i ] ] = index(i, 0);
-        _nameNdx[ _vfiles[ i ]->vfile_getName()] = index(i, 0);
+    for (; i < _items.count(); ++i) {
+        _itemIndex[ _items[ i ] ] = index(i, 0);
+        _nameNdx[ _items[ i ]->file.name()] = index(i, 0);
     }
 
     QModelIndexList newPersistentList;
@@ -497,7 +498,10 @@ void KrVfsModel::updateItem(vfile * vf)
     emit layoutChanged();
     if (newIndex != oldIndex)
         _view->makeCurrentVisible();
-#endif
+
+    //redraw the item in any case
+    //FIXME refresh item data
+    _view->redrawItem(vf);
 }
 
 QVariant KrVfsModel::headerData(int section, Qt::Orientation orientation, int role) const
