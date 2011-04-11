@@ -119,7 +119,7 @@ protected:
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy);
     virtual void intAddItem(FileItem item);
     virtual void intDelItem(FileItem item);
-    virtual void preUpdateItem(vfile *vf);
+    virtual void intUpdateItem(FileItem item);
     virtual void intSetSelected(const vfile* vf, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;
     virtual vfile *vfileFromUrl(KUrl url);

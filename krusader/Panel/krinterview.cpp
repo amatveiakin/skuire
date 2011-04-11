@@ -267,9 +267,9 @@ void KrInterView::intDelItem(FileItem item)
         _itemView->setCurrentIndex(newIndex);
 }
 
-void KrInterView::preUpdateItem(vfile *vf)
+void KrInterView::intUpdateItem(FileItem item)
 {
-    _model->updateItem(vf);
+    _model->updateItem(item);
 }
 
 void KrInterView::prepareForActive()

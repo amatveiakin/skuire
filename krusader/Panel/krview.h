@@ -386,6 +386,7 @@ public:
     virtual QString currentDescription() = 0;
     virtual void intAddItem(FileItem item) = 0;
     virtual void intDelItem(FileItem item) = 0;
+    virtual void intUpdateItem(FileItem item) = 0;
     virtual void makeCurrentVisible() = 0;
 
     // interview related functions
@@ -601,7 +602,6 @@ protected:
     virtual void addItem(vfile *vf);
     virtual void updateItem(vfile *vf);
     virtual void delItem(const QString &name);
-    virtual void preUpdateItem(vfile *vf) = 0;
     virtual void getSelectedItems(QStringList* names);
     virtual void getItemsByMask(QString mask, QStringList* names, bool dirs = true, bool files = true);
     virtual KrViewItem *getFirst() = 0;

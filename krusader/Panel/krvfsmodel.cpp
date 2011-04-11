@@ -428,17 +428,18 @@ QModelIndex KrVfsModel::removeItem(FileItem fileItem)
     return currIndex;
 }
 
-void KrVfsModel::updateItem(vfile * vf)
+void KrVfsModel::updateItem(FileItem fileItem)
 {
-    QModelIndex oldModelIndex = vfileIndex(vf);
+    QModelIndex oldModelIndex = indexFromUrl(fileItem.url());
 
     if (!oldModelIndex.isValid()) {
-        addItem(vf->toFileItem());
+        addItem(fileItem);
         return;
     }
     if(lastSortOrder() == KrViewProperties::NoColumn) {
         //FIXME refresh item data
-        _view->redrawItem(vf);
+        vfile vf(fileItem);
+        _view->redrawItem(&vf);
         return;
     }
 
@@ -491,7 +492,8 @@ void KrVfsModel::updateItem(vfile * vf)
 
     //redraw the item in any case
     //FIXME refresh item data
-    _view->redrawItem(vf);
+    vfile vf(fileItem);
+    _view->redrawItem(&vf);
 }
 
 QVariant KrVfsModel::headerData(int section, Qt::Orientation orientation, int role) const

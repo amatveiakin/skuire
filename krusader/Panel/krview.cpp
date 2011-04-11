@@ -734,7 +734,7 @@ void KrView::updateItem(vfile *vf)
     if (isFiltered(vf))
         delItem(vf->vfile_getName());
     else {
-        preUpdateItem(vf);
+        intUpdateItem(vf->toFileItem());
 //         if(_previews) //FIXME
 //             _previews->updatePreview(findItemByVfile(vf));
     }
