@@ -134,21 +134,27 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
     }
     case Qt::ToolTipRole:
     case Qt::DisplayRole: {
-        switch (index.column()) {
-        case KrViewProperties::Name: {
-            //FIXME: cache name/ext
-            if(isDummy)
+        if(isDummy) {
+            switch (index.column()) {
+            case KrViewProperties::Name:
                 return "..";
-            else
-                return nameWithoutExtension(item);
+            case KrViewProperties::Size:
+                return i18n("<DIR>");
+            default:
+                return QString();
+            }
         }
+        switch (index.column()) {
+        case KrViewProperties::Name:
+            //FIXME: cache name/ext
+            return nameWithoutExtension(item);
         case KrViewProperties::Ext: {
             //FIXME: cache name/ext
             QString nameOnly = nameWithoutExtension(item);
             return file.name().mid(nameOnly.length() + 1);
         }
         case KrViewProperties::Size: {
-            if ((file.isDir() && file.size() <= 0) || isDummy)
+            if (file.isDir() && file.size() <= 0)
                 return i18n("<DIR>");
             else //FIXME: cache this
                 return (properties()->humanReadableSize) ?
@@ -156,50 +162,33 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
                        KRpermHandler::parseSize(file.size()) + ' ';
         }
         case KrViewProperties::Type: {
-            if (isDummy)
-                return QVariant();
             KMimeType::Ptr mt = KMimeType::mimeType(file.mimetype());
             if (mt)
                 return mt->comment(); //FIXME: cache this
             return QVariant();
         }
         case KrViewProperties::Modified: {
-            if (isDummy)
-                return QVariant();
-            else //FIXME: cache this
-                //FIXME: this doesn't return the correct locale format
-                return file.time(KFileItem::ModificationTime).toString(KDateTime::LocalDate);
+            //FIXME: cache this
+            //FIXME: this doesn't return the correct locale format
+            return file.time(KFileItem::ModificationTime).toString(KDateTime::LocalDate);
         }
         case KrViewProperties::Permissions: {
-            if (isDummy)
-                return QVariant();
-            else if (properties()->numericPermissions) {
+            if (properties()->numericPermissions) {
                 QString perm; //FIXME: cache this
                 return perm.sprintf("%.4o", file.mode() & PERM_BITMASK);
             } else
                 return file.permissionsString();
         }
         case KrViewProperties::KrPermissions: {
-            if (isDummy)
-                return QVariant();
-            else {
-                vfile vf(file); //FIXME: cache this
-                return KrView::krPermissionString(&vf);
-            }
+            vfile vf(file); //FIXME: cache this
+            return KrView::krPermissionString(&vf);
         }
-        case KrViewProperties::Owner: {
-            if (isDummy)
-                return QVariant();
-            else
-                return file.user();
-        }
-        case KrViewProperties::Group: {
-            if (isDummy)
-                return QVariant();
-            else
-                return file.group();
-        }
-        default: return QString();
+        case KrViewProperties::Owner:
+            return file.user();
+        case KrViewProperties::Group:
+            return file.group();
+        default:
+            return QString();
         }
         return QVariant();
     }
