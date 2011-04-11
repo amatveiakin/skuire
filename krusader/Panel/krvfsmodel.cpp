@@ -385,36 +385,38 @@ QModelIndex KrVfsModel::addItem(vfile * vf)
 
 QModelIndex KrVfsModel::removeItem(vfile * vf)
 {
-    abort();
-#if 0
     QModelIndex currIndex = _view->getCurrentIndex();
-    int removeIdx = _vfiles.indexOf(vf);
-    if(removeIdx < 0)
+
+    QModelIndex vfIdx = vfileIndex(vf);
+    if(!vfIdx.isValid())
         return currIndex;
+
+    int removeIdx = vfIdx.row();
+    KrView::Item *item = _items[removeIdx];
 
     emit layoutAboutToBeChanged();
     QModelIndexList oldPersistentList = persistentIndexList();
     QModelIndexList newPersistentList;
 
-    _vfiles.removeAt(removeIdx);
+    _items.removeAt(removeIdx);
 
     if (currIndex.row() == removeIdx) {
-        if (_vfiles.count() == 0)
+        if (_items.count() == 0)
             currIndex = QModelIndex();
-        else if (removeIdx >= _vfiles.count())
-            currIndex = index(_vfiles.count() - 1, 0);
+        else if (removeIdx >= _items.count())
+            currIndex = index(_items.count() - 1, 0);
         else
             currIndex = index(removeIdx, 0);
     } else if (currIndex.row() > removeIdx) {
         currIndex = index(currIndex.row() - 1, 0);
     }
 
-    _vfileNdx.remove(vf);
-    _nameNdx.remove(vf->vfile_getName());
-    // update model/name index for vfiles following vf
-    for (int i = removeIdx; i < _vfiles.count(); i++) {
-        _vfileNdx[ _vfiles[i] ] = index(i, 0);
-        _nameNdx[ _vfiles[i]->vfile_getName() ] = index(i, 0);
+    _itemIndex.remove(item);
+    _nameNdx.remove(item->file.name());
+    // update model/name index for items following the removed item
+    for (int i = removeIdx; i < _items.count(); i++) {
+        _itemIndex[ _items[i] ] = index(i, 0);
+        _nameNdx[ _items[i]->file.name() ] = index(i, 0);
     }
 
     foreach(const QModelIndex &mndx, oldPersistentList) {
@@ -427,11 +429,13 @@ QModelIndex KrVfsModel::removeItem(vfile * vf)
             newPersistentList << QModelIndex();
     }
     changePersistentIndexList(oldPersistentList, newPersistentList);
+
     emit layoutChanged();
     _view->makeCurrentVisible();
 
+    delete item;
+
     return currIndex;
-#endif
 }
 
 void KrVfsModel::updateItem(vfile * vf)
