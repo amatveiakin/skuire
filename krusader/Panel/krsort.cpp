@@ -257,6 +257,11 @@ bool compareTexts(QString aS1, QString aS2, const KrViewProperties * _viewProper
 
 bool itemLessThan(SortProps *sp, SortProps *sp2)
 {
+    if (sp->isDummy())
+        return sp->isAscending();
+    if (sp2->isDummy())
+        return !sp->isAscending();
+
     const FileItem &file1 = sp->viewItem()->file;
     const FileItem &file2 = sp2->viewItem()->file;
 
@@ -269,11 +274,6 @@ bool itemLessThan(SortProps *sp, SortProps *sp2)
         if (isdir2 && !isdir1)
             return !sp->isAscending();
     }
-
-    if (sp->isDummy())
-        return sp->isAscending();
-    if (sp2->isDummy())
-        return !sp->isAscending();
 
     bool alwaysSortDirsByName = (sp->properties()->sortOptions & KrViewProperties::AlwaysSortDirsByName);
     int column = sp->column();
