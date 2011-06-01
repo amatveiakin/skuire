@@ -1,5 +1,10 @@
     ADDED: action: Open With Menu - shortcut: CTRL + Enter
     ADDED: action: Open With... - shortcut: CTRL + O
+
+==========================
+krview-rewrite bottom
+
+
     ADDED: mountman gui option: Show only removable devices
     ADDED: tabs have close buttons
     ADDED: reset button for filter dialog
