@@ -245,8 +245,6 @@ ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager, KConfigGrou
     freeSpace->setAutoFillBackground(false);
     freeSpace->setText("");
     freeSpace->setAlignment(Qt::AlignRight | Qt::AlignVCenter);
-    if(!group.readEntry("Show Free Space", false))
-        freeSpace->hide();
     ADD_WIDGET(freeSpace);
 
     // progress indicator for the preview job
@@ -490,7 +488,7 @@ void ListPanel::setProperties(int prop)
 bool ListPanel::eventFilter(QObject * watched, QEvent * e)
 {
     if(view && watched == view->widget()) {
-        if(e->type() == QEvent::FocusIn && this != ACTIVE_PANEL)
+        if(e->type() == QEvent::FocusIn && this != ACTIVE_PANEL && !isHidden())
             slotFocusOnMe();
         else if(e->type() == QEvent::ShortcutOverride) {
             QKeyEvent *ke = static_cast<QKeyEvent*>(e);

@@ -5,6 +5,7 @@
 krview-rewrite bottom
 
 
+    ADDED: options: Panel > Layout: "Compact", "Classic Krusader Layout"
     ADDED: mountman gui option: Show only removable devices
     ADDED: tabs have close buttons
     ADDED: reset button for filter dialog
@@ -17,6 +18,12 @@ krview-rewrite bottom
     ADDED: option: Panel > Operation > Unselect files before copy/move
     ADDED: support for xz archives
 
+    CHANGED: new default panel layout
+    CHANGED: option: Panel > View > Show previews -> Show previews by default
+    CHANGED: removed option "Show free disk space in the Totalsbar"
+             since that setting is controlled by the layout chosen in Panel > Layout
+    CHANGED: removed option "Preserve Attributes" - KIO always preserves Attributes
+    CHANGED: option: Panel > Filelist icon size -> Default icon size
     CHANGED: quickfilter follows case sensivity setting of quicksearch
     CHANGED: quickfilter expands wildcards
     CHANGED: duplicate tab / open in new tab:
@@ -25,6 +32,8 @@ krview-rewrite bottom
     CHANGED: filter settings are remembered when changing view type
     CHANGED: All view settings are saved/restored individually for each tab.
 
+    FIXED: Url commandline argument opens a new tab instead of switching to an existing one
+    FIXED: root mode action does not work with newer versions of kdesu, thanks to CyberCastle
     FIXED: switching tabs sometimes doesn't switch the panel
     FIXED: [ 3004510 (sf.net) ] Double-clicking executables start in ~/Documents folder
     FIXED: [ 2996188 (sf.net) ] relative path for custom folder icon doesn't work

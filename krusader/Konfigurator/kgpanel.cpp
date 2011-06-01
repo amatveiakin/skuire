@@ -53,6 +53,7 @@
 #define PAGE_VIEW         2
 #define PAGE_PANELTOOLBAR  3
 #define PAGE_MOUSE  4
+#define PAGE_LAYOUT 5
 
 
 KgPanel::KgPanel(bool first, QWidget* parent) :
@@ -183,10 +184,9 @@ void KgPanel::setupMiscTab()
     KONFIGURATOR_CHECKBOX_PARAM barSettings[] =
     {
         {"Look&Feel", "Show Size In Bytes", true, i18n("Show size in bytes too"), true,  i18n("Show size in bytes too") },
-        {"Look&Feel", "Show Free Space", false, i18n("Show free disk space in the Totalsbar"), true,  i18n("Show free disk space in the Totalsbar") },
     };
     KonfiguratorCheckBoxGroup *barSett = createCheckBoxGroup(2, 0, barSettings,
-                                          2 /*count*/, miscGrp, PAGE_MISC);
+                                          1 /*count*/, miscGrp, PAGE_MISC);
     miscGrid->addWidget(barSett, 1, 0, 1, 2);
 
     miscLayout->addWidget(miscGrp);
@@ -216,14 +216,11 @@ void KgPanel::setupLayoutTab()
     grid->addWidget(l, 0, 0);
     KONFIGURATOR_NAME_VALUE_PAIR *layouts = new KONFIGURATOR_NAME_VALUE_PAIR[numLayouts];
     for (int i = 0; i != numLayouts; i++) {
-        QString text = layoutNames[i];
-        if(text == "default")
-            text = i18n("default");
-        layouts[ i ].text = text;
+        layouts[ i ].text = KrLayoutFactory::layoutDescription(layoutNames[i]);
         layouts[ i ].value = layoutNames[i];
     }
     KonfiguratorComboBox *cmb = createComboBox("PanelLayout", "Layout", "default",
-                         layouts, numLayouts, tab, true, false, PAGE_MISC);
+                         layouts, numLayouts, tab, true, false, PAGE_LAYOUT);
     grid->addWidget(cmb, 0, 1);
     delete [] layouts;
 
@@ -236,7 +233,7 @@ void KgPanel::setupLayoutTab()
         { i18n("Statusbar"), "Statusbar" }
     };
     cmb = createComboBox("PanelLayout", "FrameColor",
-                            "default", frameColor, 3, tab, true, false, PAGE_MISC);
+                            "default", frameColor, 3, tab, true, false, PAGE_LAYOUT);
     grid->addWidget(cmb, 1, 1);
 
 
@@ -250,7 +247,7 @@ void KgPanel::setupLayoutTab()
         { i18n("Panel"), "Panel" },
     };
     cmb = createComboBox("PanelLayout", "FrameShape",
-                            "default", frameShape, 4, tab, true, false, PAGE_MISC);
+                            "default", frameShape, 4, tab, true, false, PAGE_LAYOUT);
     grid->addWidget(cmb, 2, 1);
 
 
@@ -264,7 +261,7 @@ void KgPanel::setupLayoutTab()
         { i18n("Sunken"), "Sunken" },
     };
     cmb = createComboBox("PanelLayout", "FrameShadow",
-                            "default", frameShadow, 4, tab, true, false, PAGE_MISC);
+                            "default", frameShadow, 4, tab, true, false, PAGE_LAYOUT);
     grid->addWidget(cmb, 3, 1);
 }
 
@@ -275,7 +272,7 @@ void KgPanel::setupView(KrViewInstance *instance, QWidget *parent)
 // -------------------- Filelist icon size ----------------------------------
     QHBoxLayout *hbox = new QHBoxLayout();
 
-    hbox->addWidget(new QLabel(i18n("Filelist icon size:"), parent));
+    hbox->addWidget(new QLabel(i18n("Default icon size:"), parent));
 
     KONFIGURATOR_NAME_VALUE_PAIR *iconSizes = new KONFIGURATOR_NAME_VALUE_PAIR[KrView::iconSizes.count()];
     for(int i = 0; i < KrView::iconSizes.count(); i++)
@@ -294,7 +291,7 @@ void KgPanel::setupView(KrViewInstance *instance, QWidget *parent)
         //   cfg_class             cfg_name        default       text            restart        tooltip
     {
         {instance->name(), "With Icons",      _WithIcons,   i18n("Use icons in the filenames"), true,  i18n("Show the icons for filenames and directories.") },
-        {instance->name(), "ShowPreviews",   false,        i18n("Show previews"),              false, i18n("Show previews of files and directories.") },
+        {instance->name(), "ShowPreviews", false, i18n("Show previews by default"), false, i18n("Show previews of files and directories.") },
     };
 
     KonfiguratorCheckBoxGroup *iconSett = createCheckBoxGroup(2, 0, iconSettings, 2 /*count*/, parent, PAGE_VIEW);
