@@ -41,7 +41,9 @@ KrVfsModel::KrVfsModel(KrInterView * view): QAbstractListModel(0), _extensionEna
 
 void KrVfsModel::populate(const QList<vfile*> &files, vfile *dummy)
 {
+#if QT_VERSION >= 0x040700
     _items.reserve(files.count());
+#endif
 
     foreach(vfile *vf, files) {
         //TODO: more efficient allocation
@@ -299,9 +301,11 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
     _itemIndex.clear();
     _nameNdx.clear();
 
+#if QT_VERSION >= 0x040700
     _items.reserve(count);
     _itemIndex.reserve(count);
     _nameNdx.reserve(count);
+#endif
 
     bool sortOrderChanged = false;
     QHash<int, int> changeMap;
