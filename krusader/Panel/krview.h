@@ -305,17 +305,19 @@ public:
         }
     };
 
-    struct Item
+    class Item : public KFileItem
     {
+    public:
+        Item();
         Item(const KFileItem &fileItem, bool isDummy = false);
+        Item(const Item &other);
+        Item &operator=(const Item &other);
 
         const QString &iconName() const {
             if(_iconName.isNull())
                 getIconName();
             return _iconName;
         }
-
-        KFileItem file;
 
     private:
         void getIconName() const;

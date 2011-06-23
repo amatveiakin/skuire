@@ -100,7 +100,7 @@ bool KrInterView::isSelected(const QModelIndex &ndx)
 KFileItem KrInterView::findItemByName(const QString &name)
 {
     KrView::Item *item = _model->itemAt(_model->nameIndex(name));
-    return item ? item->file : KFileItem();
+    return item ? *item : KFileItem();
 }
 
 QString KrInterView::getCurrentItem() const
@@ -312,7 +312,7 @@ KIO::filesize_t KrInterView::calcSize()
 {
     KIO::filesize_t size = 0;
     foreach(KrView::Item *item, _model->items()) {
-        size += item->file.size();
+        size += item->size();
     }
     return size;
 }
@@ -331,10 +331,10 @@ KFileItemList KrInterView::getItems(KRQuery mask, bool dirs, bool files)
     KFileItemList list;
     foreach(KrView::Item *item, _model->items()) {
         if (item != _model->dummyItem())
-            if ((!item->file.isDir() && files) || (item->file.isDir() && dirs)) {
-                vfile vf(item->file);
+            if ((!item->isDir() && files) || (item->isDir() && dirs)) {
+                vfile vf(*item);
                 if(mask.isNull() || mask.match(&vf))
-                    list << item->file;
+                    list << *item;
             }
     }
     return list;
@@ -362,9 +362,9 @@ KFileItemList KrInterView::getVisibleItems()
     KFileItemList list;
     foreach(const KrView::Item *item, _model->items()) {
         if (item != _model->dummyItem()) {
-            vfile vf(item->file);
+            vfile vf(*item);
             if(_itemView->viewport()->rect().intersects(itemRect(&vf)))
-                list << item->file;
+                list << *item;
         }
     }
     return list;
@@ -386,7 +386,7 @@ KFileItem KrInterView::firstItem()
 {
     int index = _model->dummyItem() ? 1 : 0;
     if (index < _model->rowCount())
-        return _model->items()[index]->file;
+        return *_model->items()[index];
     else
         return KFileItem();
 }
@@ -396,7 +396,7 @@ KFileItem KrInterView::lastItem()
     if (_model->rowCount()) {
         KrView::Item *item = _model->items().last();
         if (item != _model->dummyItem())
-            return item->file;
+            return *item;
     }
     return KFileItem();
 }
@@ -405,7 +405,7 @@ KFileItem KrInterView::currentItem()
 {
     KrView::Item *item = currentViewItem();
     if(item && item != _model->dummyItem())
-        return item->file;
+        return *item;
     else
         return KFileItem();
 }
@@ -475,10 +475,10 @@ void KrInterView::changeSelection(const KRQuery& filter, bool select, bool inclu
     foreach(KrView::Item *item, _model->items()) {
         if (item == _model->dummyItem())
             continue;
-        if (item->file.isDir() && !includeDirs)
+        if (item->isDir() && !includeDirs)
             continue;
 
-        vfile * file = _files->search(item->file.name());
+        vfile * file = _files->search(item->name());
         if (file == 0)
             continue;
 
@@ -501,9 +501,9 @@ void KrInterView::invertSelection()
     foreach(KrView::Item *item, _model->items()) {
         if (item == _model->dummyItem())
             continue;
-        vfile *vf = _files->search(item->file.name());
+        vfile *vf = _files->search(item->name());
         if(vf) {
-            if (item->file.isDir() && !markDirs && !isSelected(vf))
+            if (item->isDir() && !markDirs && !isSelected(vf))
                 continue;
             setSelected(vf, !isSelected(vf));
         }
@@ -625,7 +625,7 @@ QString KrInterView::currentDescription()
 {
     KrView::Item *item = currentViewItem();
     if (item)
-        return itemDescription(item->file.url(), item == _model->dummyItem());
+        return itemDescription(item->url(), item == _model->dummyItem());
     else
         return QString();
 }

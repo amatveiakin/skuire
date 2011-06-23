@@ -315,19 +315,19 @@ const KrView::IconSizes KrView::iconSizes;
 
 
 KrView::Item::Item(const KFileItem &fileItem, bool isDummy) :
-    file(fileItem),
+    KFileItem(fileItem),
     _brokenLink(false)
 {
     if(isDummy)
         _iconName = "go-up";
 
-    if(file.isLink() && file.url().isLocalFile()) {
+    if(isLink() && url().isLocalFile()) {
         //FIXME: dirs are not recognized
 
-        QString dest = file.linkDest();
+        QString dest = linkDest();
 
         if(QDir::isRelativePath(dest)) {
-            KUrl destUrl = file.url().upUrl();
+            KUrl destUrl = url().upUrl();
             destUrl.addPath(dest);
             dest = destUrl.path();
         }
@@ -340,7 +340,7 @@ KrView::Item::Item(const KFileItem &fileItem, bool isDummy) :
 
 void KrView::Item::getIconName() const
 {
-    _iconName = file.iconName();
+    _iconName = KFileItem::iconName();
 }
 
 
@@ -510,7 +510,7 @@ QPixmap KrView::getIcon(const Item *item, bool active, int size/*, KRListItem::c
         icon_name = "";
 
     cacheName.append(QString::number(size));
-    if(item->file.isLink())
+    if(item->isLink())
         cacheName.append("LINK_");
     if(dim)
         cacheName.append("DIM_");
@@ -521,7 +521,7 @@ QPixmap KrView::getIcon(const Item *item, bool active, int size/*, KRListItem::c
     // first try the cache
     if (!QPixmapCache::find(cacheName, icon)) {
         icon = processIcon(krLoader->loadIcon(icon_name, KIconLoader::Desktop, size),
-                           dim, dimColor, dimFactor, item->file.isLink());
+                           dim, dimColor, dimFactor, item->isLink());
         // insert it into the cache
         QPixmapCache::insert(cacheName, icon);
     }

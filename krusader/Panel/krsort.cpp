@@ -33,20 +33,19 @@ void SortProps::init(const KrView::Item *item, int col, const KrViewProperties *
     _ascending = asc;
     _index = origNdx;
     _customData = customData;
-    const KFileItem &file = item->file;
-    _name = file.name();
-    _time = file.time(KFileItem::ModificationTime).toTime_t();
+    _name = item->name();
+    _time = item->time(KFileItem::ModificationTime).toTime_t();
 
     if(_prop->sortOptions & KrViewProperties::IgnoreCase)
         _name = _name.toLower();
 
     switch (_col) {
     case KrViewProperties::Ext: {
-        if (file.isDir()) {
+        if (item->isDir()) {
             _ext = "";
         } else {
             // check if the file has an extension
-            const QString& vfName = file.name();
+            const QString& vfName = item->name();
             int loc = vfName.lastIndexOf('.');
             if (loc > 0) { // avoid mishandling of .bashrc and friend
                 // check if it has one of the predefined 'atomic extensions'
@@ -66,7 +65,7 @@ void SortProps::init(const KrView::Item *item, int col, const KrViewProperties *
         if (isDummy)
             _data = "";
         else {
-            KMimeType::Ptr mt = KMimeType::mimeType(file.mimetype());
+            KMimeType::Ptr mt = KMimeType::mimeType(item->mimetype());
             if (mt)
                 _data = mt->comment();
         }
@@ -78,9 +77,9 @@ void SortProps::init(const KrView::Item *item, int col, const KrViewProperties *
         else {
             if (properties()->numericPermissions) {
                 QString perm;
-                _data = perm.sprintf("%.4o", file.mode() & PERM_BITMASK);
+                _data = perm.sprintf("%.4o", item->mode() & PERM_BITMASK);
             } else
-                _data = file.permissionsString();
+                _data = item->permissionsString();
         }
         break;
     }
@@ -89,7 +88,7 @@ void SortProps::init(const KrView::Item *item, int col, const KrViewProperties *
             _data = "";
         else {
             //FIXME: change to item->krPermissionString()
-            vfile vf(file);
+            vfile vf(*item);
             _data = KrView::krPermissionString(&vf);
         }
         break;
@@ -98,13 +97,13 @@ void SortProps::init(const KrView::Item *item, int col, const KrViewProperties *
         if (isDummy)
             _data = "";
         else
-            _data = file.user();
+            _data = item->user();
     }
     case KrViewProperties::Group: {
         if (isDummy)
             _data = "";
         else
-            _data = file.group();
+            _data = item->group();
     }
     default:
         break;
@@ -262,8 +261,8 @@ bool itemLessThan(SortProps *sp, SortProps *sp2)
     if (sp2->isDummy())
         return !sp->isAscending();
 
-    const KFileItem &file1 = sp->viewItem()->file;
-    const KFileItem &file2 = sp2->viewItem()->file;
+    const KFileItem &file1 = *sp->viewItem();
+    const KFileItem &file2 = *sp2->viewItem();
 
     bool isdir1 = file1.isDir();
     bool isdir2 = file2.isDir();
