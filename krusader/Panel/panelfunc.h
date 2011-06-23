@@ -48,16 +48,16 @@ class ListPanelFunc : public QObject
     friend class ListPanel;
     Q_OBJECT
 public slots:
-    void execute(FileItem item);
-    void goInside(FileItem item);
+    void execute(KFileItem item);
+    void goInside(KFileItem item);
     void urlEntered(const QString &url);
     void urlEntered(const KUrl &url);
     void openUrl(const KUrl& path, const QString& nameToMakeCurrent = QString(),
                  bool manuallyEntered = false);
 //     void popErronousUrl();
     void immediateOpenUrl(const KUrl &url, bool disableLock = false);
-    void rename(FileItem item, QString newname);
-    void calcSpace(FileItem item);
+    void rename(KFileItem item, QString newname);
+    void calcSpace(KFileItem item);
     void trashJobStarted(KIO::Job *job);
 
     // actions

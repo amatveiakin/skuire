@@ -421,16 +421,16 @@ void ListPanel::createView()
 
     view->widget()->installEventFilter(this);
 
-    connect(view->op(), SIGNAL(calcSpace(FileItem)), func, SLOT(calcSpace(FileItem)));
+    connect(view->op(), SIGNAL(calcSpace(KFileItem)), func, SLOT(calcSpace(KFileItem)));
     connect(view->op(), SIGNAL(goHome()), func, SLOT(home()));
     connect(view->op(), SIGNAL(dirUp()), func, SLOT(dirUp()));
     connect(view->op(), SIGNAL(deleteFiles(bool)), func, SLOT(deleteFiles(bool)));
-    connect(view->op(), SIGNAL(middleButtonClicked(FileItem, bool)), SLOT(newTab(FileItem, bool)));
-    connect(view->op(), SIGNAL(currentChanged(FileItem)), SLOT(updatePopupPanel(FileItem)));
-    connect(view->op(), SIGNAL(renameItem(FileItem, QString)),
-            func, SLOT(rename(FileItem, QString)));
-    connect(view->op(), SIGNAL(executed(FileItem)), func, SLOT(execute(FileItem)));
-    connect(view->op(), SIGNAL(goInside(FileItem)), func, SLOT(goInside(FileItem)));
+    connect(view->op(), SIGNAL(middleButtonClicked(KFileItem, bool)), SLOT(newTab(KFileItem, bool)));
+    connect(view->op(), SIGNAL(currentChanged(KFileItem)), SLOT(updatePopupPanel(KFileItem)));
+    connect(view->op(), SIGNAL(renameItem(KFileItem, QString)),
+            func, SLOT(rename(KFileItem, QString)));
+    connect(view->op(), SIGNAL(executed(KFileItem)), func, SLOT(execute(KFileItem)));
+    connect(view->op(), SIGNAL(goInside(KFileItem)), func, SLOT(goInside(KFileItem)));
     connect(view->op(), SIGNAL(needFocus()), this, SLOT(slotFocusOnMe()));
     connect(view->op(), SIGNAL(selectionChanged()), this, SLOT(slotUpdateTotals()));
     connect(view->op(), SIGNAL(itemDescription(QString&)), krApp, SLOT(statusBarUpdate(QString&)));
@@ -441,7 +441,7 @@ void ListPanel::createView()
     connect(view->op(), SIGNAL(gotDrop(QDropEvent *)), this, SLOT(handleDropOnView(QDropEvent *)));
     connect(view->op(), SIGNAL(previewJobStarted(KJob*)), this, SLOT(slotPreviewJobStarted(KJob*)));
     connect(view->op(), SIGNAL(refreshActions()), krApp->viewActions(), SLOT(refreshActions()));
-    connect(view->op(), SIGNAL(currentChanged(FileItem)), func->history, SLOT(saveCurrentItem()));
+    connect(view->op(), SIGNAL(currentChanged(KFileItem)), func->history, SLOT(saveCurrentItem()));
 
     view->setFiles(func->files());
 
@@ -602,11 +602,11 @@ void ListPanel::compareDirs(bool otherPanelToo)
     KConfigGroup group(krConfig, "Look&Feel");
     bool selectDirs = group.readEntry("Mark Dirs", false);
 
-    FileItemList items = view->getItems();
-    FileItemList otherItems = otherPanel()->view->getItems();
+    KFileItemList items = view->getItems();
+    KFileItemList otherItems = otherPanel()->view->getItems();
 
-    QHash<QString, FileItem> otherItemsDict;
-    foreach(FileItem otherItem, otherItems) {
+    QHash<QString, KFileItem> otherItemsDict;
+    foreach(KFileItem otherItem, otherItems) {
         // check for duplicate file names in the other panel
         if(otherItemsDict.contains(otherItem.name())) {
             KMessageBox::error(0,
@@ -621,8 +621,8 @@ void ListPanel::compareDirs(bool otherPanelToo)
 
     KUrl::List newSelection;
 
-    foreach(FileItem item, items) {
-        FileItem otherItem = otherItemsDict[item.name()];
+    foreach(KFileItem item, items) {
+        KFileItem otherItem = otherItemsDict[item.name()];
 
         bool isSingle = otherItem.isNull(), isDifferent = false, isNewer = false;
 
@@ -817,7 +817,7 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
     bool isWritable = func->files() ->vfs_isWritable();
 
     vfs* tempFiles = func->files();
-    FileItem item;
+    KFileItem item;
     bool itemIsUpUrl = false;
     if (!widget) {
         item = view->itemAt(e->pos(), &itemIsUpUrl);
@@ -967,7 +967,7 @@ void ListPanel::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Return :
         if (e->modifiers() & Qt::ControlModifier) {
             if (e->modifiers() & Qt::AltModifier) {
-                FileItem item = view->currentItem();
+                KFileItem item = view->currentItem();
                 if (!item.isNull()) {
                     if (item.isDir())
                         newTab(item.url(), true);
@@ -985,7 +985,7 @@ void ListPanel::keyPressEvent(QKeyEvent *e)
             // directory otherwise as this one
             if ((isLeft() && e->key() == Qt::Key_Right) || (!isLeft() && e->key() == Qt::Key_Left)) {
                 KUrl newPath;
-                FileItem item = view->currentItem();
+                KFileItem item = view->currentItem();
                 if (!item.isNull()) {
                     if (item.isDir())
                         newPath = item.url();
@@ -1268,7 +1268,7 @@ void ListPanel::restoreSettings(KConfigGroup cfg)
     setJumpBack(func->history->currentUrl());
 }
 
-void ListPanel::updatePopupPanel(FileItem item)
+void ListPanel::updatePopupPanel(KFileItem item)
 {
     // which panel to display on?
     PanelPopup *p = 0;
@@ -1307,7 +1307,7 @@ void ListPanel::updateButtons()
     cdHomeButton->setEnabled(!func->atHome());
 }
 
-void ListPanel::newTab(FileItem item, bool itemIsUpUrl)
+void ListPanel::newTab(KFileItem item, bool itemIsUpUrl)
 {
     if(itemIsUpUrl)
         newTab(virtualPath().upUrl(), true);

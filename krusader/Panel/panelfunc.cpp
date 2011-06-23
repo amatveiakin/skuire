@@ -624,7 +624,7 @@ void ListPanelFunc::rename()
 }
 
 // called by signal itemRenamed() from the view to complete the renaming process
-void ListPanelFunc::rename(FileItem item, QString newname)
+void ListPanelFunc::rename(KFileItem item, QString newname)
 {
     if (item.name() == newname)
         return ; // do nothing
@@ -806,7 +806,7 @@ void ListPanelFunc::deleteFiles(bool reallyDelete)
         return ;
     }
 
-    FileItemList items = panel->view->getSelectedItems(true);
+    KFileItemList items = panel->view->getSelectedItems(true);
     if (items.isEmpty())
         return;
 
@@ -846,8 +846,8 @@ void ListPanelFunc::deleteFiles(bool reallyDelete)
     emptyDirVerify = ((emptyDirVerify) && (files() ->vfs_getType() == vfs::VFS_NORMAL));
 
     QDir dir;
-    for(FileItemList::Iterator it = items.begin(); it != items.end(); ) {
-        FileItem &item = *it;
+    for(KFileItemList::Iterator it = items.begin(); it != items.end(); ) {
+        KFileItem &item = *it;
         // verify non-empty dirs delete... (only for normal vfs)
         if (emptyDirVerify && item.isDir() && !item.isLink()) {
             dir.setPath(panel->virtualPath().path() + '/' + (item.name()));
@@ -880,7 +880,7 @@ void ListPanelFunc::deleteFiles(bool reallyDelete)
     files()->vfs_delFiles(&names, reallyDelete);
 }
 
-void ListPanelFunc::goInside(FileItem item)
+void ListPanelFunc::goInside(KFileItem item)
 {
     if(item.isNull())
         return;
@@ -956,7 +956,7 @@ void ListPanelFunc::openWith()
 }
 
 // this is done when you double click on a file
-void ListPanelFunc::execute(FileItem item)
+void ListPanelFunc::execute(KFileItem item)
 {
     if(item.isNull())
         return;
@@ -1137,13 +1137,13 @@ void ListPanelFunc::unpack()
 // code (maybe except 3) from createChecksum and matchChecksum
 static void checksum_wrapper(ListPanel *panel, QStringList& args, bool &folders)
 {
-    FileItemList items = panel->view->getSelectedItems(true);
+    KFileItemList items = panel->view->getSelectedItems(true);
     if (items.isEmpty())
         return ; // nothing to do
 
     // determine if we need recursive mode (md5deep)
     folders = false;
-    foreach(const FileItem &item, items) {
+    foreach(const KFileItem &item, items) {
         if (item.isDir())
             folders = true;
         args << item.name();
@@ -1184,7 +1184,7 @@ void ListPanelFunc::calcSpace()
     panel->slotUpdateTotals();
 }
 
-void ListPanelFunc::calcSpace(FileItem item)
+void ListPanelFunc::calcSpace(KFileItem item)
 {
     if(item.isNull())
         return;

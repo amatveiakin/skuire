@@ -42,9 +42,9 @@ public:
         return _ready;
     }
     void populate(const QList<vfile*> &files, vfile *dummy);
-    QModelIndex addItem(FileItem);
-    QModelIndex removeItem(FileItem);
-    void updateItem(FileItem);
+    QModelIndex addItem(KFileItem);
+    QModelIndex removeItem(KFileItem);
+    void updateItem(KFileItem);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;

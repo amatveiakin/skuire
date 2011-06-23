@@ -33,7 +33,7 @@ void SortProps::init(const KrView::Item *item, int col, const KrViewProperties *
     _ascending = asc;
     _index = origNdx;
     _customData = customData;
-    const FileItem &file = item->file;
+    const KFileItem &file = item->file;
     _name = file.name();
     _time = file.time(KFileItem::ModificationTime).toTime_t();
 
@@ -262,8 +262,8 @@ bool itemLessThan(SortProps *sp, SortProps *sp2)
     if (sp2->isDummy())
         return !sp->isAscending();
 
-    const FileItem &file1 = sp->viewItem()->file;
-    const FileItem &file2 = sp2->viewItem()->file;
+    const KFileItem &file1 = sp->viewItem()->file;
+    const KFileItem &file2 = sp2->viewItem()->file;
 
     bool isdir1 = file1.isDir();
     bool isdir2 = file2.isDir();

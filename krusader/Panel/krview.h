@@ -60,9 +60,6 @@ class CalcSpaceClient;
 
 typedef QList<KrViewItem*> KrViewItemList;
 
-typedef KFileItem FileItem;
-typedef KFileItemList FileItemList;
-
 // KrViewProperties
 // This class is an interface class between KrView and KrViewItem
 // In order for KrViewItem to be as independent as possible, KrView holds
@@ -140,7 +137,7 @@ public:
     }
     void startDrag();
 
-    void emitCurrentChanged(FileItem item) {
+    void emitCurrentChanged(KFileItem item) {
         emit currentChanged(item);
     }
     void emitGotDrop(QDropEvent *e) {
@@ -170,19 +167,19 @@ public:
     void emitDeleteFiles(bool reallyDelete) {
         emit deleteFiles(reallyDelete);
     }
-    void emitMiddleButtonClicked(FileItem item, bool itemIsUpUrl) {
+    void emitMiddleButtonClicked(KFileItem item, bool itemIsUpUrl) {
         emit middleButtonClicked(item, itemIsUpUrl);
     }
-    void emitCalcSpace(FileItem item) {
+    void emitCalcSpace(KFileItem item) {
         emit calcSpace(item);
     }
-    void emitRenameItem(FileItem item, QString newName) {
+    void emitRenameItem(KFileItem item, QString newName) {
         emit renameItem(item, newName);
     }
-    void emitExecuted(FileItem item) {
+    void emitExecuted(KFileItem item) {
         emit executed(item);
     }
-    void emitGoInside(FileItem item) {
+    void emitGoInside(KFileItem item) {
         emit goInside(item);
     }
     void emitRefreshActions() {
@@ -221,12 +218,12 @@ public slots:
     void stopQuickFilter(bool refreshView = true);
 
 signals:
-    void currentChanged(FileItem item);
-    void renameItem(FileItem item, QString newName);
-    void executed(FileItem item);
-    void goInside(FileItem item);
-    void middleButtonClicked(FileItem item, bool itemIsUpUrl);
-    void calcSpace(FileItem item);
+    void currentChanged(KFileItem item);
+    void renameItem(KFileItem item, QString newName);
+    void executed(KFileItem item);
+    void goInside(KFileItem item);
+    void middleButtonClicked(KFileItem item, bool itemIsUpUrl);
+    void calcSpace(KFileItem item);
     void selectionChanged();
     void gotDrop(QDropEvent *e);
     void letsDrag(KUrl::List urls, QPixmap icon);
@@ -310,7 +307,7 @@ public:
 
     struct Item
     {
-        Item(const FileItem &fileItem, bool isDummy = false);
+        Item(const KFileItem &fileItem, bool isDummy = false);
 
         const QString &iconName() const {
             if(_iconName.isNull())
@@ -318,7 +315,7 @@ public:
             return _iconName;
         }
 
-        FileItem file;
+        KFileItem file;
 
     private:
         void getIconName() const;
@@ -357,17 +354,17 @@ protected:
 public:
     virtual CalcSpaceClient *calcSpaceClient() = 0;
 
-    virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
-    virtual FileItemList getSelectedItems(bool currentIfNoSelection) = 0;
-    virtual FileItemList getVisibleItems() = 0;
+    virtual KFileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
+    virtual KFileItemList getSelectedItems(bool currentIfNoSelection) = 0;
+    virtual KFileItemList getVisibleItems() = 0;
     virtual void changeSelection(KUrl::List urls, bool select, bool clearFirst) = 0;
     virtual void changeSelection(const KRQuery& filter, bool select, bool includeDirs) = 0;
     virtual void invertSelection() = 0;
     virtual bool isItemSelected(KUrl url) = 0;
     // first item after ".."
-    virtual FileItem firstItem() = 0;
-    virtual FileItem lastItem() = 0;
-    virtual FileItem currentItem() = 0;
+    virtual KFileItem firstItem() = 0;
+    virtual KFileItem lastItem() = 0;
+    virtual KFileItem currentItem() = 0;
     // indicates that ".." is the current item
     // in this case currentItem() return a null item
     virtual bool currentItemIsUpUrl() = 0;
@@ -376,16 +373,16 @@ public:
     virtual QRect itemRectGlobal(KUrl url) = 0;
     virtual void makeItemVisible(KUrl url) = 0;
     virtual void selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst = false) = 0;
-    virtual FileItem itemAt(const QPoint &vp, bool *isUpUrl = 0) = 0;
+    virtual KFileItem itemAt(const QPoint &vp, bool *isUpUrl = 0) = 0;
     virtual QPixmap icon(KUrl url) = 0;
     virtual bool isCurrentItemSelected() = 0;
     virtual void selectCurrentItem(bool select) = 0;
     virtual void pageDown() = 0;
     virtual void pageUp() = 0;
     virtual QString currentDescription() = 0;
-    virtual void intAddItem(FileItem item) = 0;
-    virtual void intDelItem(FileItem item) = 0;
-    virtual void intUpdateItem(FileItem item) = 0;
+    virtual void intAddItem(KFileItem item) = 0;
+    virtual void intDelItem(KFileItem item) = 0;
+    virtual void intUpdateItem(KFileItem item) = 0;
     virtual void makeCurrentVisible() = 0;
 
     // interview related functions
@@ -469,7 +466,7 @@ public:
     KUrl currentUrl() {
         return currentItem().isNull() ? KUrl() : currentItem().url();
     }
-    void setCurrentItem(FileItem item) {
+    void setCurrentItem(KFileItem item) {
         setCurrentItem(item.isNull() ? KUrl() : item.url());
     }
     KUrl::List getSelectedUrls(bool currentUrlIfNoSelection) {
@@ -481,10 +478,10 @@ public:
     void setSelection(KUrl url) {
         setSelection(KUrl::List(url));
     }
-    void setSelection(FileItem item) {
+    void setSelection(KFileItem item) {
         setSelection(item.isNull() ? KUrl() : item.url());
     }
-    void selectItem(FileItem item, bool select) {
+    void selectItem(KFileItem item, bool select) {
         if(!item.isNull())
             selectItem(item.url(), select);
     }
@@ -494,13 +491,13 @@ public:
     void toggleSelected(KUrl url) {
         selectItem(url, !isItemSelected(url));
     }
-    void toggleSelected(FileItem item) {
+    void toggleSelected(KFileItem item) {
         selectItem(item, !isItemSelected(item));
     }
-    bool isItemSelected(FileItem item) {
+    bool isItemSelected(KFileItem item) {
         return item.isNull() ? false : isItemSelected(item.url());
     }
-    void selectRegion(FileItem item1, FileItem item2, bool select, bool clearFirst = false);
+    void selectRegion(KFileItem item1, KFileItem item2, bool select, bool clearFirst = false);
     QString itemDescription(KUrl url, bool itemIsUpUrl);
 
     /////////////////////////////////////////////////////////////
@@ -589,7 +586,7 @@ protected:
     void setSelected(const vfile* vf, bool select);
     virtual void makeItemVisible(const KrViewItem *item) = 0;
     virtual void setCurrentKrViewItem(KrViewItem *item) = 0;
-    virtual FileItem findItemByName(const QString &name) = 0;
+    virtual KFileItem findItemByName(const QString &name) = 0;
     virtual KrViewItem *getCurrentKrViewItem() = 0;
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;
     virtual void intSetSelected(const vfile* vf, bool select) = 0;

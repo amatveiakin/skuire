@@ -67,7 +67,7 @@ void exp_placeholder::panelMissingError(const QString &s, Expander& exp)
 
 QStringList exp_placeholder::fileList(const KrPanel* const panel, const QString& type, const QString& mask, const bool omitPath, const bool useUrl, Expander& exp, const QString& error)
 {
-    FileItemList items;
+    KFileItemList items;
     if (type.isEmpty() || type == "all")
         items = panel->view->getItems(mask);
     else if (type == "files")

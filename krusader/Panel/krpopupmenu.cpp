@@ -345,7 +345,7 @@ void KrPopupMenu::performAction(int id)
         panel->manager()->newTab(item.url(), panel);
         break;
     case OPEN_ID :
-        foreach(FileItem item, items)
+        foreach(KFileItem item, items)
             panel->func->execute(item);
         break;
     case COPY_ID :
@@ -420,11 +420,11 @@ void KrPopupMenu::performAction(int id)
         break;
     case SYNC_SELECTED_ID : {
         QStringList selectedNames; //FIXME remove this; update syncronizer to take urls as argument
-        foreach(FileItem item, items)
+        foreach(KFileItem item, items)
             selectedNames << item.name();
         if (panel->otherPanel()->view->numSelected()) {
-            FileItemList otherItems = panel->otherPanel()->view->getSelectedItems(true);
-            foreach(FileItem otherItem, otherItems) {
+            KFileItemList otherItems = panel->otherPanel()->view->getSelectedItems(true);
+            foreach(KFileItem otherItem, otherItems) {
                 if (!selectedNames.contains(otherItem.name()))
                     selectedNames.append(otherItem.name());
             }

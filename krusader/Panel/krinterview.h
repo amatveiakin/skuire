@@ -43,21 +43,21 @@ public:
         return this;
     }
 
-    virtual FileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
-    virtual FileItemList getSelectedItems(bool currentIfNoSelection);
-    virtual FileItemList getVisibleItems();
+    virtual KFileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
+    virtual KFileItemList getSelectedItems(bool currentIfNoSelection);
+    virtual KFileItemList getVisibleItems();
     virtual void changeSelection(KUrl::List urls, bool select, bool clearFirst);
     virtual void changeSelection(const KRQuery& filter, bool select, bool includeDirs);
     virtual void invertSelection();
     virtual bool isItemSelected(KUrl url);
-    virtual FileItem firstItem();
-    virtual FileItem lastItem();
-    virtual FileItem currentItem();
+    virtual KFileItem firstItem();
+    virtual KFileItem lastItem();
+    virtual KFileItem currentItem();
     virtual bool currentItemIsUpUrl();
     virtual void setCurrentItem(KUrl url);
     virtual void makeItemVisible(KUrl url);
     virtual void selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst);
-    virtual FileItem itemAt(const QPoint &vp, bool *isUpUrl);
+    virtual KFileItem itemAt(const QPoint &vp, bool *isUpUrl);
     virtual bool isItemVisible(KUrl url);
     virtual QRect itemRectGlobal(KUrl url);
     virtual QPixmap icon(KUrl url);
@@ -79,7 +79,7 @@ public:
     virtual KrViewItem* getNext(KrViewItem *current);
     virtual KrViewItem* getPrev(KrViewItem *current);
     virtual KrViewItem* getCurrentKrViewItem();
-    virtual FileItem findItemByName(const QString &name);
+    virtual KFileItem findItemByName(const QString &name);
     virtual QString getCurrentItem() const;
     virtual void setCurrentItem(const QString& name);
     virtual void setCurrentKrViewItem(KrViewItem *item);
@@ -117,9 +117,9 @@ protected:
     virtual KIO::filesize_t calcSize();
     virtual KIO::filesize_t calcSelectedSize();
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy);
-    virtual void intAddItem(FileItem item);
-    virtual void intDelItem(FileItem item);
-    virtual void intUpdateItem(FileItem item);
+    virtual void intAddItem(KFileItem item);
+    virtual void intDelItem(KFileItem item);
+    virtual void intUpdateItem(KFileItem item);
     virtual void intSetSelected(const vfile* vf, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;
     virtual vfile *vfileFromUrl(KUrl url);

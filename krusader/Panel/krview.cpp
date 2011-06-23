@@ -131,7 +131,7 @@ void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
 {
     switch (e->key()) {
     case Qt::Key_Insert: {
-        FileItem item = _view->currentItem();
+        KFileItem item = _view->currentItem();
         if(!item.isNull()) {
             _view->selectCurrentItem(!_view->isCurrentItemSelected());
             quickSearch(_quickSearch->text(), 1);
@@ -153,7 +153,7 @@ void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
 
 void KrViewOperator::quickSearch(const QString & str, int direction)
 {
-    FileItem item = _view->currentItem();
+    KFileItem item = _view->currentItem();
     if (item.isNull()) {
         _quickSearch->setMatch(false);
         return;
@@ -170,7 +170,7 @@ void KrViewOperator::quickSearch(const QString & str, int direction)
     }
 #if 0
     //FIXME
-    FileItem startItem = item;
+    KFileItem startItem = item;
     while (true) {
         item = (direction > 0) ? _view->getNext(item) : _view->getPrev(item);
         if (!item)
@@ -314,7 +314,7 @@ bool KrViewOperator::eventFilter(QObject *watched, QEvent *event)
 const KrView::IconSizes KrView::iconSizes;
 
 
-KrView::Item::Item(const FileItem &fileItem, bool isDummy) :
+KrView::Item::Item(const KFileItem &fileItem, bool isDummy) :
     file(fileItem),
     _brokenLink(false)
 {
@@ -587,7 +587,7 @@ void KrView::changeSelection(const KRQuery& filter, bool select)
 
 void KrView::delItem(const QString &name)
 {
-    FileItem it = findItemByName(name);
+    KFileItem it = findItemByName(name);
     if(it.isNull())
         return;
 
@@ -609,7 +609,7 @@ void KrView::addItem(vfile *vf)
     if (isFiltered(vf))
         return;
 
-    FileItem item = vf->toFileItem();
+    KFileItem item = vf->toFileItem();
 
     intAddItem(item);
 
@@ -660,7 +660,7 @@ void KrView::clear()
 // good old dialog box
 void KrView::renameCurrentItem()
 {
-    FileItem item = currentItem();
+    KFileItem item = currentItem();
 
     if (item.isNull())
         return;
@@ -696,7 +696,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         if (e->modifiers() & Qt::ControlModifier)           // let the panel handle it
             e->ignore();
         else {
-            FileItem item = currentItem();
+            KFileItem item = currentItem();
             if (!item.isNull())
                 op()->emitExecuted(item);
             else if (currentItemIsUpUrl())
@@ -722,7 +722,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         return true;
     }
     case Qt::Key_Space: {
-        FileItem item = currentItem();
+        KFileItem item = currentItem();
         if (!item.isNull()) {
             selectCurrentItem(!isCurrentItemSelected());
 
@@ -750,7 +750,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
                 e->modifiers() == Qt::AltModifier) {   // let the panel handle it
             e->ignore();
         } else { // just a normal click - do a lynx-like moving thing
-            FileItem item = currentItem();
+            KFileItem item = currentItem();
             if (!item.isNull())
                 op()->emitGoInside(item);
             else if (currentItemIsUpUrl())
@@ -787,7 +787,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
     return true;
     case Qt::Key_End:
         if (e->modifiers() & Qt::ShiftModifier) {
-            FileItem first = currentItemIsUpUrl() ? firstItem() : currentItem();
+            KFileItem first = currentItemIsUpUrl() ? firstItem() : currentItem();
             selectRegion(first, lastItem(), true, true);
         } else
             setCurrentItem(Last);
@@ -1169,7 +1169,7 @@ void KrView::clearSavedSelection() {
     op()->emitRefreshActions();
 }
 
-void KrView::selectRegion(FileItem item1, FileItem item2, bool select, bool clearFirst)
+void KrView::selectRegion(KFileItem item1, KFileItem item2, bool select, bool clearFirst)
 {
     KUrl url1, url2;
     if(!item1.isNull())

@@ -116,7 +116,7 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
         return QVariant();
 
     bool isDummy = (item == _dummyItem);
-    const FileItem &file = item->file;
+    const KFileItem &file = item->file;
 
     switch (role) {
     case Qt::FontRole:
@@ -330,7 +330,7 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
         _view->makeCurrentVisible();
 }
 
-QModelIndex KrVfsModel::addItem(FileItem fileItem)
+QModelIndex KrVfsModel::addItem(KFileItem fileItem)
 {
     //FIXME: make sure this wasn't  already added
 
@@ -377,7 +377,7 @@ QModelIndex KrVfsModel::addItem(FileItem fileItem)
     return index(insertIndex, 0);
 }
 
-QModelIndex KrVfsModel::removeItem(FileItem fileItem)
+QModelIndex KrVfsModel::removeItem(KFileItem fileItem)
 {
     QModelIndex currIndex = _view->getCurrentIndex();
 
@@ -432,7 +432,7 @@ QModelIndex KrVfsModel::removeItem(FileItem fileItem)
     return currIndex;
 }
 
-void KrVfsModel::updateItem(FileItem fileItem)
+void KrVfsModel::updateItem(KFileItem fileItem)
 {
     QModelIndex oldModelIndex = indexFromUrl(fileItem.url());
 

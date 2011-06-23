@@ -158,9 +158,9 @@ void KRslots::sendFileByEmail(const KUrl::List &urls)
 //TODO move this to panelfunc ?
 void KRslots::compareContent()
 {
-    FileItemList lstLeft = LEFT_PANEL->view->getSelectedItems(true);
-    FileItemList lstRight = RIGHT_PANEL->view->getSelectedItems(true);
-    FileItemList* lstActive = (ACTIVE_PANEL->gui->isLeft() ? &lstLeft : &lstRight);
+    KFileItemList lstLeft = LEFT_PANEL->view->getSelectedItems(true);
+    KFileItemList lstRight = RIGHT_PANEL->view->getSelectedItems(true);
+    KFileItemList* lstActive = (ACTIVE_PANEL->gui->isLeft() ? &lstLeft : &lstRight);
 
     KUrl url1, url2;
 
@@ -452,7 +452,7 @@ void KRslots::multiRename()
     }
     QString pathToRename = lst[i+1];
 
-    FileItemList items = ACTIVE_VIEW->getSelectedItems(true);
+    KFileItemList items = ACTIVE_VIEW->getSelectedItems(true);
 
     if (items.isEmpty())
         return;
@@ -460,7 +460,7 @@ void KRslots::multiRename()
     KProcess proc;
     proc << pathToRename;
 
-    foreach(const FileItem &item, items) {
+    foreach(const KFileItem &item, items) {
         if (item.isDir())
             proc << "-r";
         proc << item.url().pathOrUrl();
@@ -530,9 +530,9 @@ void KRslots::changeTrashIcon()
 //TODO: move to panelfunc ?
 void KRslots::slotSplit()
 {
-    FileItem item;
+    KFileItem item;
 
-    FileItemList selection = ACTIVE_VIEW->getSelectedItems(true);
+    KFileItemList selection = ACTIVE_VIEW->getSelectedItems(true);
 
     // first, see if we've got exactly 1 selected file, if not, try the current one
     if (selection.count() == 1)
@@ -572,14 +572,14 @@ void KRslots::slotCombine()
     QString       commonName;
     int           commonLength = 0;
 
-    FileItemList items = ACTIVE_VIEW->getSelectedItems(true);
+    KFileItemList items = ACTIVE_VIEW->getSelectedItems(true);
     if (items.isEmpty()) {
         KMessageBox::error(0, i18n("Don't know which files to combine."));
         return;
     }
 
     /* checking splitter names */
-    foreach(FileItem item, items) {
+    foreach(KFileItem item, items) {
         KUrl url = item.url();
 
         if (item.isDir()) {

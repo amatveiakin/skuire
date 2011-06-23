@@ -169,7 +169,7 @@ protected:
     static int defaultPanelType();
 
 protected slots:
-    void updatePopupPanel(FileItem item);
+    void updatePopupPanel(KFileItem item);
     void handleDropOnView(QDropEvent *, QWidget *destWidget = 0); // handles drops on the view only
     void startDragging(KUrl::List, QPixmap);
     void slotPreviewJobStarted(KJob *job);
@@ -181,7 +181,7 @@ protected slots:
     void inlineRefreshListResult(KJob* job);
     void inlineRefreshPercent(KJob*, unsigned long);
     void slotVfsError(QString msg);
-    void newTab(FileItem item, bool itemIsUpUrl);
+    void newTab(KFileItem item, bool itemIsUpUrl);
     void newTab(const KUrl &url, bool nextToThis = false) {
         _manager->newTab(url, nextToThis ? this : 0);
     }

@@ -576,7 +576,7 @@ void KrSearchDialog::viewCurrent()
 
 void KrSearchDialog::compareByContent()
 {
-    FileItemList list = resultView->getSelectedItems(true);
+    KFileItemList list = resultView->getSelectedItems(true);
     if (list.count() != 2)
         return;
 
