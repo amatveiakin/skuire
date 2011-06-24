@@ -83,7 +83,6 @@ public:
     virtual QString getCurrentItem() const;
     virtual void setCurrentItem(const QString& name);
     virtual void setCurrentKrViewItem(KrViewItem *item);
-    virtual void makeItemVisible(const KrViewItem *item);
     virtual void clear();
     virtual void sort();
     virtual void refreshColors();

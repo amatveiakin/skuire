@@ -183,16 +183,6 @@ void KrInterView::makeCurrentVisible()
     _itemView->scrollTo(_itemView->currentIndex());
 }
 
-void KrInterView::makeItemVisible(const KrViewItem *item)
-{
-    if (item == 0)
-        return;
-    vfile* vf = (vfile *)item->getVfile();
-    QModelIndex ndx = _model->vfileIndex(vf);
-    if (ndx.isValid())
-        _itemView->scrollTo(ndx);
-}
-
 void KrInterView::setCurrentItem(const QString& name)
 {
     setCurrentIndex(_model->nameIndex(name));

@@ -586,7 +586,7 @@ public:
 protected:
     bool isFiltered(vfile *vf);
     void setSelected(const vfile* vf, bool select);
-    virtual void makeItemVisible(const KrViewItem *item) = 0;
+//     virtual void makeItemVisible(const KrViewItem *item) = 0;
     virtual void setCurrentKrViewItem(KrViewItem *item) = 0;
     virtual KFileItem findItemByName(const QString &name) = 0;
     virtual KrViewItem *getCurrentKrViewItem() = 0;
