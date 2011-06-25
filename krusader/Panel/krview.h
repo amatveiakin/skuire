@@ -591,10 +591,6 @@ protected:
     virtual void addItem(vfile *vf);
     virtual void updateItem(vfile *vf);
     virtual void delItem(const QString &name);
-    virtual KrViewItem *getFirst() = 0;
-    virtual KrViewItem *getLast() = 0;
-    virtual KrViewItem *getNext(KrViewItem *current) = 0;
-    virtual KrViewItem *getPrev(KrViewItem *current) = 0;
     virtual vfile *vfileFromUrl(KUrl url) = 0;
     /////////////////////////////////////////////////////////////
     // deprecated functions end                                //
