@@ -132,7 +132,6 @@ protected:
     KrVfsModel *_model;
     QAbstractItemView *_itemView;
     KrMouseHandler *_mouseHandler;
-    QHash<vfile *, KrInterViewItem*> _itemHash;
     QSet<const Item*> _selection;
 };
 

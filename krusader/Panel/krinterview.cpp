@@ -46,10 +46,6 @@ KrInterView::~KrInterView()
     _model = 0;
     delete _mouseHandler;
     _mouseHandler = 0;
-    QHashIterator< vfile *, KrInterViewItem *> it(_itemHash);
-    while (it.hasNext())
-        delete it.next().value();
-    _itemHash.clear();
 }
 
 void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst)
@@ -135,10 +131,6 @@ void KrInterView::clear()
     _itemView->clearSelection();
     _itemView->setCurrentIndex(QModelIndex());
     _model->clear();
-    QHashIterator< vfile *, KrInterViewItem *> it(_itemHash);
-    while (it.hasNext())
-        delete it.next().value();
-    _itemHash.clear();
 
     KrView::clear();
 }
