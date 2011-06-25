@@ -125,6 +125,8 @@ void KrInterBriefView::setup()
 
 void KrInterBriefView::keyPressEvent(QKeyEvent *e)
 {
+//FIXME
+#if 0
     if (!e || !_model->ready())
         return ; // subclass bug
     if ((e->key() != Qt::Key_Left && e->key() != Qt::Key_Right) &&
@@ -194,6 +196,7 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
     default:
         QAbstractItemView::keyPressEvent(e);
     }
+#endif
 }
 
 void KrInterBriefView::wheelEvent(QWheelEvent *ev)

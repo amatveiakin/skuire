@@ -73,28 +73,28 @@ void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select, bool clearFi
         }
 
         for (int row = r1; row <= r2; row++)
-            setSelected(_model->vfileAt(_model->index(row, 0)), select);
+            setSelected(_model->itemAt(_model->index(row, 0)), select);
 
     } else if (mi1.isValid())
-        setSelected(_model->vfileAt(mi1), select);
+        setSelected(_model->itemAt(mi1), select);
     else if (mi2.isValid())
-        setSelected(_model->vfileAt(mi2), (select));
+        setSelected(_model->itemAt(mi2), (select));
 
     redraw();
     op()->setMassSelectionUpdate(false);
 }
 
-void KrInterView::intSetSelected(const vfile* vf, bool select)
+void KrInterView::intSetSelected(const KrView::Item *item, bool select)
 {
     if(select)
-        _selection.insert(vf);
+        _selection.insert(item);
     else
-        _selection.remove(vf);
+        _selection.remove(item);
 }
 
 bool KrInterView::isSelected(const QModelIndex &ndx)
 {
-    return isSelected(_model->vfileAt(ndx));
+    return isSelected(_model->itemAt(ndx));
 }
 
 KFileItem KrInterView::findItemByName(const QString &name)
@@ -236,9 +236,8 @@ void KrInterView::intDelItem(KFileItem item)
     if(!index.isValid())
         return;
 
-    vfile *vf = _model->vfileAt(index);
-    if(vf)
-        setSelected(vf, false);
+    if(Item *viewItem = _model->itemAt(index))
+        setSelected(viewItem, false);
 
     QModelIndex newIndex = _model->removeItem(item);
 
@@ -310,8 +309,8 @@ KIO::filesize_t KrInterView::calcSize()
 KIO::filesize_t KrInterView::calcSelectedSize()
 {
     KIO::filesize_t size = 0;
-    foreach(const vfile *vf, _selection) {
-        size += vf->vfile_getSize();
+    foreach(const Item *item, _selection) {
+        size += item->size();
     }
     return size;
 }
@@ -335,8 +334,8 @@ KFileItemList KrInterView::getSelectedItems(bool currentIfNoSelection)
     KFileItemList list;
 
     if(_selection.count()) {
-        foreach(const vfile *vf, _selection)
-            list << vf->toFileItem();
+        foreach(const Item *item, _selection)
+            list << *item;
     } else if(currentIfNoSelection) {
         vfile *vf = _model->vfileAt(_itemView->currentIndex());
         if (vf && vf != _dummyVfile)
@@ -450,7 +449,7 @@ void KrInterView::changeSelection(KUrl::List urls, bool select, bool clearFirst)
     foreach(const KUrl &url, urls) {
         QModelIndex idx = _model->indexFromUrl(url);
         if(idx.isValid())
-            setSelected(_model->vfileAt(idx), select);
+            setSelected(_model->itemAt(idx), select);
     }
 
     op()->setMassSelectionUpdate(false);
@@ -473,7 +472,7 @@ void KrInterView::changeSelection(const KRQuery& filter, bool select, bool inclu
             continue;
 
         if (filter.match(file))
-            setSelected(file, select);
+            setSelected(item, select);
     }
 
     op()->setMassSelectionUpdate(false);
@@ -491,12 +490,9 @@ void KrInterView::invertSelection()
     foreach(KrView::Item *item, _model->items()) {
         if (item == _model->dummyItem())
             continue;
-        vfile *vf = _files->search(item->name());
-        if(vf) {
-            if (item->isDir() && !markDirs && !isSelected(vf))
-                continue;
-            setSelected(vf, !isSelected(vf));
-        }
+        if (item->isDir() && !markDirs && !isSelected(item))
+            continue;
+        setSelected(item, !isSelected(item));
     }
 
     op()->setMassSelectionUpdate(false);
@@ -506,8 +502,8 @@ void KrInterView::invertSelection()
 
 bool KrInterView::isItemSelected(KUrl url)
 {
-    vfile *vf = _model->vfileAt(_model->indexFromUrl(url));
-    return vf ? _selection.contains(vf) : false;
+    Item *item = _model->itemAt(_model->indexFromUrl(url));
+    return item ? isSelected(item) : false;
 }
 
 vfile *KrInterView::vfileFromUrl(KUrl url)
@@ -579,15 +575,15 @@ QPixmap KrInterView::icon(KUrl url)
 
 bool KrInterView::isCurrentItemSelected()
 {
-    vfile *vf = _model->vfileAt(_itemView->currentIndex());
-    return vf ? _selection.contains(vf) : false;
+    Item *item = _model->itemAt(_itemView->currentIndex());
+    return item ? isSelected(item) : false;
 }
 
 void KrInterView::selectCurrentItem(bool select)
 {
-    vfile *vf = _model->vfileAt(_itemView->currentIndex());
-    if(vf && vf != _dummyVfile)
-        setSelected(vf, select);
+    Item *item = currentViewItem();
+    if(item && item != _model->dummyItem())
+        setSelected(item, select);
 }
 
 void KrInterView::pageDown()
@@ -618,4 +614,9 @@ QString KrInterView::currentDescription()
         return itemDescription(item->url(), item == _model->dummyItem());
     else
         return QString();
+}
+
+const KrView::Item *KrInterView::dummyItem()
+{
+    return _model->dummyItem();
 }

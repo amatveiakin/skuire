@@ -119,17 +119,18 @@ protected:
     virtual void intAddItem(KFileItem item);
     virtual void intDelItem(KFileItem item);
     virtual void intUpdateItem(KFileItem item);
-    virtual void intSetSelected(const vfile* vf, bool select);
+    virtual void intSetSelected(const KrView::Item *item, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;
     virtual vfile *vfileFromUrl(KUrl url);
     virtual QRect itemRect(KUrl itemUrl);
+    virtual const Item *dummyItem();
 
     virtual QRect itemRect(const vfile *vf) = 0;
 
     KrInterViewItem * getKrInterViewItem(vfile *vf);
     KrInterViewItem * getKrInterViewItem(const QModelIndex &);
-    bool isSelected(const vfile *vf) const {
-        return _selection.contains(vf);
+    bool isSelected(const KrView::Item *item) {
+        return _selection.contains(item);
     }
     void currentChanged(const QModelIndex &current);
     void setCurrentIndex(QModelIndex index);
@@ -140,7 +141,7 @@ protected:
     QAbstractItemView *_itemView;
     KrMouseHandler *_mouseHandler;
     QHash<vfile *, KrInterViewItem*> _itemHash;
-    QSet<const vfile*> _selection;
+    QSet<const Item*> _selection;
 };
 
 #endif

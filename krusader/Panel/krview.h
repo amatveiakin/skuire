@@ -421,6 +421,7 @@ public:
 
 protected:
     virtual void copySettingsFrom(KrView *other) = 0;
+    virtual void intSetSelected(const Item *item, bool select) = 0;
     virtual void updatePreviews();
     virtual void clear();
 
@@ -585,13 +586,11 @@ public:
     static QString krPermissionString(const vfile * vf);
 protected:
     bool isFiltered(vfile *vf);
-    void setSelected(const vfile* vf, bool select);
 //     virtual void makeItemVisible(const KrViewItem *item) = 0;
     virtual void setCurrentKrViewItem(KrViewItem *item) = 0;
     virtual KFileItem findItemByName(const QString &name) = 0;
     virtual KrViewItem *getCurrentKrViewItem() = 0;
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;
-    virtual void intSetSelected(const vfile* vf, bool select) = 0;
     virtual void addItem(vfile *vf);
     virtual void updateItem(vfile *vf);
     virtual void delItem(const QString &name);
@@ -613,7 +612,9 @@ protected:
     virtual KIO::filesize_t calcSize() = 0;
     virtual KIO::filesize_t calcSelectedSize() = 0;
     virtual void setCurrentItem(ItemSpec item) = 0;
+    virtual const Item *dummyItem() = 0;
 
+    void setSelected(const Item *item, bool select);
     bool handleKeyEventInt(QKeyEvent *e);
     void sortModeUpdated(KrViewProperties::ColumnType sortColumn, bool descending);
     void saveSortMode(KConfigGroup &group);

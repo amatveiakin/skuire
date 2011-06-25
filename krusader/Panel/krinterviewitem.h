@@ -37,10 +37,13 @@ public:
     }
 
     bool isSelected() const {
-        return _view->isSelected(_vf);
+        KrView::Item *item = _view->_model->itemAt(_view->_model->vfileIndex(_vf));
+        return item ? _view->isSelected(item) : false;
     }
     void setSelected(bool s) {
-        _view->setSelected(_vf, s);
+        KrView::Item *item = _view->_model->itemAt(_view->_model->vfileIndex(_vf));
+        if(item)
+            _view->setSelected(item, s);
         if(!_view->op()->isMassSelectionUpdate()) {
             redraw();
             _view->op()->emitSelectionChanged();

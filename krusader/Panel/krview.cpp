@@ -1142,14 +1142,14 @@ void KrView::refresh()
     op()->emitSelectionChanged();
 }
 
-void KrView::setSelected(const vfile* vf, bool select)
+void KrView::setSelected(const Item *item, bool select)
 {
-    if(vf == _dummyVfile)
+    if(item == dummyItem())
         return;
 
     if(select)
         clearSavedSelection();
-    intSetSelected(vf, select);
+    intSetSelected(item, select);
 }
 
 void KrView::saveSelection()
