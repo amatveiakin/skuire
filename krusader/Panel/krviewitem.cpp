@@ -85,5 +85,8 @@ QPixmap KrViewItem::icon()
 #endif
     if (dummyVfile || !_viewProperties->displayIcons)
         return QPixmap();
-    else return KrView::getIcon(_vf, true);
+    else {
+        KrView::Item item(_vf->toFileItem());
+        return KrView::getIcon(&item, true);
+    }
 }

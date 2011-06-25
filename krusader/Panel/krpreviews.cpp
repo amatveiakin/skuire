@@ -117,6 +117,8 @@ void KrPreviews::slotRefreshColors()
 
 void KrPreviews::addPreview(const vfile *file, const QPixmap &preview)
 {
+//FIXME
+#if 0
     QPixmap active, inactive;
 
     if(preview.isNull()) {
@@ -132,6 +134,7 @@ void KrPreviews::addPreview(const vfile *file, const QPixmap &preview)
     _previews.insert(file, active);
     if(_dim)
         _previewsInactive.insert(file, inactive);
+#endif
 }
 
 void KrPreviews::removePreview(const vfile* file)

@@ -592,8 +592,6 @@ public:
     virtual void setNameToMakeCurrentIfAdded(const QString name) {
         _nameToMakeCurrentIfAdded = name;
     }
-    QPixmap getIcon(vfile *vf);
-    static QPixmap getIcon(vfile *vf, bool active, int size = 0);
     static QString krPermissionString(const vfile * vf);
 protected:
     bool isFiltered(vfile *vf);

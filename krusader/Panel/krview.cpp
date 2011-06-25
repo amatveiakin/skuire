@@ -486,12 +486,6 @@ QPixmap KrView::processIcon(const QPixmap &icon, bool dim, const QColor & dimCol
                                 Qt::ThresholdAlphaDither | Qt::NoOpaqueDetection );
 }
 
-QPixmap KrView::getIcon(vfile *vf, bool active, int size/*, KRListItem::cmpColor color*/)
-{
-    Item item(vf->toFileItem());
-    return getIcon(&item, active, size);
-}
-
 QPixmap KrView::getIcon(const Item *item, bool active, int size/*, KRListItem::cmpColor color*/)
 {
     // KConfigGroup ag( krConfig, "Advanced");
@@ -539,16 +533,6 @@ QPixmap KrView::getIcon(const Item *item)
 //             return icon;
     }
     return getIcon(item, _focused, _fileIconSize);
-}
-
-QPixmap KrView::getIcon(vfile *vf)
-{
-    if(_previews) {
-        QPixmap icon;
-        if(_previews->getPreview(vf, icon, _focused))
-            return icon;
-    }
-    return getIcon(vf, _focused, _fileIconSize);
 }
 
 QString KrView::statistics()
