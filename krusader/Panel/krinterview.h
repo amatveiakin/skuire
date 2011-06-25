@@ -121,8 +121,6 @@ protected:
 
     virtual QRect itemRect(const vfile *vf) = 0;
 
-    KrInterViewItem * getKrInterViewItem(vfile *vf);
-    KrInterViewItem * getKrInterViewItem(const QModelIndex &);
     bool isSelected(const KrView::Item *item) {
         return _selection.contains(item);
     }

@@ -114,28 +114,6 @@ QString KrInterView::getCurrentItem() const
     return vf->vfile_getName();
 }
 
-KrInterViewItem * KrInterView::getKrInterViewItem(vfile *vf)
-{
-    QHash<vfile *, KrInterViewItem*>::iterator it = _itemHash.find(vf);
-    if (it == _itemHash.end()) {
-        KrInterViewItem * newItem =  new KrInterViewItem(this, vf);
-        _itemHash[ vf ] = newItem;
-        return newItem;
-    }
-    return *it;
-}
-
-KrInterViewItem * KrInterView::getKrInterViewItem(const QModelIndex & ndx)
-{
-    if (!ndx.isValid())
-        return 0;
-    vfile * vf = _model->vfileAt(ndx);
-    if (vf == 0)
-        return 0;
-    else
-        return getKrInterViewItem(vf);
-}
-
 void KrInterView::makeCurrentVisible()
 {
     _itemView->scrollTo(_itemView->currentIndex());
