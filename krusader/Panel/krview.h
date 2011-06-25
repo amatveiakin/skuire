@@ -597,6 +597,8 @@ public:
     static QString krPermissionString(const vfile * vf);
 protected:
     bool isFiltered(vfile *vf);
+
+    //the following can be removed after the switch from VFileContainer to AbstractDirLister
     virtual KFileItem findItemByName(const QString &name) = 0;
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;
     virtual void addItem(vfile *vf);
