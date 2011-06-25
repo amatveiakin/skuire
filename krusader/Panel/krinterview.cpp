@@ -188,16 +188,6 @@ void KrInterView::setCurrentItem(const QString& name)
     setCurrentIndex(_model->nameIndex(name));
 }
 
-void KrInterView::setCurrentKrViewItem(KrViewItem *item)
-{
-    if (item == 0) {
-        setCurrentIndex(QModelIndex());
-        return;
-    }
-    vfile* vf = (vfile *)item->getVfile();
-    setCurrentIndex(_model->vfileIndex(vf));
-}
-
 void KrInterView::sort()
 {
     _model->sort();

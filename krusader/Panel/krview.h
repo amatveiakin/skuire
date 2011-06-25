@@ -586,8 +586,6 @@ public:
     static QString krPermissionString(const vfile * vf);
 protected:
     bool isFiltered(vfile *vf);
-//     virtual void makeItemVisible(const KrViewItem *item) = 0;
-    virtual void setCurrentKrViewItem(KrViewItem *item) = 0;
     virtual KFileItem findItemByName(const QString &name) = 0;
     virtual KrViewItem *getCurrentKrViewItem() = 0;
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;

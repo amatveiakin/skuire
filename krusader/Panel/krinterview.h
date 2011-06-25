@@ -82,7 +82,6 @@ public:
     virtual KFileItem findItemByName(const QString &name);
     virtual QString getCurrentItem() const;
     virtual void setCurrentItem(const QString& name);
-    virtual void setCurrentKrViewItem(KrViewItem *item);
     virtual void clear();
     virtual void sort();
     virtual void refreshColors();
