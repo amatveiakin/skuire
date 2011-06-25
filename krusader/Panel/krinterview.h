@@ -78,7 +78,6 @@ public:
     virtual KrViewItem* getLast();
     virtual KrViewItem* getNext(KrViewItem *current);
     virtual KrViewItem* getPrev(KrViewItem *current);
-    virtual KrViewItem* getCurrentKrViewItem();
     virtual KFileItem findItemByName(const QString &name);
     virtual QString getCurrentItem() const;
     virtual void setCurrentItem(const QString& name);

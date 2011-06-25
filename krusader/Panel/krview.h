@@ -587,7 +587,6 @@ public:
 protected:
     bool isFiltered(vfile *vf);
     virtual KFileItem findItemByName(const QString &name) = 0;
-    virtual KrViewItem *getCurrentKrViewItem() = 0;
     virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;
     virtual void addItem(vfile *vf);
     virtual void updateItem(vfile *vf);

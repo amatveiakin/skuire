@@ -114,14 +114,6 @@ QString KrInterView::getCurrentItem() const
     return vf->vfile_getName();
 }
 
-KrViewItem* KrInterView::getCurrentKrViewItem()
-{
-    if (!_model->ready())
-        return 0;
-
-    return getKrInterViewItem(_itemView->currentIndex());
-}
-
 KrViewItem* KrInterView::getFirst()
 {
     if (!_model->ready())
@@ -244,9 +236,9 @@ void KrInterView::prepareForActive()
 {
     KrView::prepareForActive();
     _itemView->setFocus();
-    KrViewItem * current = getCurrentKrViewItem();
-    if (current != 0) {
-        QString desc = current->description();
+    Item *current = currentViewItem();
+    if (current) {
+        QString desc = itemDescription(current->url(), current == dummyItem());
         op()->emitItemDescription(desc);
     }
 }
