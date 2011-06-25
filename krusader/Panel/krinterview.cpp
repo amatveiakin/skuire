@@ -20,7 +20,6 @@
 
 #include "krinterview.h"
 #include "krvfsmodel.h"
-#include "krinterviewitem.h"
 #include "krcolorcache.h"
 #include "krmousehandler.h"
 #include "krpreviews.h"

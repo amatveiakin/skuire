@@ -27,7 +27,6 @@
 class QMouseEvent;
 class QWheelEvent;
 class KrView;
-class KrViewItem;
 class QDragEnterEvent;
 class QDragMoveEvent;
 class QDragLeaveEvent;

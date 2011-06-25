@@ -22,7 +22,6 @@
 #include "krpanel.h"
 #include "panelfunc.h"
 #include "krview.h"
-#include "krviewitem.h"
 #include "viewactions.h"
 #include "../kicons.h"
 #include "../filemanagerwindow.h"

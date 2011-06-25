@@ -16,7 +16,6 @@ set(Panel_SRCS
     krpopupmenu.cpp 
     krpreviewpopup.cpp 
     krview.cpp 
-    krviewitem.cpp 
     panelfunc.cpp
     krpanel.cpp
     listpanel.cpp

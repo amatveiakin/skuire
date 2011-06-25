@@ -20,7 +20,6 @@
 #include "krmousehandler.h"
 #include "krvfsmodel.h"
 #include "krinterviewitemdelegate.h"
-#include "krinterviewitem.h"
 #include "../GUI/krstyleproxy.h"
 #include "../defaults.h"
 

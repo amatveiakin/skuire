@@ -44,6 +44,7 @@
 #include <kstandarddirs.h>
 #include <kdirwatch.h>
 
+#include "krglobal.h"
 #include "kractions.h"
 #include "Panel/krpanel.h"
 #include "Panel/panelfunc.h"

@@ -33,10 +33,8 @@
 #include <klocale.h>
 #include <kdirlister.h>
 
-#include "krinterviewitem.h"
 #include "krviewfactory.h"
 #include "krinterviewitemdelegate.h"
-#include "krviewitem.h"
 #include "krvfsmodel.h"
 #include "krmousehandler.h"
 #include "krcolorcache.h"

@@ -33,7 +33,6 @@
 
 #include "listpanel.h"
 #include "krview.h"
-#include "krviewitem.h"
 #include "panelfunc.h"
 #include "listpanelactions.h"
 #include "../krservices.h"

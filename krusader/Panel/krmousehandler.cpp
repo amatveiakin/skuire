@@ -19,7 +19,6 @@
 
 #include "krmousehandler.h"
 #include "krview.h"
-#include "krviewitem.h"
 #include "krselectionmode.h"
 #include "../krglobal.h"
 #include "../defaults.h"

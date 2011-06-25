@@ -27,14 +27,11 @@
 #include "krview.h"
 #include "calcspacethread.h"
 
-class KrInterViewItem;
 class KrVfsModel;
 class KrMouseHandler;
-class KrViewItem;
 
 class KrInterView : public KrView, public CalcSpaceClient
 {
-    friend class KrInterViewItem;
 public:
     KrInterView(KrViewInstance &instance, KConfig *cfg, QAbstractItemView *itemView);
     virtual ~KrInterView();

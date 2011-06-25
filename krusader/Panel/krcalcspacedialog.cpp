@@ -41,6 +41,7 @@ A
 #include <kcursor.h>
 
 #include "krpanel.h"
+#include "krview.h"
 #include "panelfunc.h"
 #include "../krglobal.h"
 #include "../VFS/krpermhandler.h"

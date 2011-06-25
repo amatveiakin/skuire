@@ -89,7 +89,6 @@
 #include "Synchronizer/synchronizergui.h"
 #include "DiskUsage/diskusagegui.h"
 #include "krservices.h"
-#include "Panel/krviewitem.h"
 #include "Queue/queuedialog.h"
 #include "krtrashhandler.h"
 #include "BookMan/krbookmarkhandler.h"

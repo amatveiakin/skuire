@@ -39,7 +39,6 @@
 #include "krglobal.h"
 
 class KrMainWindow;
-class KrViewItem;
 class KUrl;
 
 class KrProcess: public KProcess

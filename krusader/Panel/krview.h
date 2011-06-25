@@ -49,7 +49,6 @@
 #define MAX_BRIEF_COLS 5
 
 class KrView;
-class KrViewItem;
 class KrQuickSearch;
 class KrPreviews;
 class QModelIndex;
@@ -58,7 +57,6 @@ class QuickFilter;
 class VfileContainer;
 class CalcSpaceClient;
 
-typedef QList<KrViewItem*> KrViewItemList;
 
 // KrViewProperties
 // This class is an interface class between KrView and KrViewItem
@@ -292,7 +290,6 @@ private:
  */
 class KrView
 {
-    friend class KrViewItem;
     friend class KrViewOperator;
     friend class KrVfsModel; //HACK
 

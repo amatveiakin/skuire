@@ -27,7 +27,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-
+#if 0
 #ifndef KRPREVIEWS_H
 #define KRPREVIEWS_H
 
@@ -40,7 +40,6 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 
 class KJob;
 class KrView;
-class KrViewItem;
 class KrPreviewJob;
 class vfile;
 
@@ -77,3 +76,4 @@ protected:
 };
 
 #endif // __krpreviews__
+#endif

@@ -29,10 +29,8 @@
 #include <kdirlister.h>
 #include <kmenu.h>
 
-#include "krinterviewitem.h"
 #include "krviewfactory.h"
 #include "krinterviewitemdelegate.h"
-#include "krviewitem.h"
 #include "krvfsmodel.h"
 #include "../VFS/krpermhandler.h"
 #include "../defaults.h"

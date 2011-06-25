@@ -32,7 +32,6 @@
 
 #include "viewactions.h"
 #include "krviewfactory.h"
-#include "krviewitem.h"
 #include "krselectionmode.h"
 #include "krcolorcache.h"
 #include "krpreviews.h"
@@ -440,6 +439,8 @@ void KrView::enableUpdateDefaultSettings(bool enable)
 
 void KrView::showPreviews(bool show)
 {
+//FIXME
+#if 0
     if(show) { 
         if(!_previews) {
             _previews = new KrPreviews(this);
@@ -452,12 +453,16 @@ void KrView::showPreviews(bool show)
     redraw();
 //     op()->settingsChanged(KrViewProperties::PropShowPreviews);
     op()->emitRefreshActions();
+#endif
 }
 
 void KrView::updatePreviews()
 {
+//FIXME
+#if 0
     if(_previews)
         _previews->update();
+#endif
 }
 
 QPixmap KrView::processIcon(const QPixmap &icon, bool dim, const QColor & dimColor, int dimFactor, bool symlink)
@@ -634,8 +639,11 @@ void KrView::updateItem(vfile *vf)
 
 void KrView::clear()
 {
+//FIXME
+#if 0
     if(_previews)
         _previews->clear();
+#endif
     _count = _numDirs = 0;
     delete _dummyVfile;
     _dummyVfile = 0;
@@ -850,10 +858,13 @@ void KrView::setFileIconSize(int size)
     if(iconSizes.indexOf(size) < 0)
         return;
     _fileIconSize = size;
+//FIXME
+#if 0
     if(_previews) {
         _previews->clear();
         _previews->update();
     }
+#endif
     redraw();
     op()->emitRefreshActions();
 }

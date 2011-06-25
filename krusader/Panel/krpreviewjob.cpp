@@ -27,12 +27,11 @@ A
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-
+#if 0
 #include "krpreviewjob.h"
 #include "krpreviews.h"
 
 #include "krview.h"
-#include "krviewitem.h"
 #include "../VFS/vfile.h"
 #include "../defaults.h"
 
@@ -167,3 +166,4 @@ bool KrPreviewJob::doKill()
     _hash.clear();
     return true;
 }
+#endif

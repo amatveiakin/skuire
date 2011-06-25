@@ -33,7 +33,6 @@
 #ifndef PANELFUNC_H
 #define PANELFUNC_H
 
-#include "krviewitem.h"
 #include "../VFS/vfs.h"
 
 #include <QtCore/QObject>
@@ -41,6 +40,7 @@
 #include <kservice.h>
 
 
+class ListPanel;
 class DirHistoryQueue;
 
 class ListPanelFunc : public QObject
@@ -107,9 +107,6 @@ public:
 
     vfs* files();  // return a pointer to the vfs
 
-    inline vfile* getVFile(KrViewItem *item) {
-        return files()->vfs_search(item->name());
-    }
     inline vfile* getVFile(const QString& name) {
         return files()->vfs_search(name);
     }

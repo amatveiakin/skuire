@@ -27,13 +27,12 @@ A
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-
+#if 0
 #include "krpreviews.h"
 #include "krpreviewjob.h"
 
 #include "krcolorcache.h"
 #include "krview.h"
-#include "krviewitem.h"
 #include "../VFS/vfile.h"
 #include "../defaults.h"
 
@@ -142,3 +141,4 @@ void KrPreviews::removePreview(const vfile* file)
     _previews.remove(file);
     _previewsInactive.remove(file);
 }
+#endif

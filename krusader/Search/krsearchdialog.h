@@ -44,7 +44,6 @@
 class QLabel;
 class SearchResultContainer;
 class KrView;
-class KrViewItem;
 class ProfileManager;
 class FilterTabs;
 class GeneralFilter;
@@ -71,7 +70,6 @@ public slots:
     void found(QString what, QString where, KIO::filesize_t size, time_t mtime, QString perm, QString foundText);
     void closeDialog(bool isAccept = true);
     void executed(const QString &name);
-    void currentChanged(KrViewItem *item);
 
     virtual void keyPressEvent(QKeyEvent *e);
     virtual void closeEvent(QCloseEvent *e);

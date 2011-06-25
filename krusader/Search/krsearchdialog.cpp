@@ -503,20 +503,6 @@ void KrSearchDialog::executed(const QString &name)
     showMinimized();
 }
 
-void KrSearchDialog::currentChanged(KrViewItem *item)
-{
-    if(!item)
-        return;
-    QString text = result->foundText(item->getVfile());
-    if(!text.isEmpty()) {
-        // ugly hack: find the <b> and </b> in the text, then
-        // use it to set the are which we don't want squeezed
-        int idx = text.indexOf("<b>") - 4; // take "<qt>" into account
-        int length = text.indexOf("</b>") - idx + 4;
-        foundTextLabel->setText(text, idx, length);
-    }
-}
-
 void KrSearchDialog::closeEvent(QCloseEvent *e)
 {                     /* if searching is in progress we must not close the window */
     if (isBusy)    /* because qApp->processEvents() is called by the searcher and */
