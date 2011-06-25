@@ -611,6 +611,7 @@ protected:
     virtual void setCurrentItem(ItemSpec item) = 0;
     virtual const Item *dummyItem() = 0;
 
+    bool isFiltered(Item *item);
     void setSelected(const Item *item, bool select);
     bool handleKeyEventInt(QKeyEvent *e);
     void sortModeUpdated(KrViewProperties::ColumnType sortColumn, bool descending);

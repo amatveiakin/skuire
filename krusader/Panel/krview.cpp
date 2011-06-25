@@ -1020,6 +1020,12 @@ bool KrView::isFiltered(vfile *vf)
     return filteredOut;
 }
 
+bool KrView::isFiltered(Item *item)
+{
+    vfile *vf = _files->search(item->name());
+    return vf ? isFiltered(vf) : false;
+}
+
 void KrView::setFiles(VfileContainer *files)
 {
     if(files != _files) {
