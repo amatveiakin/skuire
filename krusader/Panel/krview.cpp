@@ -1190,25 +1190,25 @@ QString KrView::itemDescription(KUrl url, bool itemIsUpUrl)
     if (itemIsUpUrl)
         return i18n("Climb up the directory tree");
 
-    vfile *vf = vfileFromUrl(url);
-    if(!vf)
+    const Item *item = itemFromUrl(url);
+
+    if(!item)
         return QString();
 
-    // else is implied
-    QString text = vf->vfile_getName();
+    QString text = item->name();
     QString comment;
-    KMimeType::Ptr mt = KMimeType::mimeType(vf->vfile_getMime());
+    KMimeType::Ptr mt = KMimeType::mimeType(item->mimetype());
     if (mt)
-        comment = mt->comment(vf->vfile_getUrl());
-    QString myLinkDest = vf->vfile_getSymDest();
-    KIO::filesize_t mySize = vf->vfile_getSize();
+        comment = mt->comment(url);
+    QString myLinkDest = item->linkDest();
+    KIO::filesize_t mySize = item->size();
 
     QString text2 = text;
-    mode_t m_fileMode = vf->vfile_getMode();
+    mode_t m_fileMode = item->mode();
 
-    if (vf->vfile_isSymLink()) {
+    if (item->isLink()) {
         QString tmp;
-        if (vf->vfile_isBrokenLink())
+        if (item->isBrokenLink())
             tmp = i18n("(Broken Link!)");
         else if (comment.isEmpty())
             tmp = i18n("Symbolic Link") ;
@@ -1221,14 +1221,14 @@ QString KrView::itemDescription(KUrl url, bool itemIsUpUrl)
         text += tmp;
     } else if (S_ISREG(m_fileMode)) {
         text = QString("%1").arg(text2) + QString(" (%1)").arg(properties()->humanReadableSize ?
-                KRpermHandler::parseSize(vf->vfile_getSize()) : KIO::convertSize(mySize));
+                KRpermHandler::parseSize(item->size()) : KIO::convertSize(mySize));
         text += "  ";
         text += comment;
     } else if (S_ISDIR(m_fileMode)) {
         text += "/  ";
-        if (vf->vfile_getSize() != 0) {
+        if (item->size() != 0) {
             text += '(' +
-                    (properties()->humanReadableSize ? KRpermHandler::parseSize(vf->vfile_getSize()) : KIO::convertSize(mySize)) + ") ";
+                    (properties()->humanReadableSize ? KRpermHandler::parseSize(item->size()) : KIO::convertSize(mySize)) + ") ";
         }
         text += comment;
     } else {

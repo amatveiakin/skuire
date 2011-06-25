@@ -318,6 +318,9 @@ public:
                 getIconName();
             return _iconName;
         }
+        bool isBrokenLink() const {
+            return _brokenLink;
+        }
 
     private:
         void getIconName() const;
@@ -420,6 +423,7 @@ public:
     virtual void showContextMenu() = 0;
 
 protected:
+    virtual const Item *itemFromUrl(KUrl url) const = 0;
     virtual void copySettingsFrom(KrView *other) = 0;
     virtual void intSetSelected(const Item *item, bool select) = 0;
     virtual void updatePreviews();
@@ -605,7 +609,7 @@ protected:
     virtual KIO::filesize_t calcSize() = 0;
     virtual KIO::filesize_t calcSelectedSize() = 0;
     virtual void setCurrentItem(ItemSpec item) = 0;
-    virtual const Item *dummyItem() = 0;
+    virtual const Item *dummyItem() const = 0;
 
     bool isFiltered(Item *item);
     void setSelected(const Item *item, bool select);

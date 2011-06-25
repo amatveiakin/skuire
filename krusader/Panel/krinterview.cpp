@@ -564,7 +564,12 @@ QString KrInterView::currentDescription()
         return QString();
 }
 
-const KrView::Item *KrInterView::dummyItem()
+const KrView::Item *KrInterView::dummyItem() const
 {
     return _model->dummyItem();
+}
+
+const KrView::Item *KrInterView::itemFromUrl(KUrl url) const
+{
+    return _model->itemAt(_model->indexFromUrl(url));
 }
