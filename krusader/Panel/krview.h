@@ -321,12 +321,19 @@ public:
         bool isBrokenLink() const {
             return _brokenLink;
         }
+        KIO::filesize_t size() const {
+            return _calculatedSize ? _calculatedSize : KFileItem::size();
+        }
+        void setCalculatedSize(KIO::filesize_t s) {
+            _calculatedSize = s;
+        }
 
     private:
         void getIconName() const;
 
         mutable QString _iconName;
         bool _brokenLink;
+        KIO::filesize_t _calculatedSize;
     };
 
     virtual ~KrView();
@@ -595,7 +602,6 @@ protected:
     virtual void addItem(vfile *vf);
     virtual void updateItem(vfile *vf);
     virtual void delItem(const QString &name);
-    virtual vfile *vfileFromUrl(KUrl url) = 0;
     /////////////////////////////////////////////////////////////
     // deprecated functions end                                //
     /////////////////////////////////////////////////////////////

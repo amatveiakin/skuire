@@ -115,7 +115,6 @@ protected:
     virtual void intUpdateItem(KFileItem item);
     virtual void intSetSelected(const KrView::Item *item, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;
-    virtual vfile *vfileFromUrl(KUrl url);
     virtual QRect itemRect(KUrl itemUrl);
     virtual const Item *dummyItem() const;
     virtual const Item *itemFromUrl(KUrl url) const;

@@ -316,7 +316,8 @@ const KrView::IconSizes KrView::iconSizes;
 
 KrView::Item::Item(const KFileItem &fileItem, bool isDummy) :
     KFileItem(fileItem),
-    _brokenLink(false)
+    _brokenLink(false),
+    _calculatedSize(0)
 {
     if(isDummy)
         _iconName = "go-up";
