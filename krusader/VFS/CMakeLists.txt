@@ -1,4 +1,6 @@
 set(VFS_SRCS
+    abstractdirlister.cpp
+    vfiledirlister.cpp
     vfilecontainer.cpp
     krvfshandler.cpp
     virt_vfs.cpp 
