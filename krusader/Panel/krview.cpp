@@ -87,9 +87,9 @@ void KrViewOperator::cleared()
     _view->clear();
 }
 
-void KrViewOperator::fileAdded(vfile *vf)
+void KrViewOperator::newItems(const KFileItemList& items)
 {
-    _view->addItem(vf);
+    _view->newItems(items);
 }
 
 void KrViewOperator::fileDeleted(const QString& name)
@@ -97,9 +97,19 @@ void KrViewOperator::fileDeleted(const QString& name)
     _view->delItem(name);
 }
 
-void KrViewOperator::fileUpdated(vfile *vf)
+void KrViewOperator::refreshItem(KFileItem item)
 {
-    _view->updateItem(vf);
+    _view->refreshItem(item);
+}
+
+void KrViewOperator::itemsDeleted(const KFileItemList& items)
+{
+    _view->itemsDeleted(items);
+}
+
+void KrViewOperator::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
+{
+    _view->refreshItems(items);
 }
 
 void KrViewOperator::startDrag()
@@ -356,8 +366,9 @@ KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
 KrView::~KrView()
 {
     _instance.m_objects.removeOne(this);
-    delete _previews;
-    _previews = 0;
+//FIXME
+//     delete _previews;
+//     _previews = 0;
     if (_properties)
         qFatal("A class inheriting KrView didn't delete _properties!");
     if (_operator)
@@ -593,42 +604,72 @@ void KrView::delItem(const QString &name)
     op()->emitSelectionChanged();
 }
 
-void KrView::addItem(vfile *vf)
+void KrView::itemsDeleted(const KFileItemList& items)
 {
-    KFileItem item = vf->toFileItem();
+    // FIXME: make a more efficient implementation in the subclasses
+    // and/or: if number is above a certain threshold, do a complete refresh
 
-    if (isFiltered(item))
-        return;
+    foreach(const KFileItem &item, items) {
+    //     if(_previews) //FIXME
+    //         _previews->deletePreview(it);
 
-    intAddItem(item);
+        intDelItem(item);
 
-//     if(_previews) //FIXME
-//         _previews->updatePreview(item);
+        if (item.isDir())
+            --_numDirs;
 
-    if (item.isDir())
-        ++_numDirs;
-
-    ++_count;
-
-    if (item.name() == nameToMakeCurrent()) {
-        setCurrentItem(item);
-        makeCurrentVisible();
-    }
-    if (item.name() == nameToMakeCurrentIfAdded()) {
-        setCurrentItem(item);
-        setNameToMakeCurrentIfAdded(QString());
-        makeCurrentVisible();
+        --_count;
     }
 
     op()->emitSelectionChanged();
 }
 
-void KrView::updateItem(vfile *vf)
+void KrView::newItems(const KFileItemList& items)
 {
-    if (isFiltered(vf->toFileItem()))
-        delItem(vf->vfile_getName());
+    // FIXME: make a more efficient implementation in the subclasses
+    // and/or: if number is above a certain threshold, do a complete refresh
+
+    foreach(const KFileItem &item, items) {
+        if (isFiltered(item))
+            continue;
+
+        intAddItem(item);
+
+    //     if(_previews) //FIXME
+    //         _previews->updatePreview(item);
+
+        if (item.isDir())
+            ++_numDirs;
+
+        ++_count;
+
+        if (item.name() == nameToMakeCurrent()) {
+            setCurrentItem(item);
+            makeCurrentVisible();
+        }
+        if (item.name() == nameToMakeCurrentIfAdded()) {
+            setCurrentItem(item);
+            setNameToMakeCurrentIfAdded(QString());
+            makeCurrentVisible();
+        }
+
+    }
+
+    op()->emitSelectionChanged();
+}
+
+void KrView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
+{
+    //TODO
+    abort();
+}
+
+void KrView::refreshItem(KFileItem item)
+{
+    if (isFiltered(item))
+        delItem(item.name());
     else {
-        intUpdateItem(vf->toFileItem());
+        intUpdateItem(item);
 //         if(_previews) //FIXME
 //             _previews->updatePreview(findItemByVfile(vf));
     }

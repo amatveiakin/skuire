@@ -241,15 +241,18 @@ protected slots:
     void saveDefaultSettings();
     void startUpdate();
     void cleared();
+    void newItems(const KFileItemList& items);
+    void itemsDeleted(const KFileItemList& items);
+    void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items);
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
 protected slots:
     // for signals from vfs' dirwatch
-    void fileAdded(vfile *vf);
     void fileDeleted(const QString& name);
-    void fileUpdated(vfile *vf);
+    void refreshItem(KFileItem item);
+
     /////////////////////////////////////////////////////////////
     // deprecated functions end                                //
     /////////////////////////////////////////////////////////////
@@ -512,6 +515,10 @@ public:
     void selectRegion(KFileItem item1, KFileItem item2, bool select, bool clearFirst = false);
     QString itemDescription(KUrl url, bool itemIsUpUrl);
 
+    void newItems(const KFileItemList& items);
+    void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items);
+    void itemsDeleted(const KFileItemList& items);
+
     /////////////////////////////////////////////////////////////
     // the following functions have a default and minimalistic //
     // implementation, and may be re-implemented if needed     //
@@ -592,10 +599,9 @@ public:
     }
     static QString krPermissionString(const vfile * vf);
 protected:
-    //the following can be removed after the switch from VFileContainer to AbstractDirLister
+    //the following can be removed when VFileDirLister is removed
     virtual KFileItem findItemByName(const QString &name) = 0;
-    virtual void addItem(vfile *vf);
-    virtual void updateItem(vfile *vf);
+    virtual void refreshItem(KFileItem item);
     virtual void delItem(const QString &name);
     /////////////////////////////////////////////////////////////
     // deprecated functions end                                //
