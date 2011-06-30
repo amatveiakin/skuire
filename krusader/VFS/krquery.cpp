@@ -337,6 +337,73 @@ bool KRQuery::match(vfile *vf) const
     return true;
 }
 
+bool KRQuery::match(const KFileItem &file) const
+{
+    if (file.isDir() && !matchDirName(file.name()))
+        return false;
+    // see if the name matches
+    if (!match(file.name()))
+        return false;
+    // checking the mime
+    if (!type.isEmpty() && !checkType(file.mimetype()))
+        return false;
+    // check that the size fit
+    KIO::filesize_t size = file.size();
+    if (minSize && size < minSize)
+        return false;
+    if (maxSize && size > maxSize)
+        return false;
+    // check the time frame
+    time_t mtime = file.time(KFileItem::ModificationTime).toTime_t();
+    if (olderThen && mtime > olderThen)
+        return false;
+    if (newerThen && mtime < newerThen)
+        return false;
+    // check owner name
+    if (!owner.isEmpty() && file.user() != owner)
+        return false;
+    // check group name
+    if (!group.isEmpty() && file.group() != group)
+        return false;
+    //check permission
+    if (!perm.isEmpty()) {
+        //FIXME: check whether KFileItem::permissionsString() does the same
+        mode_t mode = file.mode() | file.permissions();
+        QString filePerm = KRpermHandler::mode2QString(mode);
+        if (file.isDir())
+            filePerm[ 0 ] = 'd';
+
+        if (!checkPerm(filePerm))
+            return false;
+    }
+
+    if (!contain.isEmpty()) {
+        if ((totalBytes = file.size()) == 0)
+            totalBytes++; // sanity
+        receivedBytes = 0;
+        if (receivedBuffer)
+            delete receivedBuffer;
+        receivedBuffer = 0;
+        receivedBufferLen = 0;
+        fileName = file.name();
+        timer.start();
+
+        if (file.url().isLocalFile()) {
+            if (!containsContent(file.url().path()))
+                return false;
+        } else {
+            if (containOnRemote) {
+                if (processEventsConnected == 0)
+                    return false;
+                if (!containsContent(file.url()))
+                    return false;
+            }
+        }
+    }
+
+    return true;
+}
+
 bool KRQuery::match(KFileItem *kfi) const
 {
     mode_t mode = kfi->mode() | kfi->permissions();

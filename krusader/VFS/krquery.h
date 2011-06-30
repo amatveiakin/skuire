@@ -65,6 +65,7 @@ public:
     // matching a file with the query
     bool match(vfile *file) const;  // checks if the given vfile object matches the conditions
     // matching a KIO file with the query
+    bool match(const KFileItem &file) const;
     bool match(KFileItem *file) const;  // checks if the given vfile object matches the conditions
     // matching a name with the query
     bool match(const QString &name) const;  // matching the filename only
