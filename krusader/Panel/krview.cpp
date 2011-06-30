@@ -595,10 +595,10 @@ void KrView::delItem(const QString &name)
 
 void KrView::addItem(vfile *vf)
 {
-    if (isFiltered(vf))
-        return;
-
     KFileItem item = vf->toFileItem();
+
+    if (isFiltered(item))
+        return;
 
     intAddItem(item);
 
@@ -625,7 +625,7 @@ void KrView::addItem(vfile *vf)
 
 void KrView::updateItem(vfile *vf)
 {
-    if (isFiltered(vf))
+    if (isFiltered(vf->toFileItem()))
         delItem(vf->vfile_getName());
     else {
         intUpdateItem(vf->toFileItem());
@@ -983,19 +983,19 @@ QString KrView::krPermissionString(const vfile * vf)
     return tmp;
 }
 
-bool KrView::isFiltered(vfile *vf)
+bool KrView::isFiltered(const KFileItem &item)
 {
-    if (_quickFilterMask.isValid() && _quickFilterMask.indexIn(vf->vfile_getName()) == -1)
+    if (_quickFilterMask.isValid() && _quickFilterMask.indexIn(item.name()) == -1)
         return true;
 
     bool filteredOut = false;
-    bool isDir = vf->vfile_isDir();
+    bool isDir = item.isDir();
     if (!isDir || (isDir && properties()->filterApplysToDirs)) {
         switch (properties()->filter) {
         case KrViewProperties::All :
             break;
         case KrViewProperties::Custom :
-            if (!properties()->filterMask.match(vf))
+            if (!properties()->filterMask.match(item))
                 filteredOut = true;
             break;
         case KrViewProperties::Dirs:
@@ -1011,12 +1011,6 @@ bool KrView::isFiltered(vfile *vf)
         }
     }
     return filteredOut;
-}
-
-bool KrView::isFiltered(Item *item)
-{
-    vfile *vf = _files->search(item->name());
-    return vf ? isFiltered(vf) : false;
 }
 
 void KrView::setDirLister(AbstractDirLister *lister)
@@ -1115,9 +1109,7 @@ void KrView::refresh()
     KFileItemList items;
 
     foreach(KFileItem item, _dirLister->items()) {
-        //FIXME
-        vfile vf(item);
-        if(isFiltered(&vf))
+        if(isFiltered(item))
             continue;
         if(item.isDir())
             _numDirs++;
