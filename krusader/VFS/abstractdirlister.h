@@ -32,6 +32,7 @@ class AbstractDirLister : public QObject
     Q_OBJECT
 public:
   virtual bool isRoot() = 0;
+  virtual int numItems() = 0;
   virtual KFileItemList items() = 0;
 
 signals:

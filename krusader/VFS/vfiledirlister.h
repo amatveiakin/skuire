@@ -31,6 +31,7 @@ public:
     VfileDirLister();
 
     virtual bool isRoot();
+    virtual int numItems();
     virtual KFileItemList items();
 
     void setFiles(VfileContainer*);

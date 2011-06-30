@@ -215,7 +215,7 @@ void KrViewOperator::quickFilterChanged(const QString &text)
 
     _view->_quickFilterMask = QRegExp(text, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive, QRegExp::Wildcard);
     _view->refresh();
-    _quickFilter->setMatch(_view->_count || !_view->_files->numVfiles());
+    _quickFilter->setMatch(_view->_count || !_view->_dirLister->numItems());
 }
 
 void KrViewOperator::startQuickFilter()

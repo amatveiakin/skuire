@@ -34,6 +34,11 @@ bool VfileDirLister::isRoot()
     return _files ? _files->isRoot() : false;
 }
 
+int VfileDirLister::numItems()
+{
+    return _files ? _files->numVfiles() : 0;
+}
+
 KFileItemList VfileDirLister::items()
 {
     if(!_files)
