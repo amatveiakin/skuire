@@ -40,6 +40,7 @@
 #include "../defaults.h"
 #include "../VFS/krpermhandler.h"
 #include "../VFS/vfilecontainer.h"
+#include "../VFS/abstractdirlister.h"
 #include "../Dialogs/krspecialwidgets.h"
 #include "../Filter/filterdialog.h"
 
@@ -345,10 +346,10 @@ void KrView::Item::getIconName() const
 
 
 KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
-    _instance(instance), _files(0), _config(cfg), _mainWindow(0), _widget(0),
+    _instance(instance), _files(0), _dirLister(0), _config(cfg), _mainWindow(0), _widget(0),
     _nameToMakeCurrent(QString()), _nameToMakeCurrentIfAdded(QString()),
     _count(0), _numDirs(0), _properties(0), _focused(false),
-    _previews(0), _fileIconSize(0), _updateDefaultSettings(false), _dummyVfile(0)
+    _previews(0), _fileIconSize(0), _updateDefaultSettings(false)
 {
 }
 
@@ -357,8 +358,6 @@ KrView::~KrView()
     _instance.m_objects.removeOne(this);
     delete _previews;
     _previews = 0;
-    delete _dummyVfile;
-    _dummyVfile = 0;
     if (_properties)
         qFatal("A class inheriting KrView didn't delete _properties!");
     if (_operator)
@@ -645,8 +644,6 @@ void KrView::clear()
         _previews->clear();
 #endif
     _count = _numDirs = 0;
-    delete _dummyVfile;
-    _dummyVfile = 0;
     redraw();
 }
 
@@ -1022,24 +1019,28 @@ bool KrView::isFiltered(Item *item)
     return vf ? isFiltered(vf) : false;
 }
 
-void KrView::setFiles(VfileContainer *files)
+void KrView::setDirLister(AbstractDirLister *lister)
 {
-    if(files != _files) {
+    if(_dirLister != lister) {
         clear();
-        if(_files)
-            QObject::disconnect(_files, 0, op(), 0);
-        _files = files;
+        if(_dirLister)
+            QObject::disconnect(_dirLister, 0, op(), 0);
+        _dirLister = lister;
     }
 
-    if(!_files)
+    if(!_dirLister)
         return;
 
-    QObject::disconnect(_files, 0, op(), 0);
-    QObject::connect(_files, SIGNAL(startUpdate()), op(), SLOT(startUpdate()));
-    QObject::connect(_files, SIGNAL(cleared()), op(), SLOT(cleared()));
-    QObject::connect(_files, SIGNAL(addedVfile(vfile*)), op(), SLOT(fileAdded(vfile*)));
-    QObject::connect(_files, SIGNAL(updatedVfile(vfile*)), op(), SLOT(fileUpdated(vfile*)));
-    QObject::connect(_files, SIGNAL(deletedVfile(const QString&)), op(), SLOT(fileDeleted(const QString&)));
+    //FIXME - connect all signals, remove obsolete signals
+    QObject::disconnect(_dirLister, 0, op(), 0);
+//     QObject::connect(_dirLister, SIGNAL(started()), op(), SLOT(started()));
+    QObject::connect(_dirLister, SIGNAL(completed()), op(), SLOT(startUpdate()));
+    QObject::connect(_dirLister, SIGNAL(clear()), op(), SLOT(cleared()));
+    QObject::connect(_dirLister, SIGNAL(newItems(const KFileItemList&)), op(), SLOT(newItems(const KFileItemList&)));
+    QObject::connect(_dirLister, SIGNAL(itemsDeleted(const KFileItemList&)), op(), SLOT(itemsDeleted(const KFileItemList&)));
+    QObject::connect(_dirLister, SIGNAL(refreshItems(const QList<QPair<KFileItem, KFileItem>>&)), op(), SLOT(refreshItems(const QList<QPair<KFileItem, KFileItem>>&)));
+    QObject::connect(_dirLister, SIGNAL(itemDeleted(const QString&)), op(), SLOT(fileDeleted(const QString&)));
+    QObject::connect(_dirLister, SIGNAL(refreshItem(KFileItem)), op(), SLOT(refreshItem(KFileItem)));
 }
 
 void KrView::setFilter(KrViewProperties::FilterSpec filter, FilterSettings customFilter, bool applyToDirs)
@@ -1107,28 +1108,24 @@ void KrView::refresh()
 
     clear();
 
-    if(!_files)
+
+    if(!_dirLister)
         return;
 
-    QList<vfile*> vfiles;
+    KFileItemList items;
 
-    // if we are not at the root add the ".." entery
-    if(!_files->isRoot()) {
-        _dummyVfile = new vfile("..", 0, "drwxrwxrwx", 0, false, false, 0, 0, "", "", 0, -1);
-        _dummyVfile->vfile_setIcon("go-up");
-        vfiles << _dummyVfile;
-    }
-
-    foreach(vfile *vf, _files->vfiles()) {
-        if(isFiltered(vf))
+    foreach(KFileItem item, _dirLister->items()) {
+        //FIXME
+        vfile vf(item);
+        if(isFiltered(&vf))
             continue;
-        if(vf->vfile_isDir())
+        if(item.isDir())
             _numDirs++;
         _count++;
-        vfiles << vf;
+        items << item;
     }
 
-    populate(vfiles, _dummyVfile);
+    populate(items, !_dirLister->isRoot());
 
     if(!selection.isEmpty())
         setSelection(selection);

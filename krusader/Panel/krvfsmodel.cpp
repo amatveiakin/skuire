@@ -39,20 +39,20 @@ KrVfsModel::KrVfsModel(KrInterView * view): QAbstractListModel(0), _extensionEna
     _defaultFont = grpSvr.readEntry("Filelist Font", _FilelistFont);
 }
 
-void KrVfsModel::populate(const QList<vfile*> &files, vfile *dummy)
+void KrVfsModel::populate(const KFileItemList &items, bool addDummyItem)
 {
 #if QT_VERSION >= 0x040700
-    _items.reserve(files.count());
+    _items.reserve(items.count());
 #endif
 
-    foreach(vfile *vf, files) {
+    if(addDummyItem) {
+        _dummyItem = new KrView::Item(KFileItem(KUrl(".."), "inode/directory", 0), true);
+        _items << _dummyItem;
+    }
+
+    foreach(KFileItem fileItem, items) {
         //TODO: more efficient allocation
-        KrView::Item *item = new KrView::Item(vf->toFileItem(), vf == dummy);
-
-        if(vf == dummy)
-            _dummyItem = item;
-
-        _items << item;
+        _items << new KrView::Item(fileItem);
     }
 
     _ready = true;
@@ -441,8 +441,7 @@ void KrVfsModel::updateItem(KFileItem fileItem)
     }
     if(lastSortOrder() == KrViewProperties::NoColumn) {
         //FIXME refresh item data
-        vfile vf(fileItem);
-        _view->redrawItem(&vf);
+        _view->redrawItem(oldModelIndex);
         return;
     }
 
@@ -495,8 +494,7 @@ void KrVfsModel::updateItem(KFileItem fileItem)
 
     //redraw the item in any case
     //FIXME refresh item data
-    vfile vf(fileItem);
-    _view->redrawItem(&vf);
+    _view->redrawItem(itemIndex(item));
 }
 
 QVariant KrVfsModel::headerData(int section, Qt::Orientation orientation, int role) const
@@ -519,30 +517,9 @@ QVariant KrVfsModel::headerData(int section, Qt::Orientation orientation, int ro
     return QString();
 }
 
-vfile * KrVfsModel::vfileAt(const QModelIndex &index)
-{
-    KrView::Item *item = itemAt(index);
-    if(item) {
-        if(item == _dummyItem)
-            return _view->_dummyVfile;
-        else
-            return _view->_files->search(item->name());
-
-    } else
-        return 0;
-}
-
 const QModelIndex & KrVfsModel::itemIndex(const KrView::Item *item)
 {
     return _itemIndex[item];
-}
-
-const QModelIndex & KrVfsModel::vfileIndex(const vfile * vf)
-{
-    if(vf == _view->_dummyVfile)
-        return itemIndex(_dummyItem);
-    else
-        return indexFromUrl(vf->vfile_getUrl());
 }
 
 const QModelIndex & KrVfsModel::nameIndex(const QString & st)

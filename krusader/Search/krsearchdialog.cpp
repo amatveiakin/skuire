@@ -251,7 +251,7 @@ KrSearchDialog::KrSearchDialog(QString profile, QWidget* parent)
     resultView->op()->setQuickFilter(quickFilter);
     resultView->prepareForActive();
     resultView->refreshColors();
-    resultView->setFiles(result);
+//FIXME     resultView->setFiles(result);
     resultView->refresh();
     resultLayout->addWidget(resultView->widget(), 0, 0);
 

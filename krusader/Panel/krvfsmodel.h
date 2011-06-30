@@ -41,7 +41,7 @@ public:
     inline bool ready() const {
         return _ready;
     }
-    void populate(const QList<vfile*> &files, vfile *dummy);
+    void populate(const KFileItemList &items, bool addDummyItem);
     QModelIndex addItem(KFileItem);
     QModelIndex removeItem(KFileItem);
     void updateItem(KFileItem);
@@ -64,14 +64,10 @@ public:
     const QList<KrView::Item*> items() {
         return _items;
     }
-    vfile * vfileAt(const QModelIndex &index);
-    vfile *dummyVfile() const {
-        return _view->_dummyVfile;
-    }
     const KrView::Item *dummyItem() {
         return _dummyItem;
     }
-    const QModelIndex & vfileIndex(const vfile *);
+    const QModelIndex & itemIndex(const KrView::Item*);
     const QModelIndex & nameIndex(const QString &);
     const QModelIndex & indexFromUrl(const KUrl &url);
     virtual Qt::ItemFlags flags(const QModelIndex & index) const;
@@ -110,7 +106,6 @@ protected:
         return QVariant();
     }
 
-    const QModelIndex & itemIndex(const KrView::Item*);
     KrSort::Sorter createSorter();
     QString nameWithoutExtension(const KrView::Item *item, bool checkEnabled = true) const;
 

@@ -103,10 +103,8 @@ QString KrInterView::getCurrentItem() const
     if (!_model->ready())
         return QString();
 
-    vfile *vf = _model->vfileAt(_itemView->currentIndex());
-    if (vf == 0)
-        return QString();
-    return vf->vfile_getName();
+    Item *item = _model->itemAt(_itemView->currentIndex());
+    return item ? item->name() : QString();
 }
 
 void KrInterView::makeCurrentVisible()
@@ -134,9 +132,9 @@ void KrInterView::clear()
     KrView::clear();
 }
 
-void KrInterView::populate(const QList<vfile*> &vfiles, vfile *dummy)
+void KrInterView::populate(const KFileItemList &items, bool addDummyItem)
 {
-    _model->populate(vfiles, dummy);
+    _model->populate(items, addDummyItem);
     _itemView->setCurrentIndex(_model->index(0, 0));
 }
 
@@ -254,9 +252,9 @@ KFileItemList KrInterView::getSelectedItems(bool currentIfNoSelection)
         foreach(const Item *item, _selection)
             list << *item;
     } else if(currentIfNoSelection) {
-        vfile *vf = _model->vfileAt(_itemView->currentIndex());
-        if (vf && vf != _dummyVfile)
-            list << vf->toFileItem();
+        Item *item = _model->itemAt(_itemView->currentIndex());
+        if(item && item != _model->dummyItem())
+            list << *item;
     }
 
     return list;
@@ -268,8 +266,7 @@ KFileItemList KrInterView::getVisibleItems()
     KFileItemList list;
     foreach(const KrView::Item *item, _model->items()) {
         if (item != _model->dummyItem()) {
-            vfile vf(*item);
-            if(_itemView->viewport()->rect().intersects(itemRect(&vf)))
+            if(_itemView->viewport()->rect().intersects(itemRect(_model->itemIndex(item))))
                 list << *item;
         }
     }
@@ -318,28 +315,28 @@ KFileItem KrInterView::currentItem()
 
 bool KrInterView::currentItemIsUpUrl()
 {
-    return _model->vfileAt(_itemView->currentIndex()) == _dummyVfile;
+    return _model->dummyItem() &&
+        (_model->itemAt(_itemView->currentIndex()) == _model->dummyItem());
 }
 
 void KrInterView::currentChanged(const QModelIndex &current)
 {
-    vfile *vf =_model->vfileAt(_itemView->currentIndex());
-    KFileItem item = vf ? vf->toFileItem() : KFileItem();
-    op()->emitCurrentChanged(item);
+    Item *item = _model->itemAt(_itemView->currentIndex());
+    op()->emitCurrentChanged(item ? *item : KFileItem());
 }
 
 QRect KrInterView::itemRect(KUrl itemUrl)
 {
-    vfile *vf = _model->vfileAt(_model->indexFromUrl(itemUrl));
-    return vf ? itemRect(vf) : QRect();
+    QModelIndex index = _model->indexFromUrl(itemUrl);
+    return index.isValid() ? itemRect(index) : QRect();
 }
 
 KFileItem KrInterView::itemAt(const QPoint &vp, bool *isUpUrl)
 {
-    vfile *vf = _model->vfileAt(_itemView->indexAt(vp));
+    Item *item = _model->itemAt(_itemView->indexAt(vp));
     if(isUpUrl)
-        *isUpUrl = (vf && (vf == _dummyVfile));
-    return (vf && (vf != _dummyVfile)) ? vf->toFileItem() : KFileItem();
+        *isUpUrl = (item && (item == _model->dummyItem()));
+    return (item && (item != _model->dummyItem())) ? *item : KFileItem();
 }
 
 void KrInterView::setCurrentItem(KUrl url)
@@ -455,9 +452,9 @@ void KrInterView::setCurrentItem(ItemSpec item)
             newIndex = _model->index(currentIndex.row() + 1, 0, QModelIndex());
             break;
         case UpUrl:
-            if(!_dummyVfile)
+            if(!_model->dummyItem())
                 return;
-            newIndex = _model->vfileIndex(_dummyVfile);
+            newIndex = _model->itemIndex(_model->dummyItem());
             break;
         default:
             return;

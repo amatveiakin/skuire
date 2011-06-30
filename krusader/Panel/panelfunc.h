@@ -42,6 +42,7 @@
 
 class ListPanel;
 class DirHistoryQueue;
+class VfileDirLister;
 
 class ListPanelFunc : public QObject
 {
@@ -134,6 +135,7 @@ protected:
     ListPanel*           panel;     // our ListPanel
     DirHistoryQueue*     history;
     vfs*                 vfsP;      // pointer to vfs.
+    VfileDirLister      *dirLister;
     QTimer               delayTimer;
     KUrl                 syncURL;
     KUrl                 fileToCreate; // file that's to be created by editNewFile()

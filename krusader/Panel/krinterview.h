@@ -85,8 +85,8 @@ public:
 
     void sortModeUpdated(int column, Qt::SortOrder order);
 
-    void redrawItem(vfile *vf) {
-        _itemView->viewport()->update(itemRect(vf));
+    void redrawItem(const QModelIndex &index) {
+        _itemView->viewport()->update(itemRect(index));
     }
 
 protected:
@@ -106,7 +106,7 @@ protected:
     virtual void setCurrentItem(ItemSpec item);
     virtual KIO::filesize_t calcSize();
     virtual KIO::filesize_t calcSelectedSize();
-    virtual void populate(const QList<vfile*> &vfiles, vfile *dummy);
+    virtual void populate(const KFileItemList &items, bool addDummyItem);
     virtual void intAddItem(KFileItem item);
     virtual void intDelItem(KFileItem item);
     virtual void intUpdateItem(KFileItem item);
@@ -116,7 +116,7 @@ protected:
     virtual const Item *dummyItem() const;
     virtual const Item *itemFromUrl(KUrl url) const;
 
-    virtual QRect itemRect(const vfile *vf) = 0;
+    virtual QRect itemRect(const QModelIndex &index) = 0;
 
     bool isSelected(const KrView::Item *item) {
         return _selection.contains(item);

@@ -68,7 +68,7 @@ protected:
     virtual void doRestoreSettings(KConfigGroup group);
     virtual void saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties);
     virtual void copySettingsFrom(KrView *other);
-    virtual QRect itemRect(const vfile *vf);
+    virtual QRect itemRect(const QModelIndex &index);
     virtual void showContextMenu(const QPoint & p);
 
     int getItemHeight() const;

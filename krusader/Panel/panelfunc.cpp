@@ -77,6 +77,7 @@ A
 #include "../defaults.h"
 #include "../abstractpanelmanager.h"
 #include "../krservices.h"
+#include "../VFS/vfiledirlister.h"
 #include "../VFS/vfile.h"
 #include "../VFS/vfs.h"
 #include "../VFS/virt_vfs.h"
@@ -98,6 +99,7 @@ A
 ListPanelFunc::ListPanelFunc(ListPanel *parent) : QObject(parent),
         panel(parent), vfsP(0), urlManuallyEntered(false)
 {
+    dirLister = new VfileDirLister();
     history = new DirHistoryQueue(panel);
     delayTimer.setSingleShot(true);
     connect(&delayTimer, SIGNAL(timeout()), this, SLOT(doRefresh()));
@@ -114,6 +116,7 @@ ListPanelFunc::~ListPanelFunc()
         }
     }
     delete history;
+    delete dirLister;
 }
 
 void ListPanelFunc::urlEntered(const QString &url)
@@ -258,7 +261,7 @@ void ListPanelFunc::doRefresh()
         v->setParentWindow(krMainWindow);
         v->setMountMan(&krMtMan);
         if (v != vfsP) {
-            panel->view->setFiles(0);
+            dirLister->setFiles(0);
 
             // disconnect older signals
             disconnect(vfsP, 0, panel, 0);
@@ -288,7 +291,7 @@ void ListPanelFunc::doRefresh()
         connect(files(), SIGNAL(trashJobStarted(KIO::Job*)),
                 this, SLOT(trashJobStarted(KIO::Job*)));
 
-        panel->view->setFiles(files());
+        dirLister->setFiles(files());
 
         if(isSyncing(url))
             vfsP->vfs_setQuiet(true);

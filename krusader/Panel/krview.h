@@ -55,6 +55,7 @@ class QModelIndex;
 class KrViewInstance;
 class QuickFilter;
 class VfileContainer;
+class AbstractDirLister;
 class CalcSpaceClient;
 
 
@@ -291,7 +292,6 @@ private:
 class KrView
 {
     friend class KrViewOperator;
-    friend class KrVfsModel; //HACK
 
 public:
     class IconSizes : public QVector<int>
@@ -432,6 +432,7 @@ protected:
     virtual void intSetSelected(const Item *item, bool select) = 0;
     virtual void updatePreviews();
     virtual void clear();
+    virtual void populate(const KFileItemList &items, bool addDummyItem) = 0;
 
 public:
     //////////////////////////////////////////////////////
@@ -469,7 +470,7 @@ public:
     }
     virtual void applySettingsToOthers();
 
-    virtual void setFiles(VfileContainer *files);
+    virtual void setDirLister(AbstractDirLister *lister);
     virtual void refresh();
 
     void changeSelection(const KRQuery& filter, bool select);
@@ -595,7 +596,6 @@ protected:
 
     //the following can be removed after the switch from VFileContainer to AbstractDirLister
     virtual KFileItem findItemByName(const QString &name) = 0;
-    virtual void populate(const QList<vfile*> &vfiles, vfile *dummy) = 0;
     virtual void addItem(vfile *vf);
     virtual void updateItem(vfile *vf);
     virtual void delItem(const QString &name);
@@ -626,6 +626,7 @@ protected:
 
     KrViewInstance &_instance;
     VfileContainer *_files;
+    AbstractDirLister *_dirLister;
     KConfig *_config;
     QWidget *_mainWindow;
     QWidget *_widget;
@@ -639,7 +640,6 @@ protected:
     int _fileIconSize;
     bool _updateDefaultSettings;
     QRegExp _quickFilterMask;
-    vfile *_dummyVfile;
 
 private:
     uint _count, _numDirs;

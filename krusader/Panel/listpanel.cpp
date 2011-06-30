@@ -80,6 +80,8 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "../krusaderview.h"
 #include "../krservices.h"
 #include "../VFS/krpermhandler.h"
+#include "../VFS/abstractdirlister.h"
+#include "../VFS/vfiledirlister.h"
 #include "../MountMan/kmountman.h"
 #include "../BookMan/krbookmarkbutton.h"
 #include "../Dialogs/krdialogs.h"
@@ -443,7 +445,7 @@ void ListPanel::createView()
     connect(view->op(), SIGNAL(refreshActions()), krApp->viewActions(), SLOT(refreshActions()));
     connect(view->op(), SIGNAL(currentChanged(KFileItem)), func->history, SLOT(saveCurrentItem()));
 
-    view->setFiles(func->files());
+    view->setDirLister(func->dirLister);
 
     func->refreshActions();
 }
