@@ -381,11 +381,7 @@ void KrInterView::changeSelection(const KRQuery& filter, bool select, bool inclu
         if (item->isDir() && !includeDirs)
             continue;
 
-        vfile * file = _files->search(item->name());
-        if (file == 0)
-            continue;
-
-        if (filter.match(file))
+        if (filter.match(*item))
             setSelected(item, select);
     }
 

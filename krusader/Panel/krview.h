@@ -623,7 +623,6 @@ protected:
     }
 
     KrViewInstance &_instance;
-    VfileContainer *_files;
     AbstractDirLister *_dirLister;
     KConfig *_config;
     QWidget *_mainWindow;
