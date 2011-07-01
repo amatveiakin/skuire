@@ -19,7 +19,6 @@
 
 #include "krvfsmodel.h"
 #include "../VFS/vfile.h"
-#include "../VFS/vfilecontainer.h"
 #include <klocale.h>
 #include <QtDebug>
 #include <QtAlgorithms>

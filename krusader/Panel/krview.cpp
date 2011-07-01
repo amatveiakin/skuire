@@ -39,7 +39,6 @@
 #include "../kicons.h"
 #include "../defaults.h"
 #include "../VFS/krpermhandler.h"
-#include "../VFS/vfilecontainer.h"
 #include "../VFS/abstractdirlister.h"
 #include "../Dialogs/krspecialwidgets.h"
 #include "../Filter/filterdialog.h"
@@ -55,8 +54,6 @@
 #include <klocale.h>
 #include <kinputdialog.h>
 
-
-#define VF getVfile()
 
 KrView *KrViewOperator::_changedView = 0;
 KrViewProperties::PropertyType KrViewOperator::_changedProperties = KrViewProperties::NoProperty;

@@ -24,7 +24,6 @@
 #include "krmousehandler.h"
 #include "krpreviews.h"
 #include "../defaults.h"
-#include "../VFS/vfilecontainer.h"
 
 KrInterView::KrInterView(KrViewInstance &instance, KConfig *cfg,
                          QAbstractItemView *itemView) :
@@ -236,8 +235,7 @@ KFileItemList KrInterView::getItems(KRQuery mask, bool dirs, bool files)
     foreach(KrView::Item *item, _model->items()) {
         if (item != _model->dummyItem())
             if ((!item->isDir() && files) || (item->isDir() && dirs)) {
-                vfile vf(*item);
-                if(mask.isNull() || mask.match(&vf))
+                if(mask.isNull() || mask.match(*item))
                     list << *item;
             }
     }

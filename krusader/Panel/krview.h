@@ -40,7 +40,6 @@
 #include <QTimer>
 #include <kfileitem.h>
 #include "../krglobal.h"
-#include "../VFS/vfile.h"
 #include "../VFS/krquery.h"
 #include "../Filter/filtersettings.h"
 
@@ -54,9 +53,10 @@ class KrPreviews;
 class QModelIndex;
 class KrViewInstance;
 class QuickFilter;
-class VfileContainer;
 class AbstractDirLister;
 class CalcSpaceClient;
+
+class vfile;
 
 
 // KrViewProperties
