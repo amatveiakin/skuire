@@ -18,7 +18,6 @@
  *****************************************************************************/
 
 #include "krvfsmodel.h"
-#include "../VFS/vfile.h"
 #include <klocale.h>
 #include <QtDebug>
 #include <QtAlgorithms>
@@ -229,13 +228,11 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
         }
         colorItemType.m_alternateBackgroundColor = (actRow & 1);
         colorItemType.m_currentItem = _view->getCurrentIndex().row() == index.row();
-        //FIXME: replace with isSelected(item);
-        colorItemType.m_selectedItem = _view->isSelected(index);
+        colorItemType.m_selectedItem = _view->isSelected(item);
         if (item->isLink()) {
-            //FIXME
-//             if (vf->vfile_isBrokenLink())
-//                 colorItemType.m_fileType = KrColorItemType::InvalidSymlink;
-//             else
+            if (item->isBrokenLink())
+                colorItemType.m_fileType = KrColorItemType::InvalidSymlink;
+            else
                 colorItemType.m_fileType = KrColorItemType::Symlink;
         } else if (item->isDir())
             colorItemType.m_fileType = KrColorItemType::Directory;

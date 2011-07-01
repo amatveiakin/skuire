@@ -85,6 +85,10 @@ public:
 
     void sortModeUpdated(int column, Qt::SortOrder order);
 
+    bool isSelected(const KrView::Item *item) {
+        return _selection.contains(item);
+    }
+
     void redrawItem(const QModelIndex &index) {
         _itemView->viewport()->update(itemRect(index));
     }
@@ -118,9 +122,6 @@ protected:
 
     virtual QRect itemRect(const QModelIndex &index) = 0;
 
-    bool isSelected(const KrView::Item *item) {
-        return _selection.contains(item);
-    }
     void currentChanged(const QModelIndex &current);
     void setCurrentIndex(QModelIndex index);
     inline KrView::Item *currentViewItem();
