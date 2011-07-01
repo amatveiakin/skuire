@@ -606,7 +606,6 @@ public:
     virtual void setNameToMakeCurrentIfAdded(const QString name) {
         _nameToMakeCurrentIfAdded = name;
     }
-    static QString krPermissionString(const vfile * vf);
 protected:
     //the following can be removed when VFileDirLister is removed
     virtual KFileItem findItemByName(const QString &name) = 0;

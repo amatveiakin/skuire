@@ -1075,27 +1075,6 @@ void KrView::restoreSortMode(KConfigGroup &group)
     setSortMode(static_cast<KrViewProperties::ColumnType>(column), isDescending);
 }
 
-QString KrView::krPermissionString(const vfile * vf)
-{
-    QString tmp;
-    switch (vf->vfile_isReadable()) {
-    case ALLOWED_PERM: tmp+='r'; break;
-    case UNKNOWN_PERM: tmp+='?'; break;
-    case NO_PERM:      tmp+='-'; break;
-    }
-    switch (vf->vfile_isWriteable()) {
-    case ALLOWED_PERM: tmp+='w'; break;
-    case UNKNOWN_PERM: tmp+='?'; break;
-    case NO_PERM:      tmp+='-'; break;
-    }
-    switch (vf->vfile_isExecutable()) {
-    case ALLOWED_PERM: tmp+='x'; break;
-    case UNKNOWN_PERM: tmp+='?'; break;
-    case NO_PERM:      tmp+='-'; break;
-    }
-    return tmp;
-}
-
 bool KrView::isFiltered(const KFileItem &item)
 {
     if (_quickFilterMask.isValid() && _quickFilterMask.indexIn(item.name()) == -1)
