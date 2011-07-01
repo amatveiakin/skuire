@@ -109,7 +109,7 @@ protected:
     virtual void populate(const KFileItemList &items, bool addDummyItem);
     virtual void intAddItem(KFileItem item);
     virtual void intDelItem(KFileItem item);
-    virtual void intUpdateItem(KFileItem item);
+    virtual void intUpdateItem(KFileItem oldItem, KFileItem newItem);
     virtual void intSetSelected(const KrView::Item *item, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;
     virtual QRect itemRect(KUrl itemUrl);

@@ -325,10 +325,24 @@ const KrView::IconSizes KrView::iconSizes;
 
 
 KrView::Item::Item(const KFileItem &fileItem, bool isDummy) :
-    KFileItem(fileItem),
-    _brokenLink(false),
-    _calculatedSize(0)
+    KFileItem(fileItem)
 {
+    init(isDummy);
+}
+
+KrView::Item &KrView::Item::operator=(const KFileItem  &other)
+{
+    KFileItem::operator=(other);
+    init(false);
+    return *this;
+}
+
+void KrView::Item::init(bool isDummy)
+{
+    _iconName.clear();
+    _brokenLink = false;
+    _calculatedSize = 0;
+
     if(isDummy)
         _iconName = "go-up";
 
@@ -347,6 +361,7 @@ KrView::Item::Item(const KFileItem &fileItem, bool isDummy) :
             _iconName = "file-broken";
         }
     }
+
 }
 
 void KrView::Item::getIconName() const
@@ -660,8 +675,19 @@ void KrView::newItems(const KFileItemList& items)
 
 void KrView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
 {
-    //TODO
-    abort();
+    //FIXME optimize
+    //FIXME refresh previews
+    KFileItemList filtered;
+
+    for(int i = 0; i < items.count(); i++) {
+        QPair<KFileItem, KFileItem> item = items[i];
+        if (isFiltered(item.second))
+            filtered << item.first;
+        else
+            intUpdateItem(item.first, item.first);
+    }
+
+    itemsDeleted(filtered);
 }
 
 void KrView::refreshItem(KFileItem item)
@@ -669,7 +695,7 @@ void KrView::refreshItem(KFileItem item)
     if (isFiltered(item))
         delItem(item.name());
     else {
-        intUpdateItem(item);
+        intUpdateItem(item, item);
 //         if(_previews) //FIXME
 //             _previews->updatePreview(findItemByVfile(vf));
     }

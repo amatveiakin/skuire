@@ -160,9 +160,9 @@ void KrInterView::intDelItem(KFileItem item)
         _itemView->setCurrentIndex(newIndex);
 }
 
-void KrInterView::intUpdateItem(KFileItem item)
+void KrInterView::intUpdateItem(KFileItem oldItem, KFileItem newItem)
 {
-    _model->updateItem(item);
+    _model->updateItem(oldItem, newItem);
 }
 
 void KrInterView::prepareForActive()

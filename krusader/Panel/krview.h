@@ -312,6 +312,7 @@ public:
         Item(const KFileItem &fileItem, bool isDummy = false);
         Item(const Item &other);
         Item &operator=(const Item &other);
+        Item &operator=(const KFileItem &other);
 
         const QString &iconName() const {
             if(_iconName.isNull())
@@ -330,6 +331,7 @@ public:
 
     private:
         void getIconName() const;
+        void init(bool isDummy);
 
         mutable QString _iconName;
         bool _brokenLink;
@@ -394,7 +396,7 @@ public:
     virtual QString currentDescription() = 0;
     virtual void intAddItem(KFileItem item) = 0;
     virtual void intDelItem(KFileItem item) = 0;
-    virtual void intUpdateItem(KFileItem item) = 0;
+    virtual void intUpdateItem(KFileItem oldItem, KFileItem newItem) = 0;
     virtual void makeCurrentVisible() = 0;
 
     // interview related functions
