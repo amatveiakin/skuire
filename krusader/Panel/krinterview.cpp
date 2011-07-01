@@ -530,3 +530,34 @@ const KrView::Item *KrInterView::itemFromUrl(KUrl url) const
 {
     return _model->itemAt(_model->indexFromUrl(url));
 }
+
+bool KrInterView::quickSearch(const QString &term, int direction)
+{
+    if (currentItem().isNull())
+        return false;
+
+    if (direction == 0) {
+        if (quickSearchMatch(currentItem(), term))
+            return true;
+        else
+            direction = 1;
+    }
+
+    int startIndex = _itemView->currentIndex().row();
+    int index = startIndex;
+
+    while (true) {
+        index += (direction > 0) ? 1 : -1;
+
+        if (index < 0 || index >= _model->rowCount())
+            index = (direction > 0) ? 0 : _model->rowCount() - 1;
+
+        if (quickSearchMatch(*(_model->items()[index]), term)) {
+            QModelIndex modelIndex = _model->index(index, 0);
+            setCurrentIndex(modelIndex);
+            _itemView->scrollTo(modelIndex);
+            return true;
+        } else if (index == startIndex)
+            return false;
+    }
+}

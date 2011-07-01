@@ -160,40 +160,7 @@ void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
 
 void KrViewOperator::quickSearch(const QString & str, int direction)
 {
-    KFileItem item = _view->currentItem();
-    if (item.isNull()) {
-        _quickSearch->setMatch(false);
-        return;
-    }
-    KConfigGroup grpSvr(_view->_config, "Look&Feel");
-    bool caseSensitive = grpSvr.readEntry("Case Sensitive Quicksearch", _CaseSensitiveQuicksearch);
-    QRegExp rx(str, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive, QRegExp::Wildcard);
-    if (!direction) {
-        if (rx.indexIn(item.name()) == 0) {
-            _quickSearch->setMatch(true);
-            return ;
-        }
-        direction = 1;
-    }
-#if 0
-    //FIXME
-    KFileItem startItem = item;
-    while (true) {
-        item = (direction > 0) ? _view->getNext(item) : _view->getPrev(item);
-        if (!item)
-            item = (direction > 0) ? _view->getFirst() : _view->getLast();
-        if (item == startItem) {
-            _quickSearch->setMatch(false);
-            return ;
-        }
-        if (rx.indexIn(item->name()) == 0) {
-            _view->setCurrentKrViewItem(item);
-            _view->makeItemVisible(item);
-            _quickSearch->setMatch(true);
-            return ;
-        }
-    }
-#endif
+    _quickSearch->setMatch(_view->quickSearch(str, direction));
 }
 
 void KrViewOperator::stopQuickSearch(QKeyEvent * e)
@@ -1311,4 +1278,14 @@ QString KrView::itemDescription(KUrl url, bool itemIsUpUrl)
         text += comment;
     }
     return text;
+}
+
+bool KrView::quickSearchMatch(const KFileItem &item, QString term)
+{
+    KConfigGroup grpSvr(_config, "Look&Feel");
+    bool caseSensitive = grpSvr.readEntry("Case Sensitive Quicksearch", _CaseSensitiveQuicksearch);
+
+    QRegExp rx(term, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive, QRegExp::Wildcard);
+
+    return (rx.indexIn(item.name()) == 0);
 }

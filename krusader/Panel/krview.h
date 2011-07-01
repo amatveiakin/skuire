@@ -445,6 +445,7 @@ protected:
     virtual void updatePreviews();
     virtual void clear();
     virtual void populate(const KFileItemList &items, bool addDummyItem) = 0;
+    virtual bool quickSearch(const QString &term, int direction) = 0;
 
 public:
     //////////////////////////////////////////////////////
@@ -627,6 +628,7 @@ protected:
     virtual const Item *dummyItem() const = 0;
 
     bool isFiltered(const KFileItem &item);
+    bool quickSearchMatch(const KFileItem &item, QString term);
     void setSelected(const Item *item, bool select);
     bool handleKeyEventInt(QKeyEvent *e);
     void sortModeUpdated(KrViewProperties::ColumnType sortColumn, bool descending);

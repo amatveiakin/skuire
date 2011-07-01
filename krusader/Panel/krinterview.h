@@ -63,6 +63,7 @@ public:
     virtual void pageDown();
     virtual void pageUp();
     virtual QString currentDescription();
+    virtual bool quickSearch(const QString &term, int direction);
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();
