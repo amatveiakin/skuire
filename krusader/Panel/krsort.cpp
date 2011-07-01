@@ -86,11 +86,8 @@ void SortProps::init(const KrView::Item *item, int col, const KrViewProperties *
     case KrViewProperties::KrPermissions: {
         if (isDummy)
             _data = "";
-        else {
-            //FIXME: change to item->krPermissionString()
-            vfile vf(*item);
-            _data = KrView::krPermissionString(&vf);
-        }
+        else
+            _data = item->krPermissionsString();
         break;
     }
     case KrViewProperties::Owner: {

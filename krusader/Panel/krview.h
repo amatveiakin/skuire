@@ -319,6 +319,11 @@ public:
                 getIconName();
             return _iconName;
         }
+        QString krPermissionsString() const {
+            if(_krPermissionsString.isNull())
+                getKrPermissionsString();
+            return _krPermissionsString;
+        }
         bool isBrokenLink() const {
             return _brokenLink;
         }
@@ -331,9 +336,11 @@ public:
 
     private:
         void getIconName() const;
+        void getKrPermissionsString() const;
         void init(bool isDummy);
 
         mutable QString _iconName;
+        mutable QString  _krPermissionsString;
         bool _brokenLink;
         KIO::filesize_t _calculatedSize;
     };

@@ -337,6 +337,7 @@ KrView::Item &KrView::Item::operator=(const KFileItem  &other)
 void KrView::Item::init(bool isDummy)
 {
     _iconName.clear();
+    _krPermissionsString.clear();
     _brokenLink = false;
     _calculatedSize = 0;
 
@@ -364,6 +365,54 @@ void KrView::Item::init(bool isDummy)
 void KrView::Item::getIconName() const
 {
     _iconName = KFileItem::iconName();
+}
+
+void KrView::Item::getKrPermissionsString() const
+{
+    QString tmp;
+
+    // char ? UGLY !
+    char readable = UNKNOWN_PERM;
+    if (!url().user().isEmpty())
+        readable = KRpermHandler::ftpReadable(user(), url().user(), permissionsString());
+    else if (url().isLocalFile())
+        readable = KRpermHandler::readable(permissionsString(),
+                                            KRpermHandler::group2gid(group()),
+                                            KRpermHandler::user2uid(user()), -1);
+
+    char writeable = UNKNOWN_PERM;
+    if (!url().user().isEmpty())
+        writeable = KRpermHandler::ftpWriteable(user(), url().user(), permissionsString());
+    else if (url().isLocalFile())
+        writeable = KRpermHandler::writeable(permissionsString(),
+                                            KRpermHandler::group2gid(group()),
+                                            KRpermHandler::user2uid(user()), -1);
+
+    char executable = UNKNOWN_PERM;
+    if (!url().user().isEmpty())
+        executable = KRpermHandler::ftpExecutable(user(), url().user(), permissionsString());
+    else if (url().isLocalFile())
+        executable = KRpermHandler::executable(permissionsString(),
+                                            KRpermHandler::group2gid(group()),
+                                            KRpermHandler::user2uid(user()), -1);
+
+    switch (readable) {
+    case ALLOWED_PERM: tmp+='r'; break;
+    case UNKNOWN_PERM: tmp+='?'; break;
+    case NO_PERM:      tmp+='-'; break;
+    }
+    switch (writeable) {
+    case ALLOWED_PERM: tmp+='w'; break;
+    case UNKNOWN_PERM: tmp+='?'; break;
+    case NO_PERM:      tmp+='-'; break;
+    }
+    switch (executable) {
+    case ALLOWED_PERM: tmp+='x'; break;
+    case UNKNOWN_PERM: tmp+='?'; break;
+    case NO_PERM:      tmp+='-'; break;
+    }
+
+    _krPermissionsString = tmp;
 }
 
 
@@ -1112,7 +1161,6 @@ void KrView::setFilter(KrViewProperties::FilterSpec filter, FilterSettings custo
 
 void KrView::setFilter(KrViewProperties::FilterSpec filter)
 {
-
     KConfigGroup cfg(_config, "Look&Feel");
     bool rememberSettings = cfg.readEntry("FilterDialogRemembersSettings", _FilterDialogRemembersSettings);
     bool applyToDirs = rememberSettings ? _properties->filterApplysToDirs : false;
@@ -1165,7 +1213,6 @@ void KrView::refresh()
     KUrl::List selection = getSelectedUrls(false);
 
     clear();
-
 
     if(!_dirLister)
         return;

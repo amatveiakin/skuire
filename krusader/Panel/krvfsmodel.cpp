@@ -178,10 +178,8 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
             } else
                 return item->permissionsString();
         }
-        case KrViewProperties::KrPermissions: {
-            vfile vf(*item); //FIXME: cache this
-            return KrView::krPermissionString(&vf);
-        }
+        case KrViewProperties::KrPermissions:
+            return item->krPermissionsString();
         case KrViewProperties::Owner:
             return item->user();
         case KrViewProperties::Group:
