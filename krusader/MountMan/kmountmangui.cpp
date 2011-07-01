@@ -85,10 +85,9 @@ KMountManGUI::KMountManGUI(KMountMan *mntMan) : KDialog(mntMan->parentWindow),
     connect(watcher, SIGNAL(timeout()), this, SLOT(checkMountChange()));
 
     connect(this, SIGNAL(finishedGettingSpaceData()), this, SLOT(updateList()));
-    setButtons(KDialog::Ok | UMOUNT_BTN | EJECT_BTN);
-    setButtonGuiItem(KDialog::Ok, KGuiItem(i18n("&Close")));
+    setButtons(KDialog::Close | UMOUNT_BTN | EJECT_BTN);
     setButtonGuiItem(UMOUNT_BTN, KGuiItem(i18n("&Unmount")));
-    setButtonGuiItem(EJECT_BTN, KGuiItem(i18n("&Eject")));
+    setButtonGuiItem(EJECT_BTN, KGuiItem(i18n("&Eject"), "media-eject"));
     enableButton(UMOUNT_BTN, false);
     enableButton(EJECT_BTN, false);
     showButton(KDialog::Apply, false);
@@ -234,6 +233,7 @@ void KMountManGUI::getSpaceData()
     mounted = KMountPoint::currentMountPoints();
     possible = KMountPoint::possibleMountPoints();
     if (mounted.size() == 0) {   // nothing is mounted
+        addNonMounted();
         updateList(); // let's continue
         return ;
     }
@@ -248,17 +248,18 @@ void KMountManGUI::getSpaceData()
         KDiskFreeSpace *sp = KDiskFreeSpace::findUsageInfo((*it) ->mountPoint());
         connect(sp, SIGNAL(foundMountPoint(const QString &, quint64, quint64, quint64)),
                 this, SLOT(gettingSpaceData(const QString&, quint64, quint64, quint64)));
-        connect(sp, SIGNAL(done()), this, SLOT(gettingSpaceData()));
+        connect(sp, SIGNAL(done()), this, SLOT(finishedGettingSpaceData()));
     }
 }
 
 // this decrements the counter, while the following uses the data
 // used when certain filesystem (/dev, /sys) can't have the needed stats
-void KMountManGUI::gettingSpaceData()
+void KMountManGUI::finishedGettingSpaceData()
 {
     if (--numOfMountPoints == 0) {
         fileSystems = fileSystemsTemp;
-        emit finishedGettingSpaceData();
+        addNonMounted();
+        updateList();
     }
 }
 
@@ -279,6 +280,28 @@ void KMountManGUI::gettingSpaceData(const QString &mountPoint, quint64 kBSize,
     data.setName(m->mountedFrom());
     data.setType(m->mountType());
     fileSystemsTemp.append(data);
+}
+
+void KMountManGUI::addNonMounted()
+{
+    // handle the non-mounted ones
+    for (KMountPoint::List::iterator it = possible.begin(); it != possible.end(); ++it) {
+        // make sure we don't add things we've already added
+        if (KMountMan::findInListByMntPoint(mounted, (*it)->mountPoint())) {
+            continue;
+        } else {
+            fsData data;
+            data.setMntPoint((*it)->mountPoint());
+            data.setMounted(false);
+            data.setType((*it)->mountType());
+            data.setName((*it)->mountedFrom());
+
+            if (mountMan->invalidFilesystem(data.type()))
+                continue;
+
+            fileSystems.append(data);
+        }
+    }
 }
 
 void KMountManGUI::addItemToMountList(KrTreeWidget *lst, fsData &fs)
@@ -332,31 +355,9 @@ void KMountManGUI::updateList()
 
     mountList->clearSelection();
     mountList->clear();
-    // this handles the mounted ones
-    for (QList<fsData>::iterator it = fileSystems.begin(); it != fileSystems.end() ; ++it) {
-        if (mountMan->invalidFilesystem((*it).type())) {
-            continue;
-        }
+
+    for (QList<fsData>::iterator it = fileSystems.begin(); it != fileSystems.end() ; ++it)
         addItemToMountList(mountList, *it);
-    }
-
-    // now, handle the non-mounted ones
-    for (KMountPoint::List::iterator it = possible.begin(); it != possible.end(); ++it) {
-        // make sure we don't add things we've already added
-        if (KMountMan::findInListByMntPoint(mounted, (*it)->mountPoint())) {
-            continue;
-        } else {
-            fsData data;
-            data.setMntPoint((*it)->mountPoint());
-            data.setMounted(false);
-            data.setType((*it)->mountType());
-            data.setName((*it)->mountedFrom());
-            fileSystems.append(data);
-
-            if (mountMan->invalidFilesystem(data.type())) continue;
-            addItemToMountList(mountList, data);
-        }
-    }
 
     currentItem = mountList->topLevelItem(currentIdx);
     for(int i = 0; i < mountList->topLevelItemCount(); i++) {
@@ -412,7 +413,7 @@ void KMountManGUI::changeActive(QTreeWidgetItem *i)
         enableButton(EJECT_BTN, false);
         return;
     }
-    
+
     fsData *system = getFsData(i);
 
     info->setAlias(system->mntPoint());

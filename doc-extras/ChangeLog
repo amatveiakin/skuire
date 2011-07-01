@@ -1,14 +1,20 @@
 The Krusader Handbook ChangeLog
 -------------------------------
+2.4.0-beta1 "Migration"
+==========================
+ ADDED: Quickfilter section in basic-functions
  ADDED: MountMan option: Show only removable devices
  ADDED: option: Panel > Operation > Filter dialog remembers settings
  ADDED: action: Move Current Tab to Other Side
  ADDED: updated man page
  ADDED: support for xz archives
 
+ CHANGED: User Interface > Panels > Folder History  (history is saved now)
+ CHANGED: New layout of Konfigurator General page.
  CHANGED: kgstartup screenshot to follow Konfigurator changes
  CHANGED: new Konfigurator page (Panel), items are moved according to the interface change up to the 2.3.0-beta1+
  CHANGED: Update the addresses according to the Git move
+ CHANGED: option: Panel > Status/Totalsbar > Show space information
 
  FIXED: Bugs #261307, #261311, #261358, #261361, #261371, #261375, #261379, #261382, #261383, #263493, #263500, #267546, #267695, #267708, #267718, #268210, #268234, #268236, #268239, #270257, #270648, #270650.
  FIXED: Bugs reported to kde-doc-english by Alexander Potashev

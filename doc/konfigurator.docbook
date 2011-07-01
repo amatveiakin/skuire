@@ -111,15 +111,21 @@
             </listitem>
             <listitem>
               <para>
-              <guilabel>Show toolbar</guilabel>: If checked,
-              <link linkend="mainwindow">Main Toolbar</link> is visible after
-              startup.</para>
-            </listitem>
-            <listitem>
-              <para>
               <guilabel>Show statusbar</guilabel>: If checked, the
               <link linkend="mainwindow">Statusbar</link> is visible after
               start-up.</para>
+            </listitem>
+	    <listitem>
+              <para>
+              <guilabel>Show actions toolbar</guilabel>: If checked, the
+              <link linkend="actions_toolbar">Actions Toolbar</link> is visible after
+              start-up.</para>
+            </listitem>
+	    <listitem>
+              <para>
+              <guilabel>Show toolbar</guilabel>: If checked,
+              <link linkend="mainwindow">Main Toolbar</link> is visible after
+              startup.</para>
             </listitem>
             <listitem>
               <para>
@@ -247,7 +253,7 @@
       </itemizedlist>
       <itemizedlist>
         <title>
-          <guilabel>Quicksearch</guilabel>
+          <guilabel>Quicksearch/Quickfilter</guilabel>
         </title>
         <listitem>
           <para>
@@ -257,10 +263,10 @@
         </listitem>
         <listitem>
           <para>
-          <guilabel>Case sensitive quicksearch</guilabel>: When you
-          use the 
-          <link linkend="quicksearch">Quicksearch</link> feature: If
-          checked (the &UNIX; default), all files
+          <guilabel>Case sensitive Quicksearch/Quickfilter</guilabel>: When you
+          use the <link linkend="quicksearch">Quicksearch</link>
+          or <link linkend="quickfilter">Quickfilter</link> feature:
+          If checked (the &UNIX; default), all files
           beginning with capital letters appear before files
           beginning with lower case letters; otherwise, all files
           beginning with a specified letter (capital or otherwise)
@@ -272,7 +278,8 @@
         </listitem>
         <listitem>
           <para>
-          <guilabel>Quicksearch position</guilabel>: Lets you choose <link linkend="quicksearch">Quicksearch</link> bar position (<guimenuitem>Bottom</guimenuitem> or <guimenuitem>Top</guimenuitem>).</para>
+          <guilabel>Position</guilabel>: Lets you choose <link linkend="quicksearch">Quicksearch</link>
+          and <link linkend="quickfilter">Quickfilter</link> bar position (<guimenuitem>Bottom</guimenuitem> or <guimenuitem>Top</guimenuitem>).</para>
         </listitem>
       </itemizedlist>
       <itemizedlist>
@@ -286,8 +293,8 @@
         </listitem>
         <listitem>
           <para>
-          <guilabel>Show free disk space in the Totalsbar</guilabel>:  If checked,
-          &krusader; displays free disk space in the Totalsbar.</para>
+          <guilabel>Show space information</guilabel>:  If checked,
+	  &krusader; displays free/total disk space in the Status-/Totalsbar.</para>
         </listitem>
       </itemizedlist>
     </sect2>
@@ -414,7 +421,7 @@
         </listitem>
         <listitem>
           <para>
-          <guilabel>Show previews</guilabel>: If checked,
+          <guilabel>Show previews by default</guilabel>: If checked,
           show the previews of file contents.</para>
         </listitem>
         <listitem>
@@ -685,7 +692,7 @@
       <itemizedlist>
         <listitem>
           <para>
-          <guilabel>Layout:</guilabel> allows to define layout.</para>
+          <guilabel>Layout:</guilabel> allows to define layout. The default options are <guimenuitem>Default</guimenuitem>, <guimenuitem>Compact</guimenuitem>, and <guimenuitem>Classic</guimenuitem>.</para>
         </listitem>
         <listitem>
           <para>
@@ -925,39 +932,97 @@
       </varlistentry>
     </variablelist>
   </sect1>
-  <sect1 id="konfig-general">
+<sect1 id="konfig-general">
     <title>General</title>
-    <para>Here you configure the basic operations.</para>
-
-    <para>The following options determine basic aspects of
-    operation: 
-    <itemizedlist>
-      <listitem>
-        <para>
-        <guilabel>Delete files/Move to trash</guilabel>: when
+    <para>Here you configure the basic operations. The page is divided into three tabs:
+    <guilabel>General</guilabel>, 
+    <guilabel>Viewer/Editor</guilabel>, 
+    and <guilabel>Atomic extensions</guilabel>.</para>
+    <sect2 id="konfig-general-general">
+      <title>General</title>
+      <para>The following options determine basic aspects of operation:</para> 
+      <itemizedlist>
+	<listitem>
+	  <para>
+	    <guilabel>Warn on exit</guilabel>: if checked, &krusader;
+	    warns you every time when exit action is triggered.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    <guilabel>Minimize to tray</guilabel>: If checked, the &krusader;
+        icon will appear in the system tray.
+        When you minimize &krusader;, it won't appear in the taskbar.
+        It also will not exit if you close the main window.
+        Instead you can quit &krusader; by selecting <guimenuitem>Quit</guimenuitem> from the <guimenu>File</guimenu> menu
+        or the context menu of the tray icon.
+	  </para>
+	</listitem>
+	<listitem>
+	  <para>
+	    <guilabel>Use mimetype magic</guilabel>: mime type magic is
+	    a mechanism which allows &krusader; to inspect
+	    the files in the panels and determine their type even if
+	    the file has no identifying extension. For example, if you
+	    take an image file - 'image1.jpg' - and rename it to
+	    'image1', &krusader; will still know it's an
+	    image file and work with it accordingly. However, this mode
+	    of operation is slower (while refreshing the panel, or
+	    changing directories), so try &krusader; with
+	    and without mime type magic and decide what is best for
+	    you.</para>
+	 </listitem>
+	 <listitem>
+	   <para>
+	     <guilabel>Temp Directory</guilabel>: this option selects
+	     the base directory for &krusader;'s temporary
+	     files. The actual files will be created in separate
+	     directories under the 'Temp directory', so that each user
+	     running &krusader; will have their own temporary
+	     subdirectories under the chosen directory. 
+	     <note>
+	       <para>You must choose a temporary directory to which all
+		 users running &krusader; have full
+		 permissions!</para>
+	     </note>
+	   </para>
+	 </listitem>
+      </itemizedlist>
+      <para>
+	<guilabel>Delete mode</guilabel> (<guilabel>Delete files/Move to trash</guilabel>): when
         &krusader; deletes files it can either 'really'
         delete them or move them to the trash folder, thereby
-        making them available via &kde;'s trash.</para>
-      </listitem>
+        making them available via &kde;'s trash.
+      </para>
+      <para>
+        <guilabel>Terminal</guilabel>: choose which terminal
+        emulator will be used when &krusader; opens a
+	console window (via <keycap>F2</keycap>, or <menuchoice><guimenu>Tools</guimenu>
+	<guimenuitem>Start Terminal</guimenuitem></menuchoice>
+        menu option).
+      </para>
+      <para>
+        <guilabel>Terminal Emulator sends Chdir on a panel
+        change</guilabel>: if unchecked, there will be no 
+        <command>cd</command> command sent to the Terminal Emulator
+        if the panel folder changes.</para>
+      <para>
+	<guilabel>Fullscreen terminal (mc-style)</guilabel>: if checked,
+	  &krusader; shows fullscreen terminal in 
+	  <application>Midnight Commander</application> style (Terminal is shown
+	  instead of &krusader; window.
+      </para>
+    </sect2>
+    <sect2 id="konfig-general-viewer">
+       <title>Viewer/Editor</title>
+      <para>Here you can change the viewer and editor settings:
+      </para>
+      <itemizedlist>
       <listitem>
-        <para>
-        <guilabel>Use mimetype magic</guilabel>: mime type magic is
-        a mechanism which allows &krusader; to inspect
-        the files in the panels and determine their type even if
-        the file has no identifying extension. For example, if you
-        take an image file - 'image1.jpg' - and rename it to
-        'image1', &krusader; will still know it's an
-        image file and work with it accordingly. However, this mode
-        of operation is slower (while refreshing the panel, or
-        changing directories), so try &krusader; with
-        and without mime type magic and decide what is best for
-        you.</para>
-      </listitem>
-      <listitem>
-        <para>
-        <guilabel>Editor</guilabel>: choose what editor will be
-        used when editing a file (via F4). Default the internal viewer is used, 
-	this is the &kde;'s default viewer.</para>
+	<para>
+	  <guilabel>Internal editor and viewer opens each file in separate window</guilabel>: check this
+	  item if you want each file to be opened in separate window.
+	</para>
       </listitem>
       <listitem>
         <para>
@@ -978,59 +1043,33 @@
         <listitem>
          <para>
          <guilabel>Lister mode</guilabel>: Fast text/hex viewer for huge filesizes.
-	 Krusader lister never loads the whole file into memory, just a little part of it, and uses caching for faster scrolling. 
+	 &krusader; lister never loads the whole file into memory, just a little part of it, and uses caching for faster scrolling. 
          Remote files are downloaded, but during the download, viewing the downloaded part is possible.
          If a file constantly changes, then it can also be viewed, lister will always see its current state.</para>
         </listitem>
+	<listitem>
+         <para>
+         <guilabel>Use lister if the text file is bigger than : 10 MB (default value) </guilabel>: 
+	 checks whether a text file is bigger than 10 MB (configurable), and if yes, 
+	 then &krusader; Lister is used instead of &kde;'s default viewer.</para>
+	</listitem>      
 	</itemizedlist>
       </para>
       </listitem>
       <listitem>
         <para>
-        <guilabel>Viewer opens each file in a separate
-        window</guilabel>: you can use the browsing tabs for
-        navigation.</para>
+        <guilabel>Editor</guilabel>: choose what editor will be
+	  used when editing a file (via <keycap>F4</keycap>). Default the internal viewer is used, 
+	this is the &kde;'s default viewer.</para>
       </listitem>
-      <listitem>
-        <para>
-        <guilabel>Use lister if the text file is bigger than : 10 Mb (default value) </guilabel>: 
-	checks whether a text file is bigger than 10 MB (configurable), and if yes, 
-	then Krusader Lister is used instead of &kde;'s default viewer.</para>
-      </listitem>      
-      <listitem>
+    </itemizedlist>
+    </sect2>
+    <sect2 id="konfig-general-atomic">
+      <title>Atomic extensions</title>
         <para>
         <guilabel>Atomic extensions</guilabel>: predefined atomic extensions like <filename>tar.gz</filename> 
         are shown as one part in the <guilabel>Ext Column</guilabel> of the <link linkend="list_panel">List Panel</link>.</para>
-      </listitem>
-      <listitem>
-        <para>
-        <guilabel>Terminal</guilabel>: choose which terminal
-        emulator will be used when &krusader; opens a
-        console window (via F2, or Tools-&gt;Start Terminal
-        menu option).</para>
-      </listitem>
-      <listitem>
-        <para>
-        <guilabel>Terminal Emulator sends Chdir on a panel
-        change</guilabel>: if unchecked, there will be no 
-        <command>cd</command> command sent to the Terminal Emulator
-        if the panel folder changes.</para>
-      </listitem>
-      <listitem>
-        <para>
-        <guilabel>Temp Directory</guilabel>: this option selects
-        the base directory for &krusader;'s temporary
-        files. The actual files will be created in separate
-        directories under the 'Temp directory', so that each user
-        running &krusader; will have their own temporary
-        subdirectories under the chosen directory. 
-        <note>
-          <para>You must choose a temporary directory to which all
-          users running &krusader; have full
-          permissions!</para>
-        </note></para>
-      </listitem>
-    </itemizedlist></para>
+      </sect2>
   </sect1>
   <sect1 id="konfig-advanced">
     <title>Advanced</title>

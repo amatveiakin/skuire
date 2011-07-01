@@ -2,8 +2,8 @@ project(krusader)
 
 INCLUDE(CPack)
 
-set(VERSION "2.3.0-beta1" )
-set(RELEASE_NAME "New Horizons")
+set(VERSION "2.4.0-beta1" )
+set(RELEASE_NAME "Migration")
 
 find_package(KDE4 REQUIRED)
 include(KDE4Defaults)
@@ -20,6 +20,7 @@ add_subdirectory(pics)
 add_subdirectory(doc-extras)
 add_subdirectory(krArc)
 add_subdirectory(iso)
+add_subdirectory(doc)
 #add_subdirectory(krfiledialog) - not used
 #add_subdirectory(virt) - not used
 #add_subdirectory(tar) - not used

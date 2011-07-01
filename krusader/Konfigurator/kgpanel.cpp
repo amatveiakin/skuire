@@ -88,7 +88,7 @@ void KgPanel::setupMiscTab()
 
 // ---------------------------------------------------------------------------------------
     KONFIGURATOR_CHECKBOX_PARAM general_settings[] = { // cfg_class, cfg_name, default, text, restart, tooltip
-        {"Look&Feel", "FlatOriginBar", false, i18n("Flat Origin Bar"),   true,  0 },
+        {"Look&Feel", "FlatOriginBar", _FlatOriginBar, i18n("Flat Origin Bar"),   true,  0 },
     };
     miscLayout->addWidget(createCheckBoxGroup(2, 0, general_settings, 1 /*count*/, tab, PAGE_MISC), 0, Qt::AlignTop);
 
@@ -144,12 +144,12 @@ void KgPanel::setupMiscTab()
 // ---------------------------------------------------------------------------------------
 // -----------------------------  Quicksearch  -------------------------------------------
 // ---------------------------------------------------------------------------------------
-    miscGrp = createFrame(i18n("Quicksearch"), tab);
+    miscGrp = createFrame(i18n("Quicksearch/Quickfilter"), tab);
     miscGrid = createGridLayout(miscGrp);
 
     KONFIGURATOR_CHECKBOX_PARAM quicksearch[] = { //   cfg_class  cfg_name                default             text                              restart tooltip
-        {"Look&Feel", "New Style Quicksearch",  _NewStyleQuicksearch, i18n("New style quicksearch"), false,  i18n("Opens a quick search dialog box.") },
-        {"Look&Feel", "Case Sensitive Quicksearch",  _CaseSensitiveQuicksearch, i18n("Case sensitive quicksearch"), false,  i18n("All files beginning with capital letters appear before files beginning with non-capital letters (UNIX default).") },
+        {"Look&Feel", "New Style Quicksearch",  _NewStyleQuicksearch, i18n("New style Quicksearch"), false,  i18n("Opens a quick search dialog box.") },
+        {"Look&Feel", "Case Sensitive Quicksearch",  _CaseSensitiveQuicksearch, i18n("Case sensitive Quicksearch/QuickFilter"), false,  i18n("All files beginning with capital letters appear before files beginning with non-capital letters (UNIX default).") },
         {"Look&Feel", "Up/Down Cancels Quicksearch",  false, i18n("Up/Down cancels Quicksearch"), false,  i18n("Pressing the Up/Down buttons cancels Quicksearch.") },
     };
 
@@ -162,7 +162,7 @@ void KgPanel::setupMiscTab()
 
     hbox = new QHBoxLayout();
 
-    hbox->addWidget(new QLabel(i18n("Quicksearch position:"), miscGrp));
+    hbox->addWidget(new QLabel(i18n("Position:"), miscGrp));
 
     cmb = createComboBox("Look&Feel", "Quicksearch Position",
                             "bottom", positions, 2, miscGrp, true, false, PAGE_MISC);
@@ -184,9 +184,10 @@ void KgPanel::setupMiscTab()
     KONFIGURATOR_CHECKBOX_PARAM barSettings[] =
     {
         {"Look&Feel", "Show Size In Bytes", true, i18n("Show size in bytes too"), true,  i18n("Show size in bytes too") },
+        {"Look&Feel", "ShowSpaceInformation", true, i18n("Show space information"), true,  i18n("Show free/total space on the device") },
     };
     KonfiguratorCheckBoxGroup *barSett = createCheckBoxGroup(2, 0, barSettings,
-                                          1 /*count*/, miscGrp, PAGE_MISC);
+                                          2 /*count*/, miscGrp, PAGE_MISC);
     miscGrid->addWidget(barSett, 1, 0, 1, 2);
 
     miscLayout->addWidget(miscGrp);

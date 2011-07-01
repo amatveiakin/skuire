@@ -31,7 +31,6 @@ class KrPreviewPopup : public QMenu
 
 public:
     KrPreviewPopup();
-    ~KrPreviewPopup();
 
     void setItems(KFileItemList items);
 public slots:
@@ -39,16 +38,11 @@ public slots:
     void view(QAction *);
 
 protected:
-    virtual void paintEvent(QPaintEvent *e);
-
     QAction * prevNotAvailAction;
     KFileItemList files;
-    int id;
-    bool noPreview;
-    KUrl::List availablePreviews;
 
-    int maxXSize;
-    int maxYSize;
+private:
+    class ProxyStyle;
 };
 
 #endif
