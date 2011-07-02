@@ -117,8 +117,6 @@ void KrInterBriefView::setup()
 
 void KrInterBriefView::keyPressEvent(QKeyEvent *e)
 {
-//FIXME
-#if 0
     if (!e || !_model->ready())
         return ; // subclass bug
     if ((e->key() != Qt::Key_Left && e->key() != Qt::Key_Right) &&
@@ -130,29 +128,31 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
             e->ignore();
             break;
         }
-        KrViewItem *i = getCurrentKrViewItem();
-        KrViewItem *newCurrent = i;
 
-        if (!i)
+        if (!currentIndex().isValid())
             break;
 
-        int num = itemsPerPage() + 1;
+        int newCurrentRow = currentIndex().row() + itemsPerPage();
+        if(newCurrentRow >= _model->rowCount())
+            newCurrentRow = _model->rowCount() - 1;
 
-        if (e->modifiers() & Qt::ShiftModifier) i->setSelected(!i->isSelected());
 
-        while (i && num > 0) {
-            if (e->modifiers() & Qt::ShiftModifier) i->setSelected(!i->isSelected());
-            newCurrent = i;
-            i = getNext(i);
-            num--;
+        if (e->modifiers() & Qt::ShiftModifier) {
+            op()->setMassSelectionUpdate(true);
+
+            for (int row = currentIndex().row(); row <= newCurrentRow; row++) {
+                KrView::Item *item = _model->itemAt(_model->index(row, 0));
+                setSelected(item, !isSelected(item));
+            }
+
+            op()->setMassSelectionUpdate(false);
         }
 
-        if (newCurrent) {
-            setCurrentKrViewItem(newCurrent);
+        if (newCurrentRow >= 0) {
+            KrInterView::setCurrentIndex(_model->index(newCurrentRow, 0));
             makeCurrentVisible();
         }
-        if (e->modifiers() & Qt::ShiftModifier)
-            op()->emitSelectionChanged();
+
         break;
     }
     case Qt::Key_Left : {
@@ -160,35 +160,36 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
             e->ignore();
             break;
         }
-        KrViewItem *i = getCurrentKrViewItem();
-        KrViewItem *newCurrent = i;
 
-        if (!i)
+        if (!currentIndex().isValid())
             break;
 
-        int num = itemsPerPage() + 1;
+        int newCurrentRow = currentIndex().row() - itemsPerPage();
+        if(newCurrentRow < 0)
+            newCurrentRow = 0;
 
-        if (e->modifiers() & Qt::ShiftModifier) i->setSelected(!i->isSelected());
 
-        while (i && num > 0) {
-            if (e->modifiers() & Qt::ShiftModifier) i->setSelected(!i->isSelected());
-            newCurrent = i;
-            i = getPrev(i);
-            num--;
+        if (e->modifiers() & Qt::ShiftModifier) {
+            op()->setMassSelectionUpdate(true);
+
+            for (int row = currentIndex().row(); row >= newCurrentRow; row--) {
+                KrView::Item *item = _model->itemAt(_model->index(row, 0));
+                setSelected(item, !isSelected(item));
+            }
+
+            op()->setMassSelectionUpdate(false);
         }
 
-        if (newCurrent) {
-            setCurrentKrViewItem(newCurrent);
+        if (newCurrentRow >= 0) {
+            KrInterView::setCurrentIndex(_model->index(newCurrentRow, 0));
             makeCurrentVisible();
         }
-        if (e->modifiers() & Qt::ShiftModifier)
-            op()->emitSelectionChanged();
+
         break;
     }
     default:
         QAbstractItemView::keyPressEvent(e);
     }
-#endif
 }
 
 void KrInterBriefView::wheelEvent(QWheelEvent *ev)
