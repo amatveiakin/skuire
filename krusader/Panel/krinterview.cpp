@@ -319,6 +319,7 @@ bool KrInterView::currentItemIsUpUrl()
 
 void KrInterView::currentChanged(const QModelIndex &current)
 {
+    (void)current;
     Item *item = _model->itemAt(_itemView->currentIndex());
     op()->emitCurrentChanged(item ? *item : KFileItem());
 }
@@ -329,12 +330,16 @@ QRect KrInterView::itemRect(KUrl itemUrl)
     return index.isValid() ? itemRect(index) : QRect();
 }
 
-KFileItem KrInterView::itemAt(const QPoint &vp, bool *isUpUrl)
+KFileItem KrInterView::itemAt(const QPoint &pos, bool *isUpUrl, bool includingUpUrl)
 {
-    Item *item = _model->itemAt(_itemView->indexAt(vp));
+    Item *item = _model->itemAt(_itemView->indexAt(pos));
     if(isUpUrl)
         *isUpUrl = (item && (item == _model->dummyItem()));
-    return (item && (item != _model->dummyItem())) ? *item : KFileItem();
+
+    if(item && (item != _model->dummyItem() || includingUpUrl))
+        return *item;
+    else
+        return KFileItem();
 }
 
 void KrInterView::setCurrentItem(KUrl url)

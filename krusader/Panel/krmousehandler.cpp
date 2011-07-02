@@ -41,7 +41,7 @@ KrMouseHandler::KrMouseHandler(KrView * view) : _view(view),
 bool KrMouseHandler::mousePressEvent(QMouseEvent *e)
 {
     _rightClickedItem = _clickedItem = KFileItem();
-    KFileItem item = _view->itemAt(e->pos());
+    KFileItem item = _view->itemAt(e->pos(), 0, true);
     if (!_view->isFocused())
         _view->op()->emitNeedFocus();
     if (e->button() == Qt::LeftButton) {

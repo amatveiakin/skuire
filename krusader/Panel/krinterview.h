@@ -54,7 +54,7 @@ public:
     virtual void setCurrentItem(KUrl url);
     virtual void makeItemVisible(KUrl url);
     virtual void selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst);
-    virtual KFileItem itemAt(const QPoint &vp, bool *isUpUrl);
+    virtual KFileItem itemAt(const QPoint &pos, bool *isUpUrl, bool includingUpUrl);
     virtual bool isItemVisible(KUrl url);
     virtual QRect itemRectGlobal(KUrl url);
     virtual QPixmap icon(KUrl url);
