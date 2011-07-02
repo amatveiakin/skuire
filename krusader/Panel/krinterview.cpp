@@ -283,6 +283,7 @@ inline KrView::Item *KrInterView::currentViewItem()
     return _model->itemAt(_itemView->currentIndex());
 }
 
+//FIXME: move to KrVfsModel
 KFileItem KrInterView::firstItem()
 {
     int index = _model->dummyItem() ? 1 : 0;
@@ -292,6 +293,7 @@ KFileItem KrInterView::firstItem()
         return KFileItem();
 }
 
+//FIXME: move to KrVfsModel
 KFileItem KrInterView::lastItem()
 {
     if (_model->rowCount()) {
@@ -538,11 +540,11 @@ const KrView::Item *KrInterView::itemFromUrl(KUrl url) const
 
 bool KrInterView::quickSearch(const QString &term, int direction)
 {
-    if (currentItem().isNull())
+    if (!currentViewItem())
         return false;
 
     if (direction == 0) {
-        if (quickSearchMatch(currentItem(), term))
+        if (currentViewItem() != dummyItem() && quickSearchMatch(currentItem(), term))
             return true;
         else
             direction = 1;
