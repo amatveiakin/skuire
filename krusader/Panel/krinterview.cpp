@@ -478,11 +478,8 @@ QRect KrInterView::itemRectGlobal(KUrl url)
 
 QPixmap KrInterView::icon(KUrl url)
 {
-    const Item *item = _model->itemAt(_model->indexFromUrl(url));
-    if(item)
-        return getIcon(item);
-    else
-        return QPixmap();
+    Item *item = _model->itemAt(_model->indexFromUrl(url));
+    return item ? item->icon() : QPixmap();
 }
 
 bool KrInterView::isCurrentItemSelected()
@@ -567,4 +564,11 @@ bool KrInterView::quickSearch(const QString &term, int direction)
         } else if (index == startIndex)
             return false;
     }
+}
+
+void KrInterView::refreshIcons()
+{
+    foreach(Item *item, _model->items())
+        item->clearIcon();
+    redraw();
 }

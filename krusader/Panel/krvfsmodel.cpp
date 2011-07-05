@@ -44,13 +44,13 @@ void KrVfsModel::populate(const KFileItemList &items, bool addDummyItem)
 #endif
 
     if(addDummyItem) {
-        _dummyItem = new KrView::Item(KFileItem(KUrl(".."), "inode/directory", 0), true);
+        _dummyItem = new KrView::Item(KFileItem(KUrl(".."), "inode/directory", 0), _view, true);
         _items << _dummyItem;
     }
 
     foreach(KFileItem fileItem, items) {
         //TODO: more efficient allocation
-        _items << new KrView::Item(fileItem);
+        _items << new KrView::Item(fileItem, _view);
     }
 
     _ready = true;
@@ -195,8 +195,8 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
                 if (_justForSizeHint)
                     //FIXME: cache this
                     return QPixmap(_view->fileIconSize(), _view->fileIconSize());
-                else //FIXME: and maybe cache this too
-                    return _view->getIcon(item);
+                else
+                    return item->icon();
             }
             break;
         }
@@ -329,7 +329,7 @@ QModelIndex KrVfsModel::addItem(KFileItem fileItem)
 
     emit layoutAboutToBeChanged();
 
-    KrView::Item *newItem = new KrView::Item(fileItem);
+    KrView::Item *newItem = new KrView::Item(fileItem, _view);
 
     if(lastSortOrder() == KrViewProperties::NoColumn) {
         int idx = _items.count();
@@ -438,7 +438,7 @@ void KrVfsModel::updateItem(KFileItem oldFile, KFileItem newFile)
 
     KrView::Item *item = _items[oldIndex];
 
-    *item = newFile;
+    *item = KrView::Item(newFile, _view);
 
     if(lastSortOrder() == KrViewProperties::NoColumn) {
         _view->redrawItem(oldModelIndex);

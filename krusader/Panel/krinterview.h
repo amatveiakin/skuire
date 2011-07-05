@@ -120,6 +120,7 @@ protected:
     virtual QRect itemRect(KUrl itemUrl);
     virtual const Item *dummyItem() const;
     virtual const Item *itemFromUrl(KUrl url) const;
+    virtual void refreshIcons();
 
     virtual QRect itemRect(const QModelIndex &index) = 0;
 

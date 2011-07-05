@@ -158,6 +158,7 @@ public:
     static KrColorCache & getColorCache();
     void getColors(KrColorGroup & result, const KrColorItemType & type) const;
     bool getDimSettings(QColor & dimColor, int & dimFactor);
+    bool dimInactive();
     static QColor dimColor(const QColor & color, int dim, const QColor & targetColor);
 public slots:
     void refreshColors();

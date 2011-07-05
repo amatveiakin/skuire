@@ -55,16 +55,18 @@
 #include <kinputdialog.h>
 
 
+// ----------------------------- operator
+
 KrView *KrViewOperator::_changedView = 0;
 KrViewProperties::PropertyType KrViewOperator::_changedProperties = KrViewProperties::NoProperty;
 
 
-// ----------------------------- operator
 KrViewOperator::KrViewOperator(KrView *view, QWidget *widget) :
         _view(view), _widget(widget), _quickSearch(0), _quickFilter(0), _massSelectionUpdate(false)
 {
     _saveDefaultSettingsTimer.setSingleShot(true);
     connect(&_saveDefaultSettingsTimer, SIGNAL(timeout()), SLOT(saveDefaultSettings()));
+    connect(&KrColorCache::getColorCache(), SIGNAL(colorsRefreshed()), SLOT(colorSettingsChanged()));
     _widget->installEventFilter(this);
 }
 
@@ -107,6 +109,11 @@ void KrViewOperator::itemsDeleted(const KFileItemList& items)
 void KrViewOperator::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
 {
     _view->refreshItems(items);
+}
+
+void KrViewOperator::colorSettingsChanged()
+{
+    _view->refreshIcons();
 }
 
 void KrViewOperator::startDrag()
@@ -283,30 +290,30 @@ bool KrViewOperator::eventFilter(QObject *watched, QEvent *event)
     return false;
 }
 
-// ----------------------------- krview
 
-const KrView::IconSizes KrView::iconSizes;
+// ----------------------------- KrView::Item
 
-
-KrView::Item::Item(const KFileItem &fileItem, bool isDummy) :
+KrView::Item::Item(const KFileItem &fileItem, KrView *view, bool isDummy) :
     KFileItem(fileItem)
 {
-    init(isDummy);
+    init(view, isDummy);
 }
 
-KrView::Item &KrView::Item::operator=(const KFileItem  &other)
+KrView::Item &KrView::Item::operator=(const Item  &other)
 {
     KFileItem::operator=(other);
-    init(false);
+    init(other._view, false);
     return *this;
 }
 
-void KrView::Item::init(bool isDummy)
+void KrView::Item::init(KrView *view, bool isDummy)
 {
+    clearIcon();
     _iconName.clear();
     _krPermissionsString.clear();
     _brokenLink = false;
     _calculatedSize = 0;
+    _view = view;
 
     if(isDummy)
         _iconName = "go-up";
@@ -332,6 +339,87 @@ void KrView::Item::init(bool isDummy)
 void KrView::Item::getIconName() const
 {
     _iconName = KFileItem::iconName();
+}
+
+void KrView::Item::clearIcon()
+{
+    _iconActive = _iconInactive = QPixmap();
+}
+
+void KrView::Item::setIcon(QPixmap icon)
+{
+    _iconActive = processIcon(icon, false);
+
+    if (KrColorCache::getColorCache().dimInactive())
+        _iconInactive = processIcon(icon, true);
+    else
+        _iconInactive = _iconActive;
+}
+
+void KrView::Item::loadIcon() const
+{
+    _iconActive = loadIcon(true);
+    if (KrColorCache::getColorCache().dimInactive())
+        _iconInactive = loadIcon(false);
+    else
+        _iconInactive = _iconActive;
+}
+
+QPixmap KrView::Item::loadIcon(bool active) const
+{
+    QString cacheName;
+    cacheName.append(QString::number(_view->fileIconSize()));
+    if (isLink())
+        cacheName.append("LINK_");
+    if (!active)
+        cacheName.append("DIM_");
+    cacheName.append(iconName());
+
+    //FIXME
+    //QPixmapCache::setCacheLimit( ag.readEntry("Icon Cache Size",_IconCacheSize) );
+
+    QPixmap icon;
+
+    // first try the cache
+    if (!QPixmapCache::find(cacheName, icon)) {
+        icon = processIcon(
+            krLoader->loadIcon(iconName(), KIconLoader::Desktop, _view->fileIconSize()),
+            active);
+        // insert it into the cache
+        QPixmapCache::insert(cacheName, icon);
+    }
+
+    return icon;
+}
+
+QPixmap KrView::Item::processIcon(QPixmap icon, bool active) const
+{
+    QColor dimColor;
+    int dimFactor;
+    bool dim = !active && KrColorCache::getColorCache().getDimSettings(dimColor, dimFactor);
+
+    if (isLink()) {
+        QPixmap link(link_xpm);
+        QPainter painter(&icon);
+        painter.drawPixmap(0, icon.height() - 11, link, 0, 21, 10, 11);
+    }
+
+    if(!dim)
+        return icon;
+
+    QImage dimmed = icon.toImage();
+
+    QPainter p(&dimmed);
+    p.setCompositionMode(QPainter::CompositionMode_SourceIn);
+    p.fillRect(0, 0, icon.width(), icon.height(), dimColor);
+    p.setCompositionMode(QPainter::CompositionMode_SourceOver);
+    p.setOpacity((qreal)dimFactor / (qreal)100);
+    p.drawPixmap(0, 0, icon.width(), icon.height(), icon);
+
+    return QPixmap::fromImage(dimmed, Qt::ColorOnly | Qt::ThresholdDither |
+                                Qt::ThresholdAlphaDither | Qt::NoOpaqueDetection );
+
+    return icon;
 }
 
 void KrView::Item::getKrPermissionsString() const
@@ -381,6 +469,11 @@ void KrView::Item::getKrPermissionsString() const
 
     _krPermissionsString = tmp;
 }
+
+
+// ----------------------------- KrView
+
+const KrView::IconSizes KrView::iconSizes;
 
 
 KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
@@ -501,81 +594,6 @@ void KrView::updatePreviews()
     if(_previews)
         _previews->update();
 #endif
-}
-
-QPixmap KrView::processIcon(const QPixmap &icon, bool dim, const QColor & dimColor, int dimFactor, bool symlink)
-{
-    QPixmap pixmap = icon;
-
-    if (symlink) {
-        QPixmap link(link_xpm);
-        QPainter painter(&pixmap);
-        painter.drawPixmap(0, icon.height() - 11, link, 0, 21, 10, 11);
-    }
-
-    if(!dim)
-        return pixmap;
-
-    QImage dimmed = pixmap.toImage();
-
-    QPainter p(&dimmed);
-    p.setCompositionMode(QPainter::CompositionMode_SourceIn);
-    p.fillRect(0, 0, icon.width(), icon.height(), dimColor);
-    p.setCompositionMode(QPainter::CompositionMode_SourceOver);
-    p.setOpacity((qreal)dimFactor / (qreal)100);
-    p.drawPixmap(0, 0, icon.width(), icon.height(), pixmap);
-
-    return QPixmap::fromImage(dimmed, Qt::ColorOnly | Qt::ThresholdDither |
-                                Qt::ThresholdAlphaDither | Qt::NoOpaqueDetection );
-}
-
-QPixmap KrView::getIcon(const Item *item, bool active, int size/*, KRListItem::cmpColor color*/)
-{
-    // KConfigGroup ag( krConfig, "Advanced");
-    //////////////////////////////
-    QPixmap icon;
-    QString icon_name = item->iconName();
-    QString cacheName;
-
-    if(!size)
-        size = _FilelistIconSize.toInt();
-
-    QColor dimColor;
-    int dimFactor;
-    bool dim = !active && KrColorCache::getColorCache().getDimSettings(dimColor, dimFactor);
-
-    if (icon_name.isNull())
-        icon_name = "";
-
-    cacheName.append(QString::number(size));
-    if(item->isLink())
-        cacheName.append("LINK_");
-    if(dim)
-        cacheName.append("DIM_");
-    cacheName.append(icon_name);
-
-    //QPixmapCache::setCacheLimit( ag.readEntry("Icon Cache Size",_IconCacheSize) );
-
-    // first try the cache
-    if (!QPixmapCache::find(cacheName, icon)) {
-        icon = processIcon(krLoader->loadIcon(icon_name, KIconLoader::Desktop, size),
-                           dim, dimColor, dimFactor, item->isLink());
-        // insert it into the cache
-        QPixmapCache::insert(cacheName, icon);
-    }
-
-    return icon;
-}
-
-QPixmap KrView::getIcon(const Item *item)
-{
-    if(_previews) {
-        //FIXME
-//         QPixmap icon;
-//         if(_previews->getPreview(vf, icon, _focused))
-//             return icon;
-    }
-    return getIcon(item, _focused, _fileIconSize);
 }
 
 QString KrView::statistics()
@@ -942,6 +960,7 @@ void KrView::setFileIconSize(int size)
         _previews->update();
     }
 #endif
+    refreshIcons();
     redraw();
     op()->emitRefreshActions();
 }

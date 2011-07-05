@@ -244,6 +244,7 @@ protected slots:
     void newItems(const KFileItemList& items);
     void itemsDeleted(const KFileItemList& items);
     void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items);
+    void colorSettingsChanged();
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
@@ -252,7 +253,6 @@ protected slots:
     // for signals from vfs' dirwatch
     void fileDeleted(const QString& name);
     void refreshItem(KFileItem item);
-
     /////////////////////////////////////////////////////////////
     // deprecated functions end                                //
     /////////////////////////////////////////////////////////////
@@ -309,10 +309,9 @@ public:
     {
     public:
         Item();
-        Item(const KFileItem &fileItem, bool isDummy = false);
+        Item(const KFileItem &fileItem, KrView *view, bool isDummy = false);
         Item(const Item &other);
         Item &operator=(const Item &other);
-        Item &operator=(const KFileItem &other);
 
         const QString &iconName() const {
             if(_iconName.isNull())
@@ -333,16 +332,28 @@ public:
         void setCalculatedSize(KIO::filesize_t s) {
             _calculatedSize = s;
         }
+        const QPixmap &icon() const {
+            if(_iconActive.isNull())
+                loadIcon();
+            return _view->isFocused() ? _iconActive : _iconInactive;
+        }
+        void clearIcon();
+        void setIcon(QPixmap icon);
 
-    private:
+    protected:
+        void init(KrView *view, bool isDummy);
         void getIconName() const;
         void getKrPermissionsString() const;
-        void init(bool isDummy);
+        void loadIcon() const;
+        QPixmap loadIcon(bool active) const;
+        QPixmap processIcon(QPixmap icon, bool active) const;
 
         mutable QString _iconName;
         mutable QString  _krPermissionsString;
         bool _brokenLink;
         KIO::filesize_t _calculatedSize;
+        mutable QPixmap _iconActive, _iconInactive;
+        KrView *_view;
     };
 
     virtual ~KrView();
@@ -418,8 +429,6 @@ public:
     }
 
     virtual uint numSelected() const = 0;
-    virtual QString getCurrentItem() const = 0;
-    virtual void setCurrentItem(const QString& name) = 0;
     virtual void updateView() = 0;
     virtual void sort() = 0;
     virtual void refreshColors() = 0;
@@ -585,12 +594,6 @@ public:
     }
     void clearSavedSelection();
 
-    QPixmap getIcon(const Item *item);
-
-    static QPixmap processIcon(const QPixmap &icon, bool dim, const QColor & dimColor, int dimFactor, bool symlink);
-
-    static QPixmap getIcon(const Item *item, bool active, int size = 0);
-
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
@@ -607,6 +610,9 @@ public:
     virtual void setNameToMakeCurrentIfAdded(const QString name) {
         _nameToMakeCurrentIfAdded = name;
     }
+    virtual QString getCurrentItem() const = 0;
+    virtual void setCurrentItem(const QString& name) = 0;
+
 protected:
     //the following can be removed when VFileDirLister is removed
     virtual KFileItem findItemByName(const QString &name) = 0;
@@ -626,6 +632,7 @@ protected:
     virtual KIO::filesize_t calcSelectedSize() = 0;
     virtual void setCurrentItem(ItemSpec item) = 0;
     virtual const Item *dummyItem() const = 0;
+    virtual void refreshIcons() = 0;
 
     bool isFiltered(const KFileItem &item);
     bool quickSearchMatch(const KFileItem &item, QString term);

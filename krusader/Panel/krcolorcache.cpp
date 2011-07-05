@@ -715,7 +715,7 @@ void KrColorCache::getColors(KrColorGroup  & result, const KrColorItemType & typ
 
 bool KrColorCache::getDimSettings(QColor & dimColor, int & dimFactor)
 {
-    if(bool dimBackground = m_impl->m_colorSettings.getBoolValue("Dim Inactive Colors", false)) {
+    if(dimInactive()) {
         dimFactor = m_impl->m_colorSettings.getNumValue("Dim Factor", 100);
         dimColor = m_impl->m_colorSettings.getColorValue("Dim Target Color");
         if (!dimColor.isValid())
@@ -723,6 +723,11 @@ bool KrColorCache::getDimSettings(QColor & dimColor, int & dimFactor)
         return dimFactor >= 0 && dimFactor < 100;
     }
     return false;
+}
+
+bool KrColorCache::dimInactive()
+{
+    return m_impl->m_colorSettings.getBoolValue("Dim Inactive Colors", false);
 }
 
 QColor KrColorCache::dimColor(const QColor & color, int dim, const QColor & targetColor)
