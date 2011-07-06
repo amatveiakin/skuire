@@ -54,6 +54,9 @@ KFileItemList VfileDirLister::items()
 
 void VfileDirLister::setFiles(VfileContainer *files)
 {
+    if(_files && files == _files)
+        return;
+
     emit clear();
 
     if(_files)
