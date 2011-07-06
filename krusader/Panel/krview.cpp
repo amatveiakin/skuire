@@ -116,6 +116,11 @@ void KrViewOperator::colorSettingsChanged()
     _view->refreshIcons();
 }
 
+void KrViewOperator::gotPreview(KFileItem item, QPixmap preview)
+{
+    _view->gotPreview(item, preview);
+}
+
 void KrViewOperator::startDrag()
 {
     KUrl::List urls = _view->getSelectedUrls(true);
@@ -348,10 +353,10 @@ void KrView::Item::clearIcon()
 
 void KrView::Item::setIcon(QPixmap icon)
 {
-    _iconActive = processIcon(icon, false);
+    _iconActive = processIcon(icon, true);
 
     if (KrColorCache::getColorCache().dimInactive())
-        _iconInactive = processIcon(icon, true);
+        _iconInactive = processIcon(icon, false);
     else
         _iconInactive = _iconActive;
 }
@@ -487,9 +492,8 @@ KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
 KrView::~KrView()
 {
     _instance.m_objects.removeOne(this);
-//FIXME
-//     delete _previews;
-//     _previews = 0;
+    delete _previews;
+    _previews = 0;
     if (_properties)
         qFatal("A class inheriting KrView didn't delete _properties!");
     if (_operator)
@@ -570,30 +574,27 @@ void KrView::enableUpdateDefaultSettings(bool enable)
 
 void KrView::showPreviews(bool show)
 {
-//FIXME
-#if 0
     if(show) { 
         if(!_previews) {
             _previews = new KrPreviews(this);
+            QObject::connect(_previews, SIGNAL(gotPreview(KFileItem, QPixmap)),
+                             op(), SLOT(gotPreview(KFileItem, QPixmap)));
             _previews->update();
         }
     } else {
         delete _previews;
         _previews = 0;
+        refreshIcons();
     }
     redraw();
 //     op()->settingsChanged(KrViewProperties::PropShowPreviews);
     op()->emitRefreshActions();
-#endif
 }
 
 void KrView::updatePreviews()
 {
-//FIXME
-#if 0
     if(_previews)
         _previews->update();
-#endif
 }
 
 QString KrView::statistics()
@@ -637,8 +638,8 @@ void KrView::delItem(const QString &name)
     if(it.isNull())
         return;
 
-//     if(_previews) //FIXME
-//         _previews->deletePreview(it);
+    if(_previews)
+        _previews->deletePreview(it);
 
     intDelItem(it);
 
@@ -656,8 +657,8 @@ void KrView::itemsDeleted(const KFileItemList& items)
     // and/or: if number is above a certain threshold, do a complete refresh
 
     foreach(const KFileItem &item, items) {
-    //     if(_previews) //FIXME
-    //         _previews->deletePreview(it);
+        if(_previews)
+            _previews->deletePreview(item);
 
         intDelItem(item);
 
@@ -681,8 +682,8 @@ void KrView::newItems(const KFileItemList& items)
 
         intAddItem(item);
 
-    //     if(_previews) //FIXME
-    //         _previews->updatePreview(item);
+        if(_previews)
+            _previews->updatePreview(item);
 
         if (item.isDir())
             ++_numDirs;
@@ -707,15 +708,19 @@ void KrView::newItems(const KFileItemList& items)
 void KrView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
 {
     //FIXME optimize
-    //FIXME refresh previews
     KFileItemList filtered;
 
     for(int i = 0; i < items.count(); i++) {
         QPair<KFileItem, KFileItem> item = items[i];
+        if(_previews)
+            _previews->deletePreview(item.first);
         if (isFiltered(item.second))
             filtered << item.first;
-        else
-            intUpdateItem(item.first, item.first);
+        else {
+            intUpdateItem(item.first, item.second);
+            if(_previews)
+                _previews->updatePreview(item.second);
+        }
     }
 
     itemsDeleted(filtered);
@@ -727,8 +732,8 @@ void KrView::refreshItem(KFileItem item)
         delItem(item.name());
     else {
         intUpdateItem(item, item);
-//         if(_previews) //FIXME
-//             _previews->updatePreview(findItemByVfile(vf));
+        if(_previews)
+            _previews->updatePreview(item);
     }
 
     op()->emitSelectionChanged();
@@ -736,11 +741,9 @@ void KrView::refreshItem(KFileItem item)
 
 void KrView::clear()
 {
-//FIXME
-#if 0
     if(_previews)
         _previews->clear();
-#endif
+
     _count = _numDirs = 0;
     redraw();
 }
@@ -953,14 +956,9 @@ void KrView::setFileIconSize(int size)
     if(iconSizes.indexOf(size) < 0)
         return;
     _fileIconSize = size;
-//FIXME
-#if 0
-    if(_previews) {
-        _previews->clear();
-        _previews->update();
-    }
-#endif
+
     refreshIcons();
+    updatePreviews();
     redraw();
     op()->emitRefreshActions();
 }
@@ -1204,6 +1202,7 @@ void KrView::refresh()
         setCurrentItem(current);
 
     updatePreviews();
+
     redraw();
 
     op()->emitSelectionChanged();

@@ -27,7 +27,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-#if 0
+
 #ifndef KRPREVIEWJOB_H
 #define KRPREVIEWJOB_H
 
@@ -59,20 +59,19 @@ protected slots:
     void slotFailed(const KFileItem & item);
 
 protected:
-    QList<KrViewItem*> _scheduled;
-    QHash<const KFileItem, KrViewItem*> _hash;
+    KFileItemList _scheduled;
     KIO::PreviewJob *_job;
     QTimer _timer;
     KrPreviews *_parent;
 
     KrPreviewJob(KrPreviews *parent);
     ~KrPreviewJob();
-    void scheduleItem(KrViewItem *item);
-    void removeItem(KrViewItem *item);
+    void scheduleItem(KFileItem item);
+    void removeItem(KFileItem item);
 
     void sort();
     virtual bool doKill();
 };
 
 #endif // __krpreviewjob__
-#endif
+

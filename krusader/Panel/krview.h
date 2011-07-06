@@ -245,6 +245,7 @@ protected slots:
     void itemsDeleted(const KFileItemList& items);
     void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items);
     void colorSettingsChanged();
+    void gotPreview(KFileItem item, QPixmap preview);
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
@@ -455,6 +456,7 @@ protected:
     virtual void clear();
     virtual void populate(const KFileItemList &items, bool addDummyItem) = 0;
     virtual bool quickSearch(const QString &term, int direction) = 0;
+    virtual void gotPreview(KFileItem item, QPixmap preview) = 0;
 
 public:
     //////////////////////////////////////////////////////

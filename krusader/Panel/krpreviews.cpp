@@ -27,23 +27,17 @@ A
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-#if 0
+
 #include "krpreviews.h"
 #include "krpreviewjob.h"
 
 #include "krcolorcache.h"
 #include "krview.h"
-#include "../VFS/vfile.h"
 #include "../defaults.h"
-
-#include <stdio.h>
-
-#define ASSERT(what) if(!what) abort();
 
 
 KrPreviews::KrPreviews(KrView *view) :  _view(view), _job(0)
 {
-    _dim = KrColorCache::getColorCache().getDimSettings(_dimColor, _dimFactor);
     connect(&KrColorCache::getColorCache(), SIGNAL(colorsRefreshed()), SLOT(slotRefreshColors()));
 }
 
@@ -58,30 +52,23 @@ void KrPreviews::clear()
         _job->kill(KJob::EmitResult);
         _job = 0;
     }
-    _previews.clear();
-    _previewsInactive.clear();
 }
 
 void KrPreviews::update()
 {
-    if(_job)
-        return;
-    //FIXME
-//     for (KrViewItem *it = _view->getFirst(); it != 0; it = _view->getNext(it)) {
-//         if(!_previews.contains(it->getVfile()))
-//             updatePreview(it);
-//     }
+    clear();
+
+    foreach(KFileItem item, _view->getItems())
+        updatePreview(item);
 }
 
-void KrPreviews::deletePreview(KrViewItem *item)
+void KrPreviews::deletePreview(KFileItem item)
 {
-    if(_job) {
+    if(_job)
         _job->removeItem(item);
-    }
-    removePreview(item->getVfile());
 }
 
-void KrPreviews::updatePreview(KrViewItem *item)
+void KrPreviews::updatePreview(KFileItem item)
 {
     if(!_job) {
         _job = new KrPreviewJob(this);
@@ -89,16 +76,6 @@ void KrPreviews::updatePreview(KrViewItem *item)
         _view->op()->emitPreviewJobStarted(_job);
     }
     _job->scheduleItem(item);
-}
-
-bool KrPreviews::getPreview(const vfile* file, QPixmap &pixmap, bool active)
-{
-    if(active || !_dim)
-        pixmap = _previews.value(file);
-    else
-        pixmap = _previewsInactive.value(file);
-
-    return !pixmap.isNull();
 }
 
 void KrPreviews::slotJobResult(KJob *job)
@@ -110,35 +87,11 @@ void KrPreviews::slotJobResult(KJob *job)
 void KrPreviews::slotRefreshColors()
 {
     clear();
-    _dim = KrColorCache::getColorCache().getDimSettings(_dimColor, _dimFactor);
     update();
 }
 
-void KrPreviews::addPreview(const vfile *file, const QPixmap &preview)
+void KrPreviews::addPreview(KFileItem item, const QPixmap &preview)
 {
-//FIXME
-#if 0
-    QPixmap active, inactive;
-
-    if(preview.isNull()) {
-        active = KrView::getIcon((vfile*)file, true, _view->fileIconSize());
-        if(_dim)
-            inactive = KrView::getIcon((vfile*)file, false, _view->fileIconSize());
-    } else {
-        active = KrView::processIcon(preview, false, _dimColor, _dimFactor, file->vfile_isSymLink());
-        if(_dim)
-            inactive = KrView::processIcon(preview, true, _dimColor, _dimFactor, file->vfile_isSymLink());
-    }
-
-    _previews.insert(file, active);
-    if(_dim)
-        _previewsInactive.insert(file, inactive);
-#endif
+    if(!preview.isNull())
+        emit gotPreview(item, preview);
 }
-
-void KrPreviews::removePreview(const vfile* file)
-{
-    _previews.remove(file);
-    _previewsInactive.remove(file);
-}
-#endif

@@ -530,7 +530,7 @@ const KrView::Item *KrInterView::dummyItem() const
     return _model->dummyItem();
 }
 
-const KrView::Item *KrInterView::itemFromUrl(KUrl url) const
+KrView::Item *KrInterView::itemFromUrl(KUrl url) const
 {
     return _model->itemAt(_model->indexFromUrl(url));
 }
@@ -571,4 +571,13 @@ void KrInterView::refreshIcons()
     foreach(Item *item, _model->items())
         item->clearIcon();
     redraw();
+}
+
+void KrInterView::gotPreview(KFileItem item, QPixmap preview)
+{
+    QModelIndex index = _model->indexFromUrl(item.url());
+    if(index.isValid()) {
+        _model->itemAt(index)->setIcon(preview);
+        redrawItem(index);
+    }
 }

@@ -27,12 +27,11 @@ A
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-#if 0
+
 #include "krpreviewjob.h"
 #include "krpreviews.h"
 
 #include "krview.h"
-#include "../VFS/vfile.h"
 #include "../defaults.h"
 
 #include <stdio.h>
@@ -58,7 +57,7 @@ KrPreviewJob::~KrPreviewJob()
     doKill();
 }
 
-void KrPreviewJob::scheduleItem(KrViewItem *item)
+void KrPreviewJob::scheduleItem(KFileItem item)
 {
     if(!_scheduled.contains(item)) {
         _scheduled.append(item);
@@ -68,7 +67,7 @@ void KrPreviewJob::scheduleItem(KrViewItem *item)
         _timer.start();
 }
 
-void KrPreviewJob::removeItem(KrViewItem *item)
+void KrPreviewJob::removeItem(KFileItem item)
 {
     setTotalAmount(KJob::Files, totalAmount(KJob::Files) - _scheduled.removeAll(item));
     if(_job) {
@@ -87,15 +86,9 @@ void KrPreviewJob::slotFailed(const KFileItem & item)
 
 void KrPreviewJob::slotGotPreview(const KFileItem & item, const QPixmap & preview)
 {
-    KrViewItem *vi = _hash[item];
-    ASSERT(vi);
+    _scheduled.removeOne(item);
 
-    _scheduled.removeOne(vi);
-    _hash.remove(item);
-
-    const vfile *file = vi->getVfile();
-    _parent->addPreview(file, preview);
-    vi->redraw();
+    _parent->addPreview(item, preview);
 
     setProcessedAmount(KJob::Files, processedAmount(KJob::Files) + 1);
     emitPercent(processedAmount(KJob::Files), totalAmount(KJob::Files));
@@ -106,17 +99,13 @@ void KrPreviewJob::slotStartJob()
     ASSERT(_job == 0);
     ASSERT(!_scheduled.isEmpty());
 
-    _hash.clear();
     sort();
 
     int size = _parent->_view->fileIconSize();
 
     KFileItemList list;
-    for(int i = 0; i < _scheduled.count() && i < MAX_CHUNK_SIZE; i++) {
-        KFileItem fi(_scheduled[i]->getVfile()->vfile_getUrl(), 0, 0);
-        list.append(fi);
-        _hash.insert(fi, _scheduled[i]);
-    }
+    for(int i = 0; i < _scheduled.count() && i < MAX_CHUNK_SIZE; i++)
+        list << _scheduled[i];
 
     _job = new KIO::PreviewJob(list, size, size, 0, 0, true, true, NULL);
     connect(_job, SIGNAL(gotPreview(const KFileItem&, const QPixmap&)), SLOT(slotGotPreview(const KFileItem&, const QPixmap&)));
@@ -132,7 +121,6 @@ void KrPreviewJob::slotJobResult(KJob *job)
         abort();
 
     _job = 0;
-    _hash.clear();
 
     if(_scheduled.isEmpty())
         emitResult();
@@ -146,9 +134,8 @@ void KrPreviewJob::sort()
     QSet<KFileItem> visibleSet =
         QSet<KFileItem>::fromList(_parent->_view->getVisibleItems());
     for(int i = 0, visible_end = 0; i < _scheduled.count(); i++) {
-        KrViewItem *item = _scheduled[i];
-        KFileItem fi = item->getVfile()->toFileItem();
-        if(visibleSet.contains(fi)) {
+        KFileItem item = _scheduled[i];
+        if(visibleSet.contains(item)) {
             if(i != visible_end)
                 _scheduled.move(i, visible_end);
             visible_end++;
@@ -166,7 +153,5 @@ bool KrPreviewJob::doKill()
             abort();
         _job = 0;
     }
-    _hash.clear();
     return true;
 }
-#endif

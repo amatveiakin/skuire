@@ -27,7 +27,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 *   (at your option) any later version.                                   *
 *                                                                         *
 ***************************************************************************/
-#if 0
+
 #ifndef KRPREVIEWS_H
 #define KRPREVIEWS_H
 
@@ -37,6 +37,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include <QHash>
 
 #include <kurl.h>
+#include <kfileitem.h>
 
 class KJob;
 class KrView;
@@ -45,35 +46,30 @@ class vfile;
 
 class KrPreviews: public QObject
 {
-friend class KrPreviewJob;
+    friend class KrPreviewJob;
     Q_OBJECT
 public:
     KrPreviews(KrView *view);
     ~KrPreviews();
 
-    bool getPreview(const vfile* file, QPixmap &pixmap, bool active);
-    void updatePreview(KrViewItem *item);
-    void deletePreview(KrViewItem *item);
-    //updates all items for which no preview has been loaded yet
+    void updatePreview(KFileItem item);
+    void deletePreview(KFileItem item);
+    //updates all items
     void update();
     void clear();
+
+signals:
+    void gotPreview(KFileItem item, QPixmap preview);
 
 protected slots:
     void slotRefreshColors();
     void slotJobResult(KJob *job);
 
 protected:
-    void addPreview(const vfile *file, const QPixmap &preview);
-    void removePreview(const vfile* file);
+    void addPreview(KFileItem item, const QPixmap &preview);
 
     KrPreviewJob *_job;
-    bool _dim;
-    QColor _dimColor;
-    int _dimFactor;
-    QHash<const vfile*, QPixmap> _previews;
-    QHash<const vfile*, QPixmap> _previewsInactive;
     KrView *_view;
 };
 
 #endif // __krpreviews__
-#endif
