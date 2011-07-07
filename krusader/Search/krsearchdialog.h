@@ -42,7 +42,7 @@
 
 
 class QLabel;
-class SearchResultContainer;
+class SearchResultLister;
 class KrView;
 class ProfileManager;
 class FilterTabs;
@@ -101,7 +101,7 @@ private:
     KrSqueezedTextLabel *foundTextLabel;
     KSqueezedTextLabel *searchingLabel;
 
-    SearchResultContainer *result;
+    SearchResultLister *result;
     KrView *resultView;
 
     KRQuery *query;

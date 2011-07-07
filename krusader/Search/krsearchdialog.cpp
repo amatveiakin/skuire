@@ -65,6 +65,7 @@
 #include "../Dialogs/krdialogs.h"
 #include "../Dialogs/krspecialwidgets.h"
 #include "../Dialogs/krsqueezedtextlabel.h"
+#include "../VFS/abstractdirlister.h"
 #include "../VFS/virt_vfs.h"
 #include "../VFS/krquery.h"
 #include "../KViewer/krviewer.h"
@@ -79,56 +80,52 @@
 
 #define RESULTVIEW_TYPE 0
 
-class SearchResultContainer : public VfileContainer
+class SearchResultLister: public AbstractDirLister
 {
 public:
-    SearchResultContainer(QObject *parent) : VfileContainer(parent) {}
-    virtual ~SearchResultContainer() {
-        clear();
-    }
-
-    virtual QList<vfile*> vfiles() {
-        return _vfiles;
-    }
-    virtual unsigned long numVfiles() {
-        return _vfiles.count();
-    }
     virtual bool isRoot() {
         return true;
     }
-    virtual vfile* search(QString name) {
-        foreach(vfile *vf, _vfiles) {
-            if(vf->vfile_getName() == name)
-                return vf;
-        }
-        return 0;
+    virtual int numItems() {
+        return _items.count();
+    }
+    virtual KFileItemList items() {
+        return _items;
     }
 
     void clear() {
-        emit cleared();
-        foreach(vfile *vf, _vfiles)
-            delete vf;
-        _vfiles.clear();
-        _foundText.clear();
+        emit AbstractDirLister::clear();
+        _items.clear();
+//         _foundText.clear();
     }
 
-    void addItem(QString path, KIO::filesize_t size, time_t mtime, QString perm, QString foundText)
+    //FIXME change this to take a KFileItem as parameter
+    void addItem(QString url, KIO::filesize_t size, time_t mtime, QString perm, QString foundText)
     {
-        vfile *vf = new vfile(path, size, perm, mtime, false/*FIXME*/, false/*FIXME*/, 0, 0, QString(), QString(), 0);
-        vf->vfile_setUrl(KUrl(path));
-        _vfiles << vf;
-        if(!foundText.isEmpty())
-            _foundText[vf] = foundText;
-        emit addedVfile(vf);
+        KIO::UDSEntry entry;
+        entry.insert(KIO::UDSEntry::UDS_NAME, url);
+        entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME, mtime);
+        entry.insert(KIO::UDSEntry::UDS_SIZE , size);
+
+        KFileItem item(entry, KUrl(url), true);
+
+        _items << item;
+
+//         if(!foundText.isEmpty())
+//             _foundText[vf] = foundText;
+
+        KFileItemList newList;
+        newList << item;
+        emit newItems(newList);
     }
 
-    QString foundText(const vfile *vf) {
-        return _foundText[vf];
-    }
+//     QString foundText(const vfile *vf) {
+//         return _foundText[vf];
+//     }
 
 private:
-    QList<vfile*> _vfiles;
-    QHash<const vfile*, QString> _foundText;
+    KFileItemList _items;
+//     QHash<const vfile*, QString> _foundText;
 };
 
 
@@ -232,7 +229,7 @@ KrSearchDialog::KrSearchDialog(QString profile, QWidget* parent)
     resultLayout->addLayout(resultLabelLayout, 3, 0);
 
     // creating the result list view
-    result = new SearchResultContainer(this);
+    result = new SearchResultLister();
     // quicksearch
     KrQuickSearch *quickSearch = new KrQuickSearch(this);
     quickSearch->hide();
@@ -251,7 +248,7 @@ KrSearchDialog::KrSearchDialog(QString profile, QWidget* parent)
     resultView->op()->setQuickFilter(quickFilter);
     resultView->prepareForActive();
     resultView->refreshColors();
-//FIXME     resultView->setFiles(result);
+    resultView->setDirLister(result);
     resultView->refresh();
     resultLayout->addWidget(resultView->widget(), 0, 0);
 
@@ -340,6 +337,8 @@ KrSearchDialog::~KrSearchDialog()
     query = 0;
     delete resultView;
     resultView = 0;
+    delete result;
+    result = 0;
 }
 
 void KrSearchDialog::closeDialog(bool isAccept)
@@ -406,7 +405,7 @@ void KrSearchDialog::found(QString what, QString where, KIO::filesize_t size, ti
     if(perm[0] == 'd' && !path.endsWith('/')) // file is a directory
         path += '/';
     result->addItem(path, size, mtime, perm, foundText);
-    foundLabel->setText(i18n("Found %1 matches.", result->numVfiles()));
+    foundLabel->setText(i18n("Found %1 matches.", result->numItems()));
 }
 
 bool KrSearchDialog::gui2query()
@@ -474,7 +473,7 @@ void KrSearchDialog::startSearch()
     mainSearchBtn->setEnabled(true);
     mainCloseBtn->setEnabled(true);
     mainStopBtn->setEnabled(false);
-    if (result->numVfiles())
+    if (result->numItems())
         mainFeedToListBoxBtn->setEnabled(true);
     searchingLabel->setText(i18n("Finished searching."));
 
@@ -628,9 +627,7 @@ void KrSearchDialog::feedToListBox()
             return;
     }
 
-    KUrl::List urlList;
-    foreach(vfile *vf, result->vfiles())
-        urlList.push_back(vf->vfile_getUrl());
+    KUrl::List urlList = result->items().urlList();
 
     mainSearchBtn->setEnabled(false);
     mainCloseBtn->setEnabled(false);
@@ -652,9 +649,7 @@ void KrSearchDialog::feedToListBox()
 
 void KrSearchDialog::copyToClipBoard()
 {
-    KUrl::List urls;
-    foreach(vfile *vf, result->vfiles())
-        urls.push_back(vf->vfile_getUrl());
+    KUrl::List urls = result->items().urlList();
 
     if (urls.count() == 0)
         return;
