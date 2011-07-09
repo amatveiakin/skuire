@@ -36,7 +36,6 @@
 #include <QtCore/QRegExp>
 #include <QDropEvent>
 #include <QList>
-#include <QModelIndex>
 #include <QTimer>
 #include <kfileitem.h>
 #include "../krglobal.h"
@@ -50,7 +49,6 @@
 class KrView;
 class KrQuickSearch;
 class KrPreviews;
-class QModelIndex;
 class KrViewInstance;
 class QuickFilter;
 class AbstractDirLister;
@@ -417,18 +415,6 @@ public:
     virtual void intDelItem(KFileItem item) = 0;
     virtual void intUpdateItem(KFileItem oldItem, KFileItem newItem) = 0;
     virtual void makeCurrentVisible() = 0;
-
-    // interview related functions
-    virtual QModelIndex getCurrentIndex()                 {
-        return QModelIndex();
-    }
-    virtual bool        isSelected(const QModelIndex &) {
-        return false;
-    }
-    virtual bool        ensureVisibilityAfterSelect()     {
-        return true;
-    }
-
     virtual uint numSelected() const = 0;
     virtual void updateView() = 0;
     virtual void sort() = 0;
