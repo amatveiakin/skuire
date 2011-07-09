@@ -470,14 +470,12 @@ void KrVfsModel::updateItem(KFileItem oldFile, KFileItem newFile)
     QModelIndexList newPersistentList;
     foreach(const QModelIndex &mndx, oldPersistentList) {
         int row = mndx.row();
-        if (row == oldRow)
+        if (mndx.row() == oldRow)
             row = newRow;
-        else {
-            if (row >= oldRow)
-                row--;
-            if (mndx.row() > newRow)
+        else if (mndx.row() < oldRow && mndx.row() >= newRow)
                 row++;
-        }
+        else if (mndx.row() > oldRow && mndx.row() <= newRow)
+                row--;
         newPersistentList << index(row, mndx.column());
     }
 
