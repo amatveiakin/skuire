@@ -332,25 +332,25 @@ QModelIndex KrVfsModel::addItem(KFileItem fileItem)
     KrView::Item *newItem = new KrView::Item(fileItem, _view);
 
     if(lastSortOrder() == KrViewProperties::NoColumn) {
-        int idx = _items.count();
+        int row = _items.count();
         _items << newItem;
-        _itemIndex[newItem] = index(idx, 0);
-        _nameNdx[newItem->name()] = index(idx, 0);
+        _itemIndex[newItem] = index(row, 0);
+        _nameNdx[newItem->name()] = index(row, 0);
         emit layoutChanged();
-        return index(idx, 0);
+        return index(row, 0);
     }
 
     QModelIndexList oldPersistentList = persistentIndexList();
 
     KrSort::Sorter sorter = createSorter();
 
-    int insertIndex = sorter.insertIndex(newItem, false, customSortData(newItem));
-    if (insertIndex != _items.count())
-        _items.insert(insertIndex, newItem);
+    int insertRow = sorter.insertIndex(newItem, false, customSortData(newItem));
+    if (insertRow != _items.count())
+        _items.insert(insertRow, newItem);
     else
         _items << newItem;
 
-    for (int i = insertIndex; i < _items.count(); ++i) {
+    for (int i = insertRow; i < _items.count(); ++i) {
         _itemIndex[ _items[i] ] = index(i, 0);
         _nameNdx[ _items[ i ]->name()] = index(i, 0);
     }
@@ -358,7 +358,7 @@ QModelIndex KrVfsModel::addItem(KFileItem fileItem)
     QModelIndexList newPersistentList;
     foreach(const QModelIndex &mndx, oldPersistentList) {
         int newRow = mndx.row();
-        if (newRow >= insertIndex)
+        if (newRow >= insertRow)
             newRow++;
         newPersistentList << index(newRow, mndx.column());
     }
@@ -367,7 +367,7 @@ QModelIndex KrVfsModel::addItem(KFileItem fileItem)
     emit layoutChanged();
     _view->makeCurrentVisible();
 
-    return index(insertIndex, 0);
+    return index(insertRow, 0);
 }
 
 QModelIndex KrVfsModel::removeItem(KFileItem fileItem)
@@ -378,39 +378,39 @@ QModelIndex KrVfsModel::removeItem(KFileItem fileItem)
     if(!itemIdx.isValid())
         return currIndex;
 
-    int removeIdx = itemIdx.row();
-    KrView::Item *item = _items[removeIdx];
+    int removeRow = itemIdx.row();
+    KrView::Item *item = _items[removeRow];
 
     emit layoutAboutToBeChanged();
     QModelIndexList oldPersistentList = persistentIndexList();
     QModelIndexList newPersistentList;
 
-    _items.removeAt(removeIdx);
+    _items.removeAt(removeRow);
 
-    if (currIndex.row() == removeIdx) {
+    if (currIndex.row() == removeRow) {
         if (_items.count() == 0)
             currIndex = QModelIndex();
-        else if (removeIdx >= _items.count())
+        else if (removeRow >= _items.count())
             currIndex = index(_items.count() - 1, 0);
         else
-            currIndex = index(removeIdx, 0);
-    } else if (currIndex.row() > removeIdx) {
+            currIndex = index(removeRow, 0);
+    } else if (currIndex.row() > removeRow) {
         currIndex = index(currIndex.row() - 1, 0);
     }
 
     _itemIndex.remove(item);
     _nameNdx.remove(item->name());
     // update model/name index for items following the removed item
-    for (int i = removeIdx; i < _items.count(); i++) {
+    for (int i = removeRow; i < _items.count(); i++) {
         _itemIndex[ _items[i] ] = index(i, 0);
         _nameNdx[ _items[i]->name() ] = index(i, 0);
     }
 
     foreach(const QModelIndex &mndx, oldPersistentList) {
         int newRow = mndx.row();
-        if (newRow > removeIdx)
+        if (newRow > removeRow)
             newRow--;
-        if (newRow != removeIdx)
+        if (newRow != removeRow)
             newPersistentList << index(newRow, mndx.column());
         else
             newPersistentList << QModelIndex();
@@ -427,70 +427,67 @@ QModelIndex KrVfsModel::removeItem(KFileItem fileItem)
 
 void KrVfsModel::updateItem(KFileItem oldFile, KFileItem newFile)
 {
-    QModelIndex oldModelIndex = indexFromUrl(oldFile.url());
+    QModelIndex oldIndex = indexFromUrl(oldFile.url());
 
-    if (!oldModelIndex.isValid()) {
+    if (!oldIndex.isValid()) {
         addItem(newFile);
         return;
     }
 
-    int oldIndex = oldModelIndex.row();
+    int oldRow = oldIndex.row();
 
-    KrView::Item *item = _items[oldIndex];
+    KrView::Item *item = _items[oldRow];
 
     *item = KrView::Item(newFile, _view);
 
     if(lastSortOrder() == KrViewProperties::NoColumn) {
-        _view->redrawItem(oldModelIndex);
+        _view->redrawItem(oldIndex);
         return;
     }
 
     emit layoutAboutToBeChanged();
 
-    _items.removeAt(oldIndex);
+    _items.removeAt(oldRow);
 
     KrSort::Sorter sorter(createSorter());
 
     QModelIndexList oldPersistentList = persistentIndexList();
 
-    int newIndex = sorter.insertIndex(item, item == _dummyItem, customSortData(item));
-    if (newIndex != _items.count()) {
-        if (newIndex > oldIndex)
-            newIndex--;
-        _items.insert(newIndex, item);
+    int newRow = sorter.insertIndex(item, item == _dummyItem, customSortData(item));
+    if (newRow != _items.count()) {
+        if (newRow > oldRow)
+            newRow--;
+        _items.insert(newRow, item);
     } else
         _items << item;
 
 
-    int i = newIndex;
-    if (oldIndex < i)
-        i = oldIndex;
-    for (; i < _items.count(); ++i) {
+    for (int i = (oldRow < newRow) ? oldRow : newRow; i < _items.count(); ++i) {
         _itemIndex[ _items[ i ] ] = index(i, 0);
         _nameNdx[ _items[ i ]->name()] = index(i, 0);
     }
 
     QModelIndexList newPersistentList;
     foreach(const QModelIndex &mndx, oldPersistentList) {
-        int newRow = mndx.row();
-        if (newRow == oldIndex)
-            newRow = newIndex;
+        int row = mndx.row();
+        if (row == oldRow)
+            row = newRow;
         else {
-            if (newRow >= oldIndex)
-                newRow--;
-            if (mndx.row() > newIndex)
-                newRow++;
+            if (row >= oldRow)
+                row--;
+            if (mndx.row() > newRow)
+                row++;
         }
-        newPersistentList << index(newRow, mndx.column());
+        newPersistentList << index(row, mndx.column());
     }
 
     changePersistentIndexList(oldPersistentList, newPersistentList);
     emit layoutChanged();
-    if (newIndex != oldIndex)
+    if (newRow != oldRow)
         _view->makeCurrentVisible();
 
     //redraw the item in any case
-    if(oldIndex != newIndex)
+    if(oldRow != newRow)
         _view->redraw();
     else
         _view->redrawItem(itemIndex(item));
