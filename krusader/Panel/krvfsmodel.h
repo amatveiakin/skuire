@@ -27,7 +27,6 @@
 #include "krsort.h"
 
 
-class vfile;
 class KrViewProperties;
 
 class KrVfsModel: public QAbstractListModel

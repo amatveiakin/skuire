@@ -42,7 +42,6 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 class KJob;
 class KrView;
 class KrPreviewJob;
-class vfile;
 
 class KrPreviews: public QObject
 {
