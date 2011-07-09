@@ -141,7 +141,7 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
             op()->setMassSelectionUpdate(true);
 
             for (int row = currentIndex().row(); row <= newCurrentRow; row++) {
-                KrView::Item *item = _model->itemAt(_model->index(row, 0));
+                KrView::Item *item = _model->itemAt(row);
                 setSelected(item, !isSelected(item));
             }
 
@@ -173,7 +173,7 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
             op()->setMassSelectionUpdate(true);
 
             for (int row = currentIndex().row(); row >= newCurrentRow; row--) {
-                KrView::Item *item = _model->itemAt(_model->index(row, 0));
+                KrView::Item *item = _model->itemAt(row);
                 setSelected(item, !isSelected(item));
             }
 

@@ -86,9 +86,13 @@ public:
         return const_cast<KrVfsModel*>(this)->itemAt(index);
     }
     KrView::Item *itemAt(const QModelIndex &index) {
-        if (!index.isValid() || index.row() >= _items.count() || index.row() < 0)
+        return index.isValid() ? itemAt(index.row()) : 0;
+    }
+    KrView::Item *itemAt(int row) {
+        if(row >= _items.count() || row < 0)
             return 0;
-        return _items[index.row()];
+        else
+            return _items[row];
     }
 
 public slots:

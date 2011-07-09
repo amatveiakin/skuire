@@ -67,7 +67,7 @@ void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select, bool clearFi
         }
 
         for (int row = r1; row <= r2; row++)
-            setSelected(_model->itemAt(_model->index(row, 0)), select);
+            setSelected(_model->itemAt(row), select);
 
     } else if (mi1.isValid())
         setSelected(_model->itemAt(mi1), select);
@@ -283,21 +283,19 @@ inline KrView::Item *KrInterView::currentViewItem()
     return _model->itemAt(_itemView->currentIndex());
 }
 
-//FIXME: move to KrVfsModel
 KFileItem KrInterView::firstItem()
 {
-    int index = _model->dummyItem() ? 1 : 0;
-    if (index < _model->rowCount())
-        return *_model->items()[index];
+    int row = _model->dummyItem() ? 1 : 0;
+    if (row < _model->rowCount())
+        return *(_model->itemAt(row));
     else
         return KFileItem();
 }
 
-//FIXME: move to KrVfsModel
 KFileItem KrInterView::lastItem()
 {
     if (_model->rowCount()) {
-        KrView::Item *item = _model->items().last();
+        KrView::Item *item = _model->itemAt(_model->rowCount() - 1);
         if (item != _model->dummyItem())
             return *item;
     }
@@ -547,21 +545,21 @@ bool KrInterView::quickSearch(const QString &term, int direction)
             direction = 1;
     }
 
-    int startIndex = _itemView->currentIndex().row();
-    int index = startIndex;
+    int startRow = _itemView->currentIndex().row();
+    int row = startRow;
 
     while (true) {
-        index += (direction > 0) ? 1 : -1;
+        row += (direction > 0) ? 1 : -1;
 
-        if (index < 0 || index >= _model->rowCount())
-            index = (direction > 0) ? 0 : _model->rowCount() - 1;
+        if (row < 0 || row >= _model->rowCount())
+            row = (direction > 0) ? 0 : _model->rowCount() - 1;
 
-        if (quickSearchMatch(*(_model->items()[index]), term)) {
-            QModelIndex modelIndex = _model->index(index, 0);
+        if (quickSearchMatch(*(_model->itemAt(row)), term)) {
+            QModelIndex modelIndex = _model->index(row, 0);
             setCurrentIndex(modelIndex);
             _itemView->scrollTo(modelIndex);
             return true;
-        } else if (index == startIndex)
+        } else if (row == startRow)
             return false;
     }
 }
