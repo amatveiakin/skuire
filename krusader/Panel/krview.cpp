@@ -610,15 +610,6 @@ void KrView::changeSelection(const KRQuery& filter, bool select)
     changeSelection(filter, select, grpSvr.readEntry("Mark Dirs", _MarkDirs));
 }
 
-
-void KrView::clear()
-{
-    if(_previews)
-        _previews->clear();
-
-    redraw();
-}
-
 // good old dialog box
 void KrView::renameCurrentItem()
 {
@@ -930,7 +921,7 @@ void KrView::restoreSortMode(KConfigGroup &group)
     setSortMode(static_cast<KrViewProperties::ColumnType>(column), isDescending);
 }
 
-bool KrView::isFiltered(const KFileItem &item)
+bool KrView::isFiltered(const KFileItem &item) const
 {
     if (_quickFilterMask.isValid() && _quickFilterMask.indexIn(item.name()) == -1)
         return true;
@@ -1039,41 +1030,6 @@ void KrView::customSelection(bool select)
     includeDirs = dialog.isExtraOptionChecked(i18n("Apply selection to directories"));
 
     changeSelection(query, select, includeDirs);
-}
-
-void KrView::refresh()
-{
-    KUrl current = currentUrl();
-    KUrl::List selection = getSelectedUrls(false);
-
-    clear();
-
-    if(!_dirLister)
-        return;
-
-    KFileItemList items;
-
-    foreach(KFileItem item, _dirLister->items()) {
-        if(isFiltered(item))
-            continue;
-        items << item;
-    }
-
-    populate(items, !_dirLister->isRoot());
-
-    if(!selection.isEmpty())
-        setSelection(selection);
-
-    if (!urlToMakeCurrent().isEmpty())
-        setCurrentItem(urlToMakeCurrent());
-    else if (!current.isEmpty())
-        setCurrentItem(current);
-
-    updatePreviews();
-
-    redraw();
-
-    op()->emitSelectionChanged();
 }
 
 void KrView::setSelected(const Item *item, bool select)

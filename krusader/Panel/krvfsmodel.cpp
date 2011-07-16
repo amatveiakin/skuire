@@ -22,6 +22,7 @@
 #include <QtDebug>
 #include <QtAlgorithms>
 #include "../VFS/krpermhandler.h"
+#include "../VFS/abstractdirlister.h"
 #include "../defaults.h"
 #include "../krglobal.h"
 #include "krpanel.h"
@@ -37,20 +38,30 @@ KrVfsModel::KrVfsModel(KrInterView * view): QAbstractListModel(0), _extensionEna
     _defaultFont = grpSvr.readEntry("Filelist Font", _FilelistFont);
 }
 
-void KrVfsModel::populate(const KFileItemList &items, bool addDummyItem)
+KrVfsModel::~KrVfsModel()
 {
+    clear();
+}
+
+void KrVfsModel::refresh()
+{
+    clear();
+
 #if QT_VERSION >= 0x040700
-    _items.reserve(items.count());
+    _items.reserve(_view->dirLister()->count());
 #endif
 
-    if(addDummyItem) {
+    if(_view->dirLister()->isRoot()) {
         _dummyItem = new KrView::Item(KFileItem(KUrl(".."), "inode/directory", 0), _view, true);
         _items << _dummyItem;
     }
 
-    foreach(KFileItem fileItem, items) {
+    foreach(KFileItem item, _view->dirLister()->items()) {
         //TODO: more efficient allocation
-        _items << new KrView::Item(fileItem, _view);
+        if(_view->isFiltered(item))
+            continue;
+
+        _items << new KrView::Item(item, _view);
     }
 
     _ready = true;
@@ -65,11 +76,6 @@ void KrVfsModel::populate(const KFileItemList &items, bool addDummyItem)
         }
         emit layoutChanged();
     }
-}
-
-KrVfsModel::~KrVfsModel()
-{
-    clear();
 }
 
 void KrVfsModel::clear()

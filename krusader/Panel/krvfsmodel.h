@@ -40,7 +40,8 @@ public:
     inline bool ready() const {
         return _ready;
     }
-    void populate(const KFileItemList &items, bool addDummyItem);
+    void clear();
+    void refresh();
     void addItems(KFileItemList items);
     void updateItems(const QList<QPair<KFileItem, KFileItem> >& items);
     QModelIndex removeItems(KFileItemList items);
@@ -59,7 +60,6 @@ public:
     virtual void sort() {
         sort(lastSortOrder(), lastSortDir());
     }
-    void clear();
     const QList<KrView::Item*> items() {
         return _items;
     }

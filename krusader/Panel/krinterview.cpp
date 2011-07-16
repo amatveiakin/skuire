@@ -111,22 +111,6 @@ void KrInterView::sort()
     _model->sort();
 }
 
-void KrInterView::clear()
-{
-    _selection.clear();
-    _itemView->clearSelection();
-    _itemView->setCurrentIndex(QModelIndex());
-    _model->clear();
-
-    KrView::clear();
-}
-
-void KrInterView::populate(const KFileItemList &items, bool addDummyItem)
-{
-    _model->populate(items, addDummyItem);
-    _itemView->setCurrentIndex(_model->index(0, 0));
-}
-
 void KrInterView::prepareForActive()
 {
     KrView::prepareForActive();
@@ -555,6 +539,47 @@ uint KrInterView::calcNumDirs() const
         if(item->isDir())
             num++;
     return num;
+}
+
+void KrInterView::clear()
+{
+    if(_previews)
+        _previews->clear();
+
+    _selection.clear();
+    _itemView->clearSelection();
+    _itemView->setCurrentIndex(QModelIndex());
+    _model->clear();
+
+    redraw();
+}
+
+void KrInterView::refresh()
+{
+    KUrl current = currentUrl();
+    KUrl::List selection = getSelectedUrls(false);
+
+    clear();
+
+    if(!_dirLister)
+        return;
+
+    _model->refresh();
+    _itemView->setCurrentIndex(_model->index(0, 0));
+
+    if(!selection.isEmpty())
+        setSelection(selection);
+
+    if (!urlToMakeCurrent().isEmpty())
+        setCurrentItem(urlToMakeCurrent());
+    else if (!current.isEmpty())
+        setCurrentItem(current);
+
+    updatePreviews();
+
+    redraw();
+
+    op()->emitSelectionChanged();
 }
 
 void KrInterView::newItems(const KFileItemList& items)

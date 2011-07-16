@@ -226,6 +226,7 @@ protected:
 public:
     virtual CalcSpaceClient *calcSpaceClient() = 0;
 
+    virtual void refresh() = 0;
     virtual uint count() const = 0;
     virtual uint calcNumDirs() const = 0;
     virtual KFileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
@@ -276,8 +277,7 @@ protected:
     virtual void copySettingsFrom(KrView *other) = 0;
     virtual void intSetSelected(const Item *item, bool select) = 0;
     virtual void updatePreviews();
-    virtual void clear();
-    virtual void populate(const KFileItemList &items, bool addDummyItem) = 0;
+    virtual void clear() = 0;
     virtual bool quickSearch(const QString &term, int direction) = 0;
     virtual void gotPreview(KFileItem item, QPixmap preview) = 0;
 
@@ -309,7 +309,6 @@ public:
     virtual void applySettingsToOthers();
 
     virtual void setDirLister(AbstractDirLister *lister);
-    virtual void refresh();
 
     void changeSelection(const KRQuery& filter, bool select);
     void enableUpdateDefaultSettings(bool enable);
@@ -413,6 +412,8 @@ public:
     }
     void clearSavedSelection();
 
+    bool isFiltered(const KFileItem &item) const;
+
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
@@ -446,7 +447,6 @@ protected:
     virtual void itemsDeleted(const KFileItemList& items) = 0;
     virtual void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items) = 0;
 
-    bool isFiltered(const KFileItem &item);
     bool quickSearchMatch(const KFileItem &item, QString term);
     void setSelected(const Item *item, bool select);
     bool handleKeyEventInt(QKeyEvent *e);

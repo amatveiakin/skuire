@@ -82,6 +82,7 @@ public:
     }
     virtual QString getCurrentItem() const;
     virtual void clear();
+    virtual void refresh();
     virtual void sort();
     virtual void refreshColors();
     virtual void redraw();
@@ -103,6 +104,10 @@ public:
         _itemView->viewport()->update(itemRect(index));
     }
 
+    AbstractDirLister *dirLister() {
+        return _dirLister;
+    }
+
 protected:
     class DummySelectionModel : public QItemSelectionModel
     {
@@ -120,7 +125,6 @@ protected:
     virtual void setCurrentItem(ItemSpec item);
     virtual KIO::filesize_t calcSize();
     virtual KIO::filesize_t calcSelectedSize();
-    virtual void populate(const KFileItemList &items, bool addDummyItem);
     virtual void intSetSelected(const KrView::Item *item, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;
     virtual QRect itemRect(KUrl itemUrl);
