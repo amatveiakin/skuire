@@ -323,51 +323,52 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
         _view->makeCurrentVisible();
 }
 
-QModelIndex KrVfsModel::addItem(KFileItem fileItem)
+void KrVfsModel::addItems(KFileItemList items)
 {
-    //FIXME: make sure this wasn't  already added
+    //FIXME: optimize
 
     emit layoutAboutToBeChanged();
 
-    KrView::Item *newItem = new KrView::Item(fileItem, _view);
+    foreach(KFileItem fileItem, items) {
+        //FIXME: make sure this wasn't  already added
+        KrView::Item *newItem = new KrView::Item(fileItem, _view);
 
-    if(lastSortOrder() == KrViewProperties::NoColumn) {
-        int row = _items.count();
-        _items << newItem;
-        _itemIndex[newItem] = index(row, 0);
-        _urlNdx[newItem->url()] = index(row, 0);
-        emit layoutChanged();
-        return index(row, 0);
+        if(lastSortOrder() == KrViewProperties::NoColumn) {
+            int row = _items.count();
+            _items << newItem;
+            _itemIndex[newItem] = index(row, 0);
+            _urlNdx[newItem->url()] = index(row, 0);
+            continue;
+        }
+
+        QModelIndexList oldPersistentList = persistentIndexList();
+
+        KrSort::Sorter sorter = createSorter();
+
+        int insertRow = sorter.insertIndex(newItem, false, customSortData(newItem));
+        if (insertRow != _items.count())
+            _items.insert(insertRow, newItem);
+        else
+            _items << newItem;
+
+        for (int i = insertRow; i < _items.count(); ++i) {
+            _itemIndex[ _items[i] ] = index(i, 0);
+            _urlNdx[ _items[ i ]->url()] = index(i, 0);
+        }
+
+        QModelIndexList newPersistentList;
+        foreach(const QModelIndex &mndx, oldPersistentList) {
+            int newRow = mndx.row();
+            if (newRow >= insertRow)
+                newRow++;
+            newPersistentList << index(newRow, mndx.column());
+        }
+
+        changePersistentIndexList(oldPersistentList, newPersistentList);
     }
 
-    QModelIndexList oldPersistentList = persistentIndexList();
-
-    KrSort::Sorter sorter = createSorter();
-
-    int insertRow = sorter.insertIndex(newItem, false, customSortData(newItem));
-    if (insertRow != _items.count())
-        _items.insert(insertRow, newItem);
-    else
-        _items << newItem;
-
-    for (int i = insertRow; i < _items.count(); ++i) {
-        _itemIndex[ _items[i] ] = index(i, 0);
-        _urlNdx[ _items[ i ]->url()] = index(i, 0);
-    }
-
-    QModelIndexList newPersistentList;
-    foreach(const QModelIndex &mndx, oldPersistentList) {
-        int newRow = mndx.row();
-        if (newRow >= insertRow)
-            newRow++;
-        newPersistentList << index(newRow, mndx.column());
-    }
-
-    changePersistentIndexList(oldPersistentList, newPersistentList);
     emit layoutChanged();
     _view->makeCurrentVisible();
-
-    return index(insertRow, 0);
 }
 
 QModelIndex KrVfsModel::removeItem(KFileItem fileItem)
@@ -425,70 +426,82 @@ QModelIndex KrVfsModel::removeItem(KFileItem fileItem)
     return currIndex;
 }
 
-void KrVfsModel::updateItem(KFileItem oldFile, KFileItem newFile)
+void KrVfsModel::updateItems(const QList<QPair<KFileItem, KFileItem> >& items)
 {
-    QModelIndex oldIndex = indexFromUrl(oldFile.url());
+    //FIXME optimize
 
-    if (!oldIndex.isValid()) {
-        addItem(newFile);
-        return;
+    KFileItemList addedItems;
+
+    for(int i = 0; i < items.count(); i++) {
+        KFileItem oldFile = items[i].first;
+        KFileItem newFile = items[i].second;
+
+        QModelIndex oldIndex = indexFromUrl(oldFile.url());
+
+        if (!oldIndex.isValid()) {
+            addedItems << newFile;
+            continue;
+        }
+
+        int oldRow = oldIndex.row();
+
+        KrView::Item *item = _items[oldRow];
+
+        *item = KrView::Item(newFile, _view);
+
+        if(lastSortOrder() == KrViewProperties::NoColumn) {
+            _view->redrawItem(oldIndex);
+            continue;
+        }
+
+        emit layoutAboutToBeChanged();
+
+        _items.removeAt(oldRow);
+
+        KrSort::Sorter sorter(createSorter());
+
+        QModelIndexList oldPersistentList = persistentIndexList();
+
+        int newRow = sorter.insertIndex(item, item == _dummyItem, customSortData(item));
+        if (newRow != _items.count()) {
+            if (newRow > oldRow)
+                newRow--;
+            _items.insert(newRow, item);
+        } else
+            _items << item;
+
+
+        for (int i = (oldRow < newRow) ? oldRow : newRow; i < _items.count(); ++i) {
+            _itemIndex[ _items[ i ] ] = index(i, 0);
+            _urlNdx[ _items[ i ]->url()] = index(i, 0);
+        }
+
+        QModelIndexList newPersistentList;
+        foreach(const QModelIndex &mndx, oldPersistentList) {
+            int row = mndx.row();
+            if (mndx.row() == oldRow)
+                row = newRow;
+            else if (mndx.row() < oldRow && mndx.row() >= newRow)
+                    row++;
+            else if (mndx.row() > oldRow && mndx.row() <= newRow)
+                    row--;
+            newPersistentList << index(row, mndx.column());
+        }
+
+        changePersistentIndexList(oldPersistentList, newPersistentList);
+        emit layoutChanged();
+        if (newRow != oldRow)
+            _view->makeCurrentVisible();
+
+        //redraw the item in any case
+        if(oldRow != newRow)
+            _view->redraw();
+        else
+            _view->redrawItem(itemIndex(item));
     }
 
-    int oldRow = oldIndex.row();
-
-    KrView::Item *item = _items[oldRow];
-
-    *item = KrView::Item(newFile, _view);
-
-    if(lastSortOrder() == KrViewProperties::NoColumn) {
-        _view->redrawItem(oldIndex);
-        return;
-    }
-
-    emit layoutAboutToBeChanged();
-
-    _items.removeAt(oldRow);
-
-    KrSort::Sorter sorter(createSorter());
-
-    QModelIndexList oldPersistentList = persistentIndexList();
-
-    int newRow = sorter.insertIndex(item, item == _dummyItem, customSortData(item));
-    if (newRow != _items.count()) {
-        if (newRow > oldRow)
-            newRow--;
-        _items.insert(newRow, item);
-    } else
-        _items << item;
-
-
-    for (int i = (oldRow < newRow) ? oldRow : newRow; i < _items.count(); ++i) {
-        _itemIndex[ _items[ i ] ] = index(i, 0);
-        _urlNdx[ _items[ i ]->url()] = index(i, 0);
-    }
-
-    QModelIndexList newPersistentList;
-    foreach(const QModelIndex &mndx, oldPersistentList) {
-        int row = mndx.row();
-        if (mndx.row() == oldRow)
-            row = newRow;
-        else if (mndx.row() < oldRow && mndx.row() >= newRow)
-                row++;
-        else if (mndx.row() > oldRow && mndx.row() <= newRow)
-                row--;
-        newPersistentList << index(row, mndx.column());
-    }
-
-    changePersistentIndexList(oldPersistentList, newPersistentList);
-    emit layoutChanged();
-    if (newRow != oldRow)
-        _view->makeCurrentVisible();
-
-    //redraw the item in any case
-    if(oldRow != newRow)
-        _view->redraw();
-    else
-        _view->redrawItem(itemIndex(item));
+    if (addedItems.count())
+        addItems(addedItems);
 }
 
 QVariant KrVfsModel::headerData(int section, Qt::Orientation orientation, int role) const

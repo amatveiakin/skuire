@@ -558,7 +558,6 @@ uint KrInterView::calcNumDirs() const
 
 void KrInterView::newItems(const KFileItemList& items)
 {
-    // FIXME move to KrVfsModel
     // FIXME: if number is above a certain threshold, do a complete refresh
 
     KFileItemList itemsAfterFilter;
@@ -566,27 +565,37 @@ void KrInterView::newItems(const KFileItemList& items)
     foreach(const KFileItem &item, items) {
         if (isFiltered(item))
             continue;
-
         itemsAfterFilter << item;
+    }
 
-        QModelIndex idx = _model->addItem(item);
-        if (_model->rowCount() == 1) // if this is the fist item to be added, make it current
-            _itemView->setCurrentIndex(idx);
+    if (itemsAfterFilter.count()) {
+        bool wasEmpty = !count();
+        _model->addItems(itemsAfterFilter);
+        if (wasEmpty)
+            _itemView->setCurrentIndex(_model->index(0, 0));
+        if (_previews)
+            _previews->newItems(itemsAfterFilter);
+    }
 
-        if (item.url() == urlToMakeCurrent()) {
-            KrView::setCurrentItem(item);
+    if (urlToMakeCurrent().isValid()) {
+        QModelIndex index = _model->indexFromUrl(urlToMakeCurrent());
+        if (index.isValid()) {
+            setCurrentIndex(index);
             makeCurrentVisible();
-        }
-
-        if (item.name() == nameToMakeCurrentIfAdded()) {
-            KrView::setCurrentItem(item);
-            setNameToMakeCurrentIfAdded(QString());
-            makeCurrentVisible();
+            setUrlToMakeCurrent(KUrl());
         }
     }
 
-    if (_previews)
-        _previews->newItems(itemsAfterFilter);
+    if (!nameToMakeCurrentIfAdded().isEmpty()) {
+        foreach(Item *item, _model->items()) {
+            if (item->name() == nameToMakeCurrentIfAdded()) {
+                KrView::setCurrentItem(*item);
+                makeCurrentVisible();
+                setNameToMakeCurrentIfAdded(QString());
+                break;
+            }
+        }
+    }
 
     op()->emitSelectionChanged();
 }
@@ -607,11 +616,7 @@ void KrInterView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
 
     itemsDeleted(filtered);
 
-    //FIXME add KrVfsModel::refreshItems(QList<QPair<KFileItem, KFileItem> >& items)
-    for(int i = 0; i < updated.count(); i++) {
-        QPair<KFileItem, KFileItem> item = updated[i];
-        _model->updateItem(item.first, item.second);
-    }
+    _model->updateItems(updated);
 
     if(_previews)
         _previews->itemsUpdated(updated);

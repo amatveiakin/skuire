@@ -41,9 +41,9 @@ public:
         return _ready;
     }
     void populate(const KFileItemList &items, bool addDummyItem);
-    QModelIndex addItem(KFileItem);
+    void addItems(KFileItemList items);
+    void updateItems(const QList<QPair<KFileItem, KFileItem> >& items);
     QModelIndex removeItem(KFileItem);
-    void updateItem(KFileItem oldFile, KFileItem newFile);
 
     int rowCount(const QModelIndex &parent = QModelIndex()) const;
     int columnCount(const QModelIndex &parent = QModelIndex()) const;
