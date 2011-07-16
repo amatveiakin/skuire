@@ -33,6 +33,12 @@ class KrMouseHandler;
 class KrInterView : public KrView, public CalcSpaceClient
 {
 public:
+    enum
+    {
+        //TODO: figure out the optimal value
+        MaxIncrementalRefreshNum = 10
+    };
+
     KrInterView(KrViewInstance &instance, KConfig *cfg, QAbstractItemView *itemView);
     virtual ~KrInterView();
 

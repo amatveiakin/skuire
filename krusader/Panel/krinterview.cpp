@@ -25,6 +25,7 @@
 #include "krpreviews.h"
 #include "../defaults.h"
 
+
 KrInterView::KrInterView(KrViewInstance &instance, KConfig *cfg,
                          QAbstractItemView *itemView) :
         KrView(instance, cfg), _itemView(itemView), _mouseHandler(0)
@@ -558,7 +559,10 @@ uint KrInterView::calcNumDirs() const
 
 void KrInterView::newItems(const KFileItemList& items)
 {
-    // FIXME: if number is above a certain threshold, do a complete refresh
+    if (items.count() > MaxIncrementalRefreshNum) {
+        refresh();
+        return;
+    }
 
     KFileItemList itemsAfterFilter;
 
@@ -602,7 +606,11 @@ void KrInterView::newItems(const KFileItemList& items)
 
 void KrInterView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
 {
-    // FIXME: if number is above a certain threshold, do a complete refresh
+    if (items.count() > MaxIncrementalRefreshNum) {
+        refresh();
+        return;
+    }
+
     KFileItemList filtered;
     QList< QPair<KFileItem, KFileItem> > updated;
 
@@ -626,7 +634,10 @@ void KrInterView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
 
 void KrInterView::itemsDeleted(const KFileItemList& items)
 {
-    // FIXME if number is above a certain threshold, do a complete refresh
+    if (items.count() > MaxIncrementalRefreshNum) {
+        refresh();
+        return;
+    }
 
     if(_previews)
         _previews->itemsDeleted(items);
