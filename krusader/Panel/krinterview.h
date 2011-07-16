@@ -112,9 +112,6 @@ protected:
     virtual KIO::filesize_t calcSize();
     virtual KIO::filesize_t calcSelectedSize();
     virtual void populate(const KFileItemList &items, bool addDummyItem);
-    virtual void intAddItem(KFileItem item);
-    virtual void intDelItem(KFileItem item);
-    virtual void intUpdateItem(KFileItem oldItem, KFileItem newItem);
     virtual void intSetSelected(const KrView::Item *item, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;
     virtual QRect itemRect(KUrl itemUrl);
@@ -122,6 +119,10 @@ protected:
     virtual Item *itemFromUrl(KUrl url) const;
     virtual void refreshIcons();
     virtual void gotPreview(KFileItem item, QPixmap preview);
+
+    virtual void newItems(const KFileItemList& items);
+    virtual void itemsDeleted(const KFileItemList& items);
+    virtual void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items);
 
     virtual QRect itemRect(const QModelIndex &index) = 0;
 

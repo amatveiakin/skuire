@@ -51,8 +51,10 @@ public:
     KrPreviews(KrView *view);
     ~KrPreviews();
 
-    void updatePreview(KFileItem item);
-    void deletePreview(KFileItem item);
+    void newItems(const KFileItemList& items);
+    void itemsUpdated(const QList<QPair<KFileItem, KFileItem> >& items);
+    void itemsDeleted(const KFileItemList& items);
+
     //updates all items
     void update();
     void clear();
@@ -66,6 +68,9 @@ protected slots:
 
 protected:
     void addPreview(KFileItem item, const QPixmap &preview);
+    void startJob();
+    void updatePreview(KFileItem item);
+    void deletePreview(KFileItem item);
 
     KrPreviewJob *_job;
     KrView *_view;

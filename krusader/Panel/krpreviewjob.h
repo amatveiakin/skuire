@@ -59,6 +59,7 @@ protected slots:
     void slotFailed(const KFileItem & item);
 
 protected:
+    //TODO: add QSet<KFileItem> for quick test whether an item is already scheduled
     KFileItemList _scheduled;
     KIO::PreviewJob *_job;
     QTimer _timer;
@@ -67,6 +68,7 @@ protected:
     KrPreviewJob(KrPreviews *parent);
     ~KrPreviewJob();
     void scheduleItem(KFileItem item);
+    void updateItem(KFileItem oldItem, KFileItem newItem);
     void removeItem(KFileItem item);
 
     void sort();

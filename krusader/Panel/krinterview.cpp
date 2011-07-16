@@ -126,33 +126,6 @@ void KrInterView::populate(const KFileItemList &items, bool addDummyItem)
     _itemView->setCurrentIndex(_model->index(0, 0));
 }
 
-void KrInterView::intAddItem(KFileItem item)
-{
-    QModelIndex idx = _model->addItem(item);
-    if(_model->rowCount() == 1) // if this is the fist item to be added, make it current
-        _itemView->setCurrentIndex(idx);
-}
-
-void KrInterView::intDelItem(KFileItem item)
-{
-    QModelIndex index = _model->indexFromUrl(item.url());
-    if(!index.isValid())
-        return;
-
-    if(Item *viewItem = _model->itemAt(index))
-        setSelected(viewItem, false);
-
-    QModelIndex newIndex = _model->removeItem(item);
-
-    if (newIndex.isValid())
-        _itemView->setCurrentIndex(newIndex);
-}
-
-void KrInterView::intUpdateItem(KFileItem oldItem, KFileItem newItem)
-{
-    _model->updateItem(oldItem, newItem);
-}
-
 void KrInterView::prepareForActive()
 {
     KrView::prepareForActive();
@@ -581,4 +554,94 @@ uint KrInterView::calcNumDirs() const
         if(item->isDir())
             num++;
     return num;
+}
+
+void KrInterView::newItems(const KFileItemList& items)
+{
+    // FIXME move to KrVfsModel
+    // FIXME: if number is above a certain threshold, do a complete refresh
+
+    KFileItemList itemsAfterFilter;
+
+    foreach(const KFileItem &item, items) {
+        if (isFiltered(item))
+            continue;
+
+        itemsAfterFilter << item;
+
+        QModelIndex idx = _model->addItem(item);
+        if (_model->rowCount() == 1) // if this is the fist item to be added, make it current
+            _itemView->setCurrentIndex(idx);
+
+        if (item.url() == urlToMakeCurrent()) {
+            KrView::setCurrentItem(item);
+            makeCurrentVisible();
+        }
+
+        if (item.name() == nameToMakeCurrentIfAdded()) {
+            KrView::setCurrentItem(item);
+            setNameToMakeCurrentIfAdded(QString());
+            makeCurrentVisible();
+        }
+    }
+
+    if (_previews)
+        _previews->newItems(itemsAfterFilter);
+
+    op()->emitSelectionChanged();
+}
+
+void KrInterView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
+{
+    // FIXME: if number is above a certain threshold, do a complete refresh
+    KFileItemList filtered;
+    QList< QPair<KFileItem, KFileItem> > updated;
+
+    for(int i = 0; i < items.count(); i++) {
+        QPair<KFileItem, KFileItem> item = items[i];
+        if (isFiltered(item.second))
+            filtered << item.first;
+        else
+            updated << item;
+    }
+
+    itemsDeleted(filtered);
+
+    //FIXME add KrVfsModel::refreshItems(QList<QPair<KFileItem, KFileItem> >& items)
+    for(int i = 0; i < updated.count(); i++) {
+        QPair<KFileItem, KFileItem> item = updated[i];
+        _model->updateItem(item.first, item.second);
+    }
+
+    if(_previews)
+        _previews->itemsUpdated(updated);
+
+    op()->emitSelectionChanged();
+}
+
+void KrInterView::itemsDeleted(const KFileItemList& items)
+{
+    // FIXME if number is above a certain threshold, do a complete refresh
+    // FIXME move to KrVfsModel
+
+    QModelIndex newIndex = _itemView->currentIndex();
+
+    foreach(const KFileItem &item, items) {
+        QModelIndex index = _model->indexFromUrl(item.url());
+        if(!index.isValid())
+            return;
+
+        if(Item *viewItem = _model->itemAt(index))
+            setSelected(viewItem, false);
+
+        newIndex = _model->removeItem(item);
+    }
+
+    if (newIndex.isValid())
+        _itemView->setCurrentIndex(newIndex);
+
+    if(_previews)
+        _previews->itemsDeleted(items);
+
+    op()->emitSelectionChanged();
 }

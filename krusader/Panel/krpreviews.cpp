@@ -57,9 +57,28 @@ void KrPreviews::clear()
 void KrPreviews::update()
 {
     clear();
+    newItems(_view->getItems());
+}
 
-    foreach(KFileItem item, _view->getItems())
+void KrPreviews::newItems(const KFileItemList& items)
+{
+    foreach(KFileItem item, items)
         updatePreview(item);
+}
+
+void KrPreviews::itemsUpdated(const QList<QPair<KFileItem, KFileItem> >& items)
+{
+    for(int i = 0; i < items.count(); i++) {
+        QPair<KFileItem, KFileItem> pair = items[i];
+        startJob();
+        _job->updateItem(pair.first, pair.second);
+    }
+}
+
+void KrPreviews::itemsDeleted(const KFileItemList& items)
+{
+    foreach(KFileItem item, items)
+        deletePreview(item);
 }
 
 void KrPreviews::deletePreview(KFileItem item)
@@ -70,12 +89,17 @@ void KrPreviews::deletePreview(KFileItem item)
 
 void KrPreviews::updatePreview(KFileItem item)
 {
+    startJob();
+    _job->scheduleItem(item);
+}
+
+void KrPreviews::startJob()
+{
     if(!_job) {
         _job = new KrPreviewJob(this);
         connect(_job, SIGNAL(result(KJob*)), SLOT(slotJobResult(KJob*)));
         _view->op()->emitPreviewJobStarted(_job);
     }
-    _job->scheduleItem(item);
 }
 
 void KrPreviews::slotJobResult(KJob *job)

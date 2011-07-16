@@ -93,12 +93,26 @@ void KrViewOperator::newItems(const KFileItemList& items)
 
 void KrViewOperator::fileDeleted(const QString& name)
 {
-    _view->delItem(name);
+    KFileItem it;
+    foreach(KFileItem item, _view->getItems())
+        if(item.name() == name)
+            it = item;
+
+    if(it.isNull())
+        return;
+
+    KFileItemList list;
+    list << it;
+
+    _view->itemsDeleted(list);
 }
 
 void KrViewOperator::refreshItem(KFileItem item)
 {
-    _view->refreshItem(item);
+    QList< QPair<KFileItem, KFileItem> > list;
+    list << QPair<KFileItem, KFileItem> (item, item);
+
+    _view->refreshItems(list);
 }
 
 void KrViewOperator::itemsDeleted(const KFileItemList& items)
@@ -631,101 +645,6 @@ void KrView::changeSelection(const KRQuery& filter, bool select)
     changeSelection(filter, select, grpSvr.readEntry("Mark Dirs", _MarkDirs));
 }
 
-void KrView::delItem(const QString &name)
-{
-    KFileItem it;
-    foreach(KFileItem item, getItems())
-        if(item.name() == name)
-            it = item;
-    if(it.isNull())
-        return;
-
-    if(_previews)
-        _previews->deletePreview(it);
-
-    intDelItem(it);
-
-    op()->emitSelectionChanged();
-}
-
-void KrView::itemsDeleted(const KFileItemList& items)
-{
-    // FIXME: make a more efficient implementation in the subclasses
-    // and/or: if number is above a certain threshold, do a complete refresh
-
-    foreach(const KFileItem &item, items) {
-        if(_previews)
-            _previews->deletePreview(item);
-
-        intDelItem(item);
-    }
-
-    op()->emitSelectionChanged();
-}
-
-void KrView::newItems(const KFileItemList& items)
-{
-    // FIXME: make a more efficient implementation in the subclasses
-    // and/or: if number is above a certain threshold, do a complete refresh
-
-    foreach(const KFileItem &item, items) {
-        if (isFiltered(item))
-            continue;
-
-        intAddItem(item);
-
-        if(_previews)
-            _previews->updatePreview(item);
-
-        if (item.url() == urlToMakeCurrent()) {
-            setCurrentItem(item);
-            makeCurrentVisible();
-        }
-
-        if (item.name() == nameToMakeCurrentIfAdded()) {
-            setCurrentItem(item);
-            setNameToMakeCurrentIfAdded(QString());
-            makeCurrentVisible();
-        }
-
-    }
-
-    op()->emitSelectionChanged();
-}
-
-void KrView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
-{
-    //FIXME optimize
-    KFileItemList filtered;
-
-    for(int i = 0; i < items.count(); i++) {
-        QPair<KFileItem, KFileItem> item = items[i];
-        if(_previews)
-            _previews->deletePreview(item.first);
-        if (isFiltered(item.second))
-            filtered << item.first;
-        else {
-            intUpdateItem(item.first, item.second);
-            if(_previews)
-                _previews->updatePreview(item.second);
-        }
-    }
-
-    itemsDeleted(filtered);
-}
-
-void KrView::refreshItem(KFileItem item)
-{
-    if (isFiltered(item))
-        delItem(item.name());
-    else {
-        intUpdateItem(item, item);
-        if(_previews)
-            _previews->updatePreview(item);
-    }
-
-    op()->emitSelectionChanged();
-}
 
 void KrView::clear()
 {

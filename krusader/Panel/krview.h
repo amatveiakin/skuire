@@ -413,9 +413,6 @@ public:
     virtual void pageDown() = 0;
     virtual void pageUp() = 0;
     virtual QString currentDescription() = 0;
-    virtual void intAddItem(KFileItem item) = 0;
-    virtual void intDelItem(KFileItem item) = 0;
-    virtual void intUpdateItem(KFileItem oldItem, KFileItem newItem) = 0;
     virtual void makeCurrentVisible() = 0;
     virtual uint numSelected() const = 0;
     virtual void updateView() = 0;
@@ -515,10 +512,6 @@ public:
     void selectRegion(KFileItem item1, KFileItem item2, bool select, bool clearFirst = false);
     QString itemDescription(KUrl url, bool itemIsUpUrl);
 
-    void newItems(const KFileItemList& items);
-    void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items);
-    void itemsDeleted(const KFileItemList& items);
-
     KUrl urlToMakeCurrent() const {
         return _urlToMakeCurrent;
     }
@@ -595,9 +588,6 @@ public:
     virtual void setNameToMakeCurrentIfAdded(const QString name) {
         _nameToMakeCurrentIfAdded = name;
     }
-protected:
-    virtual void refreshItem(KFileItem item);
-    virtual void delItem(const QString &name);
     /////////////////////////////////////////////////////////////
     // deprecated functions end                                //
     /////////////////////////////////////////////////////////////
@@ -613,6 +603,10 @@ protected:
     virtual void setCurrentItem(ItemSpec item) = 0;
     virtual const Item *dummyItem() const = 0;
     virtual void refreshIcons() = 0;
+
+    virtual void newItems(const KFileItemList& items) = 0;
+    virtual void itemsDeleted(const KFileItemList& items) = 0;
+    virtual void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items) = 0;
 
     bool isFiltered(const KFileItem &item);
     bool quickSearchMatch(const KFileItem &item, QString term);

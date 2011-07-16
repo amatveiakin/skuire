@@ -67,6 +67,14 @@ void KrPreviewJob::scheduleItem(KFileItem item)
         _timer.start();
 }
 
+void KrPreviewJob::updateItem(KFileItem oldItem, KFileItem newItem)
+{
+    int index = _scheduled.indexOf(oldItem);
+    if(index != -1 && oldItem != newItem)
+        removeItem(oldItem);
+    scheduleItem(newItem);
+}
+
 void KrPreviewJob::removeItem(KFileItem item)
 {
     setTotalAmount(KJob::Files, totalAmount(KJob::Files) - _scheduled.removeAll(item));
