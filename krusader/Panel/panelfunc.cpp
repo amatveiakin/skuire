@@ -303,7 +303,7 @@ void ListPanelFunc::doRefresh()
             panel->view->setCurrentItem(history->currentItem());
             panel->view->makeItemVisible(panel->view->currentUrl());
         }
-        panel->view->setNameToMakeCurrent(history->currentItem());
+        panel->view->setUrlToMakeCurrent(history->currentItem());
 
         int savedHistoryState = history->state();
 
@@ -315,7 +315,7 @@ void ListPanelFunc::doRefresh()
 
         refreshFailed = true;
 
-        panel->view->setNameToMakeCurrent(QString());
+        panel->view->setUrlToMakeCurrent(KUrl());
 
         if(history->state() != savedHistoryState) // don't go back if the history was touched
             break;
@@ -332,7 +332,7 @@ void ListPanelFunc::doRefresh()
         vfsP->vfs_setQuiet(true);
     }
     vfsP->vfs_setQuiet(false);
-    panel->view->setNameToMakeCurrent(QString());
+    panel->view->setUrlToMakeCurrent(KUrl());
 
     panel->setCursor(Qt::ArrowCursor);
 
@@ -678,7 +678,7 @@ void ListPanelFunc::mkdir()
             }
         }
 
-        panel->view->setNameToMakeCurrent(*it);
+        panel->view->setUrlToMakeCurrent(*it);
         // as always - the vfs do the job
         files() ->vfs_mkdir(*it);
         if (dirTree.count() > 1)
@@ -986,7 +986,7 @@ void ListPanelFunc::execute(KFileItem item)
     }
 
     if (item.isDir()) {
-        panel->view->setNameToMakeCurrent(QString());
+        panel->view->setUrlToMakeCurrent(KUrl());
         openUrl(url);
     } else if (!protocol.isEmpty()) {
         url.setProtocol(protocol);
@@ -1214,7 +1214,7 @@ void ListPanelFunc::FTPDisconnect()
     // you can disconnect only if connected !
     if (files() ->vfs_getType() == vfs::VFS_FTP) {
         panel->_actions->actFTPDisconnect->setEnabled(false);
-        panel->view->setNameToMakeCurrent(QString());
+        panel->view->setUrlToMakeCurrent(KUrl());
         openUrl(panel->realPath());   // open the last local URL
     }
 }

@@ -61,7 +61,7 @@ void KrVfsModel::populate(const KFileItemList &items, bool addDummyItem)
         emit layoutAboutToBeChanged();
         for(int i = 0; i < _items.count(); i++) {
             _itemIndex[_items[i]] = index(i, 0);
-            _nameNdx[_items[i]->name()] = index(i, 0);
+            _urlNdx[_items[i]->url()] = index(i, 0);
         }
         emit layoutChanged();
     }
@@ -89,7 +89,7 @@ void KrVfsModel::clear()
         delete item;
     _items.clear();
     _itemIndex.clear();
-    _nameNdx.clear();
+    _urlNdx.clear();
     _dummyItem = 0;
 
     emit layoutChanged();
@@ -292,12 +292,12 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
 
     _items.clear();
     _itemIndex.clear();
-    _nameNdx.clear();
+    _urlNdx.clear();
 
 #if QT_VERSION >= 0x040700
     _items.reserve(count);
     _itemIndex.reserve(count);
-    _nameNdx.reserve(count);
+    _urlNdx.reserve(count);
 #endif
 
     bool sortOrderChanged = false;
@@ -309,7 +309,7 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
         if (i != props->originalIndex())
             sortOrderChanged = true;
         _itemIndex[ props->viewItem()] = index(i, 0);
-        _nameNdx[ props->viewItem()->name()] = index(i, 0);
+        _urlNdx[ props->viewItem()->url()] = index(i, 0);
     }
 
     QModelIndexList newPersistentList;
@@ -335,7 +335,7 @@ QModelIndex KrVfsModel::addItem(KFileItem fileItem)
         int row = _items.count();
         _items << newItem;
         _itemIndex[newItem] = index(row, 0);
-        _nameNdx[newItem->name()] = index(row, 0);
+        _urlNdx[newItem->url()] = index(row, 0);
         emit layoutChanged();
         return index(row, 0);
     }
@@ -352,7 +352,7 @@ QModelIndex KrVfsModel::addItem(KFileItem fileItem)
 
     for (int i = insertRow; i < _items.count(); ++i) {
         _itemIndex[ _items[i] ] = index(i, 0);
-        _nameNdx[ _items[ i ]->name()] = index(i, 0);
+        _urlNdx[ _items[ i ]->url()] = index(i, 0);
     }
 
     QModelIndexList newPersistentList;
@@ -399,11 +399,11 @@ QModelIndex KrVfsModel::removeItem(KFileItem fileItem)
     }
 
     _itemIndex.remove(item);
-    _nameNdx.remove(item->name());
+    _urlNdx.remove(item->url());
     // update model/name index for items following the removed item
     for (int i = removeRow; i < _items.count(); i++) {
         _itemIndex[ _items[i] ] = index(i, 0);
-        _nameNdx[ _items[i]->name() ] = index(i, 0);
+        _urlNdx[ _items[i]->url() ] = index(i, 0);
     }
 
     foreach(const QModelIndex &mndx, oldPersistentList) {
@@ -464,7 +464,7 @@ void KrVfsModel::updateItem(KFileItem oldFile, KFileItem newFile)
 
     for (int i = (oldRow < newRow) ? oldRow : newRow; i < _items.count(); ++i) {
         _itemIndex[ _items[ i ] ] = index(i, 0);
-        _nameNdx[ _items[ i ]->name()] = index(i, 0);
+        _urlNdx[ _items[ i ]->url()] = index(i, 0);
     }
 
     QModelIndexList newPersistentList;
@@ -516,11 +516,6 @@ const QModelIndex & KrVfsModel::itemIndex(const KrView::Item *item)
     return _itemIndex[item];
 }
 
-const QModelIndex & KrVfsModel::nameIndex(const QString & st)
-{
-    return _nameNdx[ st ];
-}
-
 Qt::ItemFlags KrVfsModel::flags(const QModelIndex & index) const
 {
     Qt::ItemFlags flags = QAbstractListModel::flags(index);
@@ -562,13 +557,11 @@ QString KrVfsModel::nameWithoutExtension(const KrView::Item *item, bool checkEna
 
 const QModelIndex & KrVfsModel::indexFromUrl(const KUrl &url)
 {
-    //TODO: use url index instead of name index
-    //HACK
     if(!url.isValid()) {
         static QModelIndex invalidIndex;
         return invalidIndex;
     }
-    return nameIndex(url.fileName());
+    return _urlNdx[url];
 }
 
 KrSort::Sorter KrVfsModel::createSorter()

@@ -483,7 +483,6 @@ const KrView::IconSizes KrView::iconSizes;
 
 KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
     _instance(instance), _dirLister(0), _config(cfg), _mainWindow(0), _widget(0),
-    _nameToMakeCurrent(QString()), _nameToMakeCurrentIfAdded(QString()),
     _count(0), _numDirs(0), _properties(0), _focused(false),
     _previews(0), _fileIconSize(0), _updateDefaultSettings(false)
 {
@@ -634,7 +633,10 @@ void KrView::changeSelection(const KRQuery& filter, bool select)
 
 void KrView::delItem(const QString &name)
 {
-    KFileItem it = findItemByName(name);
+    KFileItem it;
+    foreach(KFileItem item, getItems())
+        if(item.name() == name)
+            it = item;
     if(it.isNull())
         return;
 
@@ -690,10 +692,11 @@ void KrView::newItems(const KFileItemList& items)
 
         ++_count;
 
-        if (item.name() == nameToMakeCurrent()) {
+        if (item.url() == urlToMakeCurrent()) {
             setCurrentItem(item);
             makeCurrentVisible();
         }
+
         if (item.name() == nameToMakeCurrentIfAdded()) {
             setCurrentItem(item);
             setNameToMakeCurrentIfAdded(QString());
@@ -1172,7 +1175,7 @@ void KrView::customSelection(bool select)
 
 void KrView::refresh()
 {
-    QString current = getCurrentItem();
+    KUrl current = currentUrl();
     KUrl::List selection = getSelectedUrls(false);
 
     clear();
@@ -1196,8 +1199,8 @@ void KrView::refresh()
     if(!selection.isEmpty())
         setSelection(selection);
 
-    if (!nameToMakeCurrent().isEmpty())
-        setCurrentItem(nameToMakeCurrent());
+    if (!urlToMakeCurrent().isEmpty())
+        setCurrentItem(urlToMakeCurrent());
     else if (!current.isEmpty())
         setCurrentItem(current);
 

@@ -526,6 +526,13 @@ public:
     void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items);
     void itemsDeleted(const KFileItemList& items);
 
+    KUrl urlToMakeCurrent() const {
+        return _urlToMakeCurrent;
+    }
+    void setUrlToMakeCurrent(KUrl url) {
+        _urlToMakeCurrent = url;
+    }
+
     /////////////////////////////////////////////////////////////
     // the following functions have a default and minimalistic //
     // implementation, and may be re-implemented if needed     //
@@ -586,24 +593,16 @@ public:
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
 public:
-    virtual QString nameToMakeCurrent() const {
-        return _nameToMakeCurrent;
-    }
-    virtual void setNameToMakeCurrent(const QString name) {
-        _nameToMakeCurrent = name;
-    }
+    virtual QString getCurrentItem() const = 0;
+
+protected:
+    //the following can be removed when VFileDirLister is removed
     virtual QString nameToMakeCurrentIfAdded() const {
         return _nameToMakeCurrentIfAdded;
     }
     virtual void setNameToMakeCurrentIfAdded(const QString name) {
         _nameToMakeCurrentIfAdded = name;
     }
-    virtual QString getCurrentItem() const = 0;
-    virtual void setCurrentItem(const QString& name) = 0;
-
-protected:
-    //the following can be removed when VFileDirLister is removed
-    virtual KFileItem findItemByName(const QString &name) = 0;
     virtual void refreshItem(KFileItem item);
     virtual void delItem(const QString &name);
     /////////////////////////////////////////////////////////////
@@ -639,7 +638,7 @@ protected:
     QWidget *_mainWindow;
     QWidget *_widget;
     KUrl::List _savedSelection;
-    QString _nameToMakeCurrent;
+    KUrl _urlToMakeCurrent;
     QString _nameToMakeCurrentIfAdded;
     KrViewProperties *_properties;
     KrViewOperator *_operator;

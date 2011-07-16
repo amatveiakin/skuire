@@ -91,12 +91,6 @@ bool KrInterView::isSelected(const QModelIndex &ndx)
     return isSelected(_model->itemAt(ndx));
 }
 
-KFileItem KrInterView::findItemByName(const QString &name)
-{
-    KrView::Item *item = _model->itemAt(_model->nameIndex(name));
-    return item ? *item : KFileItem();
-}
-
 QString KrInterView::getCurrentItem() const
 {
     if (!_model->ready())
@@ -109,11 +103,6 @@ QString KrInterView::getCurrentItem() const
 void KrInterView::makeCurrentVisible()
 {
     _itemView->scrollTo(_itemView->currentIndex());
-}
-
-void KrInterView::setCurrentItem(const QString& name)
-{
-    setCurrentIndex(_model->nameIndex(name));
 }
 
 void KrInterView::sort()

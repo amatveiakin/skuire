@@ -115,8 +115,7 @@ protected:
 
     QList<KrView::Item*>                _items;
     QHash<const KrView::Item*, QModelIndex>   _itemIndex;
-    //TODO: use url index instead of name index
-    QHash<QString, QModelIndex> _nameNdx;
+    QHash<KUrl, QModelIndex>    _urlNdx;
     bool                        _extensionEnabled;
     KrInterView                 * _view;
     KrView::Item                *_dummyItem;

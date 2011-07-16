@@ -50,8 +50,8 @@ public:
     const KUrl& get(int pos) {
         return _urlQueue[pos];
     }
-    void add(KUrl url, QString currentItem);
-    void pushBack(KUrl url, QString currentItem);
+    void add(KUrl url, KUrl currentItem);
+    void pushBack(KUrl url, KUrl currentItem);
     bool gotoPos(int pos);
     bool goBack();
     bool goForward();
@@ -61,7 +61,7 @@ public:
     bool canGoForward() {
         return _currentPos > 0;
     }
-    QString currentItem(); // current item of the view
+    KUrl currentItem(); // current item of the view
 
     void save(KConfigGroup cfg);
     bool restore(KConfigGroup cfg);
@@ -74,7 +74,7 @@ private:
     int _state; // increments when we move inside the history, or a new item is added
     int _currentPos;
     KUrl::List _urlQueue;
-    QStringList _currentItems;
+    KUrl::List _currentItems;
 };
 
 #endif

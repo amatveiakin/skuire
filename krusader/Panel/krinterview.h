@@ -72,9 +72,7 @@ public:
     virtual uint numSelected() const {
         return _selection.count();
     }
-    virtual KFileItem findItemByName(const QString &name);
     virtual QString getCurrentItem() const;
-    virtual void setCurrentItem(const QString& name);
     virtual void clear();
     virtual void sort();
     virtual void refreshColors();

@@ -27,7 +27,7 @@
 #include <kdebug.h>
 
 DirHistoryQueue::DirHistoryQueue(KrPanel *panel) :
-    _panel(panel), _currentPos(0), _state(0)
+    _panel(panel), _state(0), _currentPos(0)
 {
 }
 
@@ -55,12 +55,12 @@ void DirHistoryQueue::setCurrentUrl(const KUrl &url)
         _urlQueue[_currentPos] = url;
 }
 
-QString DirHistoryQueue::currentItem()
+KUrl DirHistoryQueue::currentItem()
 {
     if(count())
         return _currentItems[_currentPos];
     else
-        return QString();
+        return KUrl();
 }
 
 void DirHistoryQueue::saveCurrentItem()
@@ -68,10 +68,10 @@ void DirHistoryQueue::saveCurrentItem()
     // if the vfs-url hasn't been refreshed yet,
     // avoid saving current item for the wrong url
     if(count() &&  _panel->virtualPath().equals(_urlQueue[_currentPos], KUrl::CompareWithoutTrailingSlash))
-        _currentItems[_currentPos] = _panel->view->getCurrentItem();
+        _currentItems[_currentPos] = _panel->view->currentUrl();
 }
 
-void DirHistoryQueue::add(KUrl url, QString currentItem)
+void DirHistoryQueue::add(KUrl url, KUrl currentItem)
 {
     url.cleanPath();
 
@@ -108,9 +108,9 @@ void DirHistoryQueue::add(KUrl url, QString currentItem)
     _state++;
 }
 
-void DirHistoryQueue::pushBack(KUrl url, QString currentItem)
+void DirHistoryQueue::pushBack(KUrl url, KUrl currentItem)
 {
-    _urlQueue.push_back(KUrl("/"));
+    _urlQueue.push_back(url);
     _currentItems.push_back(currentItem);
 }
 
@@ -139,7 +139,7 @@ void DirHistoryQueue::save(KConfigGroup cfg)
 {
     saveCurrentItem();
     cfg.writeEntry("Entrys", _urlQueue.toStringList());
-    cfg.writeEntry("CurrentItems", _currentItems);
+    cfg.writeEntry("CurrentItems", _currentItems.toStringList());
     cfg.writeEntry("CurrentIndex", _currentPos);
 }
 
@@ -147,7 +147,7 @@ bool DirHistoryQueue::restore(KConfigGroup cfg)
 {
     clear();
     _urlQueue = KUrl::List(cfg.readEntry("Entrys", QStringList()));
-    _currentItems = cfg.readEntry("CurrentItems", QStringList());
+    _currentItems = KUrl::List(cfg.readEntry("CurrentItems", QStringList()));
     if(!_urlQueue.count() || _urlQueue.count() != _currentItems.count()) {
         clear();
         return false;
