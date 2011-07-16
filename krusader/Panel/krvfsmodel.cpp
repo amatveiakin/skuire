@@ -48,7 +48,7 @@ void KrVfsModel::refresh()
     clear();
 
 #if QT_VERSION >= 0x040700
-    _items.reserve(_view->dirLister()->count());
+    _items.reserve(_view->dirLister()->numItems());
 #endif
 
     if(_view->dirLister()->isRoot()) {
