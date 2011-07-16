@@ -275,7 +275,6 @@ public:
 protected:
     virtual const Item *itemFromUrl(KUrl url) const = 0;
     virtual void copySettingsFrom(KrView *other) = 0;
-    virtual void intSetSelected(const Item *item, bool select) = 0;
     virtual void updatePreviews();
     virtual void clear() = 0;
     virtual bool quickSearch(const QString &term, int direction) = 0;
@@ -559,16 +558,11 @@ public:
     void setQuickFilter(QuickFilter*);
 
     bool handleKeyEvent(QKeyEvent *e);
-    void setMassSelectionUpdate(bool upd);
-    bool isMassSelectionUpdate() {
-        return _massSelectionUpdate;
-    }
     void settingsChanged(KrViewProperties::PropertyType properties);
 
 public slots:
     void emitSelectionChanged() {
-        if (!_massSelectionUpdate)
-            emit selectionChanged();
+        emit selectionChanged();
     }
     void quickSearch(const QString &, int = 0);
     void stopQuickSearch(QKeyEvent*);
@@ -642,7 +636,6 @@ protected:
 private:
     KrQuickSearch *_quickSearch;
     QuickFilter *_quickFilter;
-    bool _massSelectionUpdate;
     QTimer _saveDefaultSettingsTimer;
     static KrViewProperties::PropertyType _changedProperties;
     static KrView *_changedView;

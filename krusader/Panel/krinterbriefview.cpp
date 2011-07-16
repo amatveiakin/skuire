@@ -138,14 +138,11 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
 
 
         if (e->modifiers() & Qt::ShiftModifier) {
-            op()->setMassSelectionUpdate(true);
-
             for (int row = currentIndex().row(); row <= newCurrentRow; row++) {
                 KrView::Item *item = _model->itemAt(row);
                 setSelected(item, !isSelected(item));
             }
-
-            op()->setMassSelectionUpdate(false);
+            op()->emitSelectionChanged();
         }
 
         if (newCurrentRow >= 0) {
@@ -170,14 +167,11 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
 
 
         if (e->modifiers() & Qt::ShiftModifier) {
-            op()->setMassSelectionUpdate(true);
-
             for (int row = currentIndex().row(); row >= newCurrentRow; row--) {
                 KrView::Item *item = _model->itemAt(row);
                 setSelected(item, !isSelected(item));
             }
-
-            op()->setMassSelectionUpdate(false);
+            op()->emitSelectionChanged();
         }
 
         if (newCurrentRow >= 0) {

@@ -96,9 +96,7 @@ public:
     bool isSelected(const KrView::Item *item) {
         return _selection.contains(item);
     }
-    void setSelected(const Item *item, bool select) {
-        KrView::setSelected(item, select);
-    }
+    void setSelected(const KrView::Item *item, bool select);
 
     void redrawItem(const QModelIndex &index) {
         _itemView->viewport()->update(itemRect(index));
@@ -125,7 +123,6 @@ protected:
     virtual void setCurrentItem(ItemSpec item);
     virtual KIO::filesize_t calcSize();
     virtual KIO::filesize_t calcSelectedSize();
-    virtual void intSetSelected(const KrView::Item *item, bool select);
     virtual void showContextMenu(const QPoint & p) = 0;
     virtual QRect itemRect(KUrl itemUrl);
     virtual const Item *dummyItem() const;
@@ -147,6 +144,8 @@ protected:
     KrVfsModel *_model;
     QAbstractItemView *_itemView;
     KrMouseHandler *_mouseHandler;
+
+private:
     QSet<const Item*> _selection;
 };
 

@@ -62,7 +62,7 @@ KrViewProperties::PropertyType KrViewOperator::_changedProperties = KrViewProper
 
 
 KrViewOperator::KrViewOperator(KrView *view, QWidget *widget) :
-        _view(view), _widget(widget), _quickSearch(0), _quickFilter(0), _massSelectionUpdate(false)
+        _view(view), _widget(widget), _quickSearch(0), _quickFilter(0)
 {
     _saveDefaultSettingsTimer.setSingleShot(true);
     connect(&_saveDefaultSettingsTimer, SIGNAL(timeout()), SLOT(saveDefaultSettings()));
@@ -215,15 +215,6 @@ bool KrViewOperator::handleKeyEvent(QKeyEvent * e)
         return true;
     }
     return false;
-}
-
-void KrViewOperator::setMassSelectionUpdate(bool upd)
-{
-    _massSelectionUpdate = upd;
-    if (!upd) {
-        emit selectionChanged();
-        _view->redraw();
-    }
 }
 
 void KrViewOperator::settingsChanged(KrViewProperties::PropertyType properties)
@@ -1030,16 +1021,6 @@ void KrView::customSelection(bool select)
     includeDirs = dialog.isExtraOptionChecked(i18n("Apply selection to directories"));
 
     changeSelection(query, select, includeDirs);
-}
-
-void KrView::setSelected(const Item *item, bool select)
-{
-    if(item == dummyItem())
-        return;
-
-    if(select)
-        clearSavedSelection();
-    intSetSelected(item, select);
 }
 
 void KrView::saveSelection()

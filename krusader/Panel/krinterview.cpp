@@ -49,8 +49,6 @@ KrInterView::~KrInterView()
 
 void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst)
 {
-    op()->setMassSelectionUpdate(true);
-
     if(clearFirst)
         _selection.clear();
 
@@ -75,15 +73,20 @@ void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select, bool clearFi
     else if (mi2.isValid())
         setSelected(_model->itemAt(mi2), (select));
 
+    op()->emitSelectionChanged();
+
     redraw();
-    op()->setMassSelectionUpdate(false);
 }
 
-void KrInterView::intSetSelected(const KrView::Item *item, bool select)
+void KrInterView::setSelected(const KrView::Item *item, bool select)
 {
-    if(select)
+    if(item == dummyItem())
+        return;
+
+    if(select) {
+        clearSavedSelection();
         _selection.insert(item);
-    else
+    } else
         _selection.remove(item);
 }
 
@@ -305,8 +308,6 @@ void KrInterView::setCurrentIndex(QModelIndex index)
 
 void KrInterView::changeSelection(KUrl::List urls, bool select, bool clearFirst)
 {
-    op()->setMassSelectionUpdate(true);
-
     if(clearFirst)
         _selection.clear();
 
@@ -316,15 +317,13 @@ void KrInterView::changeSelection(KUrl::List urls, bool select, bool clearFirst)
             setSelected(_model->itemAt(idx), select);
     }
 
-    op()->setMassSelectionUpdate(false);
+    op()->emitSelectionChanged();
 
     redraw();
 }
 
 void KrInterView::changeSelection(const KRQuery& filter, bool select, bool includeDirs)
 {
-    op()->setMassSelectionUpdate(true);
-
     foreach(KrView::Item *item, _model->items()) {
         if (item == _model->dummyItem())
             continue;
@@ -335,15 +334,13 @@ void KrInterView::changeSelection(const KRQuery& filter, bool select, bool inclu
             setSelected(item, select);
     }
 
-    op()->setMassSelectionUpdate(false);
+    op()->emitSelectionChanged();
 
     redraw();
 }
 
 void KrInterView::invertSelection()
 {
-    op()->setMassSelectionUpdate(true);
-
     KConfigGroup grpSvr(_config, "Look&Feel");
     bool markDirs = grpSvr.readEntry("Mark Dirs", _MarkDirs);
 
@@ -355,7 +352,7 @@ void KrInterView::invertSelection()
         setSelected(item, !isSelected(item));
     }
 
-    op()->setMassSelectionUpdate(false);
+    op()->emitSelectionChanged();
 
     redraw();
 }
@@ -438,6 +435,7 @@ void KrInterView::selectCurrentItem(bool select)
     Item *item = currentViewItem();
     if(item && item != _model->dummyItem())
         setSelected(item, select);
+    op()->emitSelectionChanged();
 }
 
 void KrInterView::pageDown()
