@@ -627,26 +627,11 @@ void KrInterView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
 void KrInterView::itemsDeleted(const KFileItemList& items)
 {
     // FIXME if number is above a certain threshold, do a complete refresh
-    // FIXME move to KrVfsModel
-
-    QModelIndex newIndex = _itemView->currentIndex();
-
-    foreach(const KFileItem &item, items) {
-        QModelIndex index = _model->indexFromUrl(item.url());
-        if(!index.isValid())
-            return;
-
-        if(Item *viewItem = _model->itemAt(index))
-            setSelected(viewItem, false);
-
-        newIndex = _model->removeItem(item);
-    }
-
-    if (newIndex.isValid())
-        _itemView->setCurrentIndex(newIndex);
 
     if(_previews)
         _previews->itemsDeleted(items);
+
+    _itemView->setCurrentIndex(_model->removeItems(items));
 
     op()->emitSelectionChanged();
 }

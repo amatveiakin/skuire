@@ -89,6 +89,9 @@ public:
     bool isSelected(const KrView::Item *item) {
         return _selection.contains(item);
     }
+    void setSelected(const Item *item, bool select) {
+        KrView::setSelected(item, select);
+    }
 
     void redrawItem(const QModelIndex &index) {
         _itemView->viewport()->update(itemRect(index));

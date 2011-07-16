@@ -371,57 +371,65 @@ void KrVfsModel::addItems(KFileItemList items)
     _view->makeCurrentVisible();
 }
 
-QModelIndex KrVfsModel::removeItem(KFileItem fileItem)
+QModelIndex KrVfsModel::removeItems(KFileItemList items)
 {
+    //FIXME: optimze
+
     QModelIndex currIndex = _view->getCurrentIndex();
 
-    QModelIndex itemIdx = indexFromUrl(fileItem.url());
-    if(!itemIdx.isValid())
-        return currIndex;
-
-    int removeRow = itemIdx.row();
-    KrView::Item *item = _items[removeRow];
-
     emit layoutAboutToBeChanged();
-    QModelIndexList oldPersistentList = persistentIndexList();
-    QModelIndexList newPersistentList;
 
-    _items.removeAt(removeRow);
+    foreach(KFileItem fileItem, items) {
+        QModelIndex itemIdx = indexFromUrl(fileItem.url());
+        if(!itemIdx.isValid())
+            continue;
 
-    if (currIndex.row() == removeRow) {
-        if (_items.count() == 0)
-            currIndex = QModelIndex();
-        else if (removeRow >= _items.count())
-            currIndex = index(_items.count() - 1, 0);
-        else
-            currIndex = index(removeRow, 0);
-    } else if (currIndex.row() > removeRow) {
-        currIndex = index(currIndex.row() - 1, 0);
+        int removeRow = itemIdx.row();
+        KrView::Item *item = _items[removeRow];
+
+        _view->setSelected(item, false);
+
+        QModelIndexList oldPersistentList = persistentIndexList();
+        QModelIndexList newPersistentList;
+
+        _items.removeAt(removeRow);
+
+        if (currIndex.row() == removeRow) {
+            if (_items.count() == 0)
+                currIndex = QModelIndex();
+            else if (removeRow >= _items.count())
+                currIndex = index(_items.count() - 1, 0);
+            else
+                currIndex = index(removeRow, 0);
+        } else if (currIndex.row() > removeRow) {
+            currIndex = index(currIndex.row() - 1, 0);
+        }
+
+        _itemIndex.remove(item);
+        _urlNdx.remove(item->url());
+        // update item/url index for items following the removed item
+        for (int i = removeRow; i < _items.count(); i++) {
+            _itemIndex[ _items[i] ] = index(i, 0);
+            _urlNdx[ _items[i]->url() ] = index(i, 0);
+        }
+
+        foreach(const QModelIndex &mndx, oldPersistentList) {
+            int newRow = mndx.row();
+            if (newRow > removeRow)
+                newRow--;
+            if (newRow != removeRow)
+                newPersistentList << index(newRow, mndx.column());
+            else
+                newPersistentList << QModelIndex();
+        }
+        changePersistentIndexList(oldPersistentList, newPersistentList);
+
+        _view->makeCurrentVisible();
+
+        delete item;
     }
-
-    _itemIndex.remove(item);
-    _urlNdx.remove(item->url());
-    // update model/name index for items following the removed item
-    for (int i = removeRow; i < _items.count(); i++) {
-        _itemIndex[ _items[i] ] = index(i, 0);
-        _urlNdx[ _items[i]->url() ] = index(i, 0);
-    }
-
-    foreach(const QModelIndex &mndx, oldPersistentList) {
-        int newRow = mndx.row();
-        if (newRow > removeRow)
-            newRow--;
-        if (newRow != removeRow)
-            newPersistentList << index(newRow, mndx.column());
-        else
-            newPersistentList << QModelIndex();
-    }
-    changePersistentIndexList(oldPersistentList, newPersistentList);
 
     emit layoutChanged();
-    _view->makeCurrentVisible();
-
-    delete item;
 
     return currIndex;
 }
