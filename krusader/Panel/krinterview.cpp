@@ -598,8 +598,10 @@ void KrInterView::newItems(const KFileItemList& items)
     if (itemsAfterFilter.count()) {
         bool wasEmpty = !count();
         _model->addItems(itemsAfterFilter);
-        if (wasEmpty)
+        if (wasEmpty) {
             _itemView->setCurrentIndex(_model->index(0, 0));
+            makeCurrentVisible();
+        }
         if (_previews)
             _previews->newItems(itemsAfterFilter);
     }
@@ -607,6 +609,7 @@ void KrInterView::newItems(const KFileItemList& items)
     if (urlToMakeCurrent().isValid()) {
         QModelIndex index = _model->indexFromUrl(urlToMakeCurrent());
         if (index.isValid()) {
+            makeCurrentVisible();
             setCurrentIndex(index);
             setUrlToMakeCurrent(KUrl());
         }
@@ -616,13 +619,13 @@ void KrInterView::newItems(const KFileItemList& items)
         foreach(Item *item, _model->items()) {
             if (item->name() == nameToMakeCurrentIfAdded()) {
                 KrView::setCurrentItem(*item);
+                makeCurrentVisible();
                 setNameToMakeCurrentIfAdded(QString());
                 break;
             }
         }
     }
 
-    makeCurrentVisible();
     op()->emitSelectionChanged();
 }
 
