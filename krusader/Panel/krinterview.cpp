@@ -585,7 +585,6 @@ void KrInterView::newItems(const KFileItemList& items)
         QModelIndex index = _model->indexFromUrl(urlToMakeCurrent());
         if (index.isValid()) {
             setCurrentIndex(index);
-            makeCurrentVisible();
             setUrlToMakeCurrent(KUrl());
         }
     }
@@ -594,13 +593,13 @@ void KrInterView::newItems(const KFileItemList& items)
         foreach(Item *item, _model->items()) {
             if (item->name() == nameToMakeCurrentIfAdded()) {
                 KrView::setCurrentItem(*item);
-                makeCurrentVisible();
                 setNameToMakeCurrentIfAdded(QString());
                 break;
             }
         }
     }
 
+    makeCurrentVisible();
     op()->emitSelectionChanged();
 }
 
@@ -629,6 +628,7 @@ void KrInterView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
     if(_previews)
         _previews->itemsUpdated(updated);
 
+    makeCurrentVisible();
     op()->emitSelectionChanged();
 }
 
@@ -644,5 +644,6 @@ void KrInterView::itemsDeleted(const KFileItemList& items)
 
     _itemView->setCurrentIndex(_model->removeItems(items));
 
+    makeCurrentVisible();
     op()->emitSelectionChanged();
 }

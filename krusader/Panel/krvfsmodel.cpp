@@ -368,7 +368,6 @@ void KrVfsModel::addItems(KFileItemList items)
     }
 
     emit layoutChanged();
-    _view->makeCurrentVisible();
 }
 
 QModelIndex KrVfsModel::removeItems(KFileItemList items)
@@ -423,8 +422,6 @@ QModelIndex KrVfsModel::removeItems(KFileItemList items)
                 newPersistentList << QModelIndex();
         }
         changePersistentIndexList(oldPersistentList, newPersistentList);
-
-        _view->makeCurrentVisible();
 
         delete item;
     }
@@ -498,8 +495,6 @@ void KrVfsModel::updateItems(const QList<QPair<KFileItem, KFileItem> >& items)
 
         changePersistentIndexList(oldPersistentList, newPersistentList);
         emit layoutChanged();
-        if (newRow != oldRow)
-            _view->makeCurrentVisible();
 
         //redraw the item in any case
         if(oldRow != newRow)
