@@ -76,21 +76,6 @@ KrViewOperator::~KrViewOperator()
         saveDefaultSettings();
 }
 
-void KrViewOperator::startUpdate()
-{
-    _view->refresh();
-}
-
-void KrViewOperator::cleared()
-{
-    _view->clear();
-}
-
-void KrViewOperator::newItems(const KFileItemList& items)
-{
-    _view->newItems(items);
-}
-
 void KrViewOperator::fileDeleted(const QString& name)
 {
     KFileItem it;
@@ -113,26 +98,6 @@ void KrViewOperator::refreshItem(KFileItem item)
     list << QPair<KFileItem, KFileItem> (item, item);
 
     _view->refreshItems(list);
-}
-
-void KrViewOperator::itemsDeleted(const KFileItemList& items)
-{
-    _view->itemsDeleted(items);
-}
-
-void KrViewOperator::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
-{
-    _view->refreshItems(items);
-}
-
-void KrViewOperator::colorSettingsChanged()
-{
-    _view->refreshIcons();
-}
-
-void KrViewOperator::gotPreview(KFileItem item, QPixmap preview)
-{
-    _view->gotPreview(item, preview);
 }
 
 void KrViewOperator::startDrag()
@@ -1209,4 +1174,15 @@ bool KrView::quickSearchMatch(const KFileItem &item, QString term)
     QRegExp rx(term, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive, QRegExp::Wildcard);
 
     return (rx.indexIn(item.name()) == 0);
+}
+
+KrViewOperator *KrView::createOperator()
+{
+    return new KrViewOperator(this, _widget);
+}
+
+void KrView::prepareForPassive()
+{
+    _focused = false;
+    _operator->prepareForPassive();
 }

@@ -50,6 +50,7 @@ class KrView;
 class KrQuickSearch;
 class KrPreviews;
 class KrViewInstance;
+class KrViewOperator;
 class QuickFilter;
 class AbstractDirLister;
 class CalcSpaceClient;
@@ -112,164 +113,6 @@ public:
     int numberOfColumns;    // the number of columns in the brief view
 };
 
-// operator can handle two ways of doing things:
-// 1. if the view is a widget (inherits krview and klistview for example)
-// 2. if the view HAS A widget (a krview-son has a member of klistview)
-// this is done by specifying the view and the widget in the constructor,
-// even if they are actually the same object (specify it twice in that case)
-class KrViewOperator: public QObject
-{
-    Q_OBJECT
-public:
-    KrViewOperator(KrView *view, QWidget *widget);
-    ~KrViewOperator();
-
-    virtual bool eventFilter(QObject *watched, QEvent *event);
-
-    KrView *view() const {
-        return _view;
-    }
-    QWidget *widget() const {
-        return _widget;
-    }
-    void startDrag();
-
-    void emitCurrentChanged(KFileItem item) {
-        emit currentChanged(item);
-    }
-    void emitGotDrop(QDropEvent *e) {
-        emit gotDrop(e);
-    }
-    void emitItemDescription(QString &desc) {
-        emit itemDescription(desc);
-    }
-    void emitContextMenu(const QPoint &point) {
-        emit contextMenu(point);
-    }
-    void emitEmptyContextMenu(const QPoint &point) {
-        emit emptyContextMenu(point);
-    }
-    void emitNeedFocus() {
-        emit needFocus();
-    }
-    void emitPreviewJobStarted(KJob *job) {
-        emit previewJobStarted(job);
-    }
-    void emitGoHome() {
-        emit goHome();
-    }
-    void emitDirUp() {
-        emit dirUp();
-    }
-    void emitDeleteFiles(bool reallyDelete) {
-        emit deleteFiles(reallyDelete);
-    }
-    void emitMiddleButtonClicked(KFileItem item, bool itemIsUpUrl) {
-        emit middleButtonClicked(item, itemIsUpUrl);
-    }
-    void emitCalcSpace(KFileItem item) {
-        emit calcSpace(item);
-    }
-    void emitRenameItem(KFileItem item, QString newName) {
-        emit renameItem(item, newName);
-    }
-    void emitExecuted(KFileItem item) {
-        emit executed(item);
-    }
-    void emitGoInside(KFileItem item) {
-        emit goInside(item);
-    }
-    void emitRefreshActions() {
-        emit refreshActions();
-    }
-    void emitLetsDrag(KUrl::List urls, QPixmap icon) {
-        emit letsDrag(urls, icon);
-    }
-
-    void prepareForPassive();
-
-    void setQuickSearch(KrQuickSearch *quickSearch);
-    KrQuickSearch * quickSearch() {
-        return _quickSearch;
-    }
-
-    void setQuickFilter(QuickFilter*);
-
-    bool handleKeyEvent(QKeyEvent *e);
-    void setMassSelectionUpdate(bool upd);
-    bool isMassSelectionUpdate() {
-        return _massSelectionUpdate;
-    }
-    void settingsChanged(KrViewProperties::PropertyType properties);
-
-public slots:
-    void emitSelectionChanged() {
-        if (!_massSelectionUpdate)
-            emit selectionChanged();
-    }
-    void quickSearch(const QString &, int = 0);
-    void stopQuickSearch(QKeyEvent*);
-    void handleQuickSearchEvent(QKeyEvent*);
-
-    void startQuickFilter();
-    void stopQuickFilter(bool refreshView = true);
-
-signals:
-    void currentChanged(KFileItem item);
-    void renameItem(KFileItem item, QString newName);
-    void executed(KFileItem item);
-    void goInside(KFileItem item);
-    void middleButtonClicked(KFileItem item, bool itemIsUpUrl);
-    void calcSpace(KFileItem item);
-    void selectionChanged();
-    void gotDrop(QDropEvent *e);
-    void letsDrag(KUrl::List urls, QPixmap icon);
-    void itemDescription(QString &desc);
-    void contextMenu(const QPoint &point);
-    void emptyContextMenu(const QPoint& point);
-    void needFocus();
-    void previewJobStarted(KJob *job);
-    void goHome();
-    void deleteFiles(bool reallyDelete);
-    void dirUp();
-    void refreshActions();
-
-protected slots:
-    void quickFilterChanged(const QString &text);
-    void saveDefaultSettings();
-    void startUpdate();
-    void cleared();
-    void newItems(const KFileItemList& items);
-    void itemsDeleted(const KFileItemList& items);
-    void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items);
-    void colorSettingsChanged();
-    void gotPreview(KFileItem item, QPixmap preview);
-
-    /////////////////////////////////////////////////////////////
-    // deprecated functions start                              //
-    /////////////////////////////////////////////////////////////
-protected slots:
-    // for signals from vfs' dirwatch
-    void fileDeleted(const QString& name);
-    void refreshItem(KFileItem item);
-    /////////////////////////////////////////////////////////////
-    // deprecated functions end                                //
-    /////////////////////////////////////////////////////////////
-
-
-protected:
-    // never delete those
-    KrView *_view;
-    QWidget *_widget;
-
-private:
-    KrQuickSearch *_quickSearch;
-    QuickFilter *_quickFilter;
-    bool _massSelectionUpdate;
-    QTimer _saveDefaultSettingsTimer;
-    static KrViewProperties::PropertyType _changedProperties;
-    static KrView *_changedView;
-};
 
 /****************************************************************************
  * READ THIS FIRST: Using the view
@@ -374,9 +217,7 @@ protected:
     virtual KrViewProperties * createViewProperties() {
         return new KrViewProperties();
     }
-    virtual KrViewOperator *createOperator() {
-        return new KrViewOperator(this, _widget);
-    }
+    virtual KrViewOperator *createOperator();
     virtual void setup() = 0;
 
     ///////////////////////////////////////////////////////
@@ -423,10 +264,7 @@ public:
     virtual void prepareForActive() {
         _focused = true;
     }
-    virtual void prepareForPassive() {
-        _focused = false;
-        _operator->prepareForPassive();
-    }
+    virtual void prepareForPassive();
     virtual void renameCurrentItem(); // Rename current item. returns immediately
     virtual int  itemsPerPage() {
         return 0;
@@ -636,5 +474,178 @@ protected:
     QRegExp _quickFilterMask;
 };
 
+
+// operator can handle two ways of doing things:
+// 1. if the view is a widget (inherits krview and klistview for example)
+// 2. if the view HAS A widget (a krview-son has a member of klistview)
+// this is done by specifying the view and the widget in the constructor,
+// even if they are actually the same object (specify it twice in that case)
+class KrViewOperator: public QObject
+{
+    Q_OBJECT
+public:
+    KrViewOperator(KrView *view, QWidget *widget);
+    ~KrViewOperator();
+
+    virtual bool eventFilter(QObject *watched, QEvent *event);
+
+    KrView *view() const {
+        return _view;
+    }
+    QWidget *widget() const {
+        return _widget;
+    }
+    void startDrag();
+
+    void emitCurrentChanged(KFileItem item) {
+        emit currentChanged(item);
+    }
+    void emitGotDrop(QDropEvent *e) {
+        emit gotDrop(e);
+    }
+    void emitItemDescription(QString &desc) {
+        emit itemDescription(desc);
+    }
+    void emitContextMenu(const QPoint &point) {
+        emit contextMenu(point);
+    }
+    void emitEmptyContextMenu(const QPoint &point) {
+        emit emptyContextMenu(point);
+    }
+    void emitNeedFocus() {
+        emit needFocus();
+    }
+    void emitPreviewJobStarted(KJob *job) {
+        emit previewJobStarted(job);
+    }
+    void emitGoHome() {
+        emit goHome();
+    }
+    void emitDirUp() {
+        emit dirUp();
+    }
+    void emitDeleteFiles(bool reallyDelete) {
+        emit deleteFiles(reallyDelete);
+    }
+    void emitMiddleButtonClicked(KFileItem item, bool itemIsUpUrl) {
+        emit middleButtonClicked(item, itemIsUpUrl);
+    }
+    void emitCalcSpace(KFileItem item) {
+        emit calcSpace(item);
+    }
+    void emitRenameItem(KFileItem item, QString newName) {
+        emit renameItem(item, newName);
+    }
+    void emitExecuted(KFileItem item) {
+        emit executed(item);
+    }
+    void emitGoInside(KFileItem item) {
+        emit goInside(item);
+    }
+    void emitRefreshActions() {
+        emit refreshActions();
+    }
+    void emitLetsDrag(KUrl::List urls, QPixmap icon) {
+        emit letsDrag(urls, icon);
+    }
+
+    void prepareForPassive();
+
+    void setQuickSearch(KrQuickSearch *quickSearch);
+    KrQuickSearch * quickSearch() {
+        return _quickSearch;
+    }
+
+    void setQuickFilter(QuickFilter*);
+
+    bool handleKeyEvent(QKeyEvent *e);
+    void setMassSelectionUpdate(bool upd);
+    bool isMassSelectionUpdate() {
+        return _massSelectionUpdate;
+    }
+    void settingsChanged(KrViewProperties::PropertyType properties);
+
+public slots:
+    void emitSelectionChanged() {
+        if (!_massSelectionUpdate)
+            emit selectionChanged();
+    }
+    void quickSearch(const QString &, int = 0);
+    void stopQuickSearch(QKeyEvent*);
+    void handleQuickSearchEvent(QKeyEvent*);
+
+    void startQuickFilter();
+    void stopQuickFilter(bool refreshView = true);
+
+signals:
+    void currentChanged(KFileItem item);
+    void renameItem(KFileItem item, QString newName);
+    void executed(KFileItem item);
+    void goInside(KFileItem item);
+    void middleButtonClicked(KFileItem item, bool itemIsUpUrl);
+    void calcSpace(KFileItem item);
+    void selectionChanged();
+    void gotDrop(QDropEvent *e);
+    void letsDrag(KUrl::List urls, QPixmap icon);
+    void itemDescription(QString &desc);
+    void contextMenu(const QPoint &point);
+    void emptyContextMenu(const QPoint& point);
+    void needFocus();
+    void previewJobStarted(KJob *job);
+    void goHome();
+    void deleteFiles(bool reallyDelete);
+    void dirUp();
+    void refreshActions();
+
+protected slots:
+    void quickFilterChanged(const QString &text);
+    void saveDefaultSettings();
+    void startUpdate() {
+        _view->refresh();
+    }
+    void cleared() {
+        _view->clear();
+    }
+    void newItems(const KFileItemList& items) {
+        _view->newItems(items);
+    }
+    void itemsDeleted(const KFileItemList& items) {
+        _view->itemsDeleted(items);
+    }
+    void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items) {
+        _view->refreshItems(items);
+    }
+    void colorSettingsChanged() {
+        _view->refreshIcons();
+    }
+    void gotPreview(KFileItem item, QPixmap preview) {
+        _view->gotPreview(item, preview);
+    }
+
+    /////////////////////////////////////////////////////////////
+    // deprecated functions start                              //
+    /////////////////////////////////////////////////////////////
+protected slots:
+    // for signals from vfs' dirwatch
+    void fileDeleted(const QString& name);
+    void refreshItem(KFileItem item);
+    /////////////////////////////////////////////////////////////
+    // deprecated functions end                                //
+    /////////////////////////////////////////////////////////////
+
+
+protected:
+    // never delete those
+    KrView *_view;
+    QWidget *_widget;
+
+private:
+    KrQuickSearch *_quickSearch;
+    QuickFilter *_quickFilter;
+    bool _massSelectionUpdate;
+    QTimer _saveDefaultSettingsTimer;
+    static KrViewProperties::PropertyType _changedProperties;
+    static KrView *_changedView;
+};
 
 #endif /* KRVIEW_H */
