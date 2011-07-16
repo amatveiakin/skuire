@@ -385,6 +385,8 @@ protected:
 public:
     virtual CalcSpaceClient *calcSpaceClient() = 0;
 
+    virtual uint count() const = 0;
+    virtual uint calcNumDirs() const = 0;
     virtual KFileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
     virtual KFileItemList getSelectedItems(bool currentIfNoSelection) = 0;
     virtual KFileItemList getVisibleItems() = 0;
@@ -449,15 +451,6 @@ public:
     // the following functions are already implemented, //
     // and normally - should NOT be re-implemented.     //
     //////////////////////////////////////////////////////
-    virtual uint numFiles() const {
-        return _count -_numDirs;
-    }
-    virtual uint numDirs() const {
-        return _numDirs;
-    }
-    virtual uint count() const {
-        return _count;
-    }
     virtual void selectAllIncludingDirs() {
         changeSelection(KRQuery("*"), true, true);
     }
@@ -595,7 +588,6 @@ public:
 public:
     virtual QString getCurrentItem() const = 0;
 
-protected:
     //the following can be removed when VFileDirLister is removed
     virtual QString nameToMakeCurrentIfAdded() const {
         return _nameToMakeCurrentIfAdded;
@@ -603,6 +595,7 @@ protected:
     virtual void setNameToMakeCurrentIfAdded(const QString name) {
         _nameToMakeCurrentIfAdded = name;
     }
+protected:
     virtual void refreshItem(KFileItem item);
     virtual void delItem(const QString &name);
     /////////////////////////////////////////////////////////////
@@ -647,9 +640,6 @@ protected:
     int _fileIconSize;
     bool _updateDefaultSettings;
     QRegExp _quickFilterMask;
-
-private:
-    uint _count, _numDirs;
 };
 
 

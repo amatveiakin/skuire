@@ -304,11 +304,11 @@ TagString exp_Count::expFunc(const KrPanel* panel, const QStringList& parameter,
 
     int n = -1;
     if (parameter.count() == 0 || parameter[ 0 ].isEmpty() || parameter[ 0 ].toLower() == "all")
-        n = panel->view->numDirs() + panel->view->numFiles();
+        n = panel->view->count();
     else if (parameter[ 0 ].toLower() == "files")
-        n = panel->view->numFiles();
+        n = panel->view->count() - panel->view->calcNumDirs();
     else if (parameter[ 0 ].toLower() == "dirs")
-        n = panel->view->numDirs();
+        n = panel->view->calcNumDirs();
     else if (parameter[ 0 ].toLower() == "selected")
         n = panel->view->numSelected();
     else {

@@ -201,7 +201,7 @@ void KrViewOperator::quickFilterChanged(const QString &text)
 
     _view->_quickFilterMask = QRegExp(text, caseSensitive ? Qt::CaseSensitive : Qt::CaseInsensitive, QRegExp::Wildcard);
     _view->refresh();
-    _quickFilter->setMatch(_view->_count || !_view->_dirLister->numItems());
+    _quickFilter->setMatch(_view->count() || !_view->_dirLister->numItems());
 }
 
 void KrViewOperator::startQuickFilter()
@@ -483,7 +483,7 @@ const KrView::IconSizes KrView::iconSizes;
 
 KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
     _instance(instance), _dirLister(0), _config(cfg), _mainWindow(0), _widget(0),
-    _count(0), _numDirs(0), _properties(0), _focused(false),
+    _properties(0), _focused(false),
     _previews(0), _fileIconSize(0), _updateDefaultSettings(false)
 {
 }
@@ -607,7 +607,7 @@ QString KrView::statistics()
                     %3=filesize of selected items,%4=filesize in Bytes, \
                     %5=filesize of all items in directory,%6=filesize in Bytes",
                     "%1 out of %2, %3 (%4) out of %5 (%6)",
-                    numSelected(), _count, KIO::convertSize(selectedSize),
+                    numSelected(), count(), KIO::convertSize(selectedSize),
                     KRpermHandler::parseSize(selectedSize),
                     KIO::convertSize(size),
                     KRpermHandler::parseSize(size));
@@ -615,7 +615,7 @@ QString KrView::statistics()
         tmp = i18nc("%1=number of selected items,%2=total number of items, \
                     %3=filesize of selected items,%4=filesize of all items in directory",
                     "%1 out of %2, %3 out of %4",
-                    numSelected(), _count, KIO::convertSize(selectedSize),
+                    numSelected(), count(), KIO::convertSize(selectedSize),
                     KIO::convertSize(size));
     }
 
@@ -645,11 +645,6 @@ void KrView::delItem(const QString &name)
 
     intDelItem(it);
 
-    if (it.isDir())
-        --_numDirs;
-
-    --_count;
-
     op()->emitSelectionChanged();
 }
 
@@ -663,11 +658,6 @@ void KrView::itemsDeleted(const KFileItemList& items)
             _previews->deletePreview(item);
 
         intDelItem(item);
-
-        if (item.isDir())
-            --_numDirs;
-
-        --_count;
     }
 
     op()->emitSelectionChanged();
@@ -686,11 +676,6 @@ void KrView::newItems(const KFileItemList& items)
 
         if(_previews)
             _previews->updatePreview(item);
-
-        if (item.isDir())
-            ++_numDirs;
-
-        ++_count;
 
         if (item.url() == urlToMakeCurrent()) {
             setCurrentItem(item);
@@ -747,7 +732,6 @@ void KrView::clear()
     if(_previews)
         _previews->clear();
 
-    _count = _numDirs = 0;
     redraw();
 }
 
@@ -1188,9 +1172,6 @@ void KrView::refresh()
     foreach(KFileItem item, _dirLister->items()) {
         if(isFiltered(item))
             continue;
-        if(item.isDir())
-            _numDirs++;
-        _count++;
         items << item;
     }
 

@@ -568,3 +568,17 @@ void KrInterView::gotPreview(KFileItem item, QPixmap preview)
         redrawItem(index);
     }
 }
+
+uint KrInterView::count() const
+{
+    return _model->rowCount();
+}
+
+uint KrInterView::calcNumDirs() const
+{
+    uint num = 0;
+    foreach(Item *item, _model->items())
+        if(item->isDir())
+            num++;
+    return num;
+}

@@ -40,6 +40,8 @@ public:
         return this;
     }
 
+    virtual uint count() const;
+    virtual uint calcNumDirs() const;
     virtual KFileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
     virtual KFileItemList getSelectedItems(bool currentIfNoSelection);
     virtual KFileItemList getVisibleItems();
