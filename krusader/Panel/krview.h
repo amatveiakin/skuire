@@ -205,7 +205,7 @@ public:
     // 2. view->init()
     // notes: constructor does as little as possible, setup() does the rest. esp, note that
     // if you need something from operator or properties, move it into setup()
-    virtual void init();
+    virtual void init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
     KrViewInstance *instance() {
         return &_instance;
     }
@@ -217,7 +217,7 @@ protected:
     virtual KrViewProperties * createViewProperties() {
         return new KrViewProperties();
     }
-    virtual KrViewOperator *createOperator();
+    virtual KrViewOperator *createOperator(KrQuickSearch *quickSearch, QuickFilter *quickFilter);
     virtual void setup() = 0;
 
     ///////////////////////////////////////////////////////
@@ -393,10 +393,6 @@ public:
         return _focused;
     }
 
-    void setMainWindow(QWidget *mainWindow) {
-        _mainWindow = mainWindow;
-    }
-
     // save this view's settings as default for new views of this type
     void saveDefaultSettings(KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
     // restore the default settings for this view type
@@ -483,16 +479,13 @@ class KrViewOperator: public QObject
 {
     Q_OBJECT
 public:
-    KrViewOperator(KrView *view, QWidget *widget);
+    KrViewOperator(KrView *view, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
     ~KrViewOperator();
 
     virtual bool eventFilter(QObject *watched, QEvent *event);
 
     KrView *view() const {
         return _view;
-    }
-    QWidget *widget() const {
-        return _widget;
     }
     void startDrag();
 
@@ -550,12 +543,9 @@ public:
 
     void prepareForPassive();
 
-    void setQuickSearch(KrQuickSearch *quickSearch);
     KrQuickSearch * quickSearch() {
         return _quickSearch;
     }
-
-    void setQuickFilter(QuickFilter*);
 
     bool handleKeyEvent(QKeyEvent *e);
     void settingsChanged(KrViewProperties::PropertyType properties);
@@ -629,9 +619,7 @@ protected slots:
 
 
 protected:
-    // never delete those
     KrView *_view;
-    QWidget *_widget;
 
 private:
     KrQuickSearch *_quickSearch;

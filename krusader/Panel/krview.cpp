@@ -61,13 +61,25 @@ KrView *KrViewOperator::_changedView = 0;
 KrViewProperties::PropertyType KrViewOperator::_changedProperties = KrViewProperties::NoProperty;
 
 
-KrViewOperator::KrViewOperator(KrView *view, QWidget *widget) :
-        _view(view), _widget(widget), _quickSearch(0), _quickFilter(0)
+KrViewOperator::KrViewOperator(KrView *view, KrQuickSearch *quickSearch, QuickFilter *quickFilter) :
+    _view(view), _quickSearch(quickSearch), _quickFilter(quickFilter)
 {
     _saveDefaultSettingsTimer.setSingleShot(true);
     connect(&_saveDefaultSettingsTimer, SIGNAL(timeout()), SLOT(saveDefaultSettings()));
+
     connect(&KrColorCache::getColorCache(), SIGNAL(colorsRefreshed()), SLOT(colorSettingsChanged()));
-    _widget->installEventFilter(this);
+    _view->widget()->installEventFilter(this);
+
+    _quickSearch->setFocusProxy(_view->widget());
+    connect(quickSearch, SIGNAL(textChanged(const QString&)), this, SLOT(quickSearch(const QString&)));
+    connect(quickSearch, SIGNAL(otherMatching(const QString&, int)), this, SLOT(quickSearch(const QString& , int)));
+    connect(quickSearch, SIGNAL(stop(QKeyEvent*)), this, SLOT(stopQuickSearch(QKeyEvent*)));
+    connect(quickSearch, SIGNAL(process(QKeyEvent*)), this, SLOT(handleQuickSearchEvent(QKeyEvent*)));
+
+    _quickFilter->lineEdit()->installEventFilter(this);
+    connect(_quickFilter, SIGNAL(stop()), SLOT(stopQuickFilter()));
+    connect(_quickFilter->lineEdit(), SIGNAL(textEdited(const QString&)), SLOT(quickFilterChanged(const QString&)));
+    connect(_quickFilter->lineEdit(), SIGNAL(returnPressed(const QString&)), _view->widget(), SLOT(setFocus()));
 }
 
 KrViewOperator::~KrViewOperator()
@@ -113,18 +125,6 @@ void KrViewOperator::startDrag()
     emit letsDrag(urls, px);
 }
 
-void KrViewOperator::setQuickSearch(KrQuickSearch *quickSearch)
-{
-    _quickSearch = quickSearch;
-
-    _quickSearch->setFocusProxy(_view->widget());
-
-    connect(quickSearch, SIGNAL(textChanged(const QString&)), this, SLOT(quickSearch(const QString&)));
-    connect(quickSearch, SIGNAL(otherMatching(const QString&, int)), this, SLOT(quickSearch(const QString& , int)));
-    connect(quickSearch, SIGNAL(stop(QKeyEvent*)), this, SLOT(stopQuickSearch(QKeyEvent*)));
-    connect(quickSearch, SIGNAL(process(QKeyEvent*)), this, SLOT(handleQuickSearchEvent(QKeyEvent*)));
-}
-
 void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
 {
     switch (e->key()) {
@@ -164,15 +164,6 @@ void KrViewOperator::stopQuickSearch(QKeyEvent * e)
     }
 }
 
-void KrViewOperator::setQuickFilter(QuickFilter *quickFilter)
-{
-    _quickFilter = quickFilter;
-    _quickFilter->lineEdit()->installEventFilter(this);
-    connect(_quickFilter, SIGNAL(stop()), SLOT(stopQuickFilter()));
-    connect(_quickFilter->lineEdit(), SIGNAL(textEdited(const QString&)), SLOT(quickFilterChanged(const QString&)));
-    connect(_quickFilter->lineEdit(), SIGNAL(returnPressed(const QString&)), _view->widget(), SLOT(setFocus()));
-}
-
 void KrViewOperator::quickFilterChanged(const QString &text)
 {
     KConfigGroup grpSvr(_view->_config, "Look&Feel");
@@ -192,7 +183,7 @@ void KrViewOperator::startQuickFilter()
 void KrViewOperator::stopQuickFilter(bool refreshView)
 {
     if(_quickFilter->lineEdit()->hasFocus())
-        _widget->setFocus();
+        _view->widget()->setFocus();
     _quickFilter->hide();
     _quickFilter->lineEdit()->clear();
     _quickFilter->setMatch(true);
@@ -259,7 +250,7 @@ bool KrViewOperator::eventFilter(QObject *watched, QEvent *event)
             event->accept();
             return true;
         }
-        else if(watched == _widget && !_quickSearch->isHidden())
+        else if(watched == _view->widget() && !_quickSearch->isHidden())
             return _quickSearch->shortcutOverride(ke);
     }
     return false;
@@ -469,14 +460,14 @@ KrView::~KrView()
         qFatal("A class inheriting KrView didn't delete _operator!");
 }
 
-void KrView::init()
+void KrView::init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter)
 {
     // sanity checks:
     if (!_widget)
         qFatal("_widget must be set during construction of KrView inheritors");
     // ok, continue
     initProperties();
-    _operator = createOperator();
+    _operator = createOperator(quickSearch, quickFilter);
     setup();
     restoreDefaultSettings();
     KConfigGroup grp(_config, _instance.name());
@@ -1113,9 +1104,9 @@ bool KrView::quickSearchMatch(const KFileItem &item, QString term)
     return (rx.indexIn(item.name()) == 0);
 }
 
-KrViewOperator *KrView::createOperator()
+KrViewOperator *KrView::createOperator(KrQuickSearch *quickSearch, QuickFilter *quickFilter)
 {
-    return new KrViewOperator(this, _widget);
+    return new KrViewOperator(this, quickSearch, quickFilter);
 }
 
 void KrView::prepareForPassive()

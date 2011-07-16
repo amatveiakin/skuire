@@ -240,12 +240,9 @@ KrSearchDialog::KrSearchDialog(QString profile, QWidget* parent)
     resultLayout->addWidget(quickFilter, 2, 0);
     // the view
     resultView = KrViewFactory::createView(RESULTVIEW_TYPE, resultTab, krConfig);
-    resultView->init();
+    resultView->init(this, quickSearch, quickFilter);
     resultView->restoreSettings(KConfigGroup(&group, "ResultView"));
     resultView->enableUpdateDefaultSettings(false);
-    resultView->setMainWindow(this);
-    resultView->op()->setQuickSearch(quickSearch);
-    resultView->op()->setQuickFilter(quickFilter);
     resultView->prepareForActive();
     resultView->refreshColors();
     resultView->setDirLister(result);

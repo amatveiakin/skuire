@@ -405,10 +405,7 @@ int ListPanel::defaultPanelType()
 void ListPanel::createView()
 {
     view = KrViewFactory::createView(panelType, splt, krConfig);
-    view->init();
-    view->setMainWindow(krApp);
-    view->op()->setQuickSearch(quickSearch);
-    view->op()->setQuickFilter(quickFilter);
+    view->init(krApp, quickSearch, quickFilter);
 
     // KrViewFactory may create a different view type than requested
     panelType = view->instance()->id();
