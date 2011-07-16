@@ -807,7 +807,7 @@ void KrView::setFileIconSize(int size)
     op()->emitRefreshActions();
 }
 
-int KrView::defaultFileIconSize()
+int KrView::defaultFileIconSize() const
 {
     KConfigGroup grpSvr(_config, _instance.name());
     return grpSvr.readEntry("IconSize", _FilelistIconSize).toInt();

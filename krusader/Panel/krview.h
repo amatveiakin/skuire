@@ -213,12 +213,13 @@ public:
     static const IconSizes iconSizes;
 
 protected:
+    enum ItemSpec { First, Last, Prev, Next, UpUrl };
+
     virtual void initProperties();
     virtual KrViewProperties * createViewProperties() {
         return new KrViewProperties();
     }
     virtual KrViewOperator *createOperator(KrQuickSearch *quickSearch, QuickFilter *quickFilter);
-    virtual void setup() = 0;
 
     ///////////////////////////////////////////////////////
     // Every view must implement the following functions //
@@ -273,18 +274,28 @@ public:
     virtual void showContextMenu() = 0;
 
 protected:
+    virtual void setup() = 0;
     virtual const Item *itemFromUrl(KUrl url) const = 0;
     virtual void copySettingsFrom(KrView *other) = 0;
     virtual void updatePreviews();
     virtual void clear() = 0;
     virtual bool quickSearch(const QString &term, int direction) = 0;
     virtual void gotPreview(KFileItem item, QPixmap preview) = 0;
+    virtual KIO::filesize_t calcSize() = 0;
+    virtual KIO::filesize_t calcSelectedSize() = 0;
+    virtual void setCurrentItem(ItemSpec item) = 0;
+    virtual const Item *dummyItem() const = 0;
+    virtual void refreshIcons() = 0;
 
-public:
+    virtual void newItems(const KFileItemList& items) = 0;
+    virtual void itemsDeleted(const KFileItemList& items) = 0;
+    virtual void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items) = 0;
+
     //////////////////////////////////////////////////////
     // the following functions are already implemented, //
     // and normally - should NOT be re-implemented.     //
     //////////////////////////////////////////////////////
+public:
     virtual void selectAllIncludingDirs() {
         changeSelection(KRQuery("*"), true, true);
     }
@@ -308,6 +319,64 @@ public:
     virtual void applySettingsToOthers();
 
     virtual void setDirLister(AbstractDirLister *lister);
+
+    /////////////////////////////////////////////////////////////
+    // the following functions have a default and minimalistic //
+    // implementation, and may be re-implemented if needed     //
+    /////////////////////////////////////////////////////////////
+    virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending) {
+        sortModeUpdated(sortColumn, descending);
+    }
+    virtual const KRQuery& filterMask() const {
+        return _properties->filterMask;
+    }
+    virtual KrViewProperties::FilterSpec filter() const {
+        return _properties->filter;
+    }
+    virtual void setFilter(KrViewProperties::FilterSpec filter);
+    virtual void setFilter(KrViewProperties::FilterSpec filter, FilterSettings customFilter, bool applyToDirs);
+    virtual void customSelection(bool select);
+    virtual int defaultFileIconSize() const;
+    virtual void setFileIconSize(int size);
+    virtual void setDefaultFileIconSize() {
+        setFileIconSize(defaultFileIconSize());
+    }
+    virtual void zoomIn();
+    virtual void zoomOut();
+
+    // save this view's settings to be restored after restart
+    virtual void saveSettings(KConfigGroup grp,
+        KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
+
+    inline QWidget *widget() {
+        return _widget;
+    }
+    inline int fileIconSize() const {
+        return _fileIconSize;
+    }
+    inline bool isFocused() const {
+        return _focused;
+    }
+
+    /////////////////////////////////////////////////////////////
+    // non-virtual functions                                   //
+    /////////////////////////////////////////////////////////////
+
+    // save this view's settings as default for new views of this type
+    void saveDefaultSettings(KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
+    // restore the default settings for this view type
+    void restoreDefaultSettings();
+    // call this to restore this view's settings after restart
+    void restoreSettings(KConfigGroup grp);
+
+    void saveSelection();
+    void restoreSelection();
+    bool canRestoreSelection() {
+        return !_savedSelection.isEmpty();
+    }
+    void clearSavedSelection();
+
+    bool isFiltered(const KFileItem &item) const;
 
     void changeSelection(const KRQuery& filter, bool select);
     void enableUpdateDefaultSettings(bool enable);
@@ -356,60 +425,6 @@ public:
     }
 
     /////////////////////////////////////////////////////////////
-    // the following functions have a default and minimalistic //
-    // implementation, and may be re-implemented if needed     //
-    /////////////////////////////////////////////////////////////
-    virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending) {
-        sortModeUpdated(sortColumn, descending);
-    }
-    virtual const KRQuery& filterMask() const {
-        return _properties->filterMask;
-    }
-    virtual KrViewProperties::FilterSpec filter() const {
-        return _properties->filter;
-    }
-    virtual void setFilter(KrViewProperties::FilterSpec filter);
-    virtual void setFilter(KrViewProperties::FilterSpec filter, FilterSettings customFilter, bool applyToDirs);
-    virtual void customSelection(bool select);
-    virtual int defaultFileIconSize();
-    virtual void setFileIconSize(int size);
-    virtual void setDefaultFileIconSize() {
-        setFileIconSize(defaultFileIconSize());
-    }
-    virtual void zoomIn();
-    virtual void zoomOut();
-
-    // save this view's settings to be restored after restart
-    virtual void saveSettings(KConfigGroup grp,
-        KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
-
-    inline QWidget *widget() {
-        return _widget;
-    }
-    inline int fileIconSize() const {
-        return _fileIconSize;
-    }
-    inline bool isFocused() const {
-        return _focused;
-    }
-
-    // save this view's settings as default for new views of this type
-    void saveDefaultSettings(KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
-    // restore the default settings for this view type
-    void restoreDefaultSettings();
-    // call this to restore this view's settings after restart
-    void restoreSettings(KConfigGroup grp);
-
-    void saveSelection();
-    void restoreSelection();
-    bool canRestoreSelection() {
-        return !_savedSelection.isEmpty();
-    }
-    void clearSavedSelection();
-
-    bool isFiltered(const KFileItem &item) const;
-
-    /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
 public:
@@ -427,20 +442,9 @@ public:
     /////////////////////////////////////////////////////////////
 
 protected:
-    enum ItemSpec { First, Last, Prev, Next, UpUrl };
-
     KrView(KrViewInstance &instance, KConfig *cfg);
 
     virtual void doRestoreSettings(KConfigGroup grp);
-    virtual KIO::filesize_t calcSize() = 0;
-    virtual KIO::filesize_t calcSelectedSize() = 0;
-    virtual void setCurrentItem(ItemSpec item) = 0;
-    virtual const Item *dummyItem() const = 0;
-    virtual void refreshIcons() = 0;
-
-    virtual void newItems(const KFileItemList& items) = 0;
-    virtual void itemsDeleted(const KFileItemList& items) = 0;
-    virtual void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items) = 0;
 
     bool quickSearchMatch(const KFileItem &item, QString term);
     void setSelected(const Item *item, bool select);
