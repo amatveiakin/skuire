@@ -374,6 +374,8 @@ ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager, KConfigGrou
 ListPanel::~ListPanel()
 {
     inlineRefreshCancel();
+    // otherwise eventFilter() might be called during destruction and crash
+    view->widget()->removeEventFilter(this);
     delete view;
     view = 0;
     delete func;
@@ -458,6 +460,9 @@ void ListPanel::changeType(int type)
 
         panelType = type;
         quickSearch->setFocusProxy(0);
+
+        // otherwise eventFilter() might be called during destruction and crash
+        view->widget()->removeEventFilter(this);
         delete view;
 
         createView();
