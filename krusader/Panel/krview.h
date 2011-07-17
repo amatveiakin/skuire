@@ -245,6 +245,7 @@ public:
     virtual void refreshColors() = 0;
     virtual void redraw() = 0;
     virtual void showContextMenu() = 0;
+    virtual QWidget *widget() = 0;
 
     /////////////////////////////////////////////////////////////
     // virtual functions                                       //
@@ -280,9 +281,6 @@ public:
     /////////////////////////////////////////////////////////////
     // non-virtual functions                                   //
     /////////////////////////////////////////////////////////////
-    inline QWidget *widget() {
-        return _widget;
-    }
     inline int fileIconSize() const {
         return _fileIconSize;
     }
@@ -437,9 +435,6 @@ protected:
     void sortModeUpdated(KrViewProperties::ColumnType sortColumn, bool descending);
     void saveSortMode(KConfigGroup &group);
     void restoreSortMode(KConfigGroup &group);
-    inline void setWidget(QWidget *w) {
-        _widget = w;
-    }
     KrViewOperator* op() const {
         return _operator;
     }
@@ -448,7 +443,6 @@ protected:
     AbstractDirLister *_dirLister;
     KConfig *_config;
     QWidget *_mainWindow;
-    QWidget *_widget;
     KUrl::List _savedSelection;
     KUrl _urlToMakeCurrent;
     QString _nameToMakeCurrentIfAdded;

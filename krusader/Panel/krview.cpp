@@ -443,7 +443,7 @@ const KrView::IconSizes KrView::iconSizes;
 
 
 KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
-    _instance(instance), _dirLister(0), _config(cfg), _mainWindow(0), _widget(0),
+    _instance(instance), _dirLister(0), _config(cfg), _mainWindow(0),
     _properties(0), _focused(false),
     _previews(0), _fileIconSize(0), _updateDefaultSettings(false)
 {
@@ -465,10 +465,7 @@ KrView::~KrView()
 
 void KrView::init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter)
 {
-    // sanity checks:
-    if (!_widget)
-        qFatal("_widget must be set during construction of KrView inheritors");
-    // ok, continue
+    _mainWindow = mainWindow;
     initProperties();
     _operator = createOperator(quickSearch, quickFilter);
     setup();
@@ -981,7 +978,7 @@ void KrView::setFilter(KrViewProperties::FilterSpec filter)
         break;
     case KrViewProperties::Custom :
         {
-            FilterDialog dialog(_widget, i18n("Filter Files"), QStringList(i18n("Apply filter to directories")), false);
+            FilterDialog dialog(widget(), i18n("Filter Files"), QStringList(i18n("Apply filter to directories")), false);
             dialog.checkExtraOption(i18n("Apply filter to directories"), applyToDirs);
             if(rememberSettings)
                 dialog.applySettings(_properties->filterSettings);

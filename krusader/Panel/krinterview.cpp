@@ -30,7 +30,6 @@ KrInterView::KrInterView(KrViewInstance &instance, KConfig *cfg,
                          QAbstractItemView *itemView) :
         KrView(instance, cfg), _itemView(itemView), _mouseHandler(0)
 {
-    setWidget(_itemView);
 }
 
 KrInterView::~KrInterView()

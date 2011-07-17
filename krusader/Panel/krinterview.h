@@ -72,6 +72,9 @@ public:
     virtual void pageUp();
     virtual QString currentDescription();
     virtual bool quickSearch(const QString &term, int direction);
+    virtual QWidget *widget() {
+        return _itemView;
+    }
 
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();
