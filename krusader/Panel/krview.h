@@ -50,7 +50,6 @@ class KrView;
 class KrQuickSearch;
 class KrPreviews;
 class KrViewInstance;
-class KrViewOperator;
 class QuickFilter;
 class AbstractDirLister;
 class CalcSpaceClient;
@@ -140,12 +139,13 @@ class KrView
     // notes: constructor does as little as possible, setup() does the rest. esp, note that
     // if you need something from operator or properties, move it into setup()
 
-    friend class KrViewOperator;
+    friend class Operator;
 
 public:
     class Item;
     class EmitterBase;
     class Emitter;
+    class Operator;
 
     class IconSizes : public QVector<int>
     {
@@ -376,7 +376,7 @@ protected:
         return new KrViewProperties();
     }
     virtual void initProperties();
-    virtual KrViewOperator *createOperator(KrQuickSearch *quickSearch, QuickFilter *quickFilter);
+    virtual Operator *createOperator(KrQuickSearch *quickSearch, QuickFilter *quickFilter);
     virtual void doRestoreSettings(KConfigGroup grp);
 
     bool quickSearchMatch(const KFileItem &item, QString term);
@@ -385,7 +385,7 @@ protected:
     void sortModeUpdated(KrViewProperties::ColumnType sortColumn, bool descending);
     void saveSortMode(KConfigGroup &group);
     void restoreSortMode(KConfigGroup &group);
-    KrViewOperator* op() const {
+    Operator* op() const {
         return _operator;
     }
 
@@ -397,7 +397,7 @@ protected:
     KUrl _urlToMakeCurrent;
     QString _nameToMakeCurrentIfAdded;
     KrViewProperties *_properties;
-    KrViewOperator *_operator;
+    Operator *_operator;
     Emitter *_emitter;
     bool _focused;
     KrPreviews *_previews;
@@ -549,12 +549,12 @@ public:
 // 2. if the view HAS A widget (a krview-son has a member of klistview)
 // this is done by specifying the view and the widget in the constructor,
 // even if they are actually the same object (specify it twice in that case)
-class KrViewOperator : public QObject
+class KrView::Operator : public QObject
 {
     Q_OBJECT
 public:
-    KrViewOperator(KrView *view, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
-    ~KrViewOperator();
+    Operator(KrView *view, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
+    ~Operator();
 
     virtual bool eventFilter(QObject *watched, QEvent *event);
 

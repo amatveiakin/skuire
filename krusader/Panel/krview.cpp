@@ -57,11 +57,11 @@
 
 // ----------------------------- operator
 
-KrView *KrViewOperator::_changedView = 0;
-KrViewProperties::PropertyType KrViewOperator::_changedProperties = KrViewProperties::NoProperty;
+KrView *KrView::Operator::_changedView = 0;
+KrViewProperties::PropertyType KrView::Operator::_changedProperties = KrViewProperties::NoProperty;
 
 
-KrViewOperator::KrViewOperator(KrView *view, KrQuickSearch *quickSearch, QuickFilter *quickFilter) :
+KrView::Operator::Operator(KrView *view, KrQuickSearch *quickSearch, QuickFilter *quickFilter) :
     _view(view), _quickSearch(quickSearch), _quickFilter(quickFilter)
 {
     _saveDefaultSettingsTimer.setSingleShot(true);
@@ -82,13 +82,13 @@ KrViewOperator::KrViewOperator(KrView *view, KrQuickSearch *quickSearch, QuickFi
     connect(_quickFilter->lineEdit(), SIGNAL(returnPressed(const QString&)), _view->widget(), SLOT(setFocus()));
 }
 
-KrViewOperator::~KrViewOperator()
+KrView::Operator::~Operator()
 {
     if(_changedView == _view)
         saveDefaultSettings();
 }
 
-void KrViewOperator::fileDeleted(const QString& name)
+void KrView::Operator::fileDeleted(const QString& name)
 {
     KFileItem it;
     foreach(KFileItem item, _view->getItems())
@@ -104,7 +104,7 @@ void KrViewOperator::fileDeleted(const QString& name)
     _view->itemsDeleted(list);
 }
 
-void KrViewOperator::refreshItem(KFileItem item)
+void KrView::Operator::refreshItem(KFileItem item)
 {
     QList< QPair<KFileItem, KFileItem> > list;
     list << QPair<KFileItem, KFileItem> (item, item);
@@ -112,7 +112,7 @@ void KrViewOperator::refreshItem(KFileItem item)
     _view->refreshItems(list);
 }
 
-void KrViewOperator::startDrag()
+void KrView::Operator::startDrag()
 {
     KUrl::List urls = _view->getSelectedUrls(true);
     if (urls.empty())
@@ -125,7 +125,7 @@ void KrViewOperator::startDrag()
     _view->_emitter->emitLetsDrag(urls, px);
 }
 
-void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
+void KrView::Operator::handleQuickSearchEvent(QKeyEvent * e)
 {
     switch (e->key()) {
     case Qt::Key_Insert: {
@@ -149,12 +149,12 @@ void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
     }
 }
 
-void KrViewOperator::quickSearch(const QString & str, int direction)
+void KrView::Operator::quickSearch(const QString & str, int direction)
 {
     _quickSearch->setMatch(_view->quickSearch(str, direction));
 }
 
-void KrViewOperator::stopQuickSearch(QKeyEvent * e)
+void KrView::Operator::stopQuickSearch(QKeyEvent * e)
 {
     if (_quickSearch) {
         _quickSearch->hide();
@@ -164,7 +164,7 @@ void KrViewOperator::stopQuickSearch(QKeyEvent * e)
     }
 }
 
-void KrViewOperator::quickFilterChanged(const QString &text)
+void KrView::Operator::quickFilterChanged(const QString &text)
 {
     KConfigGroup grpSvr(_view->_config, "Look&Feel");
     bool caseSensitive = grpSvr.readEntry("Case Sensitive Quicksearch", _CaseSensitiveQuicksearch);
@@ -174,13 +174,13 @@ void KrViewOperator::quickFilterChanged(const QString &text)
     _quickFilter->setMatch(_view->count() || !_view->_dirLister->numItems());
 }
 
-void KrViewOperator::startQuickFilter()
+void KrView::Operator::startQuickFilter()
 {
     _quickFilter->show();
     _quickFilter->lineEdit()->setFocus();
 }
 
-void KrViewOperator::stopQuickFilter(bool refreshView)
+void KrView::Operator::stopQuickFilter(bool refreshView)
 {
     if(_quickFilter->lineEdit()->hasFocus())
         _view->widget()->setFocus();
@@ -192,14 +192,14 @@ void KrViewOperator::stopQuickFilter(bool refreshView)
         _view->refresh();
 }
 
-void KrViewOperator::prepareForPassive()
+void KrView::Operator::prepareForPassive()
 {
     if (_quickSearch && !_quickSearch->isHidden()) {
         stopQuickSearch(0);
     }
 }
 
-bool KrViewOperator::handleKeyEvent(QKeyEvent * e)
+bool KrView::Operator::handleKeyEvent(QKeyEvent * e)
 {
     if (!_quickSearch->isHidden()) {
         _quickSearch->myKeyPressEvent(e);
@@ -208,7 +208,7 @@ bool KrViewOperator::handleKeyEvent(QKeyEvent * e)
     return false;
 }
 
-void KrViewOperator::settingsChanged(KrViewProperties::PropertyType properties)
+void KrView::Operator::settingsChanged(KrViewProperties::PropertyType properties)
 {
     if(_view->_updateDefaultSettings) {
         if(_changedView != _view)
@@ -219,7 +219,7 @@ void KrViewOperator::settingsChanged(KrViewProperties::PropertyType properties)
     }
 }
 
-void KrViewOperator::saveDefaultSettings()
+void KrView::Operator::saveDefaultSettings()
 {
     _saveDefaultSettingsTimer.stop();
     if(_changedView)
@@ -228,7 +228,7 @@ void KrViewOperator::saveDefaultSettings()
     _changedView = 0;
 }
 
-bool KrViewOperator::eventFilter(QObject *watched, QEvent *event)
+bool KrView::Operator::eventFilter(QObject *watched, QEvent *event)
 {
     if(event->type() == QEvent::KeyPress) {
         QKeyEvent *ke = static_cast<QKeyEvent*>(event);
@@ -1106,9 +1106,9 @@ bool KrView::quickSearchMatch(const KFileItem &item, QString term)
     return (rx.indexIn(item.name()) == 0);
 }
 
-KrViewOperator *KrView::createOperator(KrQuickSearch *quickSearch, QuickFilter *quickFilter)
+KrView::Operator *KrView::createOperator(KrQuickSearch *quickSearch, QuickFilter *quickFilter)
 {
-    return new KrViewOperator(this, quickSearch, quickFilter);
+    return new Operator(this, quickSearch, quickFilter);
 }
 
 void KrView::prepareForPassive()
