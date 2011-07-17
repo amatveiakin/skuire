@@ -143,6 +143,7 @@ class KrView
     friend class KrViewOperator;
 
 public:
+    class Item;
     class EmitterBase;
     class Emitter;
 
@@ -152,57 +153,6 @@ public:
         IconSizes() : QVector<int>() {
             *this << 12 << 16 << 22 << 32 << 48 << 64 << 128 << 256;
         }
-    };
-
-    class Item : public KFileItem
-    {
-    public:
-        Item();
-        Item(const KFileItem &fileItem, KrView *view, bool isDummy = false);
-        Item(const Item &other);
-        Item &operator=(const Item &other);
-
-        const QString &iconName() const {
-            if(_iconName.isNull())
-                getIconName();
-            return _iconName;
-        }
-        QString krPermissionsString() const {
-            if(_krPermissionsString.isNull())
-                getKrPermissionsString();
-            return _krPermissionsString;
-        }
-        bool isBrokenLink() const {
-            return _brokenLink;
-        }
-        KIO::filesize_t size() const {
-            return _calculatedSize ? _calculatedSize : KFileItem::size();
-        }
-        void setCalculatedSize(KIO::filesize_t s) {
-            _calculatedSize = s;
-        }
-        const QPixmap &icon() const {
-            if(_iconActive.isNull())
-                loadIcon();
-            return _view->isFocused() ? _iconActive : _iconInactive;
-        }
-        void clearIcon();
-        void setIcon(QPixmap icon);
-
-    protected:
-        void init(KrView *view, bool isDummy);
-        void getIconName() const;
-        void getKrPermissionsString() const;
-        void loadIcon() const;
-        QPixmap loadIcon(bool active) const;
-        QPixmap processIcon(QPixmap icon, bool active) const;
-
-        mutable QString _iconName;
-        mutable QString  _krPermissionsString;
-        bool _brokenLink;
-        KIO::filesize_t _calculatedSize;
-        mutable QPixmap _iconActive, _iconInactive;
-        KrView *_view;
     };
 
     /////////////////////////////////////////////////////////////
@@ -454,6 +404,58 @@ protected:
     int _fileIconSize;
     bool _updateDefaultSettings;
     QRegExp _quickFilterMask;
+};
+
+
+class KrView::Item : public KFileItem
+{
+public:
+    Item();
+    Item(const KFileItem &fileItem, KrView *view, bool isDummy = false);
+    Item(const Item &other);
+    Item &operator=(const Item &other);
+
+    const QString &iconName() const {
+        if(_iconName.isNull())
+            getIconName();
+        return _iconName;
+    }
+    QString krPermissionsString() const {
+        if(_krPermissionsString.isNull())
+            getKrPermissionsString();
+        return _krPermissionsString;
+    }
+    bool isBrokenLink() const {
+        return _brokenLink;
+    }
+    KIO::filesize_t size() const {
+        return _calculatedSize ? _calculatedSize : KFileItem::size();
+    }
+    void setCalculatedSize(KIO::filesize_t s) {
+        _calculatedSize = s;
+    }
+    const QPixmap &icon() const {
+        if(_iconActive.isNull())
+            loadIcon();
+        return _view->isFocused() ? _iconActive : _iconInactive;
+    }
+    void clearIcon();
+    void setIcon(QPixmap icon);
+
+protected:
+    void init(KrView *view, bool isDummy);
+    void getIconName() const;
+    void getKrPermissionsString() const;
+    void loadIcon() const;
+    QPixmap loadIcon(bool active) const;
+    QPixmap processIcon(QPixmap icon, bool active) const;
+
+    mutable QString _iconName;
+    mutable QString  _krPermissionsString;
+    bool _brokenLink;
+    KIO::filesize_t _calculatedSize;
+    mutable QPixmap _iconActive, _iconInactive;
+    KrView *_view;
 };
 
 
