@@ -299,19 +299,6 @@ public:
     virtual void selectAllIncludingDirs() {
         changeSelection(KRQuery("*"), true, true);
     }
-    virtual void select(const KRQuery& filter = KRQuery("*")) {
-        changeSelection(filter, true);
-    }
-    virtual void unselect(const KRQuery& filter = KRQuery("*")) {
-        changeSelection(filter, false);
-    }
-    virtual QString statistics();
-    virtual const KrViewProperties* properties() const {
-        return _properties;
-    }
-    virtual KrViewOperator* op() const {
-        return _operator;
-    }
     virtual void showPreviews(bool show);
     virtual bool previewsShown() {
         return _previews != 0;
@@ -327,26 +314,16 @@ public:
     virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending) {
         sortModeUpdated(sortColumn, descending);
     }
-    virtual const KRQuery& filterMask() const {
-        return _properties->filterMask;
-    }
-    virtual KrViewProperties::FilterSpec filter() const {
-        return _properties->filter;
-    }
-    virtual void setFilter(KrViewProperties::FilterSpec filter);
-    virtual void setFilter(KrViewProperties::FilterSpec filter, FilterSettings customFilter, bool applyToDirs);
-    virtual void customSelection(bool select);
-    virtual int defaultFileIconSize() const;
+
     virtual void setFileIconSize(int size);
-    virtual void setDefaultFileIconSize() {
-        setFileIconSize(defaultFileIconSize());
-    }
-    virtual void zoomIn();
-    virtual void zoomOut();
 
     // save this view's settings to be restored after restart
     virtual void saveSettings(KConfigGroup grp,
         KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
+
+    /////////////////////////////////////////////////////////////
+    // non-virtual functions                                   //
+    /////////////////////////////////////////////////////////////
 
     inline QWidget *widget() {
         return _widget;
@@ -357,10 +334,6 @@ public:
     inline bool isFocused() const {
         return _focused;
     }
-
-    /////////////////////////////////////////////////////////////
-    // non-virtual functions                                   //
-    /////////////////////////////////////////////////////////////
 
     // save this view's settings as default for new views of this type
     void saveDefaultSettings(KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
@@ -377,8 +350,15 @@ public:
     void clearSavedSelection();
 
     bool isFiltered(const KFileItem &item) const;
+    const KRQuery& filterMask() const {
+        return _properties->filterMask;
+    }
+    KrViewProperties::FilterSpec filter() const {
+        return _properties->filter;
+    }
+    void setFilter(KrViewProperties::FilterSpec filter);
+    void setFilter(KrViewProperties::FilterSpec filter, FilterSettings customFilter, bool applyToDirs);
 
-    void changeSelection(const KRQuery& filter, bool select);
     void enableUpdateDefaultSettings(bool enable);
     KUrl currentUrl() {
         return currentItem().isNull() ? KUrl() : currentItem().url();
@@ -389,6 +369,14 @@ public:
     KUrl::List getSelectedUrls(bool currentUrlIfNoSelection) {
         return getSelectedItems(currentUrlIfNoSelection).urlList();
     }
+    void select(const KRQuery& filter = KRQuery("*")) {
+        changeSelection(filter, true);
+    }
+    void unselect(const KRQuery& filter = KRQuery("*")) {
+        changeSelection(filter, false);
+    }
+    void customSelection(bool select);
+    void changeSelection(const KRQuery& filter, bool select);
     void setSelection(KUrl::List urls) {
         changeSelection(urls, true, true);
     }
@@ -423,6 +411,20 @@ public:
     void setUrlToMakeCurrent(KUrl url) {
         _urlToMakeCurrent = url;
     }
+    QString statistics();
+    KrViewOperator* op() const {
+        return _operator;
+    }
+    const KrViewProperties* properties() const {
+        return _properties;
+    }
+
+    int defaultFileIconSize() const;
+    void setDefaultFileIconSize() {
+        setFileIconSize(defaultFileIconSize());
+    }
+    void zoomIn();
+    void zoomOut();
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
