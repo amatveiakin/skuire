@@ -168,7 +168,7 @@ void ViewActions::focusPanel()
 
 void ViewActions::quickFilter()
 {
-    view()->op()->startQuickFilter();
+    view()->startQuickFilter();
 }
 
 void ViewActions::togglePreviews(bool show)

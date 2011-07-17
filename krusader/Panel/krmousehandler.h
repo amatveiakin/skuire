@@ -22,11 +22,12 @@
 #include <QPoint>
 #include <QTimer>
 #include <QTime>
-#include "kfileitem.h"
+#include <kfileitem.h>
+
+#include "krview.h"
 
 class QMouseEvent;
 class QWheelEvent;
-class KrView;
 class QDragEnterEvent;
 class QDragMoveEvent;
 class QDragLeaveEvent;
@@ -37,7 +38,7 @@ class KrMouseHandler : public QObject
     Q_OBJECT
 
 public:
-    KrMouseHandler(KrView * view);
+    KrMouseHandler(KrView * view, KrView::Emitter *emitter);
 
     bool mousePressEvent(QMouseEvent *e);
     bool mouseReleaseEvent(QMouseEvent *e);
@@ -57,9 +58,11 @@ public slots:
 
 signals:
     void renameCurrentItem();
+    void startDrag();
 
 protected:
     KrView     * _view;
+    KrView::Emitter *_emitter;
     KFileItem    _rightClickedItem;
     KFileItem    _clickedItem;
     bool         _rightClickSelects;

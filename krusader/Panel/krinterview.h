@@ -120,6 +120,7 @@ protected:
     // KrCalcSpaceDialog::Client implementation
     virtual void updateItemSize(KUrl url, KIO::filesize_t newSize);
 
+    virtual void setup();
     virtual void setCurrentItem(ItemSpec item);
     virtual KIO::filesize_t calcSize();
     virtual KIO::filesize_t calcSelectedSize();

@@ -150,6 +150,8 @@ void KrInterDetailedView::updateView()
 
 void KrInterDetailedView::setup()
 {
+    KrInterView::setup();
+
     setSortMode(_properties->sortColumn, (_properties->sortOptions & KrViewProperties::Descending));
     setSortingEnabled(true);
 }

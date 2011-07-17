@@ -31,7 +31,7 @@ KrInterView::KrInterView(KrViewInstance &instance, KConfig *cfg,
         KrView(instance, cfg), _itemView(itemView), _mouseHandler(0)
 {
     _model = new KrVfsModel(this);
-    _mouseHandler = new KrMouseHandler(this);
+    _mouseHandler = new KrMouseHandler(this, _emitter);
 }
 
 KrInterView::~KrInterView()
@@ -45,6 +45,14 @@ KrInterView::~KrInterView()
     _model = 0;
     delete _mouseHandler;
     _mouseHandler = 0;
+}
+
+void KrInterView::setup()
+{
+    QObject::connect(_model, SIGNAL(renameItem(KFileItem, QString)),
+                     _emitter, SIGNAL(renameItem(KFileItem, QString)));
+    QObject::connect(_mouseHandler, SIGNAL(startDrag()),
+                     op(), SLOT(startDrag()));
 }
 
 void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst)
@@ -73,7 +81,7 @@ void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select, bool clearFi
     else if (mi2.isValid())
         setSelected(_model->itemAt(mi2), (select));
 
-    op()->emitSelectionChanged();
+    _emitter->emitSelectionChanged();
 
     redraw();
 }
@@ -121,7 +129,7 @@ void KrInterView::prepareForActive()
     Item *current = currentViewItem();
     if (current) {
         QString desc = itemDescription(current->url(), current == dummyItem());
-        op()->emitItemDescription(desc);
+        _emitter->emitItemDescription(desc);
     }
 }
 
@@ -271,7 +279,7 @@ void KrInterView::currentChanged(const QModelIndex &current)
 {
     (void)current;
     Item *item = _model->itemAt(_itemView->currentIndex());
-    op()->emitCurrentChanged(item ? *item : KFileItem());
+    _emitter->emitCurrentChanged(item ? *item : KFileItem());
 }
 
 QRect KrInterView::itemRect(KUrl itemUrl)
@@ -317,7 +325,7 @@ void KrInterView::changeSelection(KUrl::List urls, bool select, bool clearFirst)
             setSelected(_model->itemAt(idx), select);
     }
 
-    op()->emitSelectionChanged();
+    _emitter->emitSelectionChanged();
 
     redraw();
 }
@@ -334,7 +342,7 @@ void KrInterView::changeSelection(const KRQuery& filter, bool select, bool inclu
             setSelected(item, select);
     }
 
-    op()->emitSelectionChanged();
+    _emitter->emitSelectionChanged();
 
     redraw();
 }
@@ -352,7 +360,7 @@ void KrInterView::invertSelection()
         setSelected(item, !isSelected(item));
     }
 
-    op()->emitSelectionChanged();
+    _emitter->emitSelectionChanged();
 
     redraw();
 }
@@ -435,7 +443,7 @@ void KrInterView::selectCurrentItem(bool select)
     Item *item = currentViewItem();
     if(item && item != _model->dummyItem())
         setSelected(item, select);
-    op()->emitSelectionChanged();
+    _emitter->emitSelectionChanged();
 }
 
 void KrInterView::pageDown()
@@ -577,7 +585,7 @@ void KrInterView::refresh()
 
     redraw();
 
-    op()->emitSelectionChanged();
+    _emitter->emitSelectionChanged();
 }
 
 void KrInterView::newItems(const KFileItemList& items)
@@ -626,7 +634,7 @@ void KrInterView::newItems(const KFileItemList& items)
         }
     }
 
-    op()->emitSelectionChanged();
+    _emitter->emitSelectionChanged();
 }
 
 void KrInterView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
@@ -655,7 +663,7 @@ void KrInterView::refreshItems(const QList<QPair<KFileItem, KFileItem> >& items)
         _previews->itemsUpdated(updated);
 
     makeCurrentVisible();
-    op()->emitSelectionChanged();
+    _emitter->emitSelectionChanged();
 }
 
 void KrInterView::itemsDeleted(const KFileItemList& items)
@@ -671,5 +679,5 @@ void KrInterView::itemsDeleted(const KFileItemList& items)
     _itemView->setCurrentIndex(_model->removeItems(items));
 
     makeCurrentVisible();
-    op()->emitSelectionChanged();
+    _emitter->emitSelectionChanged();
 }

@@ -96,6 +96,12 @@ A
 #include "../GUI/syncbrowsebutton.h"
 #include "../Queue/queue_mgr.h"
 
+//HACK
+#include "../krusader.h"
+//HACK
+#include "viewactions.h"
+
+
 ListPanelFunc::ListPanelFunc(ListPanel *parent) : QObject(parent),
         panel(parent), vfsP(0), urlManuallyEntered(false)
 {
@@ -244,7 +250,7 @@ void ListPanelFunc::doRefresh()
 
     if (!isEqualUrl) {
         panel->setCursor(Qt::WaitCursor);
-        panel->view->op()->stopQuickFilter(false);
+        panel->view->stopQuickFilter(false);
         panel->view->clearSavedSelection();
     }
 
@@ -1280,7 +1286,7 @@ void ListPanelFunc::refreshActions()
     panel->_actions->actHome->setEnabled(!atHome());
     panel->_actions->actHistoryBackward->setEnabled(history->canGoBack());
     panel->_actions->actHistoryForward->setEnabled(history->canGoForward());
-    panel->view->op()->emitRefreshActions();
+    krApp->viewActions()->refreshActions();
 }
 
 vfs* ListPanelFunc::files()

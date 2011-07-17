@@ -143,6 +143,9 @@ class KrView
     friend class KrViewOperator;
 
 public:
+    class EmitterBase;
+    class Emitter;
+
     class IconSizes : public QVector<int>
     {
     public:
@@ -291,6 +294,8 @@ public:
         return &_instance;
     }
 
+    Emitter *emitter();
+
     // save this view's settings as default for new views of this type
     void saveDefaultSettings(KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
     // restore the default settings for this view type
@@ -368,9 +373,6 @@ public:
         _urlToMakeCurrent = url;
     }
     QString statistics();
-    KrViewOperator* op() const {
-        return _operator;
-    }
     const KrViewProperties* properties() const {
         return _properties;
     }
@@ -380,6 +382,8 @@ public:
     }
     void zoomIn();
     void zoomOut();
+    void startQuickFilter();
+    void stopQuickFilter(bool refreshView = true);
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
@@ -436,6 +440,9 @@ protected:
     inline void setWidget(QWidget *w) {
         _widget = w;
     }
+    KrViewOperator* op() const {
+        return _operator;
+    }
 
     KrViewInstance &_instance;
     AbstractDirLister *_dirLister;
@@ -447,6 +454,7 @@ protected:
     QString _nameToMakeCurrentIfAdded;
     KrViewProperties *_properties;
     KrViewOperator *_operator;
+    Emitter *_emitter;
     bool _focused;
     KrPreviews *_previews;
     int _fileIconSize;
@@ -455,25 +463,37 @@ protected:
 };
 
 
-// operator can handle two ways of doing things:
-// 1. if the view is a widget (inherits krview and klistview for example)
-// 2. if the view HAS A widget (a krview-son has a member of klistview)
-// this is done by specifying the view and the widget in the constructor,
-// even if they are actually the same object (specify it twice in that case)
-class KrViewOperator: public QObject
+class KrView::EmitterBase : public QObject
 {
     Q_OBJECT
+signals:
+    void currentChanged(KFileItem item);
+    void renameItem(KFileItem item, QString newName);
+    void executed(KFileItem item);
+    void goInside(KFileItem item);
+    void middleButtonClicked(KFileItem item, bool itemIsUpUrl);
+    void calcSpace(KFileItem item);
+    void selectionChanged();
+    void gotDrop(QDropEvent *e);
+    void letsDrag(KUrl::List urls, QPixmap icon);
+    void itemDescription(QString &desc);
+    void contextMenu(const QPoint &point);
+    void emptyContextMenu(const QPoint& point);
+    void needFocus();
+    void previewJobStarted(KJob *job);
+    void goHome();
+    void deleteFiles(bool reallyDelete);
+    void dirUp();
+    void refreshActions();
+};
+
+
+class KrView::Emitter : public KrView::EmitterBase
+{
 public:
-    KrViewOperator(KrView *view, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
-    ~KrViewOperator();
-
-    virtual bool eventFilter(QObject *watched, QEvent *event);
-
-    KrView *view() const {
-        return _view;
+    void emitSelectionChanged() {
+        emit selectionChanged();
     }
-    void startDrag();
-
     void emitCurrentChanged(KFileItem item) {
         emit currentChanged(item);
     }
@@ -525,6 +545,26 @@ public:
     void emitLetsDrag(KUrl::List urls, QPixmap icon) {
         emit letsDrag(urls, icon);
     }
+};
+
+
+// operator can handle two ways of doing things:
+// 1. if the view is a widget (inherits krview and klistview for example)
+// 2. if the view HAS A widget (a krview-son has a member of klistview)
+// this is done by specifying the view and the widget in the constructor,
+// even if they are actually the same object (specify it twice in that case)
+class KrViewOperator : public QObject
+{
+    Q_OBJECT
+public:
+    KrViewOperator(KrView *view, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
+    ~KrViewOperator();
+
+    virtual bool eventFilter(QObject *watched, QEvent *event);
+
+    KrView *view() const {
+        return _view;
+    }
 
     void prepareForPassive();
 
@@ -536,9 +576,6 @@ public:
     void settingsChanged(KrViewProperties::PropertyType properties);
 
 public slots:
-    void emitSelectionChanged() {
-        emit selectionChanged();
-    }
     void quickSearch(const QString &, int = 0);
     void stopQuickSearch(QKeyEvent*);
     void handleQuickSearchEvent(QKeyEvent*);
@@ -546,25 +583,7 @@ public slots:
     void startQuickFilter();
     void stopQuickFilter(bool refreshView = true);
 
-signals:
-    void currentChanged(KFileItem item);
-    void renameItem(KFileItem item, QString newName);
-    void executed(KFileItem item);
-    void goInside(KFileItem item);
-    void middleButtonClicked(KFileItem item, bool itemIsUpUrl);
-    void calcSpace(KFileItem item);
-    void selectionChanged();
-    void gotDrop(QDropEvent *e);
-    void letsDrag(KUrl::List urls, QPixmap icon);
-    void itemDescription(QString &desc);
-    void contextMenu(const QPoint &point);
-    void emptyContextMenu(const QPoint& point);
-    void needFocus();
-    void previewJobStarted(KJob *job);
-    void goHome();
-    void deleteFiles(bool reallyDelete);
-    void dirUp();
-    void refreshActions();
+    void startDrag();
 
 protected slots:
     void quickFilterChanged(const QString &text);

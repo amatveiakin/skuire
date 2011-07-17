@@ -93,6 +93,8 @@ void KrInterBriefView::updateView()
 
 void KrInterBriefView::setup()
 {
+    KrInterView::setup();
+
     _header = new QHeaderView(Qt::Horizontal, this);
     _header->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
     _header->setParent(this);
@@ -142,7 +144,7 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
                 KrView::Item *item = _model->itemAt(row);
                 setSelected(item, !isSelected(item));
             }
-            op()->emitSelectionChanged();
+            _emitter->emitSelectionChanged();
         }
 
         if (newCurrentRow >= 0) {
@@ -171,7 +173,7 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
                 KrView::Item *item = _model->itemAt(row);
                 setSelected(item, !isSelected(item));
             }
-            op()->emitSelectionChanged();
+            _emitter->emitSelectionChanged();
         }
 
         if (newCurrentRow >= 0) {

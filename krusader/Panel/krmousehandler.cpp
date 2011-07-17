@@ -18,7 +18,7 @@
  *****************************************************************************/
 
 #include "krmousehandler.h"
-#include "krview.h"
+
 #include "krselectionmode.h"
 #include "../krglobal.h"
 #include "../defaults.h"
@@ -27,7 +27,8 @@
 
 #define CANCEL_TWO_CLICK_RENAME {_singleClicked = false;_renameTimer.stop();}
 
-KrMouseHandler::KrMouseHandler(KrView * view) : _view(view),
+KrMouseHandler::KrMouseHandler(KrView * view, KrView::Emitter *emitter) :
+        _view(view), _emitter(emitter),
         _contextMenuTimer(), _singleClicked(false), _singleClickTime(),
         _renameTimer(), _dragStartPos(-1, -1), _emptyContextMenu(false)
 {
@@ -43,7 +44,7 @@ bool KrMouseHandler::mousePressEvent(QMouseEvent *e)
     _rightClickedItem = _clickedItem = KFileItem();
     KFileItem item = _view->itemAt(e->pos(), 0, true);
     if (!_view->isFocused())
-        _view->op()->emitNeedFocus();
+        _emitter->emitNeedFocus();
     if (e->button() == Qt::LeftButton) {
         _dragStartPos = e->pos();
         if (e->modifiers() == Qt::NoModifier) {
@@ -163,9 +164,9 @@ bool KrMouseHandler::mouseReleaseEvent(QMouseEvent *e)
         CANCEL_TWO_CLICK_RENAME;
         e->accept();
         if (!item.isNull())
-            _view->op()->emitExecuted(item);
+            _emitter->emitExecuted(item);
         else if(itemIsUpUrl)
-            _view->op()->emitDirUp();
+            _emitter->emitDirUp();
         return true;
     } else if (!_singleClick && e->button() == Qt::LeftButton) {
         if (!item.isNull() && e->modifiers() == Qt::NoModifier) {
@@ -199,7 +200,7 @@ bool KrMouseHandler::mouseReleaseEvent(QMouseEvent *e)
         e->accept();
         if (item.isNull())
             return true;
-        _view->op()->emitMiddleButtonClicked(item, itemIsUpUrl);
+        _emitter->emitMiddleButtonClicked(item, itemIsUpUrl);
         return true;
     }
     return false;
@@ -216,9 +217,9 @@ bool KrMouseHandler::mouseDoubleClickEvent(QMouseEvent *e)
     if (e->button() == Qt::LeftButton) {
         e->accept();
         if(!item.isNull())
-            _view->op()->emitExecuted(item);
+            _emitter->emitExecuted(item);
         else if (itemIsUpUrl)
-            _view->op()->emitDirUp();
+            _emitter->emitDirUp();
         return true;
     }
     return false;
@@ -233,14 +234,14 @@ bool KrMouseHandler::mouseMoveEvent(QMouseEvent *e)
 
     QString desc = _view->itemDescription(item.isNull() ? KUrl() : item.url(), itemIsUpUrl);
     if(!desc.isEmpty())
-        _view->op()->emitItemDescription(desc);
+        _emitter->emitItemDescription(desc);
 
     if (item.isNull())
         return false;
 
     if (_dragStartPos != QPoint(-1, -1) &&
             (e->buttons() & Qt::LeftButton) && (_dragStartPos - e->pos()).manhattanLength() > QApplication::startDragDistance()) {
-        _view->op()->startDrag();
+        emit startDrag();
         return true;
     }
 
@@ -262,7 +263,7 @@ bool KrMouseHandler::mouseMoveEvent(QMouseEvent *e)
 bool KrMouseHandler::wheelEvent(QWheelEvent *)
 {
     if (!_view->isFocused())
-        _view->op()->emitNeedFocus();
+        _emitter->emitNeedFocus();
     return false;
 }
 
@@ -271,23 +272,23 @@ void KrMouseHandler::showContextMenu()
     if (!_rightClickedItem.isNull())
         _view->selectItem(_rightClickedItem, true);
     if (_emptyContextMenu)
-        _view->op()->emitEmptyContextMenu(_contextMenuPoint);
+        _emitter->emitEmptyContextMenu(_contextMenuPoint);
     else
-        _view->op()->emitContextMenu(_contextMenuPoint);
+        _emitter->emitContextMenu(_contextMenuPoint);
 }
 
 void KrMouseHandler::handleContextMenu(KFileItem item, const QPoint & pos)
 {
     if (!_view->isFocused())
-        _view->op()->emitNeedFocus();
+        _emitter->emitNeedFocus();
     int i = KrSelectionMode::getSelectionHandler()->showContextMenu();
     _contextMenuPoint = pos;
     if (i < 0) {
         if (item.isNull())
-            _view->op()->emitEmptyContextMenu(_contextMenuPoint);
+            _emitter->emitEmptyContextMenu(_contextMenuPoint);
         else {
             _view->setCurrentItem(item);
-            _view->op()->emitContextMenu(_contextMenuPoint);
+            _emitter->emitContextMenu(_contextMenuPoint);
         }
     } else if (i > 0) {
         _emptyContextMenu = item.isNull();
@@ -335,7 +336,7 @@ bool KrMouseHandler::dragLeaveEvent(QDragLeaveEvent*)
 
 bool KrMouseHandler::dropEvent(QDropEvent *e)
 {
-    _view->op()->emitGotDrop(e);
+    _emitter->emitGotDrop(e);
     return true;
 }
 #endif

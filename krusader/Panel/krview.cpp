@@ -122,7 +122,7 @@ void KrViewOperator::startDrag()
         px = FL_LOADICON("queue");   // how much are we dragging
     else
         px = _view->icon(_view->currentUrl());
-    emit letsDrag(urls, px);
+    _view->_emitter->emitLetsDrag(urls, px);
 }
 
 void KrViewOperator::handleQuickSearchEvent(QKeyEvent * e)
@@ -447,6 +447,7 @@ KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
     _properties(0), _focused(false),
     _previews(0), _fileIconSize(0), _updateDefaultSettings(false)
 {
+    _emitter = new Emitter();
 }
 
 KrView::~KrView()
@@ -454,6 +455,8 @@ KrView::~KrView()
     _instance.m_objects.removeOne(this);
     delete _previews;
     _previews = 0;
+    delete _emitter;
+    _emitter = 0;
     if (_properties)
         qFatal("A class inheriting KrView didn't delete _properties!");
     if (_operator)
@@ -539,6 +542,8 @@ void KrView::showPreviews(bool show)
             _previews = new KrPreviews(this);
             QObject::connect(_previews, SIGNAL(gotPreview(KFileItem, QPixmap)),
                              op(), SLOT(gotPreview(KFileItem, QPixmap)));
+            QObject::connect(_previews, SIGNAL(jobStarted(KJob*)),
+                             _emitter, SIGNAL(previewJobStarted(KJob*)));
             _previews->update();
         }
     } else {
@@ -548,7 +553,7 @@ void KrView::showPreviews(bool show)
     }
     redraw();
 //     op()->settingsChanged(KrViewProperties::PropShowPreviews);
-    op()->emitRefreshActions();
+    _emitter->emitRefreshActions();
 }
 
 void KrView::updatePreviews()
@@ -606,7 +611,7 @@ void KrView::renameCurrentItem()
     // if the user canceled - quit
     if (!ok || newName == item.name())
         return ;
-    op()->emitRenameItem(item, newName);
+    _emitter->emitRenameItem(item, newName);
 }
 
 bool KrView::handleKeyEvent(QKeyEvent *e)
@@ -618,7 +623,7 @@ bool KrView::handleKeyEvent(QKeyEvent *e)
     // emit the new item description
     QString desc = currentDescription();
     if(!desc.isEmpty())
-        op()->emitItemDescription(desc);
+        _emitter->emitItemDescription(desc);
 
     return res;
 }
@@ -633,9 +638,9 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         else {
             KFileItem item = currentItem();
             if (!item.isNull())
-                op()->emitExecuted(item);
+                _emitter->emitExecuted(item);
             else if (currentItemIsUpUrl())
-                op()->emitDirUp();
+                _emitter->emitDirUp();
         }
         return true;
     }
@@ -643,17 +648,17 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         if (e->modifiers() == Qt::ControlModifier) {   // let the panel handle it
             e->ignore();
         } else {          // a normal click - do a lynx-like moving thing
-            op()->emitGoHome(); // ask krusader to move to the home directory
+            _emitter->emitGoHome(); // ask krusader to move to the home directory
         }
         return true;
     case Qt::Key_Delete :                   // kill file
-        op()->emitDeleteFiles(e->modifiers() == Qt::ShiftModifier || e->modifiers() == Qt::ControlModifier);
+        _emitter->emitDeleteFiles(e->modifiers() == Qt::ShiftModifier || e->modifiers() == Qt::ControlModifier);
         return true;
     case Qt::Key_Insert: {
         selectCurrentItem(!isCurrentItemSelected());
         if (KrSelectionMode::getSelectionHandler()->insertMovesDown())
             setCurrentItem(Next);
-        op()->emitSelectionChanged();
+        _emitter->emitSelectionChanged();
         return true;
     }
     case Qt::Key_Space: {
@@ -663,11 +668,11 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
 
             if (item.isDir() && item.size() <= 0 &&
                     KrSelectionMode::getSelectionHandler()->spaceCalculatesDiskSpace()) {
-                op()->emitCalcSpace(item);
+                _emitter->emitCalcSpace(item);
             }
             if (KrSelectionMode::getSelectionHandler()->spaceMovesDown())
                 setCurrentItem(Next);
-            op()->emitSelectionChanged();
+            _emitter->emitSelectionChanged();
         }
         return true;
     }
@@ -677,7 +682,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
                 e->modifiers() == Qt::AltModifier) {   // let the panel handle it
             e->ignore();
         } else {          // a normal click - do a lynx-like moving thing
-            op()->emitDirUp(); // ask krusader to move up a directory
+            _emitter->emitDirUp(); // ask krusader to move up a directory
         }
         return true;         // safety
     case Qt::Key_Right :
@@ -687,9 +692,9 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         } else { // just a normal click - do a lynx-like moving thing
             KFileItem item = currentItem();
             if (!item.isNull())
-                op()->emitGoInside(item);
+                _emitter->emitGoInside(item);
             else if (currentItemIsUpUrl())
-                op()->emitDirUp();
+                _emitter->emitDirUp();
         }
         return true;
     case Qt::Key_Up :
@@ -698,7 +703,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         } else {
             if (e->modifiers() == Qt::ShiftModifier) {
                 selectCurrentItem(!isCurrentItemSelected());
-                op()->emitSelectionChanged();
+                _emitter->emitSelectionChanged();
             }
             setCurrentItem(Prev);
         }
@@ -709,7 +714,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         } else {
             if (e->modifiers() == Qt::ShiftModifier) {
                 selectCurrentItem(!isCurrentItemSelected());
-                op()->emitSelectionChanged();
+                _emitter->emitSelectionChanged();
             }
             setCurrentItem(Next);
         }
@@ -764,7 +769,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
                     // will resize the icon view immediately.
                     // ACTIVE_PANEL->gui->layout->activate();
                     // UPDATE: it seems like this isn't needed anymore, in case I'm wrong
-                    // do something like op()->emitQuickSearchStartet()
+                    // do something like _emitter->emitQuickSearchStartet()
                     // -----------------------------
                 }
                 // now, send the key to the quicksearch
@@ -804,7 +809,7 @@ void KrView::setFileIconSize(int size)
     refreshIcons();
     updatePreviews();
     redraw();
-    op()->emitRefreshActions();
+    _emitter->emitRefreshActions();
 }
 
 int KrView::defaultFileIconSize() const
@@ -816,7 +821,7 @@ int KrView::defaultFileIconSize() const
 void KrView::saveDefaultSettings(KrViewProperties::PropertyType properties)
 {
     saveSettings(KConfigGroup(_config, _instance.name()), properties);
-    op()->emitRefreshActions();
+    _emitter->emitRefreshActions();
 }
 
 void KrView::restoreDefaultSettings()
@@ -1017,7 +1022,7 @@ void KrView::customSelection(bool select)
 void KrView::saveSelection()
 {
     _savedSelection = getSelectedUrls(false);
-    op()->emitRefreshActions();
+    _emitter->emitRefreshActions();
 }
 
 void KrView::restoreSelection()
@@ -1028,7 +1033,7 @@ void KrView::restoreSelection()
 
 void KrView::clearSavedSelection() {
     _savedSelection.clear();
-    op()->emitRefreshActions();
+    _emitter->emitRefreshActions();
 }
 
 void KrView::selectRegion(KFileItem item1, KFileItem item2, bool select, bool clearFirst)
@@ -1113,4 +1118,19 @@ void KrView::prepareForPassive()
 {
     _focused = false;
     _operator->prepareForPassive();
+}
+
+KrView::Emitter *KrView::emitter()
+{
+    return _emitter;
+}
+
+void KrView::startQuickFilter()
+{
+    op()->startQuickFilter();
+}
+
+void KrView::stopQuickFilter(bool refreshView)
+{
+    op()->stopQuickFilter(refreshView);
 }

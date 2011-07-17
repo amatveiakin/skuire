@@ -95,6 +95,9 @@ public:
             return _items[row];
     }
 
+signals:
+    void renameItem(KFileItem item, QString newName);
+
 public slots:
     virtual void sort(int column, Qt::SortOrder order = Qt::AscendingOrder);
 

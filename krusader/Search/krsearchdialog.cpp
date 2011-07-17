@@ -283,9 +283,9 @@ KrSearchDialog::KrSearchDialog(QString profile, QWidget* parent)
     connect(profileManager, SIGNAL(loadFromProfile(QString)), filterTabs, SLOT(loadFromProfile(QString)));
     connect(profileManager, SIGNAL(saveToProfile(QString)), filterTabs, SLOT(saveToProfile(QString)));
 
-    connect(resultView->op(), SIGNAL(currentChanged(KrViewItem*)), SLOT(currentChanged(KrViewItem*)));
-    connect(resultView->op(), SIGNAL(executed(const QString&)), SLOT(executed(const QString&)));
-    connect(resultView->op(), SIGNAL(contextMenu(const QPoint&)), SLOT(contextMenu(const QPoint &)));
+    connect(resultView->emitter(), SIGNAL(currentChanged(KrViewItem*)), SLOT(currentChanged(KrViewItem*)));
+    connect(resultView->emitter(), SIGNAL(executed(const QString&)), SLOT(executed(const QString&)));
+    connect(resultView->emitter(), SIGNAL(contextMenu(const QPoint&)), SLOT(contextMenu(const QPoint &)));
 
     // tab order
 
@@ -520,7 +520,7 @@ void KrSearchDialog::keyPressEvent(QKeyEvent *e)
     }
     if (resultView->widget()->hasFocus()) {
         if ((e->key() | e->modifiers()) == (Qt::CTRL | Qt::Key_I))
-            resultView->op()->startQuickFilter();
+            resultView->startQuickFilter();
         if (e->key() == Qt::Key_F4) {
             if (!generalFilter->containsText->currentText().isEmpty() && QApplication::clipboard()->text() != generalFilter->containsText->currentText())
                 QApplication::clipboard()->setText(generalFilter->containsText->currentText());

@@ -420,27 +420,27 @@ void ListPanel::createView()
 
     view->widget()->installEventFilter(this);
 
-    connect(view->op(), SIGNAL(calcSpace(KFileItem)), func, SLOT(calcSpace(KFileItem)));
-    connect(view->op(), SIGNAL(goHome()), func, SLOT(home()));
-    connect(view->op(), SIGNAL(dirUp()), func, SLOT(dirUp()));
-    connect(view->op(), SIGNAL(deleteFiles(bool)), func, SLOT(deleteFiles(bool)));
-    connect(view->op(), SIGNAL(middleButtonClicked(KFileItem, bool)), SLOT(newTab(KFileItem, bool)));
-    connect(view->op(), SIGNAL(currentChanged(KFileItem)), SLOT(updatePopupPanel(KFileItem)));
-    connect(view->op(), SIGNAL(renameItem(KFileItem, QString)),
+    connect(view->emitter(), SIGNAL(calcSpace(KFileItem)), func, SLOT(calcSpace(KFileItem)));
+    connect(view->emitter(), SIGNAL(goHome()), func, SLOT(home()));
+    connect(view->emitter(), SIGNAL(dirUp()), func, SLOT(dirUp()));
+    connect(view->emitter(), SIGNAL(deleteFiles(bool)), func, SLOT(deleteFiles(bool)));
+    connect(view->emitter(), SIGNAL(middleButtonClicked(KFileItem, bool)), SLOT(newTab(KFileItem, bool)));
+    connect(view->emitter(), SIGNAL(currentChanged(KFileItem)), SLOT(updatePopupPanel(KFileItem)));
+    connect(view->emitter(), SIGNAL(renameItem(KFileItem, QString)),
             func, SLOT(rename(KFileItem, QString)));
-    connect(view->op(), SIGNAL(executed(KFileItem)), func, SLOT(execute(KFileItem)));
-    connect(view->op(), SIGNAL(goInside(KFileItem)), func, SLOT(goInside(KFileItem)));
-    connect(view->op(), SIGNAL(needFocus()), this, SLOT(slotFocusOnMe()));
-    connect(view->op(), SIGNAL(selectionChanged()), this, SLOT(slotUpdateTotals()));
-    connect(view->op(), SIGNAL(itemDescription(QString&)), krApp, SLOT(statusBarUpdate(QString&)));
-    connect(view->op(), SIGNAL(contextMenu(const QPoint &)), this, SLOT(popRightClickMenu(const QPoint &)));
-    connect(view->op(), SIGNAL(emptyContextMenu(const QPoint &)),
+    connect(view->emitter(), SIGNAL(executed(KFileItem)), func, SLOT(execute(KFileItem)));
+    connect(view->emitter(), SIGNAL(goInside(KFileItem)), func, SLOT(goInside(KFileItem)));
+    connect(view->emitter(), SIGNAL(needFocus()), this, SLOT(slotFocusOnMe()));
+    connect(view->emitter(), SIGNAL(selectionChanged()), this, SLOT(slotUpdateTotals()));
+    connect(view->emitter(), SIGNAL(itemDescription(QString&)), krApp, SLOT(statusBarUpdate(QString&)));
+    connect(view->emitter(), SIGNAL(contextMenu(const QPoint &)), this, SLOT(popRightClickMenu(const QPoint &)));
+    connect(view->emitter(), SIGNAL(emptyContextMenu(const QPoint &)),
             this, SLOT(popEmptyRightClickMenu(const QPoint &)));
-    connect(view->op(), SIGNAL(letsDrag(KUrl::List, QPixmap)), this, SLOT(startDragging(KUrl::List, QPixmap)));
-    connect(view->op(), SIGNAL(gotDrop(QDropEvent *)), this, SLOT(handleDropOnView(QDropEvent *)));
-    connect(view->op(), SIGNAL(previewJobStarted(KJob*)), this, SLOT(slotPreviewJobStarted(KJob*)));
-    connect(view->op(), SIGNAL(refreshActions()), krApp->viewActions(), SLOT(refreshActions()));
-    connect(view->op(), SIGNAL(currentChanged(KFileItem)), func->history, SLOT(saveCurrentItem()));
+    connect(view->emitter(), SIGNAL(letsDrag(KUrl::List, QPixmap)), this, SLOT(startDragging(KUrl::List, QPixmap)));
+    connect(view->emitter(), SIGNAL(gotDrop(QDropEvent *)), this, SLOT(handleDropOnView(QDropEvent *)));
+    connect(view->emitter(), SIGNAL(previewJobStarted(KJob*)), this, SLOT(slotPreviewJobStarted(KJob*)));
+    connect(view->emitter(), SIGNAL(refreshActions()), krApp->viewActions(), SLOT(refreshActions()));
+    connect(view->emitter(), SIGNAL(currentChanged(KFileItem)), func->history, SLOT(saveCurrentItem()));
 
     view->setDirLister(func->dirLister);
 

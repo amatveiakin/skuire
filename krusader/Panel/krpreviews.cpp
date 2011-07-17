@@ -98,7 +98,7 @@ void KrPreviews::startJob()
     if(!_job) {
         _job = new KrPreviewJob(this);
         connect(_job, SIGNAL(result(KJob*)), SLOT(slotJobResult(KJob*)));
-        _view->op()->emitPreviewJobStarted(_job);
+        emit jobStarted(_job);
     }
 }
 

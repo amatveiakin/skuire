@@ -61,6 +61,7 @@ public:
 
 signals:
     void gotPreview(KFileItem item, QPixmap preview);
+    void jobStarted(KJob *job);
 
 protected slots:
     void slotRefreshColors();

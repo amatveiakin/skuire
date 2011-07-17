@@ -273,7 +273,7 @@ bool KrVfsModel::setData(const QModelIndex & index, const QVariant & value, int 
         KrView::Item *item = itemAt(index);
         if (!item)
             return false;
-        _view->op()->emitRenameItem(*item, value.toString());
+        emit renameItem(*item, value.toString());
     } else if (role == Qt::UserRole && index.isValid())
         _justForSizeHint = value.toBool();
 
