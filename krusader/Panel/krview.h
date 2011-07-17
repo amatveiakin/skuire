@@ -292,7 +292,7 @@ public:
         return &_instance;
     }
 
-    Emitter *emitter();
+    EmitterBase *emitter();
 
     // save this view's settings as default for new views of this type
     void saveDefaultSettings(KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
