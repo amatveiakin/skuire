@@ -28,7 +28,10 @@
 
 KrInterView::KrInterView(KrViewInstance &instance, KConfig *cfg,
                          QAbstractItemView *itemView) :
-        KrView(instance, cfg), _itemView(itemView), _mouseHandler(0)
+        KrView(instance, cfg),
+        _model(0),
+        _itemView(itemView),
+        _mouseHandler(0)
 {
 }
 
