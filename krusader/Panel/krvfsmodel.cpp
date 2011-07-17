@@ -51,7 +51,7 @@ void KrVfsModel::refresh()
     _items.reserve(_view->dirLister()->numItems());
 #endif
 
-    if(_view->dirLister()->isRoot()) {
+    if(!_view->dirLister()->isRoot()) {
         _dummyItem = new KrView::Item(KFileItem(KUrl(".."), "inode/directory", 0), _view, true);
         _items << _dummyItem;
     }
