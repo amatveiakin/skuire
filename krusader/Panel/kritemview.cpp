@@ -32,8 +32,18 @@ KrItemView::KrItemView(QWidget *parent, KrViewInstance &instance, KConfig *cfg) 
     QAbstractItemView(parent),
     KrInterView(instance, cfg, this)
 {
-    setWidget(this);
-    setModel(_model);
+}
+
+KrItemView::~KrItemView()
+{
+    setModel(0);
+    delete _operator;
+    _operator = 0;
+}
+
+void KrItemView::setup()
+{
+    KrInterView::setup();
 
     setSelectionMode(QAbstractItemView::NoSelection);
     setSelectionModel(new DummySelectionModel(_model, this));
@@ -47,14 +57,9 @@ KrItemView::KrItemView(QWidget *parent, KrViewInstance &instance, KConfig *cfg) 
     setAcceptDrops(true);
     setDropIndicatorShown(true);
 
-    connect(_mouseHandler, SIGNAL(renameCurrentItem()), SLOT(renameCurrentItem()));
-}
+    setModel(_model);
 
-KrItemView::~KrItemView()
-{
-    setModel(0);
-    delete _operator;
-    _operator = 0;
+    connect(_mouseHandler, SIGNAL(renameCurrentItem()), SLOT(renameCurrentItem()));
 }
 
 void KrItemView::setFileIconSize(int size)

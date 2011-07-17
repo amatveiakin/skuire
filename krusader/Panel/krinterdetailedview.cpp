@@ -44,15 +44,27 @@ KrInterDetailedView::KrInterDetailedView(QWidget *parent, KrViewInstance &instan
         KrInterView(instance, cfg, this),
         _autoResizeColumns(true)
 {
-    connect(_mouseHandler, SIGNAL(renameCurrentItem()), this, SLOT(renameCurrentItem()));
-    setWidget(this);
+}
+
+KrInterDetailedView::~KrInterDetailedView()
+{
+    setModel(0);
+    delete _properties;
+    _properties = 0;
+    delete _operator;
+    _operator = 0;
+}
+
+void KrInterDetailedView::setup()
+{
+    KrInterView::setup();
+
     KConfigGroup group(krConfig, "Private");
 
     KConfigGroup grpSvr(_config, "Look&Feel");
     _viewFont = grpSvr.readEntry("Filelist Font", _FilelistFont);
 
-    this->setModel(_model);
-    this->setRootIsDecorated(false);
+    setRootIsDecorated(false);
 
     setSelectionModel(new DummySelectionModel(_model, this));
 
@@ -73,17 +85,13 @@ KrInterDetailedView::KrInterDetailedView(QWidget *parent, KrViewInstance &instan
 
     connect(header(), SIGNAL(sectionResized(int, int, int)), this, SLOT(sectionResized(int, int, int)));
     connect(header(), SIGNAL(sectionMoved(int, int, int)), this, SLOT(sectionMoved(int, int, int)));
-}
+    connect(_mouseHandler, SIGNAL(renameCurrentItem()), this, SLOT(renameCurrentItem()));
 
-KrInterDetailedView::~KrInterDetailedView()
-{
-    setModel(0);
-    delete _properties;
-    _properties = 0;
-    delete _operator;
-    _operator = 0;
-}
+    setModel(_model);
 
+    setSortMode(_properties->sortColumn, (_properties->sortOptions & KrViewProperties::Descending));
+    setSortingEnabled(true);
+}
 
 void KrInterDetailedView::currentChanged(const QModelIndex & current, const QModelIndex & previous)
 {
@@ -146,14 +154,6 @@ int KrInterDetailedView::itemsPerPage()
 
 void KrInterDetailedView::updateView()
 {
-}
-
-void KrInterDetailedView::setup()
-{
-    KrInterView::setup();
-
-    setSortMode(_properties->sortColumn, (_properties->sortOptions & KrViewProperties::Descending));
-    setSortingEnabled(true);
 }
 
 void KrInterDetailedView::keyPressEvent(QKeyEvent *e)

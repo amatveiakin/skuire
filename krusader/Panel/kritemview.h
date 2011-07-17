@@ -40,6 +40,7 @@ public:
     }
 
     // ---- reimplemented from KrView ----
+    virtual void setup();
     virtual void setFileIconSize(int size);
 
 protected slots:

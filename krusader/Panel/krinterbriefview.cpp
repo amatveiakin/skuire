@@ -47,14 +47,41 @@ KrInterBriefView::KrInterBriefView(QWidget *parent, KrViewInstance &instance, KC
         KrItemView(parent, instance, cfg),
         _header(0)
 {
-    _model->setExtensionEnabled(false);
-    _model->setAlternatingTable(true);
 }
 
 KrInterBriefView::~KrInterBriefView()
 {
     delete _properties;
     _properties = 0;
+}
+
+void KrInterBriefView::setup()
+{
+    KrItemView::setup();
+
+    _model->setExtensionEnabled(false);
+    _model->setAlternatingTable(true);
+
+    _header = new QHeaderView(Qt::Horizontal, this);
+    _header->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    _header->setParent(this);
+    _header->setModel(_model);
+    _header->hideSection(KrViewProperties::Type);
+    _header->hideSection(KrViewProperties::Permissions);
+    _header->hideSection(KrViewProperties::KrPermissions);
+    _header->hideSection(KrViewProperties::Owner);
+    _header->hideSection(KrViewProperties::Group);
+    _header->setStretchLastSection(true);
+    _header->setResizeMode(QHeaderView::Fixed);
+    _header->setClickable(true);
+    _header->setSortIndicatorShown(true);
+    connect(_header, SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
+            _model, SLOT(sort(int, Qt::SortOrder)));
+    _header->installEventFilter(this);
+
+    _numOfColumns = _properties->numberOfColumns;
+
+    setSortMode(_properties->sortColumn, (_properties->sortOptions & KrViewProperties::Descending));
 }
 
 void KrInterBriefView::doRestoreSettings(KConfigGroup group)
@@ -87,34 +114,9 @@ int KrInterBriefView::itemsPerPage()
     int numRows = viewport()->height() / height;
     return numRows;
 }
+
 void KrInterBriefView::updateView()
 {
-}
-
-void KrInterBriefView::setup()
-{
-    KrInterView::setup();
-
-    _header = new QHeaderView(Qt::Horizontal, this);
-    _header->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    _header->setParent(this);
-    _header->setModel(_model);
-    _header->hideSection(KrViewProperties::Type);
-    _header->hideSection(KrViewProperties::Permissions);
-    _header->hideSection(KrViewProperties::KrPermissions);
-    _header->hideSection(KrViewProperties::Owner);
-    _header->hideSection(KrViewProperties::Group);
-    _header->setStretchLastSection(true);
-    _header->setResizeMode(QHeaderView::Fixed);
-    _header->setClickable(true);
-    _header->setSortIndicatorShown(true);
-    connect(_header, SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-            _model, SLOT(sort(int, Qt::SortOrder)));
-    _header->installEventFilter(this);
-
-    _numOfColumns = _properties->numberOfColumns;
-
-    setSortMode(_properties->sortColumn, (_properties->sortOptions & KrViewProperties::Descending));
 }
 
 void KrInterBriefView::keyPressEvent(QKeyEvent *e)

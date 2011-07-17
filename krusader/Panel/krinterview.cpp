@@ -30,8 +30,7 @@ KrInterView::KrInterView(KrViewInstance &instance, KConfig *cfg,
                          QAbstractItemView *itemView) :
         KrView(instance, cfg), _itemView(itemView), _mouseHandler(0)
 {
-    _model = new KrVfsModel(this);
-    _mouseHandler = new KrMouseHandler(this, _emitter);
+    setWidget(_itemView);
 }
 
 KrInterView::~KrInterView()
@@ -49,6 +48,9 @@ KrInterView::~KrInterView()
 
 void KrInterView::setup()
 {
+    _model = new KrVfsModel(this);
+    _mouseHandler = new KrMouseHandler(this, _emitter);
+
     QObject::connect(_model, SIGNAL(renameItem(KFileItem, QString)),
                      _emitter, SIGNAL(renameItem(KFileItem, QString)));
     QObject::connect(_mouseHandler, SIGNAL(startDrag()),
