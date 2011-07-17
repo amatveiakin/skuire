@@ -46,6 +46,8 @@ void KrItemView::setup()
     KrInterView::setup();
 
     setSelectionMode(QAbstractItemView::NoSelection);
+
+    setModel(_model);
     setSelectionModel(new DummySelectionModel(_model, this));
 
     KConfigGroup grpSvr(_config, "Look&Feel");
@@ -56,8 +58,6 @@ void KrItemView::setup()
     setMouseTracking(true);
     setAcceptDrops(true);
     setDropIndicatorShown(true);
-
-    setModel(_model);
 
     connect(_mouseHandler, SIGNAL(renameCurrentItem()), SLOT(renameCurrentItem()));
 }

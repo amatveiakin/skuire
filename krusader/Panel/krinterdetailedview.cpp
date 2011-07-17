@@ -66,6 +66,8 @@ void KrInterDetailedView::setup()
 
     setRootIsDecorated(false);
 
+    setModel(_model);
+
     setSelectionModel(new DummySelectionModel(_model, this));
 
     header()->installEventFilter(this);
@@ -86,8 +88,6 @@ void KrInterDetailedView::setup()
     connect(header(), SIGNAL(sectionResized(int, int, int)), this, SLOT(sectionResized(int, int, int)));
     connect(header(), SIGNAL(sectionMoved(int, int, int)), this, SLOT(sectionMoved(int, int, int)));
     connect(_mouseHandler, SIGNAL(renameCurrentItem()), this, SLOT(renameCurrentItem()));
-
-    setModel(_model);
 
     setSortMode(_properties->sortColumn, (_properties->sortOptions & KrViewProperties::Descending));
     setSortingEnabled(true);
