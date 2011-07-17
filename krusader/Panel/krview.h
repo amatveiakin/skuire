@@ -55,8 +55,6 @@ class QuickFilter;
 class AbstractDirLister;
 class CalcSpaceClient;
 
-class vfile;
-
 
 // KrViewProperties
 // This class is an interface class between KrView and KrViewItem
@@ -136,6 +134,12 @@ public:
  */
 class KrView
 {
+    // instantiating a new view
+    // 1. new KrView
+    // 2. view->init()
+    // notes: constructor does as little as possible, setup() does the rest. esp, note that
+    // if you need something from operator or properties, move it into setup()
+
     friend class KrViewOperator;
 
 public:
@@ -198,35 +202,10 @@ public:
         KrView *_view;
     };
 
-    virtual ~KrView();
-
-    // instantiating a new view
-    // 1. new KrView
-    // 2. view->init()
-    // notes: constructor does as little as possible, setup() does the rest. esp, note that
-    // if you need something from operator or properties, move it into setup()
-    virtual void init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
-    KrViewInstance *instance() {
-        return &_instance;
-    }
-
-    static const IconSizes iconSizes;
-
-protected:
-    enum ItemSpec { First, Last, Prev, Next, UpUrl };
-
-    virtual void initProperties();
-    virtual KrViewProperties * createViewProperties() {
-        return new KrViewProperties();
-    }
-    virtual KrViewOperator *createOperator(KrQuickSearch *quickSearch, QuickFilter *quickFilter);
-
-    ///////////////////////////////////////////////////////
-    // Every view must implement the following functions //
-    ///////////////////////////////////////////////////////
-public:
+    /////////////////////////////////////////////////////////////
+    // pure virtual functions                                  //
+    /////////////////////////////////////////////////////////////
     virtual CalcSpaceClient *calcSpaceClient() = 0;
-
     virtual void refresh() = 0;
     virtual uint count() const = 0;
     virtual uint calcNumDirs() const = 0;
@@ -262,6 +241,29 @@ public:
     virtual void sort() = 0;
     virtual void refreshColors() = 0;
     virtual void redraw() = 0;
+    virtual void showContextMenu() = 0;
+
+    /////////////////////////////////////////////////////////////
+    // virtual functions                                       //
+    /////////////////////////////////////////////////////////////
+    virtual ~KrView();
+    virtual void init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
+    virtual void selectAllIncludingDirs() {
+        changeSelection(KRQuery("*"), true, true);
+    }
+    virtual void showPreviews(bool show);
+    virtual bool previewsShown() {
+        return _previews != 0;
+    }
+    virtual void applySettingsToOthers();
+    virtual void setDirLister(AbstractDirLister *lister);
+    virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending) {
+        sortModeUpdated(sortColumn, descending);
+    }
+    virtual void setFileIconSize(int size);
+    // save this view's settings to be restored after restart
+    virtual void saveSettings(KConfigGroup grp,
+        KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
     virtual bool handleKeyEvent(QKeyEvent *e);
     virtual void prepareForActive() {
         _focused = true;
@@ -271,60 +273,10 @@ public:
     virtual int  itemsPerPage() {
         return 0;
     }
-    virtual void showContextMenu() = 0;
-
-protected:
-    virtual void setup() = 0;
-    virtual const Item *itemFromUrl(KUrl url) const = 0;
-    virtual void copySettingsFrom(KrView *other) = 0;
-    virtual void updatePreviews();
-    virtual void clear() = 0;
-    virtual bool quickSearch(const QString &term, int direction) = 0;
-    virtual void gotPreview(KFileItem item, QPixmap preview) = 0;
-    virtual KIO::filesize_t calcSize() = 0;
-    virtual KIO::filesize_t calcSelectedSize() = 0;
-    virtual void setCurrentItem(ItemSpec item) = 0;
-    virtual const Item *dummyItem() const = 0;
-    virtual void refreshIcons() = 0;
-
-    virtual void newItems(const KFileItemList& items) = 0;
-    virtual void itemsDeleted(const KFileItemList& items) = 0;
-    virtual void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items) = 0;
-
-    //////////////////////////////////////////////////////
-    // the following functions are already implemented, //
-    // and normally - should NOT be re-implemented.     //
-    //////////////////////////////////////////////////////
-public:
-    virtual void selectAllIncludingDirs() {
-        changeSelection(KRQuery("*"), true, true);
-    }
-    virtual void showPreviews(bool show);
-    virtual bool previewsShown() {
-        return _previews != 0;
-    }
-    virtual void applySettingsToOthers();
-
-    virtual void setDirLister(AbstractDirLister *lister);
-
-    /////////////////////////////////////////////////////////////
-    // the following functions have a default and minimalistic //
-    // implementation, and may be re-implemented if needed     //
-    /////////////////////////////////////////////////////////////
-    virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending) {
-        sortModeUpdated(sortColumn, descending);
-    }
-
-    virtual void setFileIconSize(int size);
-
-    // save this view's settings to be restored after restart
-    virtual void saveSettings(KConfigGroup grp,
-        KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
 
     /////////////////////////////////////////////////////////////
     // non-virtual functions                                   //
     /////////////////////////////////////////////////////////////
-
     inline QWidget *widget() {
         return _widget;
     }
@@ -333,6 +285,10 @@ public:
     }
     inline bool isFocused() const {
         return _focused;
+    }
+
+    KrViewInstance *instance() {
+        return &_instance;
     }
 
     // save this view's settings as default for new views of this type
@@ -418,7 +374,6 @@ public:
     const KrViewProperties* properties() const {
         return _properties;
     }
-
     int defaultFileIconSize() const;
     void setDefaultFileIconSize() {
         setFileIconSize(defaultFileIconSize());
@@ -429,7 +384,6 @@ public:
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////
-public:
     virtual QString getCurrentItem() const = 0;
 
     //the following can be removed when VFileDirLister is removed
@@ -443,9 +397,34 @@ public:
     // deprecated functions end                                //
     /////////////////////////////////////////////////////////////
 
+    static const IconSizes iconSizes;
+
 protected:
+    enum ItemSpec { First, Last, Prev, Next, UpUrl };
+
     KrView(KrViewInstance &instance, KConfig *cfg);
 
+    virtual void setup() = 0;
+    virtual void clear() = 0;
+    virtual const Item *itemFromUrl(KUrl url) const = 0;
+    virtual void copySettingsFrom(KrView *other) = 0;
+    virtual void updatePreviews();
+    virtual bool quickSearch(const QString &term, int direction) = 0;
+    virtual void gotPreview(KFileItem item, QPixmap preview) = 0;
+    virtual KIO::filesize_t calcSize() = 0;
+    virtual KIO::filesize_t calcSelectedSize() = 0;
+    virtual void setCurrentItem(ItemSpec item) = 0;
+    virtual const Item *dummyItem() const = 0;
+    virtual void refreshIcons() = 0;
+    virtual void newItems(const KFileItemList& items) = 0;
+    virtual void itemsDeleted(const KFileItemList& items) = 0;
+    virtual void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items) = 0;
+
+    virtual KrViewProperties * createViewProperties() {
+        return new KrViewProperties();
+    }
+    virtual void initProperties();
+    virtual KrViewOperator *createOperator(KrQuickSearch *quickSearch, QuickFilter *quickFilter);
     virtual void doRestoreSettings(KConfigGroup grp);
 
     bool quickSearchMatch(const KFileItem &item, QString term);
@@ -614,6 +593,7 @@ protected slots:
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
+    // can be removed when VFileDirLister is removed           //
     /////////////////////////////////////////////////////////////
 protected slots:
     // for signals from vfs' dirwatch
