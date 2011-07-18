@@ -380,7 +380,6 @@ protected:
     virtual void doRestoreSettings(KConfigGroup grp);
 
     bool quickSearchMatch(const KFileItem &item, QString term);
-    void setSelected(const Item *item, bool select);
     bool handleKeyEventInt(QKeyEvent *e);
     void sortModeUpdated(KrViewProperties::ColumnType sortColumn, bool descending);
     void saveSortMode(KConfigGroup &group);
