@@ -29,36 +29,40 @@
 class QMouseEvent;
 class QKeyEvent;
 class QDragEnterEvent;
+class KrMouseHandler;
 
-class KrInterDetailedView : public QTreeView, public KrInterView
+class KrInterDetailedView : public QTreeView, public ViewWidget
 {
     Q_OBJECT
 
 public:
-    KrInterDetailedView(QWidget *parent, KrViewInstance &instance, KConfig *cfg);
-    virtual ~KrInterDetailedView();
+    KrInterDetailedView(QWidget *parentWidget, ViewWidgetParent *parent,
+                        KrMouseHandler *mouseHandler, KConfig *cfg);
 
-    virtual void updateView();
-
-    virtual bool ensureVisibilityAfterSelect() {
-        return false;
+    // ViewWidget implentation
+    virtual QAbstractItemView *itemView() {
+        return this;
     }
-    virtual int  itemsPerPage();
+    virtual QRect itemRect(const QModelIndex &index);
     virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending);
-    virtual void setFileIconSize(int size);
-    virtual void doRestoreSettings(KConfigGroup grp);
+    virtual int itemsPerPage();
+    virtual void saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties);
+    virtual void restoreSettings(KConfigGroup grp);
+    virtual void copySettingsFrom(ViewWidget *other);
+    virtual void showContextMenu(const QPoint &p);
+    virtual bool isColumnHidden(int column) {
+        return QTreeView::isColumnHidden(column);
+    }
 
 protected slots:
+    // ViewWidget implentation
     virtual void renameCurrentItem();
+
     virtual void sectionResized(int, int, int);
     void sectionMoved(int, int, int);
     virtual void currentChanged(const QModelIndex & current, const QModelIndex & previous);
 
 protected:
-    virtual void setup();
-    virtual void copySettingsFrom(KrView *other);
-    virtual void saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties);
-
     // Don't do anything, selections are handled by the mouse handler
     virtual void setSelection(const QRect &rect, QItemSelectionModel::SelectionFlags command) {}
     virtual void selectAll() {}
@@ -74,16 +78,13 @@ protected:
     virtual void dragMoveEvent(QDragMoveEvent *e);
     virtual void dragLeaveEvent(QDragLeaveEvent *e);
     virtual void dropEvent(QDropEvent *);
+
     virtual bool eventFilter(QObject *object, QEvent *event);
     virtual bool viewportEvent(QEvent * event);
 
-    virtual QRect itemRect(const QModelIndex &index);
+    void recalculateColumnSizes();
 
-    virtual void showContextMenu(const QPoint & p);
-    virtual void recalculateColumnSizes();
-
-private:
-    QFont _viewFont;
     bool _autoResizeColumns;
 };
+
 #endif // __krinterview__

@@ -30,7 +30,45 @@
 class KrVfsModel;
 class KrMouseHandler;
 
-class KrInterView : public KrView, public CalcSpaceClient
+
+class ViewWidgetParent
+{
+public:
+    virtual const KrViewProperties *properties() = 0;
+    virtual bool handleKeyEvent(QKeyEvent *e) = 0;
+    virtual void currentChanged(const QModelIndex &current) = 0;
+    virtual void settingsChanged(KrViewProperties::PropertyType properties) = 0;
+    virtual void visibleColumnsChanged() = 0;
+};
+
+
+class ViewWidget
+{
+public:
+    ViewWidget(ViewWidgetParent *parent, KrMouseHandler *mouseHandler) :
+        _parent(parent),
+        _mouseHandler(mouseHandler) {}
+
+    virtual ~ViewWidget() {}
+
+    virtual QAbstractItemView *itemView() = 0;
+    virtual QRect itemRect(const QModelIndex &index) = 0;
+    virtual int itemsPerPage() = 0;
+    virtual bool isColumnHidden(int column) = 0;
+    virtual void renameCurrentItem() = 0; 
+    virtual void showContextMenu(const QPoint &p) = 0;
+    virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending) = 0;
+    virtual void saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties) = 0;
+    virtual void restoreSettings(KConfigGroup grp) = 0;
+    virtual void copySettingsFrom(ViewWidget *other) = 0;
+
+protected:
+    ViewWidgetParent *_parent;
+    KrMouseHandler *_mouseHandler;
+};
+
+
+class KrInterView : public KrView, public ViewWidgetParent, public CalcSpaceClient
 {
 public:
     enum
@@ -39,13 +77,18 @@ public:
         MaxIncrementalRefreshNum = 10
     };
 
-    KrInterView(KrViewInstance &instance, KConfig *cfg, QAbstractItemView *itemView);
+    KrInterView(QWidget *parent, KrViewInstance &instance, KConfig *cfg);
     virtual ~KrInterView();
 
+    // ViewWidgetParent implementation
+    const KrViewProperties *properties() {
+        return KrView::properties();
+    }
+
+    // KrView implementation
     virtual CalcSpaceClient *calcSpaceClient() {
         return this;
     }
-
     virtual uint count() const;
     virtual uint calcNumDirs() const;
     virtual KFileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true);
@@ -75,7 +118,7 @@ public:
     virtual QWidget *widget() {
         return _itemView;
     }
-
+    virtual int itemsPerPage();
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();
     }
@@ -84,6 +127,7 @@ public:
         return _selection.count();
     }
     virtual QString getCurrentItem() const;
+    virtual void renameCurrentItem();
     virtual void clear();
     virtual void refresh();
     virtual void sort();
@@ -93,6 +137,10 @@ public:
     virtual void prepareForPassive();
     virtual void showContextMenu();
     virtual void makeCurrentVisible();
+    virtual void setFileIconSize(int size);
+    virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending);
+    virtual void saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties);
+    virtual void copySettingsFrom(KrView*);
 
     void sortModeUpdated(int column, Qt::SortOrder order);
 
@@ -109,6 +157,9 @@ public:
         return _dirLister;
     }
 
+    //FIXME dummy
+    virtual void updateView() {}
+
 protected:
     class DummySelectionModel : public QItemSelectionModel
     {
@@ -120,6 +171,15 @@ protected:
         virtual void select(const QItemSelection & selection, QItemSelectionModel::SelectionFlags command) {}
     };
 
+    // ViewWidgetParent implementation
+    virtual bool handleKeyEvent(QKeyEvent *e) {
+        return KrView::handleKeyEvent(e);
+    }
+    virtual void settingsChanged(KrViewProperties::PropertyType properties) {
+        op()->settingsChanged(properties);
+    }
+    virtual void visibleColumnsChanged();
+
     // KrCalcSpaceDialog::Client implementation
     virtual void updateItemSize(KUrl url, KIO::filesize_t newSize);
 
@@ -127,7 +187,6 @@ protected:
     virtual void setCurrentItem(ItemSpec item);
     virtual KIO::filesize_t calcSize();
     virtual KIO::filesize_t calcSelectedSize();
-    virtual void showContextMenu(const QPoint & p) = 0;
     virtual QRect itemRect(KUrl itemUrl);
     virtual const Item *dummyItem() const;
     virtual Item *itemFromUrl(KUrl url) const;
@@ -138,7 +197,9 @@ protected:
     virtual void itemsDeleted(const KFileItemList& items);
     virtual void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items);
 
-    virtual QRect itemRect(const QModelIndex &index) = 0;
+    virtual void doRestoreSettings(KConfigGroup grp);
+
+    QRect itemRect(const QModelIndex &index);
 
     void currentChanged(const QModelIndex &current);
     void setCurrentIndex(QModelIndex index);
@@ -148,6 +209,9 @@ protected:
     KrVfsModel *_model;
     QAbstractItemView *_itemView;
     KrMouseHandler *_mouseHandler;
+
+    QWidget *_parentWidget;
+    ViewWidget *_widget;
 
 private:
     QSet<const Item*> _selection;

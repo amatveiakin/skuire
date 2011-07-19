@@ -196,6 +196,7 @@ public:
     virtual void redraw() = 0;
     virtual void showContextMenu() = 0;
     virtual QWidget *widget() = 0;
+    virtual int itemsPerPage() = 0;
 
     /////////////////////////////////////////////////////////////
     // virtual functions                                       //
@@ -224,9 +225,6 @@ public:
     }
     virtual void prepareForPassive();
     virtual void renameCurrentItem(); // Rename current item. returns immediately
-    virtual int  itemsPerPage() {
-        return 0;
-    }
 
     /////////////////////////////////////////////////////////////
     // non-virtual functions                                   //

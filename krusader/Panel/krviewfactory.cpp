@@ -30,8 +30,9 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 
 #include "krviewfactory.h"
 
-#include "krinterdetailedview.h"
-#include "krinterbriefview.h"
+// #include "krinterdetailedview.h"
+// #include "krinterbriefview.h"
+#include "krinterview.h"
 
 #include <stdio.h>
 
@@ -61,11 +62,14 @@ KrViewFactory & KrViewFactory::self()
 
 void KrViewFactory::init()
 {
-    new KrViewInstanceImpl<KrInterDetailedView> (0, "KrInterDetailedView",
+    new KrViewInstanceImpl<KrInterView> (0, "KrInterDetailedView",
         i18n("&Detailed View"), "view-list-details", Qt::ALT + Qt::SHIFT + Qt::Key_D);
 
-    new KrViewInstanceImpl<KrInterBriefView> (1, "KrInterBriefView",
-        i18n("&Brief View"), "view-list-icons", Qt::ALT + Qt::SHIFT + Qt::Key_B);
+//     new KrViewInstanceImpl<KrInterDetailedView> (0, "KrInterDetailedView",
+//         i18n("&Detailed View"), "view-list-details", Qt::ALT + Qt::SHIFT + Qt::Key_D);
+
+//     new KrViewInstanceImpl<KrInterBriefView> (1, "KrInterBriefView",
+//         i18n("&Brief View"), "view-list-icons", Qt::ALT + Qt::SHIFT + Qt::Key_B);
 }
 
 KrView * KrViewFactory::createView(int id, QWidget *widget, KConfig *cfg)

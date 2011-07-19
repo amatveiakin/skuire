@@ -25,24 +25,26 @@
 #include "krpreviews.h"
 #include "../defaults.h"
 
+//HACK
+#include "krinterdetailedview.h"
 
-KrInterView::KrInterView(KrViewInstance &instance, KConfig *cfg,
-                         QAbstractItemView *itemView) :
+
+KrInterView::KrInterView(QWidget *parent, KrViewInstance &instance, KConfig *cfg) :
         KrView(instance, cfg),
         _model(0),
-        _itemView(itemView),
-        _mouseHandler(0)
+        _itemView(0),
+        _mouseHandler(0),
+        _parentWidget(parent),
+        _widget(0)
 {
 }
 
 KrInterView::~KrInterView()
 {
-    // any references to the model should be cleared ar this point,
-    // but sometimes for some reason it is still referenced by
-    // QPersistentModelIndex instances held by QAbstractItemView and/or QItemSelectionModel(child object) -
-    // so schedule _model for later deletion
-    _model->clear();
-    _model->deleteLater();
+    delete _widget;
+    _widget = 0;
+    _itemView = 0;
+    delete _model;
     _model = 0;
     delete _mouseHandler;
     _mouseHandler = 0;
@@ -52,6 +54,12 @@ void KrInterView::setup()
 {
     _model = new KrVfsModel(this);
     _mouseHandler = new KrMouseHandler(this, _emitter);
+
+    _widget = new KrInterDetailedView(_parentWidget, this, _mouseHandler, _config); //HACK
+    _itemView = _widget->itemView();
+
+    _itemView->setModel(_model);
+    _itemView->setSelectionModel(new DummySelectionModel(_model, _itemView));
 
     QObject::connect(_model, SIGNAL(renameItem(KFileItem, QString)),
                      _emitter, SIGNAL(renameItem(KFileItem, QString)));
@@ -164,7 +172,7 @@ void KrInterView::refreshColors()
 
 void KrInterView::showContextMenu()
 {
-    showContextMenu(_itemView->viewport()->mapToGlobal(QPoint(0,0)));
+    _widget->showContextMenu(_itemView->viewport()->mapToGlobal(QPoint(0,0)));
 }
 
 void KrInterView::sortModeUpdated(int column, Qt::SortOrder order)
@@ -457,6 +465,10 @@ void KrInterView::pageDown()
         newIndex = _model->rowCount() - 1;
 
     setCurrentIndex(_model->index(newIndex, 0));
+
+//FIXME moveCursor is protected
+//_itemView->moveCursor(QAbstractItemView::MovePageDown, Qt::NoModifier);
+
     makeCurrentVisible();
 }
 
@@ -684,4 +696,55 @@ void KrInterView::itemsDeleted(const KFileItemList& items)
 
     makeCurrentVisible();
     _emitter->emitSelectionChanged();
+}
+
+QRect KrInterView::itemRect(const QModelIndex &index)
+{
+    return _widget->itemRect(index);
+}
+
+void KrInterView::setFileIconSize(int size)
+{
+    KrView::setFileIconSize(size);
+    _itemView->setIconSize(QSize(fileIconSize(), fileIconSize()));
+}
+
+void KrInterView::setSortMode(KrViewProperties::ColumnType sortColumn, bool descending)
+{
+    _widget->setSortMode(sortColumn, descending);
+}
+
+int KrInterView::itemsPerPage()
+{
+    return _widget->itemsPerPage();
+}
+
+void KrInterView::saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties)
+{
+    KrView::saveSettings(grp, properties);
+    _widget->saveSettings(grp, properties);
+}
+
+void KrInterView::doRestoreSettings(KConfigGroup grp)
+{
+    KrView::doRestoreSettings(grp);
+    _widget->restoreSettings(grp);
+}
+
+void KrInterView::renameCurrentItem()
+{
+    _widget->renameCurrentItem();
+}
+
+void KrInterView::copySettingsFrom(KrView *other)
+{
+    if(other->instance() == instance()) { // the other view is of the same type
+        KrInterView *v = static_cast<KrInterView*>(other);
+        _widget->copySettingsFrom(v->_widget);
+    }
+}
+
+void KrInterView::visibleColumnsChanged()
+{
+    _model->setExtensionEnabled(!_widget->isColumnHidden(KrViewProperties::Ext));
 }

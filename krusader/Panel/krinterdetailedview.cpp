@@ -38,37 +38,19 @@
 #include "krcolorcache.h"
 #include "../GUI/krstyleproxy.h"
 
-
-KrInterDetailedView::KrInterDetailedView(QWidget *parent, KrViewInstance &instance, KConfig *cfg):
-        QTreeView(parent),
-        KrInterView(instance, cfg, this),
-        _autoResizeColumns(true)
+KrInterDetailedView::KrInterDetailedView(QWidget *parentWidget, ViewWidgetParent *parent,
+                                       KrMouseHandler *mouseHandler, KConfig *cfg) : 
+    QTreeView(parentWidget),
+    ViewWidget(parent, mouseHandler),
+    _autoResizeColumns(true)
 {
-}
 
-KrInterDetailedView::~KrInterDetailedView()
-{
-    setModel(0);
-    delete _properties;
-    _properties = 0;
-    delete _operator;
-    _operator = 0;
-}
+//     KConfigGroup group(krConfig, "Private");
 
-void KrInterDetailedView::setup()
-{
-    KrInterView::setup();
-
-    KConfigGroup group(krConfig, "Private");
-
-    KConfigGroup grpSvr(_config, "Look&Feel");
-    _viewFont = grpSvr.readEntry("Filelist Font", _FilelistFont);
+//     KConfigGroup grpSvr(_config, "Look&Feel");
+//     _viewFont = grpSvr.readEntry("Filelist Font", _FilelistFont);
 
     setRootIsDecorated(false);
-
-    setModel(_model);
-
-    setSelectionModel(new DummySelectionModel(_model, this));
 
     header()->installEventFilter(this);
 
@@ -89,17 +71,19 @@ void KrInterDetailedView::setup()
     connect(header(), SIGNAL(sectionMoved(int, int, int)), this, SLOT(sectionMoved(int, int, int)));
     connect(_mouseHandler, SIGNAL(renameCurrentItem()), this, SLOT(renameCurrentItem()));
 
-    setSortMode(_properties->sortColumn, (_properties->sortOptions & KrViewProperties::Descending));
+    setSortMode(_parent->properties()->sortColumn,
+                (_parent->properties()->sortOptions & KrViewProperties::Descending));
     setSortingEnabled(true);
+
 }
 
 void KrInterDetailedView::currentChanged(const QModelIndex & current, const QModelIndex & previous)
 {
-    KrInterView::currentChanged(current);
+    _parent->currentChanged(current);
     QTreeView::currentChanged(current, previous);
 }
 
-void KrInterDetailedView::doRestoreSettings(KConfigGroup grp)
+void KrInterDetailedView::restoreSettings(KConfigGroup grp)
 {
     QByteArray savedState = grp.readEntry("Saved State", QByteArray());
 
@@ -108,26 +92,22 @@ void KrInterDetailedView::doRestoreSettings(KConfigGroup grp)
         hideColumn(KrViewProperties::Permissions);
         hideColumn(KrViewProperties::Owner);
         hideColumn(KrViewProperties::Group);
-        header()->resizeSection(KrViewProperties::Ext, QFontMetrics(_viewFont).width("tar.bz2  "));
-        header()->resizeSection(KrViewProperties::KrPermissions, QFontMetrics(_viewFont).width("rwx  "));
-        header()->resizeSection(KrViewProperties::Size, QFontMetrics(_viewFont).width("9") * 10);
+//FIXME        header()->resizeSection(KrViewProperties::Ext, QFontMetrics(_viewFont).width("tar.bz2  "));
+//FIXME        header()->resizeSection(KrViewProperties::KrPermissions, QFontMetrics(_viewFont).width("rwx  "));
+//FIXME        header()->resizeSection(KrViewProperties::Size, QFontMetrics(_viewFont).width("9") * 10);
 
         QDateTime tmp(QDate(2099, 12, 29), QTime(23, 59));
         QString desc = KGlobal::locale()->formatDateTime(tmp) + "  ";
 
-        header()->resizeSection(KrViewProperties::Modified, QFontMetrics(_viewFont).width(desc));
-    } else {
+//FIXME        header()->resizeSection(KrViewProperties::Modified, QFontMetrics(_viewFont).width(desc));
+    } else
         header()->restoreState(savedState);
-        _model->setExtensionEnabled(!isColumnHidden(KrViewProperties::Ext));
-    }
 
-    KrInterView::doRestoreSettings(grp);
+    _parent->visibleColumnsChanged();
 }
 
 void KrInterDetailedView::saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties)
 {
-    KrInterView::saveSettings(grp, properties);
-
     if(properties & KrViewProperties::PropColumns) {
         QByteArray state = header()->saveState();
         grp.writeEntry("Saved State", state);
@@ -138,8 +118,8 @@ int KrInterDetailedView::itemsPerPage()
 {
     QRect rect = visualRect(currentIndex());
     if (!rect.isValid()) {
-        for (int i = 0; i != _model->rowCount(); i++) {
-            rect = visualRect(_model->index(i, 0));
+        for (int i = 0; i != model()->rowCount(); i++) {
+            rect = visualRect(model()->index(i, 0));
             if (rect.isValid())
                 break;
         }
@@ -152,17 +132,12 @@ int KrInterDetailedView::itemsPerPage()
     return size;
 }
 
-void KrInterDetailedView::updateView()
-{
-}
-
 void KrInterDetailedView::keyPressEvent(QKeyEvent *e)
 {
-    if (!e || !_model->ready())
-        return ; // subclass bug
-    if (handleKeyEvent(e))    // did the view class handled the event?
+    if (_parent->handleKeyEvent(e))
         return;
-    QTreeView::keyPressEvent(e);
+    else
+        QTreeView::keyPressEvent(e);
 }
 
 void KrInterDetailedView::mousePressEvent(QMouseEvent * ev)
@@ -228,7 +203,7 @@ bool KrInterDetailedView::event(QEvent * e)
 void KrInterDetailedView::renameCurrentItem()
 {
     QModelIndex cIndex = currentIndex();
-    QModelIndex nameIndex = _model->index(cIndex.row(), KrViewProperties::Name);
+    QModelIndex nameIndex = model()->index(cIndex.row(), KrViewProperties::Name);
     edit(nameIndex);
     updateEditorData();
     update(nameIndex);
@@ -256,8 +231,8 @@ void KrInterDetailedView::showContextMenu(const QPoint & p)
 
     QVector<QAction*> actions;
 
-    for(int i = KrViewProperties::Name; i < KrViewProperties::MAX_COLUMNS; i++) {
-        QString text = (_model->headerData(i, Qt::Horizontal)).toString();
+    for(int i = 0; i < model()->columnCount(); i++) {
+        QString text = (model()->headerData(i, Qt::Horizontal)).toString();
         QAction *act = popup.addAction(text);
         act->setCheckable(true);
         act->setChecked(!header()->isSectionHidden(i));
@@ -283,11 +258,10 @@ void KrInterDetailedView::showContextMenu(const QPoint & p)
             header()->showSection(idx);
         else
             header()->hideSection(idx);
-
-        if(KrViewProperties::Ext == idx)
-            _model->setExtensionEnabled(!header()->isSectionHidden(KrViewProperties::Ext));
     }
-    op()->settingsChanged(KrViewProperties::PropColumns);
+
+    _parent->visibleColumnsChanged();
+    _parent->settingsChanged(KrViewProperties::PropColumns);
 }
 
 void KrInterDetailedView::sectionResized(int column, int oldSize, int newSize)
@@ -300,10 +274,10 @@ void KrInterDetailedView::sectionResized(int column, int oldSize, int newSize)
     // regression in combination with bug 178630 (see fix in comment #8).
     if ((QApplication::mouseButtons() & Qt::LeftButton) && header()->underMouse()) {
         _autoResizeColumns = false;
-        op()->settingsChanged(KrViewProperties::PropColumns);
+    _parent->settingsChanged(KrViewProperties::PropColumns);
     }
 
-    if (oldSize == newSize || !_model->ready())
+    if (oldSize == newSize)
         return;
 
     recalculateColumnSizes();
@@ -311,15 +285,16 @@ void KrInterDetailedView::sectionResized(int column, int oldSize, int newSize)
 
 void KrInterDetailedView::sectionMoved(int logicalIndex, int oldVisualIndex, int newVisualIndex)
 {
-    op()->settingsChanged(KrViewProperties::PropColumns);
+    _parent->settingsChanged(KrViewProperties::PropColumns);
 }
 
 void KrInterDetailedView::recalculateColumnSizes()
 {
     if(!_autoResizeColumns)
         return;
+
     int sum = 0;
-    for (int i = 0; i != _model->columnCount(); i++) {
+    for (int i = 0; i != model()->columnCount(); i++) {
         if (!isColumnHidden(i))
             sum += header()->sectionSize(i);
     }
@@ -334,6 +309,8 @@ void KrInterDetailedView::recalculateColumnSizes()
 
 bool KrInterDetailedView::viewportEvent(QEvent * event)
 {
+//FIXME
+#if 0
     if (event->type() == QEvent::ToolTip) {
         QHelpEvent *he = static_cast<QHelpEvent*>(event);
         const QModelIndex index = indexAt(he->pos());
@@ -359,6 +336,7 @@ bool KrInterDetailedView::viewportEvent(QEvent * event)
             }
         }
     }
+#endif
     return QTreeView::viewportEvent(event);
 }
 
@@ -366,12 +344,6 @@ void KrInterDetailedView::setSortMode(KrViewProperties::ColumnType sortColumn, b
 {
     Qt::SortOrder sortDir = descending ? Qt::DescendingOrder : Qt::AscendingOrder;
     sortByColumn(sortColumn, sortDir);
-}
-
-void KrInterDetailedView::setFileIconSize(int size)
-{
-    KrView::setFileIconSize(size);
-    setIconSize(QSize(fileIconSize(), fileIconSize()));
 }
 
 QRect KrInterDetailedView::itemRect(const QModelIndex &index)
@@ -382,12 +354,12 @@ QRect KrInterDetailedView::itemRect(const QModelIndex &index)
     return r;
 }
 
-void KrInterDetailedView::copySettingsFrom(KrView *other)
+void KrInterDetailedView::copySettingsFrom(ViewWidget *other)
 {
-    if(other->instance() == instance()) { // the other view is of the same type
-        KrInterDetailedView *v = static_cast<KrInterDetailedView*>(other);
-        header()->restoreState(v->header()->saveState());
-        _model->setExtensionEnabled(!isColumnHidden(KrViewProperties::Ext));
+    KrInterDetailedView *otherWidget = qobject_cast<KrInterDetailedView*>(other->itemView());
+    if(otherWidget) { // the other view is of the same type
+        header()->restoreState(otherWidget->header()->saveState());
+        _parent->visibleColumnsChanged();
         recalculateColumnSizes();
     }
 }

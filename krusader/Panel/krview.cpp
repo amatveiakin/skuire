@@ -68,7 +68,6 @@ KrView::Operator::Operator(KrView *view, KrQuickSearch *quickSearch, QuickFilter
     connect(&_saveDefaultSettingsTimer, SIGNAL(timeout()), SLOT(saveDefaultSettings()));
 
     connect(&KrColorCache::getColorCache(), SIGNAL(colorsRefreshed()), SLOT(colorSettingsChanged()));
-    _view->widget()->installEventFilter(this);
 
     _quickSearch->setFocusProxy(_view->widget());
     connect(quickSearch, SIGNAL(textChanged(const QString&)), this, SLOT(quickSearch(const QString&)));
@@ -455,12 +454,12 @@ KrView::~KrView()
     _instance.m_objects.removeOne(this);
     delete _previews;
     _previews = 0;
+    delete _operator;
+    _operator = 0;
+    delete _properties;
+    _properties = 0;
     delete _emitter;
     _emitter = 0;
-    if (_properties)
-        qFatal("A class inheriting KrView didn't delete _properties!");
-    if (_operator)
-        qFatal("A class inheriting KrView didn't delete _operator!");
 }
 
 void KrView::init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter)
@@ -469,8 +468,8 @@ void KrView::init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *
     initProperties();
     _operator = createOperator(quickSearch, quickFilter);
     setup();
+    widget()->installEventFilter(op());
     restoreDefaultSettings();
-    KConfigGroup grp(_config, _instance.name());
     enableUpdateDefaultSettings(true);
     _instance.m_objects.append(this);
 }
