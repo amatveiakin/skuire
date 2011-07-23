@@ -584,7 +584,7 @@ void KrInterView::clear()
 
     _selection.clear();
     _itemView->clearSelection();
-    _itemView->setCurrentIndex(QModelIndex());
+    setCurrentIndex(QModelIndex());
     _model->clear();
 
     redraw();
@@ -601,7 +601,7 @@ void KrInterView::refresh()
         return;
 
     _model->refresh();
-    _itemView->setCurrentIndex(_model->index(0, 0));
+    setCurrentIndex(_model->index(0, 0));
 
     if(!selection.isEmpty())
         setSelection(selection);
@@ -637,7 +637,7 @@ void KrInterView::newItems(const KFileItemList& items)
         bool wasEmpty = !count();
         _model->addItems(itemsAfterFilter);
         if (wasEmpty) {
-            _itemView->setCurrentIndex(_model->index(0, 0));
+            setCurrentIndex(_model->index(0, 0));
             makeCurrentVisible();
         }
         if (_previews)
@@ -706,7 +706,7 @@ void KrInterView::itemsDeleted(const KFileItemList& items)
     if(_previews)
         _previews->itemsDeleted(items);
 
-    _itemView->setCurrentIndex(_model->removeItems(items));
+    setCurrentIndex(_model->removeItems(items));
 
     makeCurrentVisible();
     _emitter->emitSelectionChanged();
