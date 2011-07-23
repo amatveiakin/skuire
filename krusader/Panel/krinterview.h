@@ -39,6 +39,7 @@ public:
     virtual void currentChanged(const QModelIndex &current) = 0;
     virtual void settingsChanged(KrViewProperties::PropertyType properties) = 0;
     virtual void visibleColumnsChanged() = 0;
+    virtual void toggleSelected(QModelIndexList indexes) = 0;
 };
 
 
@@ -187,6 +188,7 @@ protected:
         op()->settingsChanged(properties);
     }
     virtual void visibleColumnsChanged();
+    virtual void toggleSelected(QModelIndexList indexes);
 
     // KrCalcSpaceDialog::Client implementation
     virtual void updateItemSize(KUrl url, KIO::filesize_t newSize);

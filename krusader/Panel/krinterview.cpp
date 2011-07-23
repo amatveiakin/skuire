@@ -763,3 +763,15 @@ void KrInterView::visibleColumnsChanged()
 {
     _model->setExtensionEnabled(!_widget->isColumnHidden(KrViewProperties::Ext));
 }
+
+void KrInterView::toggleSelected(QModelIndexList indexes)
+{
+    foreach(const QModelIndex &index, indexes) {
+        KrView::Item *item = _model->itemAt(index);
+        if (item)
+            setSelected(item, !isSelected(item));
+    }
+    _emitter->emitSelectionChanged();
+
+    redraw();
+}

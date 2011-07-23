@@ -110,8 +110,7 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
     if ((e->key() != Qt::Key_Left && e->key() != Qt::Key_Right) &&
             (_parent->handleKeyEvent(e)))      // did the view class handled the event?
         return;
-//FIXME
-#if 0
+
     switch (e->key()) {
     case Qt::Key_Right : {
         if (e->modifiers() == Qt::ControlModifier) {   // let the panel handle it
@@ -123,21 +122,19 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
             break;
 
         int newCurrentRow = currentIndex().row() + itemsPerPage();
-        if(newCurrentRow >= model()->rowCount())
+        if (newCurrentRow >= model()->rowCount())
             newCurrentRow = model()->rowCount() - 1;
 
-
         if (e->modifiers() & Qt::ShiftModifier) {
-            for (int row = currentIndex().row(); row <= newCurrentRow; row++) {
-                KrView::Item *item = model()->itemAt(row);
-                setSelected(item, !isSelected(item));
-            }
-            _emitter->emitSelectionChanged();
+            QModelIndexList toggleSelected;
+            for (int row = currentIndex().row(); row < newCurrentRow; row++)
+                toggleSelected << model()->index(row, 0);
+            _parent->toggleSelected(toggleSelected);
         }
 
         if (newCurrentRow >= 0) {
-            KrInterView::setCurrentIndex(model()->index(newCurrentRow, 0));
-            makeCurrentVisible();
+            setCurrentIndex(model()->index(newCurrentRow, 0));
+            scrollTo(currentIndex());
         }
 
         break;
@@ -155,18 +152,16 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
         if(newCurrentRow < 0)
             newCurrentRow = 0;
 
-
         if (e->modifiers() & Qt::ShiftModifier) {
-            for (int row = currentIndex().row(); row >= newCurrentRow; row--) {
-                KrView::Item *item = model()->itemAt(row);
-                setSelected(item, !isSelected(item));
-            }
-            _emitter->emitSelectionChanged();
+            QModelIndexList toggleSelected;
+            for (int row = currentIndex().row(); row > newCurrentRow; row--)
+                toggleSelected << model()->index(row, 0);
+            _parent->toggleSelected(toggleSelected);
         }
 
         if (newCurrentRow >= 0) {
-            KrInterView::setCurrentIndex(model()->index(newCurrentRow, 0));
-            makeCurrentVisible();
+            setCurrentIndex(model()->index(newCurrentRow, 0));
+            scrollTo(currentIndex());
         }
 
         break;
@@ -174,9 +169,6 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
     default:
         QAbstractItemView::keyPressEvent(e);
     }
-#else
-    QAbstractItemView::keyPressEvent(e);
-#endif
 }
 
 void KrInterBriefView::wheelEvent(QWheelEvent *ev)
@@ -545,5 +537,5 @@ QRect KrInterBriefView::itemRect(const QModelIndex &index)
 
 void KrInterBriefView::copySettingsFrom(ViewWidget *other)
 {
-//FIXME
+//FIXME number of columns
 }
