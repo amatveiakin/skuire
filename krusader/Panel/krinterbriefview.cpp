@@ -537,5 +537,9 @@ QRect KrInterBriefView::itemRect(const QModelIndex &index)
 
 void KrInterBriefView::copySettingsFrom(ViewWidget *other)
 {
-//FIXME number of columns
+    KrInterBriefView *otherWidget = qobject_cast<KrInterBriefView*>(other->itemView());
+    if(otherWidget) { // the other view is of the same type
+        _numOfColumns = otherWidget->_numOfColumns;
+        updateGeometries();
+    }
 }
