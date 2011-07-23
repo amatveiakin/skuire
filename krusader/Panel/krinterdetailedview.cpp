@@ -108,7 +108,7 @@ void KrInterDetailedView::restoreSettings(KConfigGroup grp)
 
 void KrInterDetailedView::saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties)
 {
-    if(properties & KrViewProperties::PropColumns) {
+    if (properties & KrViewProperties::PropColumns) {
         QByteArray state = header()->saveState();
         grp.writeEntry("Saved State", state);
     }
@@ -246,15 +246,15 @@ void KrInterDetailedView::showContextMenu(const QPoint & p)
 
     QAction *res = popup.exec(p);
 
-    if(res == actAutoResize) {
+    if (res == actAutoResize) {
         _autoResizeColumns = !_autoResizeColumns;
         recalculateColumnSizes();
     } else {
         int idx = actions.indexOf(res);
-        if(idx < 0)
+        if (idx < 0)
             return;
 
-        if(header()->isSectionHidden(idx))
+        if (header()->isSectionHidden(idx))
             header()->showSection(idx);
         else
             header()->hideSection(idx);
@@ -274,7 +274,7 @@ void KrInterDetailedView::sectionResized(int column, int oldSize, int newSize)
     // regression in combination with bug 178630 (see fix in comment #8).
     if ((QApplication::mouseButtons() & Qt::LeftButton) && header()->underMouse()) {
         _autoResizeColumns = false;
-    _parent->settingsChanged(KrViewProperties::PropColumns);
+        _parent->settingsChanged(KrViewProperties::PropColumns);
     }
 
     if (oldSize == newSize)
@@ -290,7 +290,7 @@ void KrInterDetailedView::sectionMoved(int logicalIndex, int oldVisualIndex, int
 
 void KrInterDetailedView::recalculateColumnSizes()
 {
-    if(!_autoResizeColumns)
+    if (!_autoResizeColumns)
         return;
 
     int sum = 0;
@@ -357,7 +357,7 @@ QRect KrInterDetailedView::itemRect(const QModelIndex &index)
 void KrInterDetailedView::copySettingsFrom(ViewWidget *other)
 {
     KrInterDetailedView *otherWidget = qobject_cast<KrInterDetailedView*>(other->itemView());
-    if(otherWidget) { // the other view is of the same type
+    if (otherWidget) { // the other view is of the same type
         header()->restoreState(otherWidget->header()->saveState());
         _parent->visibleColumnsChanged();
         recalculateColumnSizes();
