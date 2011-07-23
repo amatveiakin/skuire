@@ -31,21 +31,30 @@ class KrInterBriefView : public KrItemView
 {
     Q_OBJECT
 public:
-    KrInterBriefView(QWidget *parent, KrViewInstance &instance, KConfig *cfg);
+    KrInterBriefView(QWidget *parentWidget, ViewWidgetParent *parent,
+               KrMouseHandler *mouseHandler, KConfig *cfg);
     virtual ~KrInterBriefView();
 
     // ---- reimplemented from QAbstractItemView ----
     virtual QRect visualRect(const QModelIndex&) const;
     virtual QModelIndex indexAt(const QPoint&) const;
     virtual void scrollTo(const QModelIndex&, QAbstractItemView::ScrollHint = QAbstractItemView::EnsureVisible);
+    virtual void setModel(QAbstractItemModel *model);
 
-    // ---- reimplemented from KrView ----
-    virtual int  itemsPerPage();
-    virtual void updateView();
-    virtual bool ensureVisibilityAfterSelect() {
-        return false;
-    }
+    // ViewWidget implentation
+    virtual QRect itemRect(const QModelIndex &index);
     virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending);
+    virtual int itemsPerPage();
+    virtual void saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties);
+    virtual void restoreSettings(KConfigGroup grp);
+    virtual void copySettingsFrom(ViewWidget *other);
+    virtual void showContextMenu(const QPoint &p);
+    virtual bool isColumnHidden(int column) {
+        return column != 0;
+    }
+    virtual bool hasAlternatingTable() {
+        return true;
+    }
 
 protected slots:
     // ---- reimplemented from QAbstractItemView ----
@@ -62,14 +71,6 @@ protected:
     virtual int verticalOffset() const;
     virtual bool isIndexHidden(const QModelIndex&) const;
 //     virtual QRegion visualRegionForSelection(const QItemSelection&) const;
-
-    // ---- reimplemented from KrView ----
-    virtual void setup();
-    virtual void doRestoreSettings(KConfigGroup group);
-    virtual void saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties);
-    virtual void copySettingsFrom(KrView *other);
-    virtual QRect itemRect(const QModelIndex &index);
-    virtual void showContextMenu(const QPoint & p);
 
     int getItemHeight() const;
     int elementWidth(const QModelIndex & index);

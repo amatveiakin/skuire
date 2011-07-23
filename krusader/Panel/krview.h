@@ -76,8 +76,7 @@ public:
         filterMask(KRQuery("*")),
         filterApplysToDirs(false),
         localeAwareCompareIsCaseSensitive(false),
-        humanReadableSize(),
-        numberOfColumns(1)
+        humanReadableSize()
     {}
 
     enum PropertyType { NoProperty = 0x0, PropIconSize = 0x1, PropShowPreviews = 0x2,
@@ -107,7 +106,6 @@ public:
     bool localeAwareCompareIsCaseSensitive; // mostly, it is not! depends on LC_COLLATE
     bool humanReadableSize;  // display size as KB, MB or just as a long number
     QStringList atomicExtensions; // list of strings, which will be treated as one extension. Must start with a dot.
-    int numberOfColumns;    // the number of columns in the brief view
 };
 
 

@@ -62,7 +62,15 @@ public:
     virtual void restoreSettings(KConfigGroup grp) = 0;
     virtual void copySettingsFrom(ViewWidget *other) = 0;
 
+    virtual bool hasAlternatingTable() {
+        return false;
+    }
+
 protected:
+    const KrViewProperties *properties() const {
+        return _parent->properties();
+    }
+
     ViewWidgetParent *_parent;
     KrMouseHandler *_mouseHandler;
 };

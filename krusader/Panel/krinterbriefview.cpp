@@ -43,65 +43,55 @@
 #include "../GUI/krstyleproxy.h"
 
 
-KrInterBriefView::KrInterBriefView(QWidget *parent, KrViewInstance &instance, KConfig *cfg) :
-        KrItemView(parent, instance, cfg),
+KrInterBriefView::KrInterBriefView(QWidget *parentWidget, ViewWidgetParent *parent,
+                       KrMouseHandler *mouseHandler, KConfig *cfg) :
+        KrItemView(parentWidget, parent, mouseHandler, cfg),
+        _numOfColumns(_NumberOfBriefColumns),
         _header(0)
 {
+    _header = new QHeaderView(Qt::Horizontal, this);
+    _header->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
+    _header->setParent(this);
+    _header->setStretchLastSection(true);
+    _header->setResizeMode(QHeaderView::Fixed);
+    _header->setClickable(true);
+    _header->setSortIndicatorShown(true);
+    _header->installEventFilter(this);
+
+    setSortMode(properties()->sortColumn,
+                properties()->sortOptions & KrViewProperties::Descending);
 }
 
 KrInterBriefView::~KrInterBriefView()
 {
-    delete _properties;
-    _properties = 0;
 }
 
-void KrInterBriefView::setup()
+void KrInterBriefView::setModel(QAbstractItemModel *model)
 {
-    KrItemView::setup();
-
-    _model->setExtensionEnabled(false);
-    _model->setAlternatingTable(true);
-
-    _header = new QHeaderView(Qt::Horizontal, this);
-    _header->setDefaultAlignment(Qt::AlignLeft | Qt::AlignVCenter);
-    _header->setParent(this);
-    _header->setModel(_model);
+    QAbstractItemView::setModel(model);
+    _header->setModel(model);
     _header->hideSection(KrViewProperties::Type);
     _header->hideSection(KrViewProperties::Permissions);
     _header->hideSection(KrViewProperties::KrPermissions);
     _header->hideSection(KrViewProperties::Owner);
     _header->hideSection(KrViewProperties::Group);
-    _header->setStretchLastSection(true);
-    _header->setResizeMode(QHeaderView::Fixed);
-    _header->setClickable(true);
-    _header->setSortIndicatorShown(true);
     connect(_header, SIGNAL(sortIndicatorChanged(int, Qt::SortOrder)),
-            _model, SLOT(sort(int, Qt::SortOrder)));
-    _header->installEventFilter(this);
-
-    _numOfColumns = _properties->numberOfColumns;
-
-    setSortMode(_properties->sortColumn, (_properties->sortOptions & KrViewProperties::Descending));
+            model, SLOT(sort(int, Qt::SortOrder)));
 }
 
-void KrInterBriefView::doRestoreSettings(KConfigGroup group)
+void KrInterBriefView::restoreSettings(KConfigGroup group)
 {
-    _properties->numberOfColumns = group.readEntry("Number Of Brief Columns", _NumberOfBriefColumns);
-    if (_properties->numberOfColumns < 1)
-        _properties->numberOfColumns = 1;
-    else if (_properties->numberOfColumns > MAX_BRIEF_COLS)
-        _properties->numberOfColumns = MAX_BRIEF_COLS;
-
-    _numOfColumns = _properties->numberOfColumns;
-
-    KrItemView::doRestoreSettings(group);
+    _numOfColumns = group.readEntry("Number Of Brief Columns", _NumberOfBriefColumns);
+    if (_numOfColumns  < 1)
+        _numOfColumns  = 1;
+    else if (_numOfColumns > MAX_BRIEF_COLS)
+        _numOfColumns  = MAX_BRIEF_COLS;
 
     updateGeometries();
 }
 
 void KrInterBriefView::saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties)
 {
-    KrItemView::saveSettings(grp, properties);
     if(properties & KrViewProperties::PropColumns)
         grp.writeEntry("Number Of Brief Columns", _numOfColumns);
 }
@@ -115,17 +105,13 @@ int KrInterBriefView::itemsPerPage()
     return numRows;
 }
 
-void KrInterBriefView::updateView()
-{
-}
-
 void KrInterBriefView::keyPressEvent(QKeyEvent *e)
 {
-    if (!e || !_model->ready())
-        return ; // subclass bug
     if ((e->key() != Qt::Key_Left && e->key() != Qt::Key_Right) &&
-            (handleKeyEvent(e)))      // did the view class handled the event?
+            (_parent->handleKeyEvent(e)))      // did the view class handled the event?
         return;
+//FIXME
+#if 0
     switch (e->key()) {
     case Qt::Key_Right : {
         if (e->modifiers() == Qt::ControlModifier) {   // let the panel handle it
@@ -137,20 +123,20 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
             break;
 
         int newCurrentRow = currentIndex().row() + itemsPerPage();
-        if(newCurrentRow >= _model->rowCount())
-            newCurrentRow = _model->rowCount() - 1;
+        if(newCurrentRow >= model()->rowCount())
+            newCurrentRow = model()->rowCount() - 1;
 
 
         if (e->modifiers() & Qt::ShiftModifier) {
             for (int row = currentIndex().row(); row <= newCurrentRow; row++) {
-                KrView::Item *item = _model->itemAt(row);
+                KrView::Item *item = model()->itemAt(row);
                 setSelected(item, !isSelected(item));
             }
             _emitter->emitSelectionChanged();
         }
 
         if (newCurrentRow >= 0) {
-            KrInterView::setCurrentIndex(_model->index(newCurrentRow, 0));
+            KrInterView::setCurrentIndex(model()->index(newCurrentRow, 0));
             makeCurrentVisible();
         }
 
@@ -172,14 +158,14 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
 
         if (e->modifiers() & Qt::ShiftModifier) {
             for (int row = currentIndex().row(); row >= newCurrentRow; row--) {
-                KrView::Item *item = _model->itemAt(row);
+                KrView::Item *item = model()->itemAt(row);
                 setSelected(item, !isSelected(item));
             }
             _emitter->emitSelectionChanged();
         }
 
         if (newCurrentRow >= 0) {
-            KrInterView::setCurrentIndex(_model->index(newCurrentRow, 0));
+            KrInterView::setCurrentIndex(model()->index(newCurrentRow, 0));
             makeCurrentVisible();
         }
 
@@ -188,6 +174,9 @@ void KrInterBriefView::keyPressEvent(QKeyEvent *e)
     default:
         QAbstractItemView::keyPressEvent(e);
     }
+#else
+    QAbstractItemView::keyPressEvent(e);
+#endif
 }
 
 void KrInterBriefView::wheelEvent(QWheelEvent *ev)
@@ -219,7 +208,7 @@ void KrInterBriefView::showContextMenu(const QPoint & p)
         QAction *act = popup.addAction(QString("%1").arg(i));
         act->setData(QVariant(COL_ID + i));
         act->setCheckable(true);
-        act->setChecked(properties()->numberOfColumns == i);
+        act->setChecked(_numOfColumns == i);
     }
 
     QAction * res = popup.exec(p);
@@ -228,10 +217,9 @@ void KrInterBriefView::showContextMenu(const QPoint & p)
         result = res->data().toInt();
 
     if (result > COL_ID && result <= COL_ID + MAX_BRIEF_COLS) {
-        _properties->numberOfColumns = result - COL_ID;
-        _numOfColumns = _properties->numberOfColumns;
+        _numOfColumns = result - COL_ID;
         updateGeometries();
-        op()->settingsChanged(KrViewProperties::PropColumns);
+        _parent->settingsChanged(KrViewProperties::PropColumns);
     }
 }
 
@@ -289,24 +277,24 @@ QModelIndex KrInterBriefView::indexAt(const QPoint& p) const
     int row = y / itemHeight;
     int col = x / itemWidth;
 
-    int numColsTotal = _model->rowCount() / numRows;
-    if(_model->rowCount() % numRows)
+    int numColsTotal = model()->rowCount() / numRows;
+    if(model()->rowCount() % numRows)
         numColsTotal++;
 
     if(row < numRows && col < numColsTotal)
-        return _model->index((col * numRows) + row, 0);
+        return model()->index((col * numRows) + row, 0);
 
     return QModelIndex();
 }
 
 QModelIndex KrInterBriefView::moveCursor(QAbstractItemView::CursorAction cursorAction, Qt::KeyboardModifiers)
 {
-    if (_model->rowCount() == 0)
+    if (model()->rowCount() == 0)
         return QModelIndex();
 
     QModelIndex current = currentIndex();
     if (!current.isValid())
-        return _model->index(0, 0);
+        return model()->index(0, 0);
 
     switch (cursorAction) {
     case MoveLeft:
@@ -314,33 +302,33 @@ QModelIndex KrInterBriefView::moveCursor(QAbstractItemView::CursorAction cursorA
         int newRow = current.row() - itemsPerPage();
         if (newRow < 0)
             newRow = 0;
-        return _model->index(newRow, 0);
+        return model()->index(newRow, 0);
     }
     case MoveRight:
     case MovePageUp: {
         int newRow = current.row() + itemsPerPage();
-        if (newRow >= _model->rowCount())
-            newRow = _model->rowCount() - 1;
-        return _model->index(newRow, 0);
+        if (newRow >= model()->rowCount())
+            newRow = model()->rowCount() - 1;
+        return model()->index(newRow, 0);
     }
     case MovePrevious:
     case MoveUp: {
         int newRow = current.row() - 1;
         if (newRow < 0)
             newRow = 0;
-        return _model->index(newRow, 0);
+        return model()->index(newRow, 0);
     }
     case MoveNext:
     case MoveDown: {
         int newRow = current.row() + 1;
-        if (newRow >= _model->rowCount())
-            newRow = _model->rowCount() - 1;
-        return _model->index(newRow, 0);
+        if (newRow >= model()->rowCount())
+            newRow = model()->rowCount() - 1;
+        return model()->index(newRow, 0);
     }
     case MoveHome:
-        return _model->index(0, 0);
+        return model()->index(0, 0);
     case MoveEnd:
-        return _model->index(_model->rowCount() - 1, 0);
+        return model()->index(model()->rowCount() - 1, 0);
     }
 
     return current;
@@ -360,6 +348,7 @@ bool KrInterBriefView::isIndexHidden(const QModelIndex&ndx) const
 {
     return ndx.column() != 0;
 }
+
 #if 0
 QRegion KrInterBriefView::visualRegionForSelection(const QItemSelection &selection) const
 {
@@ -391,11 +380,12 @@ QRegion KrInterBriefView::visualRegionForSelection(const QItemSelection &selecti
     return selectionRegion;
 }
 #endif
+
 void KrInterBriefView::paintEvent(QPaintEvent *e)
 {
     QStyleOptionViewItemV4 option = viewOptions();
     option.widget = this;
-    option.decorationSize = QSize(_fileIconSize, _fileIconSize);
+    option.decorationSize = iconSize();
     option.decorationPosition = QStyleOptionViewItem::Left;
     QPainter painter(viewport());
 
@@ -433,7 +423,7 @@ int KrInterBriefView::getItemHeight() const
     int height = textHeight;
     int iconSize = 0;
     if (properties()->displayIcons)
-        iconSize = _fileIconSize;
+        iconSize = this->iconSize().height();
     if (iconSize > textHeight)
         height = iconSize;
     if (height == 0)
@@ -462,10 +452,10 @@ void KrInterBriefView::updateGeometries()
             if (!_header->isSectionHidden(i))
                 _header->resizeSection(i, sectWidth);
 
-        QMetaObject::invokeMethod(_header, "updateGeometries");
+        QMetaObject::invokeMethod(_header, "updateGeometries"); // UGLY isn't it ?
     }
 
-    if (_model->rowCount() <= 0)
+    if (model()->rowCount() <= 0)
         horizontalScrollBar()->setRange(0, 0);
     else {
         int itemsPerColumn = viewport()->height() / getItemHeight();
@@ -474,8 +464,8 @@ void KrInterBriefView::updateGeometries()
         int columnWidth = (viewport()->width()) / _numOfColumns;
         if ((viewport()->width()) % _numOfColumns)
             columnWidth++;
-        int maxWidth = _model->rowCount() / itemsPerColumn;
-        if (_model->rowCount() % itemsPerColumn)
+        int maxWidth = model()->rowCount() / itemsPerColumn;
+        if (model()->rowCount() % itemsPerColumn)
             maxWidth++;
         maxWidth *= columnWidth;
         if (maxWidth > viewport()->width()) {
@@ -516,7 +506,7 @@ int KrInterBriefView::elementWidth(const QModelIndex & index)
 
 void KrInterBriefView::intersectionSet(const QRect &rect, QVector<QModelIndex> &ndxList)
 {
-    int maxNdx = _model->rowCount();
+    int maxNdx = model()->rowCount();
     int width = (viewport()->width()) / _numOfColumns;
     if ((viewport()->width()) % _numOfColumns)
         width++;
@@ -544,7 +534,7 @@ void KrInterBriefView::intersectionSet(const QRect &rect, QVector<QModelIndex> &
         for (int j = xmin; j < xmax; j++) {
             int ndx = j * items + i;
             if (ndx < maxNdx)
-                ndxList.append(_model->index(ndx, 0));
+                ndxList.append(model()->index(ndx, 0));
         }
 }
 
@@ -553,13 +543,7 @@ QRect KrInterBriefView::itemRect(const QModelIndex &index)
     return visualRect(index);
 }
 
-void KrInterBriefView::copySettingsFrom(KrView *other)
+void KrInterBriefView::copySettingsFrom(ViewWidget *other)
 {
-    if(other->instance() == instance()) { // the other view is of the same type
-        KrInterBriefView *v = static_cast<KrInterBriefView*>(other);
-        int column = v->_model->lastSortOrder();
-        Qt::SortOrder sortDir = v->_model->lastSortDir();
-        _header->setSortIndicator(column, sortDir);
-        _model->sort(column, sortDir);
-    }
+//FIXME
 }

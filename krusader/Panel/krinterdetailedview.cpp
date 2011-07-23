@@ -39,7 +39,7 @@
 #include "../GUI/krstyleproxy.h"
 
 KrInterDetailedView::KrInterDetailedView(QWidget *parentWidget, ViewWidgetParent *parent,
-                                       KrMouseHandler *mouseHandler, KConfig *cfg) : 
+                                         KrMouseHandler *mouseHandler, KConfig *cfg) : 
     QTreeView(parentWidget),
     ViewWidget(parent, mouseHandler),
     _autoResizeColumns(true)
@@ -71,8 +71,8 @@ KrInterDetailedView::KrInterDetailedView(QWidget *parentWidget, ViewWidgetParent
     connect(header(), SIGNAL(sectionMoved(int, int, int)), this, SLOT(sectionMoved(int, int, int)));
     connect(_mouseHandler, SIGNAL(renameCurrentItem()), this, SLOT(renameCurrentItem()));
 
-    setSortMode(_parent->properties()->sortColumn,
-                (_parent->properties()->sortOptions & KrViewProperties::Descending));
+    setSortMode(properties()->sortColumn,
+                (properties()->sortOptions & KrViewProperties::Descending));
     setSortingEnabled(true);
 
 }

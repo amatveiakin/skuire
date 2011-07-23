@@ -65,6 +65,9 @@ void KrViewFactory::init()
     new KrViewInstanceImpl<KrInterView> (0, "KrInterDetailedView",
         i18n("&Detailed View"), "view-list-details", Qt::ALT + Qt::SHIFT + Qt::Key_D);
 
+    new KrViewInstanceImpl<KrInterView> (1, "KrInterBriefView",
+        i18n("&Brief View"), "view-list-icons", Qt::ALT + Qt::SHIFT + Qt::Key_B);
+
 //     new KrViewInstanceImpl<KrInterDetailedView> (0, "KrInterDetailedView",
 //         i18n("&Detailed View"), "view-list-details", Qt::ALT + Qt::SHIFT + Qt::Key_D);
 

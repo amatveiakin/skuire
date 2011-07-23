@@ -28,30 +28,16 @@
 #include <kconfig.h>
 
 
-KrItemView::KrItemView(QWidget *parent, KrViewInstance &instance, KConfig *cfg) :
-    QAbstractItemView(parent),
-    KrInterView(instance, cfg, this)
+KrItemView::KrItemView(QWidget *parentWidget, ViewWidgetParent *parent,
+                       KrMouseHandler *mouseHandler, KConfig *cfg) :
+    QAbstractItemView(parentWidget),
+    ViewWidget(parent, mouseHandler)
 {
-}
-
-KrItemView::~KrItemView()
-{
-    setModel(0);
-    delete _operator;
-    _operator = 0;
-}
-
-void KrItemView::setup()
-{
-    KrInterView::setup();
-
     setSelectionMode(QAbstractItemView::NoSelection);
 
-    setModel(_model);
-    setSelectionModel(new DummySelectionModel(_model, this));
-
-    KConfigGroup grpSvr(_config, "Look&Feel");
-    _viewFont = grpSvr.readEntry("Filelist Font", _FilelistFont);
+//FIXME
+//     KConfigGroup grpSvr(_config, "Look&Feel");
+//     _viewFont = grpSvr.readEntry("Filelist Font", _FilelistFont);
 
     setStyle(new KrStyleProxy());
     setItemDelegate(new KrInterViewItemDelegate());
@@ -62,23 +48,16 @@ void KrItemView::setup()
     connect(_mouseHandler, SIGNAL(renameCurrentItem()), SLOT(renameCurrentItem()));
 }
 
-void KrItemView::setFileIconSize(int size)
-{
-    KrView::setFileIconSize(size);
-    setIconSize(QSize(fileIconSize(), fileIconSize()));
-    updateGeometries();
-}
-
 void KrItemView::currentChanged(const QModelIndex & current, const QModelIndex & previous)
 {
-    KrInterView::currentChanged(current);
+    _parent->currentChanged(current);
     QAbstractItemView::currentChanged(current, previous);
 }
 
 void KrItemView::renameCurrentItem()
 {
     QModelIndex cIndex = currentIndex();
-    QModelIndex nameIndex = _model->index(cIndex.row(), KrViewProperties::Name);
+    QModelIndex nameIndex = model()->index(cIndex.row(), KrViewProperties::Name);
     edit(nameIndex);
     updateEditorData();
     update(nameIndex);

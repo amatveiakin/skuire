@@ -1,7 +1,7 @@
 set(Panel_SRCS
     calcspacethread.cpp
     urlrequester.cpp
-#     kritemview.cpp
+    kritemview.cpp
     quickfilter.cpp
     viewactions.cpp
     listpanelactions.cpp
@@ -24,7 +24,7 @@ set(Panel_SRCS
     krselectionmode.cpp 
     krvfsmodel.cpp
     krinterview.cpp
-#     krinterbriefview.cpp
+    krinterbriefview.cpp
     krinterdetailedview.cpp
     krinterviewitemdelegate.cpp
     krviewfactory.cpp

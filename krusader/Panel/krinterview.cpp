@@ -26,7 +26,9 @@
 #include "../defaults.h"
 
 //HACK
+#include "krviewfactory.h"
 #include "krinterdetailedview.h"
+#include "krinterbriefview.h"
 
 
 KrInterView::KrInterView(QWidget *parent, KrViewInstance &instance, KConfig *cfg) :
@@ -55,9 +57,21 @@ void KrInterView::setup()
     _model = new KrVfsModel(this);
     _mouseHandler = new KrMouseHandler(this, _emitter);
 
-    _widget = new KrInterDetailedView(_parentWidget, this, _mouseHandler, _config); //HACK
-    _itemView = _widget->itemView();
+    //HACK
+    switch(_instance.id()) {
+    case 0:
+        _widget = new KrInterDetailedView(_parentWidget, this, _mouseHandler, _config);
+        break;
+    case 1:
+        _widget = new KrInterBriefView(_parentWidget, this, _mouseHandler, _config);
+        break;
+    default:
+        abort();
+    }
 
+    _model->setAlternatingTable(_widget->hasAlternatingTable());
+
+    _itemView = _widget->itemView();
     _itemView->setModel(_model);
     _itemView->setSelectionModel(new DummySelectionModel(_model, _itemView));
 
@@ -741,6 +755,7 @@ void KrInterView::copySettingsFrom(KrView *other)
     if(other->instance() == instance()) { // the other view is of the same type
         KrInterView *v = static_cast<KrInterView*>(other);
         _widget->copySettingsFrom(v->_widget);
+        _widget->setSortMode(v->properties()->sortColumn, v->_model->lastSortDir());
     }
 }
 

@@ -23,12 +23,18 @@
 
 #include <QFont>
 
-class KrItemView : public QAbstractItemView, public KrInterView
+class KrItemView : public QAbstractItemView, public ViewWidget
 {
     Q_OBJECT
+
 public:
-    KrItemView(QWidget *parent, KrViewInstance &instance, KConfig *cfg);
-    virtual ~KrItemView();
+    KrItemView(QWidget *parentWidget, ViewWidgetParent *parent,
+               KrMouseHandler *mouseHandler, KConfig *cfg);
+
+    // ViewWidget implentation
+    virtual QAbstractItemView *itemView() {
+        return this;
+    }
 
     // ---- reimplemented from QAbstractItemView ----
     // Don't do anything, selections are handled by the mouse handler
@@ -38,10 +44,6 @@ public:
     virtual QRegion visualRegionForSelection(const QItemSelection&) const {
         return QRegion();
     }
-
-    // ---- reimplemented from KrView ----
-    virtual void setup();
-    virtual void setFileIconSize(int size);
 
 protected slots:
     // ---- reimplemented from KrView ----
@@ -67,7 +69,7 @@ protected:
     virtual int elementWidth(const QModelIndex & index) = 0;
     virtual QRect mapToViewport(const QRect &rect) const;
 
-    QFont _viewFont;
+//     QFont _viewFont;
 };
 
 #endif // __KRITEMVIEW_H__
