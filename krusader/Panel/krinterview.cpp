@@ -647,8 +647,8 @@ void KrInterView::newItems(const KFileItemList& items)
     if (urlToMakeCurrent().isValid()) {
         QModelIndex index = _model->indexFromUrl(urlToMakeCurrent());
         if (index.isValid()) {
-            makeCurrentVisible();
             setCurrentIndex(index);
+            makeCurrentVisible();
             setUrlToMakeCurrent(KUrl());
         }
     }
