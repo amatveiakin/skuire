@@ -44,12 +44,6 @@ KrInterDetailedView::KrInterDetailedView(QWidget *parentWidget, ViewWidgetParent
     ViewWidget(parent, mouseHandler),
     _autoResizeColumns(true)
 {
-
-//     KConfigGroup group(krConfig, "Private");
-
-//     KConfigGroup grpSvr(_config, "Look&Feel");
-//     _viewFont = grpSvr.readEntry("Filelist Font", _FilelistFont);
-
     setRootIsDecorated(false);
 
     header()->installEventFilter(this);

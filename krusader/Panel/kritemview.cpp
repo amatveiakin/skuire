@@ -35,10 +35,6 @@ KrItemView::KrItemView(QWidget *parentWidget, ViewWidgetParent *parent,
 {
     setSelectionMode(QAbstractItemView::NoSelection);
 
-//FIXME
-//     KConfigGroup grpSvr(_config, "Look&Feel");
-//     _viewFont = grpSvr.readEntry("Filelist Font", _FilelistFont);
-
     setStyle(new KrStyleProxy());
     setItemDelegate(new KrInterViewItemDelegate());
     setMouseTracking(true);

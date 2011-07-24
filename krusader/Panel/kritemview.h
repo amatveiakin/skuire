@@ -67,8 +67,6 @@ protected:
     // ---- reimplemented from KrView ----
     virtual int elementWidth(const QModelIndex & index) = 0;
     virtual QRect mapToViewport(const QRect &rect) const;
-
-//     QFont _viewFont;
 };
 
 #endif // __KRITEMVIEW_H__
