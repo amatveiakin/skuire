@@ -46,9 +46,8 @@ public:
     }
 
 protected slots:
-    // ---- reimplemented from KrView ----
     virtual void currentChanged(const QModelIndex & current, const QModelIndex & previous);
-
+    // ViewWidget implentation
     virtual void renameCurrentItem();
 
 protected:
