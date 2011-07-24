@@ -54,6 +54,9 @@ public:
     void setExtensionEnabled(bool exten) {
         _extensionEnabled = exten;
     }
+    const QFont &font() {
+        return _defaultFont;
+    }
     inline const KrViewProperties * properties() const {
         return _view->properties();
     }

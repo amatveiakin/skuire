@@ -77,7 +77,6 @@ protected:
     void intersectionSet(const QRect &, QVector<QModelIndex> &);
 
 private:
-    QFont _viewFont;
     int _numOfColumns;
     QHeaderView * _header;
 };

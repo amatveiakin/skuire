@@ -35,6 +35,7 @@ class ViewWidgetParent
 {
 public:
     virtual const KrViewProperties *properties() = 0;
+    virtual int maxTextHeight() = 0;
     virtual bool handleKeyEvent(QKeyEvent *e) = 0;
     virtual void currentChanged(const QModelIndex &current) = 0;
     virtual void settingsChanged(KrViewProperties::PropertyType properties) = 0;
@@ -90,7 +91,7 @@ public:
     virtual ~KrInterView();
 
     // ViewWidgetParent implementation
-    const KrViewProperties *properties() {
+    virtual const KrViewProperties *properties() {
         return KrView::properties();
     }
 
@@ -181,6 +182,7 @@ protected:
     };
 
     // ViewWidgetParent implementation
+    virtual int maxTextHeight();
     virtual bool handleKeyEvent(QKeyEvent *e) {
         return KrView::handleKeyEvent(e);
     }

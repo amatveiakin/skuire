@@ -411,7 +411,7 @@ void KrInterBriefView::paintEvent(QPaintEvent *e)
 
 int KrInterBriefView::getItemHeight() const
 {
-    int textHeight = QFontMetrics(_viewFont).height();
+    int textHeight = _parent->maxTextHeight();
     int height = textHeight;
     int iconSize = 0;
     if (properties()->displayIcons)
@@ -481,17 +481,18 @@ void KrInterBriefView::setSortMode(KrViewProperties::ColumnType sortColumn, bool
 int KrInterBriefView::elementWidth(const QModelIndex & index)
 {
     QString text = index.data(Qt::DisplayRole).toString();
+    int textWidth = 0;
 
-    int textWidth = QFontMetrics(_viewFont).width(text);
+    QVariant font = index.data(Qt::FontRole);
+    if (font.isValid() && font.type() == QVariant::Font)
+        textWidth += QFontMetrics(font.value<QFont>()).width(text);
 
     const int textMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameHMargin) + 1;
     textWidth += 2 * textMargin;
 
     QVariant decor = index.data(Qt::DecorationRole);
-    if (decor.isValid() && decor.type() == QVariant::Pixmap) {
-        QPixmap p = decor.value<QPixmap>();
-        textWidth += p.width() + 2 * textMargin;
-    }
+    if (decor.isValid() && decor.type() == QVariant::Pixmap)
+        textWidth += decor.value<QPixmap>().width() + 2 * textMargin;
 
     return textWidth;
 }

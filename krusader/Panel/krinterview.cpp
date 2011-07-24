@@ -775,3 +775,8 @@ void KrInterView::toggleSelected(QModelIndexList indexes)
 
     redraw();
 }
+
+int KrInterView::maxTextHeight()
+{
+    return QFontMetrics(_model->font()).height();
+}
