@@ -64,7 +64,6 @@ protected:
     virtual void dropEvent(QDropEvent *);
     virtual bool viewportEvent(QEvent * event);
 
-    virtual int elementWidth(const QModelIndex & index) = 0;
     virtual QRect mapToViewport(const QRect &rect) const;
 };
 

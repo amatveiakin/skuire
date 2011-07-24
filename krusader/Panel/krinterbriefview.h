@@ -73,7 +73,6 @@ protected:
 //     virtual QRegion visualRegionForSelection(const QItemSelection&) const;
 
     int getItemHeight() const;
-    int elementWidth(const QModelIndex & index);
     void intersectionSet(const QRect &, QVector<QModelIndex> &);
 
 private:

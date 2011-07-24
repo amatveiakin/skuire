@@ -37,6 +37,7 @@ public:
     virtual const KrViewProperties *properties() = 0;
     virtual int maxTextHeight() = 0;
     virtual bool handleKeyEvent(QKeyEvent *e) = 0;
+    virtual bool handleViewportEvent(QEvent *event) = 0;
     virtual void currentChanged(const QModelIndex &current) = 0;
     virtual void settingsChanged(KrViewProperties::PropertyType properties) = 0;
     virtual void visibleColumnsChanged() = 0;
@@ -64,6 +65,7 @@ public:
     virtual void restoreSettings(KConfigGroup grp) = 0;
     virtual void copySettingsFrom(ViewWidget *other) = 0;
 
+    virtual int elementWidth(const QModelIndex &index);
     virtual bool hasAlternatingTable() {
         return false;
     }
@@ -186,6 +188,7 @@ protected:
     virtual bool handleKeyEvent(QKeyEvent *e) {
         return KrView::handleKeyEvent(e);
     }
+    virtual bool handleViewportEvent(QEvent *event);
     virtual void settingsChanged(KrViewProperties::PropertyType properties) {
         op()->settingsChanged(properties);
     }

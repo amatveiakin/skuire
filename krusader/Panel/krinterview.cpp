@@ -31,6 +31,26 @@
 #include "krinterbriefview.h"
 
 
+int ViewWidget::elementWidth(const QModelIndex & index)
+{
+    QString text = index.data(Qt::DisplayRole).toString();
+    int width = 0;
+
+    QVariant font = index.data(Qt::FontRole);
+    if (font.isValid() && font.type() == QVariant::Font)
+        width += QFontMetrics(font.value<QFont>()).width(text);
+
+    const int textMargin = itemView()->style()->pixelMetric(QStyle::PM_FocusFrameHMargin) + 1;
+    width += 2 * textMargin;
+
+    QVariant decor = index.data(Qt::DecorationRole);
+    if (decor.isValid() && decor.type() == QVariant::Pixmap)
+        width += decor.value<QPixmap>().width() + 2 * textMargin;
+
+    return width;
+}
+
+
 KrInterView::KrInterView(QWidget *parent, KrViewInstance &instance, KConfig *cfg) :
         KrView(instance, cfg),
         _model(0),
@@ -779,4 +799,23 @@ void KrInterView::toggleSelected(QModelIndexList indexes)
 int KrInterView::maxTextHeight()
 {
     return QFontMetrics(_model->font()).height();
+}
+
+bool KrInterView::handleViewportEvent(QEvent *event)
+{
+    if (event->type() == QEvent::ToolTip) {
+        QHelpEvent *he = static_cast<QHelpEvent*>(event);
+        const QModelIndex index = _itemView->indexAt(he->pos());
+
+        if (index.isValid()) {
+            int width = _itemView->visualRect(index).width();
+            int fullWidth = _widget->elementWidth(index);
+
+            if (fullWidth <= width) {
+                event->accept();
+                return true;
+            }
+        }
+    }
+    return false;
 }

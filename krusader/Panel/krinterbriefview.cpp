@@ -478,25 +478,6 @@ void KrInterBriefView::setSortMode(KrViewProperties::ColumnType sortColumn, bool
     _header->setSortIndicator(sortColumn, sortDir);
 }
 
-int KrInterBriefView::elementWidth(const QModelIndex & index)
-{
-    QString text = index.data(Qt::DisplayRole).toString();
-    int textWidth = 0;
-
-    QVariant font = index.data(Qt::FontRole);
-    if (font.isValid() && font.type() == QVariant::Font)
-        textWidth += QFontMetrics(font.value<QFont>()).width(text);
-
-    const int textMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameHMargin) + 1;
-    textWidth += 2 * textMargin;
-
-    QVariant decor = index.data(Qt::DecorationRole);
-    if (decor.isValid() && decor.type() == QVariant::Pixmap)
-        textWidth += decor.value<QPixmap>().width() + 2 * textMargin;
-
-    return textWidth;
-}
-
 void KrInterBriefView::intersectionSet(const QRect &rect, QVector<QModelIndex> &ndxList)
 {
     int maxNdx = model()->rowCount();

@@ -303,35 +303,10 @@ void KrInterDetailedView::recalculateColumnSizes()
 
 bool KrInterDetailedView::viewportEvent(QEvent * event)
 {
-//FIXME
-#if 0
-    if (event->type() == QEvent::ToolTip) {
-        QHelpEvent *he = static_cast<QHelpEvent*>(event);
-        const QModelIndex index = indexAt(he->pos());
-
-        if (index.isValid()) {
-            int width = header()->sectionSize(index.column());
-            QString text = index.data(Qt::DisplayRole).toString();
-
-            int textWidth = QFontMetrics(_viewFont).width(text);
-
-            const int textMargin = QApplication::style()->pixelMetric(QStyle::PM_FocusFrameHMargin) + 1;
-            textWidth += 2 * textMargin;
-
-            QVariant decor = index.data(Qt::DecorationRole);
-            if (decor.isValid() && decor.type() == QVariant::Pixmap) {
-                QPixmap p = decor.value<QPixmap>();
-                textWidth += p.width() + 2 * textMargin;
-            }
-
-            if (textWidth <= width) {
-                event->accept();
-                return true;
-            }
-        }
-    }
-#endif
-    return QTreeView::viewportEvent(event);
+    if (_parent->handleViewportEvent(event))
+        return true;
+    else
+        return QTreeView::viewportEvent(event);
 }
 
 void KrInterDetailedView::setSortMode(KrViewProperties::ColumnType sortColumn, bool descending)

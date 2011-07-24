@@ -119,23 +119,12 @@ void KrItemView::dropEvent(QDropEvent *ev)
         QAbstractItemView::dropEvent(ev);
 }
 
-bool KrItemView::viewportEvent(QEvent * event)
+bool KrItemView::viewportEvent(QEvent *event)
 {
-    if (event->type() == QEvent::ToolTip) {
-        QHelpEvent *he = static_cast<QHelpEvent*>(event);
-        const QModelIndex index = indexAt(he->pos());
-
-        if (index.isValid()) {
-            int width = visualRect(index).width();
-            int textWidth = elementWidth(index);
-
-            if (textWidth <= width) {
-                event->accept();
-                return true;
-            }
-        }
-    }
-    return QAbstractItemView::viewportEvent(event);
+    if (_parent->handleViewportEvent(event))
+        return true;
+    else
+        return QAbstractItemView::viewportEvent(event);
 }
 
 QRect KrItemView::mapToViewport(const QRect &rect) const
