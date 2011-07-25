@@ -487,9 +487,11 @@ bool KrInterView::isCurrentItemSelected()
 void KrInterView::selectCurrentItem(bool select)
 {
     Item *item = currentViewItem();
-    if(item && item != _model->dummyItem())
+    if(item && item != _model->dummyItem()) {
         setSelected(item, select);
-    _emitter->emitSelectionChanged();
+        _emitter->emitSelectionChanged();
+        redrawItem(_itemView->currentIndex());
+    }
 }
 
 void KrInterView::pageDown()
