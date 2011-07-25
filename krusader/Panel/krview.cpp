@@ -654,7 +654,6 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         selectCurrentItem(!isCurrentItemSelected());
         if (KrSelectionMode::getSelectionHandler()->insertMovesDown())
             setCurrentItem(Next);
-        _emitter->emitSelectionChanged();
         return true;
     }
     case Qt::Key_Space: {
@@ -668,7 +667,6 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
             }
             if (KrSelectionMode::getSelectionHandler()->spaceMovesDown())
                 setCurrentItem(Next);
-            _emitter->emitSelectionChanged();
         }
         return true;
     }
@@ -697,10 +695,8 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         if (e->modifiers() == Qt::ControlModifier) {   // let the panel handle it - jump to the Location Bar
             e->ignore();
         } else {
-            if (e->modifiers() == Qt::ShiftModifier) {
+            if (e->modifiers() == Qt::ShiftModifier)
                 selectCurrentItem(!isCurrentItemSelected());
-                _emitter->emitSelectionChanged();
-            }
             setCurrentItem(Prev);
         }
         return true;
@@ -708,10 +704,8 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         if (e->modifiers() == Qt::ControlModifier || e->modifiers() == (Qt::ControlModifier | Qt::ShiftModifier)) {     // let the panel handle it - jump to command line
             e->ignore();
         } else {
-            if (e->modifiers() == Qt::ShiftModifier) {
+            if (e->modifiers() == Qt::ShiftModifier)
                 selectCurrentItem(!isCurrentItemSelected());
-                _emitter->emitSelectionChanged();
-            }
             setCurrentItem(Next);
         }
         return true;
