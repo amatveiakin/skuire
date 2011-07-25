@@ -148,7 +148,9 @@ vfile::vfile(const KFileItem &item)
 
 KFileItem vfile::toFileItem() const
 {
-    return KFileItem(vfile_getUrl(), ((vfile*)this)->vfile_getMime(), vfile_getMode());
+    KUrl url = vfile_getUrl();
+    url.cleanPath();
+    return KFileItem(url, ((vfile*)this)->vfile_getMime(), vfile_getMode());
 }
 
 char vfile::vfile_isReadable() const

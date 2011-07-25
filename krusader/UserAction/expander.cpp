@@ -505,7 +505,7 @@ TagString exp_Goto::expFunc(const KrPanel* panel, const QStringList& parameter, 
         else
             MAIN_VIEW->rightMng->slotNewTab(parameter[0]);
     } else {
-        panel->func->openUrl(parameter[0], "");
+        panel->func->openUrl(parameter[0], KUrl());
         panel->gui->slotFocusOnMe();
     }
 

@@ -628,9 +628,9 @@ void KrInterView::refresh()
     if(!selection.isEmpty())
         setSelection(selection);
 
-    if (!urlToMakeCurrent().isEmpty())
+    if (urlToMakeCurrent().isValid())
         setCurrentItem(urlToMakeCurrent());
-    else if (!current.isEmpty())
+    else if (current.isValid())
         setCurrentItem(current);
 
     updatePreviews();

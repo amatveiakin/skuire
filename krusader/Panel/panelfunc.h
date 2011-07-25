@@ -53,7 +53,7 @@ public slots:
     void goInside(KFileItem item);
     void urlEntered(const QString &url);
     void urlEntered(const KUrl &url);
-    void openUrl(const KUrl& path, const QString& nameToMakeCurrent = QString(),
+    void openUrl(const KUrl& path, KUrl urlToMakeCurrent = KUrl(),
                  bool manuallyEntered = false);
 //     void popErronousUrl();
     void immediateOpenUrl(const KUrl &url, bool disableLock = false);
@@ -128,7 +128,7 @@ protected slots:
 protected:
     KUrl cleanPath(const KUrl &url);
     bool isSyncing(const KUrl &url);
-    void openUrlInternal(const KUrl& url, const QString& makeCurrent,
+    void openUrlInternal(const KUrl& url, KUrl urlToMakeCurrent,
                          bool immediately, bool disableLock, bool manuallyEntered);
     void runCommand(QString cmd);
 

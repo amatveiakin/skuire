@@ -136,7 +136,7 @@ void ListPanelFunc::urlEntered(const QString &url)
 
 void ListPanelFunc::urlEntered(const KUrl &url)
 {
-    openUrl(url, QString(), true);
+    openUrl(url, KUrl(), true);
 }
 
 bool ListPanelFunc::isSyncing(const KUrl &url)
@@ -181,7 +181,7 @@ KUrl ListPanelFunc::cleanPath(const KUrl &urlIn)
     return url;
 }
 
-void ListPanelFunc::openUrl(const KUrl& url, const QString& nameToMakeCurrent,
+void ListPanelFunc::openUrl(const KUrl& url, KUrl urlToMakeCurrent,
                             bool manuallyEntered)
 {
     if (panel->syncBrowseButton->state() == SYNCBROWSE_CD) {
@@ -192,9 +192,9 @@ void ListPanelFunc::openUrl(const KUrl& url, const QString& nameToMakeCurrent,
         syncURL.addPath(KUrl::relativeUrl(panel->virtualPath().url() + '/', url.url()));
         syncURL.cleanPath();
         panel->otherPanel()->gui->setLocked(false);
-        otherFunc()->openUrlInternal(syncURL, nameToMakeCurrent, false, false, false);
+        otherFunc()->openUrlInternal(syncURL, urlToMakeCurrent, false, false, false);
     }
-    openUrlInternal(url, nameToMakeCurrent, false, false, manuallyEntered);
+    openUrlInternal(url, urlToMakeCurrent, false, false, manuallyEntered);
 }
 
 void ListPanelFunc::immediateOpenUrl(const KUrl& url, bool disableLock)
@@ -202,7 +202,7 @@ void ListPanelFunc::immediateOpenUrl(const KUrl& url, bool disableLock)
     openUrlInternal(url, QString(), true, disableLock, false);
 }
 
-void ListPanelFunc::openUrlInternal(const KUrl& url, const QString& nameToMakeCurrent,
+void ListPanelFunc::openUrlInternal(const KUrl& url, KUrl urlToMakeCurrent,
                                     bool immediately, bool disableLock, bool manuallyEntered)
 {
     KUrl cleanUrl = cleanPath(url);
@@ -216,7 +216,7 @@ void ListPanelFunc::openUrlInternal(const KUrl& url, const QString& nameToMakeCu
 
     urlManuallyEntered = manuallyEntered;
 
-    history->add(cleanUrl, nameToMakeCurrent);
+    history->add(cleanUrl, urlToMakeCurrent);
 
     if(immediately)
         doRefresh();
@@ -302,10 +302,10 @@ void ListPanelFunc::doRefresh()
         if(isSyncing(url))
             vfsP->vfs_setQuiet(true);
 
-        if(!history->currentItem().isEmpty() && isEqualUrl) {
+        if(history->currentItem().isValid() && isEqualUrl) {
             // if the url we're refreshing into is the current one, then the
             // partial refresh will not generate the needed signals to actually allow the
-            // view to use nameToMakeCurrent. do it here instead (patch by Thomas Jarosch)
+            // view to use urlToMakeCurrent. do it here instead (patch by Thomas Jarosch)
             panel->view->setCurrentItem(history->currentItem());
             panel->view->makeItemVisible(panel->view->currentUrl());
         }
@@ -1375,7 +1375,9 @@ void ListPanelFunc::historyForward()
 
 void ListPanelFunc::dirUp()
 {
-    openUrl(files() ->vfs_getOrigin().upUrl(), files() ->vfs_getOrigin().fileName());
+    // dont't go up if we are at the root dir
+    if (!files()->vfs_getOrigin().equals(KUrl(ROOT_DIR), KUrl::CompareWithoutTrailingSlash))
+        openUrl(files()->vfs_getOrigin().upUrl(), files()->vfs_getOrigin());
 }
 
 void ListPanelFunc::home()
