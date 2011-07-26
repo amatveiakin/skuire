@@ -96,7 +96,7 @@ public:
     void clear() {
         emit AbstractDirLister::clear();
         _items.clear();
-//         _foundText.clear();
+        _foundText.clear();
     }
 
     //FIXME change this to take a KFileItem as parameter
@@ -107,25 +107,28 @@ public:
         entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME, mtime);
         entry.insert(KIO::UDSEntry::UDS_SIZE , size);
 
-        KFileItem item(entry, KUrl(url), true);
+        KUrl u(url);
+        u.cleanPath();
+
+        KFileItem item(entry, u, true);
 
         _items << item;
 
-//         if(!foundText.isEmpty())
-//             _foundText[vf] = foundText;
+        if(!foundText.isEmpty())
+            _foundText[item] = foundText;
 
-        KFileItemList newList;
+        KFileItemList newList; //UGLY - FIXME - probably after implementing threaded searching
         newList << item;
         emit newItems(newList);
     }
 
-//     QString foundText(const vfile *vf) {
-//         return _foundText[vf];
-//     }
+    QString foundText(const KFileItem &item) {
+        return _foundText[item];
+    }
 
 private:
     KFileItemList _items;
-//     QHash<const vfile*, QString> _foundText;
+    QHash<KFileItem, QString> _foundText;
 };
 
 
@@ -283,8 +286,8 @@ KrSearchDialog::KrSearchDialog(QString profile, QWidget* parent)
     connect(profileManager, SIGNAL(loadFromProfile(QString)), filterTabs, SLOT(loadFromProfile(QString)));
     connect(profileManager, SIGNAL(saveToProfile(QString)), filterTabs, SLOT(saveToProfile(QString)));
 
-    connect(resultView->emitter(), SIGNAL(currentChanged(KrViewItem*)), SLOT(currentChanged(KrViewItem*)));
-    connect(resultView->emitter(), SIGNAL(executed(const QString&)), SLOT(executed(const QString&)));
+    connect(resultView->emitter(), SIGNAL(currentChanged(KFileItem)), SLOT(currentChanged(KFileItem)));
+    connect(resultView->emitter(), SIGNAL(executed(KFileItem)), SLOT(executed(KFileItem)));
     connect(resultView->emitter(), SIGNAL(contextMenu(const QPoint&)), SLOT(contextMenu(const QPoint &)));
 
     // tab order
@@ -399,8 +402,6 @@ void KrSearchDialog::found(QString what, QString where, KIO::filesize_t size, ti
 {
     where = where.replace(QRegExp("\\\\"), "#"); //FIXME ? why is that done ?
     QString path =  where.endsWith('/') ? (where + what) : (where + "/" + what);
-    if(perm[0] == 'd' && !path.endsWith('/')) // file is a directory
-        path += '/';
     result->addItem(path, size, mtime, perm, foundText);
     foundLabel->setText(i18n("Found %1 matches.", result->numItems()));
 }
@@ -486,17 +487,24 @@ void KrSearchDialog::stopSearch()
     }
 }
 
-void KrSearchDialog::executed(const QString &name)
+void KrSearchDialog::executed(KFileItem item)
 {
-    QString path = name;
-    QString fileName;
-    if(!name.endsWith('/')) {
-        int idx = name.lastIndexOf("/");
-        fileName = name.mid(idx+1);
-        path = name.left(idx);
-    }
-    ACTIVE_FUNC->openUrl(KUrl(path), fileName);
+    ACTIVE_FUNC->openUrl(item.url().upUrl(), item.url());
     showMinimized();
+}
+
+void KrSearchDialog::currentChanged(KFileItem item)
+{
+    if(item.isNull())
+        return;
+    QString text = result->foundText(item);
+    if(!text.isEmpty()) {
+        // ugly hack: find the <b> and </b> in the text, then
+        // use it to set the are which we don't want squeezed
+        int idx = text.indexOf("<b>") - 4; // take "<qt>" into account
+        int length = text.indexOf("</b>") - idx + 4;
+        foundTextLabel->setText(text, idx, length);
+    }
 }
 
 void KrSearchDialog::closeEvent(QCloseEvent *e)

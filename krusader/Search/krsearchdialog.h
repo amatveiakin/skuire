@@ -69,7 +69,8 @@ public slots:
     void copyToClipBoard();
     void found(QString what, QString where, KIO::filesize_t size, time_t mtime, QString perm, QString foundText);
     void closeDialog(bool isAccept = true);
-    void executed(const QString &name);
+    void executed(KFileItem item);
+    void currentChanged(KFileItem item);
 
     virtual void keyPressEvent(QKeyEvent *e);
     virtual void closeEvent(QCloseEvent *e);
