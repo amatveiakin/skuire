@@ -563,6 +563,7 @@ public:
         return _quickSearch;
     }
 
+    void widgetChanged();
     bool handleKeyEvent(QKeyEvent *e);
     void settingsChanged(KrViewProperties::PropertyType properties);
 

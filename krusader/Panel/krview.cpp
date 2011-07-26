@@ -69,7 +69,6 @@ KrView::Operator::Operator(KrView *view, KrQuickSearch *quickSearch, QuickFilter
 
     connect(&KrColorCache::getColorCache(), SIGNAL(colorsRefreshed()), SLOT(colorSettingsChanged()));
 
-    _quickSearch->setFocusProxy(_view->widget());
     connect(quickSearch, SIGNAL(textChanged(const QString&)), this, SLOT(quickSearch(const QString&)));
     connect(quickSearch, SIGNAL(otherMatching(const QString&, int)), this, SLOT(quickSearch(const QString& , int)));
     connect(quickSearch, SIGNAL(stop(QKeyEvent*)), this, SLOT(stopQuickSearch(QKeyEvent*)));
@@ -78,13 +77,19 @@ KrView::Operator::Operator(KrView *view, KrQuickSearch *quickSearch, QuickFilter
     _quickFilter->lineEdit()->installEventFilter(this);
     connect(_quickFilter, SIGNAL(stop()), SLOT(stopQuickFilter()));
     connect(_quickFilter->lineEdit(), SIGNAL(textEdited(const QString&)), SLOT(quickFilterChanged(const QString&)));
-    connect(_quickFilter->lineEdit(), SIGNAL(returnPressed(const QString&)), _view->widget(), SLOT(setFocus()));
 }
 
 KrView::Operator::~Operator()
 {
     if(_changedView == _view)
         saveDefaultSettings();
+}
+
+void KrView::Operator::widgetChanged()
+{
+    _view->widget()->installEventFilter(this);
+    _quickSearch->setFocusProxy(_view->widget());
+    connect(_quickFilter->lineEdit(), SIGNAL(returnPressed(const QString&)), _view->widget(), SLOT(setFocus()));
 }
 
 void KrView::Operator::fileDeleted(const QString& name)
@@ -468,7 +473,7 @@ void KrView::init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *
     initProperties();
     _operator = createOperator(quickSearch, quickFilter);
     setup();
-    widget()->installEventFilter(op());
+    op()->widgetChanged();
     restoreDefaultSettings();
     enableUpdateDefaultSettings(true);
     _instance.m_objects.append(this);
