@@ -96,7 +96,7 @@ public:
         return !((*this) == vf);
     }
 
-    KFileItem toFileItem() const;
+    KFileItem toFileItem();
 
     // following functions give-out file details
     inline const QString&   vfile_getName()    const {

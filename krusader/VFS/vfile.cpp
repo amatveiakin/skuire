@@ -146,11 +146,12 @@ vfile::vfile(const KFileItem &item)
     vfile_acl_loaded = false;
 }
 
-KFileItem vfile::toFileItem() const
+KFileItem vfile::toFileItem()
 {
     KUrl url = vfile_getUrl();
     url.cleanPath();
-    return KFileItem(url, ((vfile*)this)->vfile_getMime(), vfile_getMode());
+//     return KFileItem(url, ((vfile*)this)->vfile_getMime(), vfile_getMode());
+    return KFileItem(vfile_getEntry(), url);
 }
 
 char vfile::vfile_isReadable() const
