@@ -99,6 +99,8 @@ void KrInterView::setup()
                      _emitter, SIGNAL(renameItem(KFileItem, QString)));
     QObject::connect(_mouseHandler, SIGNAL(startDrag()),
                      op(), SLOT(startDrag()));
+
+    visibleColumnsChanged();
 }
 
 void KrInterView::selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst)
