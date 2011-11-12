@@ -26,8 +26,6 @@
 #include <QVector>
 #include <QVariant>
 
-#define PERM_BITMASK (S_ISUID|S_ISGID|S_ISVTX|S_IRWXU|S_IRWXG|S_IRWXO)
-
 namespace KrSort {
 
 class SortProps
