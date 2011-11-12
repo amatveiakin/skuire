@@ -279,8 +279,13 @@ KrView::Item &KrView::Item::operator=(const Item  &other)
 void KrView::Item::init(KrView *view, bool isDummy)
 {
     clearIcon();
+    _nameWithoutExtension.clear();
+    _extension.clear();
+    _krPermissions.clear();
+    _sizeString.clear();
+    _mtimeString.clear();
+    _numericPermissions.clear();
     _iconName.clear();
-    _krPermissionsString.clear();
     _brokenLink = false;
     _calculatedSize = 0;
     _view = view;
@@ -303,12 +308,145 @@ void KrView::Item::init(KrView *view, bool isDummy)
             _iconName = "file-broken";
         }
     }
-
 }
 
-void KrView::Item::getIconName() const
+const QString &KrView::Item::nameWithoutExtension() const
 {
-    _iconName = KFileItem::iconName();
+    if (_nameWithoutExtension.isNull()) {
+        if (isDir())
+            _nameWithoutExtension = name();
+        else {
+            // check if the file has an extension
+            int loc = name().lastIndexOf('.');
+            // avoid mishandling of .bashrc and friend 
+            // and virtfs / search result names like "/dir/.file" which whould become "/dir/"
+            if (loc > 0 && name().lastIndexOf('/') < loc) {
+                // check if it has one of the predefined 'atomic extensions'
+                foreach(const QString &ext, _view->properties()->atomicExtensions) {
+                    if (name().endsWith(ext) && name() != ext) {
+                        loc = name().length() - (ext).length();
+                        break;
+                    }
+                }
+                _nameWithoutExtension = name().left(loc);
+            } else
+                _nameWithoutExtension = name();
+        }
+    }
+    return _nameWithoutExtension;
+}
+
+const QString &KrView::Item::extension() const
+{
+    if (_extension.isNull())
+        _extension = name().mid(nameWithoutExtension().length() + 1);
+    return _extension;
+}
+
+const QString &KrView::Item::krPermissions() const
+{
+    if (!_krPermissions.isNull())
+        return _krPermissions;
+
+    QString tmp;
+
+    // char ? UGLY !
+    char readable = UNKNOWN_PERM;
+    if (!url().user().isEmpty())
+        readable = KRpermHandler::ftpReadable(user(), url().user(), permissionsString());
+    else if (url().isLocalFile())
+        readable = KRpermHandler::readable(permissionsString(),
+                                            KRpermHandler::group2gid(group()),
+                                            KRpermHandler::user2uid(user()), -1);
+
+    char writeable = UNKNOWN_PERM;
+    if (!url().user().isEmpty())
+        writeable = KRpermHandler::ftpWriteable(user(), url().user(), permissionsString());
+    else if (url().isLocalFile())
+        writeable = KRpermHandler::writeable(permissionsString(),
+                                            KRpermHandler::group2gid(group()),
+                                            KRpermHandler::user2uid(user()), -1);
+
+    char executable = UNKNOWN_PERM;
+    if (!url().user().isEmpty())
+        executable = KRpermHandler::ftpExecutable(user(), url().user(), permissionsString());
+    else if (url().isLocalFile())
+        executable = KRpermHandler::executable(permissionsString(),
+                                            KRpermHandler::group2gid(group()),
+                                            KRpermHandler::user2uid(user()), -1);
+
+    switch (readable) {
+    case ALLOWED_PERM: tmp+='r'; break;
+    case UNKNOWN_PERM: tmp+='?'; break;
+    case NO_PERM:      tmp+='-'; break;
+    }
+    switch (writeable) {
+    case ALLOWED_PERM: tmp+='w'; break;
+    case UNKNOWN_PERM: tmp+='?'; break;
+    case NO_PERM:      tmp+='-'; break;
+    }
+    switch (executable) {
+    case ALLOWED_PERM: tmp+='x'; break;
+    case UNKNOWN_PERM: tmp+='?'; break;
+    case NO_PERM:      tmp+='-'; break;
+    }
+
+    return _krPermissions = tmp;
+}
+
+void KrView::Item::setCalculatedSize(KIO::filesize_t s)
+{
+    _calculatedSize = s;
+    _sizeString.clear();
+}
+
+const QString &KrView::Item::sizeString() const
+{
+    if (_sizeString.isNull()) {
+        if (isDir() && size() <= 0)
+            _sizeString = i18n("<DIR>");
+        else
+            _sizeString = (_view->properties()->humanReadableSize) ?
+                    KIO::convertSize(size()) + "  " :
+                    KRpermHandler::parseSize(size()) + ' ';
+    }
+    return _sizeString;
+}
+
+const QString &KrView::Item::mtimeString() const
+{
+    if (_mtimeString.isNull())
+        _mtimeString = KFileItem::timeString(KFileItem::ModificationTime);
+    return _mtimeString;
+}
+
+const QString &KrView::Item::permissionsString() const
+{
+    if (_view->properties()->numericPermissions) {
+        if (_numericPermissions.isNull())
+            _numericPermissions = QString().sprintf("%.4o", permissions());
+        return _numericPermissions;
+    } else
+        return KFileItem::permissionsString();
+}
+
+const QString &KrView::Item::iconName() const
+{
+    if (_iconName.isNull())
+        _iconName = KFileItem::iconName();
+    return _iconName;
+}
+
+const QPixmap &KrView::Item::icon() const
+{
+    if(_iconActive.isNull()) {
+        _iconActive = loadIcon(true);
+        if (KrColorCache::getColorCache().dimInactive())
+            _iconInactive = loadIcon(false);
+        else
+            _iconInactive = _iconActive;
+    }
+    return _view->isFocused() ? _iconActive : _iconInactive;
 }
 
 void KrView::Item::clearIcon()
@@ -322,15 +460,6 @@ void KrView::Item::setIcon(QPixmap icon)
 
     if (KrColorCache::getColorCache().dimInactive())
         _iconInactive = processIcon(icon, false);
-    else
-        _iconInactive = _iconActive;
-}
-
-void KrView::Item::loadIcon() const
-{
-    _iconActive = loadIcon(true);
-    if (KrColorCache::getColorCache().dimInactive())
-        _iconInactive = loadIcon(false);
     else
         _iconInactive = _iconActive;
 }
@@ -390,54 +519,6 @@ QPixmap KrView::Item::processIcon(QPixmap icon, bool active) const
                                 Qt::ThresholdAlphaDither | Qt::NoOpaqueDetection );
 
     return icon;
-}
-
-void KrView::Item::getKrPermissionsString() const
-{
-    QString tmp;
-
-    // char ? UGLY !
-    char readable = UNKNOWN_PERM;
-    if (!url().user().isEmpty())
-        readable = KRpermHandler::ftpReadable(user(), url().user(), permissionsString());
-    else if (url().isLocalFile())
-        readable = KRpermHandler::readable(permissionsString(),
-                                            KRpermHandler::group2gid(group()),
-                                            KRpermHandler::user2uid(user()), -1);
-
-    char writeable = UNKNOWN_PERM;
-    if (!url().user().isEmpty())
-        writeable = KRpermHandler::ftpWriteable(user(), url().user(), permissionsString());
-    else if (url().isLocalFile())
-        writeable = KRpermHandler::writeable(permissionsString(),
-                                            KRpermHandler::group2gid(group()),
-                                            KRpermHandler::user2uid(user()), -1);
-
-    char executable = UNKNOWN_PERM;
-    if (!url().user().isEmpty())
-        executable = KRpermHandler::ftpExecutable(user(), url().user(), permissionsString());
-    else if (url().isLocalFile())
-        executable = KRpermHandler::executable(permissionsString(),
-                                            KRpermHandler::group2gid(group()),
-                                            KRpermHandler::user2uid(user()), -1);
-
-    switch (readable) {
-    case ALLOWED_PERM: tmp+='r'; break;
-    case UNKNOWN_PERM: tmp+='?'; break;
-    case NO_PERM:      tmp+='-'; break;
-    }
-    switch (writeable) {
-    case ALLOWED_PERM: tmp+='w'; break;
-    case UNKNOWN_PERM: tmp+='?'; break;
-    case NO_PERM:      tmp+='-'; break;
-    }
-    switch (executable) {
-    case ALLOWED_PERM: tmp+='x'; break;
-    case UNKNOWN_PERM: tmp+='?'; break;
-    case NO_PERM:      tmp+='-'; break;
-    }
-
-    _krPermissionsString = tmp;
 }
 
 

@@ -41,53 +41,28 @@ void SortProps::init(const KrView::Item *item, int col, const KrViewProperties *
 
     switch (_col) {
     case KrViewProperties::Ext: {
-        if (item->isDir()) {
-            _ext = "";
-        } else {
-            // check if the file has an extension
-            const QString& vfName = item->name();
-            int loc = vfName.lastIndexOf('.');
-            if (loc > 0) { // avoid mishandling of .bashrc and friend
-                // check if it has one of the predefined 'atomic extensions'
-                for (QStringList::const_iterator i = props->atomicExtensions.begin(); i != props->atomicExtensions.end(); ++i) {
-                    if (vfName.endsWith(*i) && vfName != *i) {
-                        loc = vfName.length() - (*i).length();
-                        break;
-                    }
-                }
-                _ext = _name.mid(loc);
-            } else
-                _ext = "";
-        }
+        _ext = item->extension();
         break;
     }
     case KrViewProperties::Type: {
         if (isDummy)
             _data = "";
-        else {
-            KMimeType::Ptr mt = KMimeType::mimeType(item->mimetype());
-            if (mt)
-                _data = mt->comment();
-        }
+        else
+            _data = item->mimeComment();
         break;
     }
     case KrViewProperties::Permissions: {
         if (isDummy)
             _data = "";
-        else {
-            if (properties()->numericPermissions) {
-                QString perm;
-                _data = perm.sprintf("%.4o", item->mode() & PERM_BITMASK);
-            } else
-                _data = item->permissionsString();
-        }
+        else
+            _data = item->permissionsString();
         break;
     }
     case KrViewProperties::KrPermissions: {
         if (isDummy)
             _data = "";
         else
-            _data = item->krPermissionsString();
+            _data = item->krPermissions();
         break;
     }
     case KrViewProperties::Owner: {

@@ -410,43 +410,36 @@ public:
     Item(const Item &other);
     Item &operator=(const Item &other);
 
-    const QString &iconName() const {
-        if(_iconName.isNull())
-            getIconName();
-        return _iconName;
-    }
-    QString krPermissionsString() const {
-        if(_krPermissionsString.isNull())
-            getKrPermissionsString();
-        return _krPermissionsString;
-    }
+    const QString &nameWithoutExtension() const;
+    const QString &extension() const;
+    const QString &krPermissions() const;
     bool isBrokenLink() const {
         return _brokenLink;
     }
     KIO::filesize_t size() const {
         return _calculatedSize ? _calculatedSize : KFileItem::size();
     }
-    void setCalculatedSize(KIO::filesize_t s) {
-        _calculatedSize = s;
-    }
-    const QPixmap &icon() const {
-        if(_iconActive.isNull())
-            loadIcon();
-        return _view->isFocused() ? _iconActive : _iconInactive;
-    }
+    void setCalculatedSize(KIO::filesize_t s);
+    const QString &sizeString() const;
+    const QString &mtimeString() const;
+    const QString &permissionsString() const;
+    const QString &iconName() const;
+    const QPixmap &icon() const;
     void clearIcon();
     void setIcon(QPixmap icon);
 
 protected:
     void init(KrView *view, bool isDummy);
-    void getIconName() const;
-    void getKrPermissionsString() const;
-    void loadIcon() const;
     QPixmap loadIcon(bool active) const;
     QPixmap processIcon(QPixmap icon, bool active) const;
 
+    mutable QString _nameWithoutExtension;
+    mutable QString _extension;
+    mutable QString _krPermissions;
+    mutable QString _sizeString;
+    mutable QString _mtimeString;
+    mutable QString _numericPermissions;
     mutable QString _iconName;
-    mutable QString  _krPermissionsString;
     bool _brokenLink;
     KIO::filesize_t _calculatedSize;
     mutable QPixmap _iconActive, _iconInactive;

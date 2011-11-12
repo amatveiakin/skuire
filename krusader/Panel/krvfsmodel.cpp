@@ -91,12 +91,12 @@ void KrVfsModel::clear()
         newPersistentList << QModelIndex();
     changePersistentIndexList(oldPersistentList, newPersistentList);
 
+    _dummyItem = 0;
     foreach(KrView::Item *item, _items)
         delete item;
     _items.clear();
     _itemIndex.clear();
     _urlNdx.clear();
-    _dummyItem = 0;
 
     emit layoutChanged();
 }
@@ -132,7 +132,7 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
     }
     case Qt::UserRole: {
         if (index.column() == 0)
-            return nameWithoutExtension(item, false);
+            return item->nameWithoutExtension();
         else
             return QVariant();
     }
@@ -150,41 +150,22 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
         }
         switch (index.column()) {
         case KrViewProperties::Name:
-            //FIXME: cache name/ext
-            return nameWithoutExtension(item);
-        case KrViewProperties::Ext: {
-            //FIXME: cache name/ext
-            QString nameOnly = nameWithoutExtension(item);
-            return item->name().mid(nameOnly.length() + 1);
-        }
-        case KrViewProperties::Size: {
-            if (item->isDir() && item->size() <= 0)
-                return i18n("<DIR>");
-            else //FIXME: cache this
-                return (properties()->humanReadableSize) ?
-                       KIO::convertSize(item->size()) + "  " :
-                       KRpermHandler::parseSize(item->size()) + ' ';
-        }
-        case KrViewProperties::Type: {
-            KMimeType::Ptr mt = KMimeType::mimeType(item->mimetype());
-            if (mt)
-                return mt->comment(); //FIXME: cache this
-            return QVariant();
-        }
-        case KrViewProperties::Modified: {
-            //FIXME: cache this
-            //FIXME: this doesn't return the correct locale format
-            return item->time(KFileItem::ModificationTime).toString(KDateTime::LocalDate);
-        }
-        case KrViewProperties::Permissions: {
-            if (properties()->numericPermissions) {
-                QString perm; //FIXME: cache this
-                return perm.sprintf("%.4o", item->mode() & PERM_BITMASK);
-            } else
-                return item->permissionsString();
-        }
+            if(_extensionEnabled)
+                return item->nameWithoutExtension();
+            else
+                return item->name();
+        case KrViewProperties::Ext:
+            return item->extension();
+        case KrViewProperties::Size:
+            return item->sizeString();
+        case KrViewProperties::Type:
+            return item->mimeComment();
+        case KrViewProperties::Modified:
+            return item->mtimeString();
+        case KrViewProperties::Permissions:
+            return item->permissionsString();
         case KrViewProperties::KrPermissions:
-            return item->krPermissionsString();
+            return item->krPermissions();
         case KrViewProperties::Owner:
             return item->user();
         case KrViewProperties::Group:
@@ -552,29 +533,6 @@ Qt::ItemFlags KrVfsModel::flags(const QModelIndex & index) const
         flags = flags | Qt::ItemIsEditable | Qt::ItemIsDragEnabled | Qt::ItemIsDropEnabled;
 
     return flags;
-}
-
-QString KrVfsModel::nameWithoutExtension(const KrView::Item *item, bool checkEnabled) const
-{
-    //FIXME: cache name/ext
-    if ((checkEnabled && !_extensionEnabled) || item->isDir())
-        return item->name();
-    // check if the file has an extension
-    const QString& vfName = item->name();
-    int loc = vfName.lastIndexOf('.');
-    // avoid mishandling of .bashrc and friend 
-    // and virtfs / search result names like "/dir/.file" which whould become "/dir/"
-    if (loc > 0 && vfName.lastIndexOf('/') < loc) {
-        // check if it has one of the predefined 'atomic extensions'
-        for (QStringList::const_iterator i = properties()->atomicExtensions.begin(); i != properties()->atomicExtensions.end(); ++i) {
-            if (vfName.endsWith(*i) && vfName != *i) {
-                loc = vfName.length() - (*i).length();
-                break;
-            }
-        }
-    } else
-        return vfName;
-    return vfName.left(loc);
 }
 
 const QModelIndex & KrVfsModel::indexFromUrl(const KUrl &url)

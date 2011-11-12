@@ -116,8 +116,6 @@ protected:
     }
 
     KrSort::Sorter createSorter();
-    QString nameWithoutExtension(const KrView::Item *item, bool checkEnabled = true) const;
-
 
     QList<KrView::Item*>                _items;
     QHash<const KrView::Item*, QModelIndex>   _itemIndex;
