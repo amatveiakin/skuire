@@ -695,6 +695,8 @@ void ListPanel::slotFocusOnMe(bool focus)
 
     origin->setActive(focus);
     refreshColors();
+    view->redraw();
+    update();
 
     krApp->setUpdatesEnabled(true);
 }
