@@ -386,6 +386,7 @@ void KrInterBriefView::paintEvent(QPaintEvent *e)
     QVector<QModelIndex> intersectVector;
     QRect area = e->rect();
     area.adjust(horizontalOffset(), verticalOffset(), horizontalOffset(), verticalOffset());
+
     intersectionSet(area, intersectVector);
 
     foreach(const QModelIndex &mndx, intersectVector) {

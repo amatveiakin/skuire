@@ -58,7 +58,7 @@ KrInterDetailedView::KrInterDetailedView(QWidget *parentWidget, ViewWidgetParent
     setDropIndicatorShown(true);
 
     for (int i = 0; i != KrViewProperties::MAX_COLUMNS; i++)
-        header()->setResizeMode(i, QHeaderView::Interactive);
+        header()->setResizeMode(i, QHeaderView::Interactive); //FIXME: may crash if section is not visible
     header()->setStretchLastSection(false);
 
     connect(header(), SIGNAL(sectionResized(int, int, int)), this, SLOT(sectionResized(int, int, int)));

@@ -107,7 +107,7 @@ public:
     virtual TabActions *tabActions() {
         return _tabActions;
     }
-    virtual void plugActionList(const char *name, QList<QAction*> &list) {
+    virtual void plugActionList(const char *name, QList <QAction*> &list) {
         KParts::MainWindow::plugActionList(name, list);
     }
 
