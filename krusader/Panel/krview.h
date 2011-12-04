@@ -137,14 +137,12 @@ class KrView
     // notes: constructor does as little as possible, setup() does the rest. esp, note that
     // if you need something from operator or properties, move it into setup()
 
-    friend class Operator;
-
 public:
     class Item;
     class EmitterBase;
     class Emitter;
     class Operator;
-
+    
     class IconSizes : public QVector<int>
     {
     public:
@@ -152,6 +150,8 @@ public:
             *this << 12 << 16 << 22 << 32 << 48 << 64 << 128 << 256;
         }
     };
+
+    friend class KrView::Operator;
 
     /////////////////////////////////////////////////////////////
     // pure virtual functions                                  //
