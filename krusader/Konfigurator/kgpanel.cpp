@@ -89,16 +89,27 @@ void KgPanel::setupMiscTab()
     miscLayout->setContentsMargins(11, 11, 11, 11);
 
 // ---------------------------------------------------------------------------------------
+// ------------------------------- Address Bar -------------------------------------------
+// ---------------------------------------------------------------------------------------
+    QGroupBox *miscGrp = createFrame(i18n("Address bar"), tab);
+    QGridLayout *miscGrid = createGridLayout(miscGrp);
+
     KONFIGURATOR_CHECKBOX_PARAM general_settings[] = { // cfg_class, cfg_name, default, text, restart, tooltip
-        {"Look&Feel", "FlatOriginBar", _FlatOriginBar, i18n("Flat Origin Bar"),   true,  0 },
+        {"Look&Feel", "FlatOriginBar", _FlatOriginBar, i18n("Flat address bar"),   true,  0 },
+        {"Look&Feel", "ShortenHomePath", _ShortenHomePath, i18n("Shorten home path"),   true,  i18n("Display home path as \"~\"") },
     };
-    miscLayout->addWidget(createCheckBoxGroup(2, 0, general_settings, 1 /*count*/, tab, PAGE_MISC), 0, Qt::AlignTop);
+    KonfiguratorCheckBoxGroup *cbs = createCheckBoxGroup(2, 0, general_settings, 2 /*count*/, miscGrp, PAGE_MISC);
+    cbs->find("FlatOriginBar")->addDep(cbs->find("ShortenHomePath"));
+    miscGrid->addWidget(cbs, 0, 0);
+
+    miscLayout->addWidget(miscGrp);
+
 
 // ---------------------------------------------------------------------------------------
 // ------------------------------- Operation ---------------------------------------------
 // ---------------------------------------------------------------------------------------
-    QGroupBox *miscGrp = createFrame(i18n("Operation"), tab);
-    QGridLayout *miscGrid = createGridLayout(miscGrp);
+    miscGrp = createFrame(i18n("Operation"), tab);
+    miscGrid = createGridLayout(miscGrp);
 
     KONFIGURATOR_CHECKBOX_PARAM operation_settings[] = { // cfg_class, cfg_name, default, text, restart, tooltip
         {"Look&Feel", "Mark Dirs",            _MarkDirs,          i18n("Autoselect directories"),   false,  i18n("When matching the select criteria, not only files will be selected, but also directories.") },
@@ -121,7 +132,7 @@ void KgPanel::setupMiscTab()
         {"Look&Feel", "Fullpath Tab Names",   _FullPathTabNames,  i18n("Use full path tab names"), true ,  i18n("Display the full path in the folder tabs. By default only the last part of the path is displayed.") },
         {"Look&Feel", "Show Tab Buttons",   true,  i18n("Show new/close tab buttons"), true ,  i18n("Show the new/close tab buttons") },
     };
-    KonfiguratorCheckBoxGroup *cbs = createCheckBoxGroup(2, 0, tabbar_settings, 2 /*count*/, miscGrp, PAGE_MISC);
+    cbs = createCheckBoxGroup(2, 0, tabbar_settings, 2 /*count*/, miscGrp, PAGE_MISC);
     miscGrid->addWidget(cbs, 0, 0);
 
 // -----------------  Tab Bar position ----------------------------------

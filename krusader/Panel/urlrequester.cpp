@@ -30,7 +30,7 @@
 class UrlRequester::PathLabel : public KSqueezedTextLabel
 {
 public:
-    PathLabel (QWidget *parent, QLineEdit *le) : KSqueezedTextLabel(parent), _lineEdit(le) {}
+    PathLabel(QWidget *parent, QLineEdit *le) : KSqueezedTextLabel(parent), _lineEdit(le) {}
 
     virtual void mousePressEvent(QMouseEvent *event) {
         Q_UNUSED(event);
@@ -110,6 +110,15 @@ bool UrlRequester::eventFilter(QObject * watched, QEvent * e)
 }
 
 void UrlRequester::slotTextChanged(const QString &text) {
-    if(_path)
-        _path->setText(' ' + text + ' ');
+    if(_path) {
+        QString displayText = text;
+        if (text.startsWith(QDir::homePath()) &&
+                KConfigGroup(krConfig, "Look&Feel").readEntry("ShortenHomePath", _ShortenHomePath)) {
+            int prefixLength = QDir::homePath().length();
+            if (QDir::homePath().endsWith(QDir::separator()))
+                prefixLength--;
+            displayText = "~" + text.mid(prefixLength);
+        }
+        _path->setText(' ' + displayText + ' ');
+    }
 }

@@ -1,5 +1,8 @@
+    ADDED: option: Panel > Address bar > Shorten home path
     ADDED: action: Open With Menu - shortcut: CTRL + Enter
     ADDED: action: Open With... - shortcut: CTRL + O
+
+    CHANGED: option: Panel > Flat Origin Bar -> Panel > Address bar > Flat address bar
 
     FIXED:  [ 293370 ]  After a file deletion old file name is still shown
                         in the status bar 

@@ -95,6 +95,8 @@
 #define _FilterDialogRemembersSettings false
 // Flat Origin Bar
 #define _FlatOriginBar true
+// Shorten Home Path
+#define _ShortenHomePath true
 
 // Panel Toolbar Checkboxes
 // Panel Toolbar Visible checkbox turned off
