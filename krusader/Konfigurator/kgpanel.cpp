@@ -49,11 +49,13 @@
 #include "../Panel/krviewfactory.h"
 #include "../Panel/krlayoutfactory.h"
 
-#define PAGE_MISC     1
-#define PAGE_VIEW         2
-#define PAGE_PANELTOOLBAR  3
-#define PAGE_MOUSE  4
-#define PAGE_LAYOUT 5
+enum {
+    PAGE_MISC = 0,
+    PAGE_VIEW,
+    PAGE_PANELTOOLBAR,
+    PAGE_MOUSE,
+    PAGE_LAYOUT
+};
 
 
 KgPanel::KgPanel(bool first, QWidget* parent) :
@@ -542,7 +544,7 @@ void KgPanel::setupMouseModeTab()
     KONFIGURATOR_NAME_VALUE_TIP singleOrDoubleClick[] = {
         //          name            value            tooltip
         { i18n("Double-click selects (classic)"), "0", i18n("A single click on a file will select and focus, a double click opens the file or steps into the directory.") },
-        { i18n("Obey KDE's global selection policy"), "1", i18n("<p>Use KDE's global setting:</p><p><i>KDE System Settings -> General -> Computer Administration -> Keyboard & Mouse -> Mouse</i></p>") }
+        { i18n("Obey KDE's global selection policy"), "1", i18n("<p>Use KDE's global setting:</p><p><i>KDE System Settings -> Input Devices -> Mouse</i></p>") }
     };
     KonfiguratorRadioButtons *clickRadio = createRadioButtonGroup("Look&Feel", "Single Click Selects", "0", 1, 0, singleOrDoubleClick, 2, mouseDetailGroup, true, PAGE_MOUSE);
     clickRadio->layout()->setContentsMargins(0, 0, 0, 0);

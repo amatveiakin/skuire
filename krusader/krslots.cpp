@@ -238,14 +238,15 @@ void KRslots::addBookmark()
 // GUI toggle slots
 void KRslots::toggleFnkeys()
 {
-    if (MAIN_VIEW->fnKeys->isVisible()) MAIN_VIEW->fnKeys->hide();
-    else MAIN_VIEW->fnKeys->show();
+    if (MAIN_VIEW->fnKeys()->isVisible())
+        MAIN_VIEW->fnKeys()->hide();
+    else MAIN_VIEW->fnKeys()->show();
 }
 
 void KRslots::toggleCmdline()
 {
-    if (MAIN_VIEW->cmdLine->isVisible()) MAIN_VIEW->cmdLine->hide();
-    else MAIN_VIEW->cmdLine->show();
+    if (MAIN_VIEW->cmdLine()->isVisible()) MAIN_VIEW->cmdLine()->hide();
+    else MAIN_VIEW->cmdLine()->show();
 }
 
 void KRslots::toggleStatusbar()
@@ -257,7 +258,7 @@ void KRslots::toggleStatusbar()
 
 void KRslots::toggleTerminal()
 {
-    if (MAIN_VIEW->terminal_dock->isVisible()) MAIN_VIEW->slotTerminalEmulator(false);
+    if (MAIN_VIEW->terminalDock()->isVisible()) MAIN_VIEW->slotTerminalEmulator(false);
     else MAIN_VIEW->slotTerminalEmulator(true);
 }
 
@@ -275,16 +276,16 @@ void KRslots::insertFileName(bool full_path)
 
     filename = KrServices::quote(filename);
 
-    if (MAIN_VIEW->cmdLine->isVisible() || !MAIN_VIEW->terminal_dock->isTerminalVisible()) {
-        QString current = MAIN_VIEW->cmdLine->text();
+    if (MAIN_VIEW->cmdLine()->isVisible() || !MAIN_VIEW->terminalDock()->isTerminalVisible()) {
+        QString current = MAIN_VIEW->cmdLine()->text();
         if (current.length() != 0 && !current.endsWith(' '))
             current += ' ';
-        MAIN_VIEW->cmdLine->setText(current + filename);
-        MAIN_VIEW->cmdLine->setFocus();
-    } else if (MAIN_VIEW->terminal_dock->isTerminalVisible()) {
+        MAIN_VIEW->cmdLine()->setText(current + filename);
+        MAIN_VIEW->cmdLine()->setFocus();
+    } else if (MAIN_VIEW->terminalDock()->isTerminalVisible()) {
         filename = QChar(' ') + filename + QChar(' ');
-        MAIN_VIEW->terminal_dock->sendInput(filename);
-        MAIN_VIEW->terminal_dock->setFocus();
+        MAIN_VIEW->terminalDock()->sendInput(filename);
+        MAIN_VIEW->terminalDock()->setFocus();
     }
 }
 
@@ -311,19 +312,19 @@ void KRslots::configChanged(bool isGUIRestartNeeded)
         vfile::vfile_loadUserDefinedFolderIcons(group.readEntry("Load User Defined Folder Icons", _UserDefinedFolderIcons));
 
         bool leftActive = ACTIVE_PANEL->gui->isLeft();
-        MAIN_VIEW->leftMng->slotRecreatePanels();
-        MAIN_VIEW->rightMng->slotRecreatePanels();
+        MAIN_VIEW->leftManager()->slotRecreatePanels();
+        MAIN_VIEW->rightManager()->slotRecreatePanels();
         if(leftActive)
             LEFT_PANEL->slotFocusOnMe();
         else
             RIGHT_PANEL->slotFocusOnMe();
-        MAIN_VIEW->fnKeys->updateShortcuts();
+        MAIN_VIEW->fnKeys()->updateShortcuts();
         KrSelectionMode::resetSelectionHandler();
         krApp->setUpdatesEnabled(true);
     }
 
     // really ugly, but reload the Fn keys just in case - csaba: any better idea?
-    MAIN_VIEW->fnKeys->updateShortcuts();
+    MAIN_VIEW->fnKeys()->updateShortcuts();
 
     krApp->configChanged();
 }
@@ -335,8 +336,8 @@ void KRslots::toggleHidden()
     KrActions::actToggleHidden->setChecked(show);
     group.writeEntry("Show Hidden", show);
 
-    MAIN_VIEW->leftMng->refreshAllTabs(true);
-    MAIN_VIEW->rightMng->refreshAllTabs(true);
+    MAIN_VIEW->leftManager()->refreshAllTabs(true);
+    MAIN_VIEW->rightManager()->refreshAllTabs(true);
 }
 
 void KRslots::swapPanels()
@@ -345,7 +346,7 @@ void KRslots::swapPanels()
     KUrl rightURL = RIGHT_PANEL->func->files()->vfs_getOrigin();
 
     LEFT_PANEL->func->openUrl(rightURL);
-    LEFT_PANEL->func->openUrl(leftURL);
+    RIGHT_PANEL->func->openUrl(leftURL);
 }
 
 void KRslots::toggleSwapSides()
@@ -690,7 +691,7 @@ void KRslots::execTypeSetup()
         if ((*KrActions::execTypeArray[i])->isChecked()) {
             if (*KrActions::execTypeArray[i] == KrActions::actExecTerminalEmbedded) {
                 // if commands are to be executed in the TE, it must be loaded
-                MAIN_VIEW->terminal_dock->initialise();
+                MAIN_VIEW->terminalDock()->initialise();
             }
             KConfigGroup grp(krConfig,  "Private");
             grp.writeEntry("Command Execution Mode", i);
@@ -772,7 +773,7 @@ void KRslots::bookmarkCurrent()
 
 void KRslots::cmdlinePopup()
 {
-    MAIN_VIEW->cmdLine->popup();
+    MAIN_VIEW->cmdLine()->popup();
 }
 
 #include "krslots.moc"

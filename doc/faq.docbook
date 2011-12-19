@@ -83,7 +83,7 @@
           another window manager. However, the configuration of the
           &krusader; fonts and some behavior is done by
           running 
-          <command>kcontrol</command>.</para>
+          <command>systemsettings</command>.</para>
           <para></para>
           <!-- Empty line to make it more readable -->
           <para>A lot depends on what you want to do with
@@ -374,7 +374,7 @@
           &krusader; for the first time
           (&kde; will detect the newer version number in
           the first line).</para>
-          <para>If you install a CVS or beta version and
+          <para>If you install a development or beta version and
           &krusader; was already installed on your
           computer then you should delete the 
           <filename>krusaderui.rc</filename> file from your home
@@ -545,8 +545,9 @@
                 <filename>kusader.spec</filename> to 
                 <filename class="directory">
                 /usr/scr/RPM/SPECS</filename> Tip: the latest 
-                <filename>kusader.spec</filename> can be found in
-                CVS.</para>
+                <filename>kusader.spec</filename> can be found in the
+                <ulink url="https://projects.kde.org/projects/extragear/utils/krusader/repository/revisions/master/changes/krusader.spec">
+                Git  Repository</ulink>.</para>
               </listitem>
               <listitem>
                 <para>Edit 
@@ -604,7 +605,7 @@
       </qandaentry>
       <qandaentry>
         <question id="faqi_mac_dbus">
-          <para>Why does &krusader; doesn't start on &MacOS;?</para>
+          <para>Why does &krusader; not start on &MacOS;?</para>
         </question>
         <answer>
           <para>Please read carefully the <ulink url="http://www.macports.org/">macports.org</ulink> 
@@ -771,10 +772,8 @@
           client code page = MyCodePage (ex. 852)
           character set = MyCharSet (ex. ISO8859-2)
           </programlisting>
-          Unfortunately 
-          <application>kcontrol</application> (&kde;
-          3.1.1) fails to configure smb.conf properly, so this must
-          be done manually with a text editor.</para>
+          You can try to configure smb.conf with appropriate 
+          &systemsettings; module.</para>
           <para></para>
           <!-- Empty line to make it more readable -->
         </answer>
@@ -870,7 +869,7 @@
             <listitem>
               <para>
                <menuchoice>
-                 <guimenu>Application Appearance and Behavior</guimenu>
+                 <guimenu>Common Appearance and Behavior</guimenu>
                  <guimenuitem>File Associations</guimenuitem>
               </menuchoice>
               </para>
@@ -900,8 +899,8 @@
           firewall or proxy. Open 
             <menuchoice>
               <guimenu>KDE System Settings</guimenu>
-              <guimenuitem>Network</guimenuitem>
-              <guimenuitem>Preferences</guimenuitem>
+              <guimenuitem>Network Settings</guimenuitem>
+              <guimenuitem>Connection Preferences</guimenuitem>
             </menuchoice>, 
           <guilabel>"Enable Passive Mode (PASV)"</guilabel> has to
           be turned on or off, depending on it's current setting.
@@ -928,7 +927,7 @@
           via &HTTP; proxy' feature is not yet supported
           by &krusader;. This error may be caused by a
           misconfiguration of the proxy settings in
-          &kcontrolcenter;. Modify the proxy settings to
+          &systemsettings;. Modify the proxy settings to
           not use &HTTP; proxy and &FTP; will
           work.</para>
           <para></para>
@@ -949,7 +948,7 @@
                 <guilabel>Mark partially uploaded files</guilabel> in &kde;'s System Settings. 
                 The check box is located at 
                 <menuchoice>
-                 <guimenu>Internet and Network</guimenu>
+                 <guimenu>Network Settings</guimenu>
                  <guimenuitem>Connection Preferences</guimenuitem>
                 </menuchoice>.</para>
           <!-- Empty line to make it more readable -->
@@ -1031,7 +1030,6 @@
           mode, than you need to configure:
             <menuchoice>
               <guimenu>KDE System Settings</guimenu>
-              <guimenuitem>KDE components</guimenuitem>
               <guimenuitem>File Associations</guimenuitem>
               <guimenuitem>Application</guimenuitem>
               <guimenuitem>octet-stream</guimenuitem>
@@ -1258,14 +1256,6 @@
           </note>
           <para></para>
           <!-- Empty line to make it more readable -->
-          <note>
-            <para>
-              <remark>If you've got bugs to report please do not
-              use &kde;'s bugzilla http://bugs.kde.org/,
-              &kde;'s Bug Tracking System. Report
-              &krusader; bugs directly to us.</remark>
-            </para>
-          </note>
           <para></para>
           <!-- Empty line to make it more readable -->
         </answer>
@@ -1277,7 +1267,7 @@
   </question>
   <answer>
   <para>Usually binary packages that are been used by your distribution do not contain debug information.
-        Since we usually only develop and fix &krusader;-cvs, compile &krusader;-cvs in debugmode and install it, than check if the bug still exist.
+        Since we usually only develop and fix &krusader;-git, compile &krusader;-git in debugmode and install it, than check if the bug still exist.
         <screen><prompt>$</prompt> <userinput><command>cmake</command> <option>-DCMAKE_BUILD_TYPE=debugfull</option></userinput></screen>  
 
         Install <ulink url="http://valgrind.org">valgrind</ulink>, a suite of tools for debugging and profiling &Linux; programs.
@@ -1298,7 +1288,7 @@
   </question>
   <answer>
   <para>Usually binary packages that are been used by your distribution do not contain debug information.
-        Since we usually only develop and fix &krusader;-cvs, compile &krusader;-cvs in debugmode and install it, than check if the bug still exist.
+        Since we usually only develop and fix &krusader;-git, compile &krusader;-git in debugmode and install it, than check if the bug still exist.
         <screen><prompt>$</prompt> <userinput><command>cmake</command> <option>-DCMAKE_BUILD_TYPE=debugfull</option></userinput></screen> 
  
        If the KDEKrashhandler still doesn't provide useful backtrace information, than sometimes a coredump will give better information. 
@@ -1353,14 +1343,6 @@
               can ask for help and talk with the
               &krusader; users and developers.</para>
             </listitem>
-            <listitem>
-              <para><ulink url="http://groups-beta.google.com/group/krusader-i18n">&krusader;-i18n</ulink> is the translations
-              mailing list.</para>
-            </listitem>
-            <listitem>
-              <para><ulink url="http://groups-beta.google.com/group/krusader-doc">&krusader;-doc</ulink> is the documentation
-              mailing list.</para>
-            </listitem>
           </itemizedlist></para>
           <para></para>
           <!-- Empty line to make it more readable -->
@@ -1379,9 +1361,7 @@
           <ulink url="http://groups.google.com/group/krusader-devel/feeds">krusader-devel feed</ulink>
 	  and even 
           <ulink url="http://dir.gmane.org/gmane.comp.kde.krusader.devel">additional feeds</ulink> by gmane.org.
-          <ulink url="http://groups.google.com/group/krusader-users/feeds">krusader-users feed</ulink>,
-          <ulink url="http://groups.google.com/group/krusader-i18n/feeds">krusader-i18n feed</ulink>,
-          <ulink url="http://groups.google.com/group/krusader-doc/feeds">krusader-doc feed</ulink> .</para>
+          <ulink url="http://groups.google.com/group/krusader-users/feeds">krusader-users feed</ulink>.</para>
           <para></para>
           <!-- Empty line to make it more readable -->
         </answer>

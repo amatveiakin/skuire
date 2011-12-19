@@ -443,10 +443,6 @@ void Krusader::savePosition() {
         cfg.writeEntry("Start Position", isMaximized() ? oldPos : pos());
         cfg.writeEntry("Start Size", isMaximized() ? oldSize : size());
     }
-    QList<int> lst = MAIN_VIEW->horiz_splitter->sizes();
-    cfg.writeEntry("Splitter Sizes", lst);
-    if (!MAIN_VIEW->getTerminalEmulatorSplitterSizes().isEmpty())
-        cfg.writeEntry("Terminal Emulator Splitter Sizes", MAIN_VIEW->getTerminalEmulatorSplitterSizes());
 
     cfg = krConfig->group("Startup");
     MAIN_VIEW->saveSettings(cfg);
@@ -485,17 +481,6 @@ void Krusader::saveSettings() {
     _popularUrls->save();
 
     krConfig->sync();
-}
-
-void Krusader::refreshView() {
-    delete MAIN_VIEW;
-    MAIN_VIEW = new KrusaderView(this);
-    setCentralWidget(MAIN_VIEW);
-    KConfigGroup cfg(krConfig, "Private");
-    resize(cfg.readEntry("Start Size", _StartSize));
-    move(cfg.readEntry("Start Position", _StartPosition));
-    MAIN_VIEW->show();
-    show();
 }
 
 void Krusader::configChanged() {
@@ -679,7 +664,7 @@ void Krusader::updateUserActions() {
 void Krusader::updateGUI(bool enforce) {
     // now, check if we need to create a konsole_part
     // call the XML GUI function to draw the UI
-    createGUI(MAIN_VIEW->terminal_dock->part());
+    createGUI(MAIN_VIEW->terminalDock()->part());
 
     // this needs to be called AFTER createGUI() !!!
     updateUserActions();
@@ -703,35 +688,8 @@ void Krusader::updateGUI(bool enforce) {
             statusBar() ->show();
             KrActions::actShowStatusBar->setChecked(true);
         }
-        if (!cfg.readEntry("Show Cmd Line", _ShowCmdline)) {
-            MAIN_VIEW->cmdLine->hide();
-            KrActions::actToggleCmdline->setChecked(false);
-        } else {
-            MAIN_VIEW->cmdLine->show();
-            KrActions::actToggleCmdline->setChecked(true);
-        }
 
-        // update the Fn bar to the shortcuts selected by the user
-        MAIN_VIEW->fnKeys->updateShortcuts();
-        if (!cfg.readEntry("Show FN Keys", _ShowFNkeys)) {
-            MAIN_VIEW->fnKeys->hide();
-            KrActions::actToggleFnkeys->setChecked(false);
-        } else {
-            MAIN_VIEW->fnKeys->show();
-            KrActions::actToggleFnkeys->setChecked(true);
-        }
-        // set vertical mode
-        if (cfg.readEntry("Vertical Mode", false)) {
-            MAIN_VIEW->toggleVerticalMode();
-        }
-        if (cfg.readEntry("Show Terminal Emulator", _ShowTerminalEmulator)) {
-            MAIN_VIEW->slotTerminalEmulator(true);   // create konsole_part
-            MAIN_VIEW->vert_splitter->setSizes(MAIN_VIEW->verticalSplitterSizes);
-        } else if (KrActions::actExecTerminalEmbedded->isChecked()) {
-            //create (but not show) terminal emulator,
-            //if command-line commands are to be run there
-            MAIN_VIEW->terminal_dock->initialise();
-        }
+        MAIN_VIEW->updateGUI(cfg);
     }
     // popular urls
     _popularUrls->load();
@@ -851,7 +809,7 @@ void Krusader::moveToTop() {
 }
 
 bool Krusader::isRunning() {
-    moveToTop();
+    moveToTop(); //FIXME - doesn't belong here
     return true;
 }
 
@@ -897,12 +855,12 @@ AbstractPanelManager *Krusader::activeManager()
 
 AbstractPanelManager *Krusader::leftManager()
 {
-    return MAIN_VIEW->leftMng;
+    return MAIN_VIEW->leftManager();
 }
 
 AbstractPanelManager *Krusader::rightManager()
 {
-    return MAIN_VIEW->rightMng;
+    return MAIN_VIEW->rightManager();
 }
 
 #include "krusader.moc"

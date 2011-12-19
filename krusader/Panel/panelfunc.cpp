@@ -314,8 +314,9 @@ void ListPanelFunc::doRefresh()
         int savedHistoryState = history->state();
 
         if (vfsP->vfs_refresh(u)) {
-            // update the history, as the actual url might differ from the one requested
+            // update the history and address bar, as the actual url might differ from the one requested
             history->setCurrentUrl(vfsP->vfs_getOrigin());
+            panel->origin->setUrl(vfsP->vfs_getOrigin().prettyUrl());
             break; // we have a valid refreshed URL now
         }
 
@@ -986,7 +987,7 @@ void ListPanelFunc::execute(KFileItem item)
 
     if (protocol == "tar" || protocol == "krarc") {
         bool encrypted;
-        QString type = KRarcHandler::getType(encrypted, url.path(), mime, false);
+        QString type = KRarcHandler::getType(encrypted, url.path(), mime, false, true);
         if (!KRarcHandler::arcHandled(type))       // if the specified archive is disabled delete the protocol
             protocol = "";
     }

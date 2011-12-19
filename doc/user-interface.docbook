@@ -111,9 +111,7 @@
       <link linkend="settings-menu">Settings menu</link>. The Main Toolbar contents can be
       configured from the 
       <guimenuitem>Configure Toolbars</guimenuitem> in the
-      <link linkend="settings-menu">Settings menu</link> or the 
-      <guilabel>Buttons</guilabel> tab in the
-      <link linkend="konfig-panel">Konfigurator Panel page</link>. Since various commands
+      <link linkend="settings-menu">Settings menu</link>. Since various commands
       and options in &krusader; are context-dependent,
       some commands are not always available. The icon of an
       inappropriate or inactive action will be deactivated
@@ -633,7 +631,7 @@
     <para>When you start typing your commands,
     the command line auto-completion feature will make its offers
     according to what you choose in the
-    &kcontrolcenter;. If you want to change the way
+    &systemsettings;. If you want to change the way
     auto-complete behaves in the current &krusader;
     session, 
     <keycap>right click</keycap> on the command line and change it.

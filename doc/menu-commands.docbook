@@ -113,13 +113,12 @@
               <keycap>F5</keycap>
             </shortcut>
             <guimenu>File</guimenu>
-            <guimenuitem>Copy</guimenuitem>
+            <guimenuitem>Copy to other panel</guimenuitem>
           </menuchoice>
         </term>
         <listitem>
-          <para>Opens a dialog to 
-          <link linkend="copying">copy</link> the currently selected
-          files or directories to a specified location.</para>
+          <para>Copy the currently selected
+          files or directories to the other panel.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -194,7 +193,7 @@
         <term>
           <menuchoice>
             <guimenu>File</guimenu>
-            <guimenuitem>Compare by content</guimenuitem>
+            <guimenuitem>Compare by Content</guimenuitem>
           </menuchoice>
         </term>
         <listitem>
@@ -364,7 +363,7 @@
               <keycap>X</keycap></keycombo>
             </shortcut>
             <guimenu>Edit</guimenu>
-            <guimenuitem>Cut to Clipboard</guimenuitem>
+            <guimenuitem>Cut</guimenuitem>
           </menuchoice>
         </term>
         <listitem>
@@ -381,7 +380,7 @@
               <keycap>C</keycap></keycombo>
             </shortcut>
             <guimenu>Edit</guimenu>
-            <guimenuitem>Copy to Clipboard</guimenuitem>
+            <guimenuitem>Copy</guimenuitem>
           </menuchoice>
         </term>
         <listitem>
@@ -398,7 +397,7 @@
               <keycap>V</keycap></keycombo>
             </shortcut>
             <guimenu>Edit</guimenu>
-            <guimenuitem>Paste from Clipboard</guimenuitem>
+            <guimenuitem>Paste</guimenuitem>
           </menuchoice>
         </term>
         <listitem>
@@ -628,7 +627,7 @@
           <menuchoice>
             <shortcut>
               <keycombo action="simul">&Alt;
-              <keycap>KP_Enter</keycap></keycombo>
+              <keysym>Return</keysym></keycombo>
             </shortcut>
             <guimenu>Edit</guimenu>
             <guimenuitem>Properties</guimenuitem>
@@ -637,6 +636,142 @@
         <listitem>
           <para>Opens the properties dialog for the currently
           selected file. (KP refers to Key Pad.)</para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </sect1>
+  <sect1 id="go-menu">
+    <title>Go Menu</title>
+    <variablelist>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <shortcut>
+              <keycombo action="simul">&Alt;
+              <keysym>Up</keysym></keycombo>
+            </shortcut>
+            <guimenu>Go</guimenu>
+            <guimenuitem>Up</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Navigates to the parent directory of the active
+          panel.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <shortcut>
+              <keycombo action="simul">&Alt;
+              <keysym>Left</keysym></keycombo>
+            </shortcut>
+            <guimenu>Go</guimenu>
+            <guimenuitem>Back</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Navigates to the previously viewed directory in the
+          active panel.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <shortcut>
+              <keycombo action="simul">&Alt;
+              <keysym>Right</keysym></keycombo>
+            </shortcut>
+            <guimenu>Go</guimenu>
+            <guimenuitem>Forward</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Navigates to the next viewed directory in the
+	    active panel. Becomes available only if <menuchoice><guimenu>Go</guimenu>
+	    <guimenuitem>Back</guimenuitem></menuchoice> was used beforehand.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <shortcut>
+              <keycombo action="simul">&Alt;
+              <keysym>Home</keysym></keycombo>
+            </shortcut>
+            <guimenu>Go</guimenu>
+            <guimenuitem>Home</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Navigates to the home directory of the current
+          user.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <shortcut>
+              <keycombo action="simul">&Ctrl;
+              &Backspace;</keycombo>
+            </shortcut>
+            <guimenu>Go</guimenu>
+            <guimenuitem>Root</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Navigates to the root directory of the
+          system.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <shortcut>
+              <keycombo action="simul">&Ctrl;
+              <keycap>Z</keycap></keycombo>
+            </shortcut>
+            <guimenu>Go</guimenu>
+            <guimenuitem>Popular URLs</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Displays a listing of frequently viewed directories
+          from which you may navigate to one by double-clicking on
+          it.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <shortcut>
+              <keycombo action="simul">
+              &Ctrl;&Shift;
+              <keycap>J</keycap></keycombo>
+            </shortcut>
+            <guimenu>Go</guimenu>
+            <guimenuitem>Set Jump Back Point</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Sets the current directory as a "jump back" point.
+          To navigate to this directory quickly, select the "Jump
+          Back" command from the Go Menu.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <shortcut>
+              <keycombo action="simul">&Ctrl;
+              <keycap>J</keycap></keycombo>
+            </shortcut>
+            <guimenu>Go</guimenu>
+            <guimenuitem>Jump Back</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Returns to a previous "jump back" point.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -824,121 +959,6 @@
       </varlistentry>
     </variablelist>
   </sect1>
-  <sect1 id="go-menu">
-    <title>Go Menu</title>
-    <variablelist>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <guimenu>Go</guimenu>
-            <guimenuitem>Back</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Navigates to the previously viewed directory in the
-          active panel.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <shortcut>
-              <keycombo action="simul">&Ctrl;
-              <keysym>PgUp</keysym></keycombo>
-            </shortcut>
-            <guimenu>Go</guimenu>
-            <guimenuitem>Up</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Navigates to the parent directory of the active
-          panel.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <shortcut>
-              <keycombo action="simul">&Ctrl;
-              &Backspace;</keycombo>
-            </shortcut>
-            <guimenu>Go</guimenu>
-            <guimenuitem>Root</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Navigates to the root directory of the
-          system.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <shortcut>
-              <keycombo action="simul">&Alt;
-              <keysym>Home</keysym></keycombo>
-            </shortcut>
-            <guimenu>Go</guimenu>
-            <guimenuitem>Home</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Navigates to the home directory of the current
-          user.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <shortcut>
-              <keycombo action="simul">&Ctrl;
-              <keycap>Z</keycap></keycombo>
-            </shortcut>
-            <guimenu>Go</guimenu>
-            <guimenuitem>Popular URLs</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Displays a listing of frequently viewed directories
-          from which you may navigate to one by double-clicking on
-          it.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <shortcut>
-              <keycombo action="simul">
-              &Ctrl;&Shift;
-              <keycap>J</keycap></keycombo>
-            </shortcut>
-            <guimenu>Go</guimenu>
-            <guimenuitem>Set Jump Back Point</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Sets the current directory as a "jump back" point.
-          To navigate to this directory quickly, select the "Jump
-          Back" command from the Go Menu.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <shortcut>
-              <keycombo action="simul">&Ctrl;
-              <keycap>J</keycap></keycombo>
-            </shortcut>
-            <guimenu>Go</guimenu>
-            <guimenuitem>Jump Back</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Returns to a previous "jump back" point.</para>
-        </listitem>
-      </varlistentry>
-    </variablelist>
-  </sect1>
   <sect1 id="useractions-menu">
     <title>Useractions Menu</title>
     <variablelist>
@@ -957,19 +977,29 @@
       <varlistentry>
         <term>
           <menuchoice>
-            <guimenu>Useractions</guimenu>
-            <guimenuitem>Your own Useractions</guimenuitem>
+            <shortcut>
+              <keycombo action="simul">
+                <keycap>Meta</keycap>
+                <keycap>A</keycap>
+              </keycombo>
+            </shortcut>
+            <guimenu>Useractions</guimenu><guisubmenu>Multimedia</guisubmenu>
+            <guimenuitem>Enqueue in Amarok</guimenuitem>
           </menuchoice>
         </term>
         <listitem>
-          <para>Opens the default user actions and those
-          created by the user.</para>
+          <para>Appends selected item(s) to Amarok playlist.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
         <term>
           <menuchoice>
-            <guimenu>Useractions</guimenu>
+            <shortcut>
+              <keycombo action="simul">
+                &Ctrl;&Alt;
+              </keycombo>
+            </shortcut>
+            <guimenu>Useractions</guimenu><guisubmenu>Samples</guisubmenu>
             <guimenuitem>Equal panel-size</guimenuitem>
           </menuchoice>
         </term>
@@ -981,7 +1011,12 @@
       <varlistentry>
         <term>
           <menuchoice>
-            <guimenu>Useractions</guimenu>
+            <shortcut>
+              <keycombo action="simul">
+                &Ctrl;<keycap>E</keycap>
+              </keycombo>
+            </shortcut>
+            <guimenu>Useractions</guimenu><guisubmenu>Samples</guisubmenu>
             <guimenuitem>Edit as root</guimenuitem>
           </menuchoice>
         </term>
@@ -993,7 +1028,12 @@
       <varlistentry>
         <term>
           <menuchoice>
-            <guimenu>Useractions</guimenu>
+            <shortcut>
+              <keycombo action="simul">
+                &Ctrl;&Alt;<keycap>M</keycap>
+              </keycombo>
+            </shortcut>
+            <guimenu>Useractions</guimenu><guisubmenu>Samples</guisubmenu>
             <guimenuitem>Mount</guimenuitem>
           </menuchoice>
         </term>
@@ -1004,18 +1044,12 @@
       <varlistentry>
         <term>
           <menuchoice>
-            <guimenu>Useractions</guimenu>
-            <guimenuitem>Enqueue in Amarok</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Appends selected item(s) to Amarok playlist.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <guimenu>Useractions</guimenu>
+            <shortcut>
+              <keycombo action="simul">
+                &Ctrl;&Alt;<keycap>C</keycap>
+              </keycombo>
+            </shortcut>
+            <guimenu>Useractions</guimenu><guisubmenu>Samples</guisubmenu>
             <guimenuitem>Copy current item to
             clipboard</guimenuitem>
           </menuchoice>
@@ -1029,11 +1063,28 @@
           <menuchoice>
             <shortcut>
               <keycombo action="simul">
-                <keycap>Win</keycap>
+                <keycap>Meta</keycap><keycap>F5</keycap>
+              </keycombo>
+            </shortcut>
+            <guimenu>Useractions</guimenu><guisubmenu>System</guisubmenu>
+            <guimenuitem>Backup current</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Backups current file in current directory and asks the user for a new filename. 
+                By default <filename>.old</filename> is appended to the original filename.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <shortcut>
+              <keycombo action="simul">
+                <keycap>Meta</keycap>
                 <keycap>1</keycap>
               </keycombo>
             </shortcut>
-            <guimenu>Useractions</guimenu>
+            <guimenu>Useractions</guimenu><guisubmenu>User Interface</guisubmenu>
             <guimenuitem>Sort By Name</guimenuitem>
           </menuchoice>
         </term>
@@ -1048,11 +1099,11 @@
           <menuchoice>
             <shortcut>
               <keycombo action="simul">
-                <keycap>Win</keycap>
+                <keycap>Meta</keycap>
                 <keycap>2</keycap>
               </keycombo>
             </shortcut>
-            <guimenu>Useractions</guimenu>
+            <guimenu>Useractions</guimenu><guisubmenu>User Interface</guisubmenu>
             <guimenuitem>Sort By Extension</guimenuitem>
           </menuchoice>
         </term>
@@ -1069,11 +1120,11 @@
           <menuchoice>
             <shortcut>
               <keycombo action="simul">
-                <keycap>Win</keycap>
+                <keycap>Meta</keycap>
                 <keycap>3</keycap>
               </keycombo>
             </shortcut>
-            <guimenu>Useractions</guimenu>
+            <guimenu>Useractions</guimenu><guisubmenu>User Interface</guisubmenu>
             <guimenuitem>Sort By Size</guimenuitem>
           </menuchoice>
         </term>
@@ -1089,11 +1140,11 @@
           <menuchoice>
             <shortcut>
               <keycombo action="simul">
-                <keycap>Win</keycap>
+                <keycap>Meta</keycap>
                 <keycap>4</keycap>
               </keycombo>
             </shortcut>
-            <guimenu>Useractions</guimenu>
+            <guimenu>Useractions</guimenu><guisubmenu>User Interface</guisubmenu>
             <guimenuitem>Sort By Modified</guimenuitem>
           </menuchoice>
         </term>
@@ -1107,18 +1158,12 @@
       <varlistentry>
         <term>
           <menuchoice>
-            <shortcut>
-              <keycombo action="simul">
-                &Shift;<keycap>F5</keycap>
-              </keycombo>
-            </shortcut>
             <guimenu>Useractions</guimenu>
-            <guimenuitem>Backup current</guimenuitem>
+            <guimenuitem>Your own Useractions</guimenuitem>
           </menuchoice>
         </term>
         <listitem>
-          <para>Backups current file in current directory and asks the user for a new filename. 
-                By default <filename>.old</filename> is appended to the original filename.</para>
+          <para>Opens the user actions created by the user.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -1201,7 +1246,7 @@
           <menuchoice>
             <shortcut>
               <keycombo action="simul">&Alt;&Shift;
-              <keycap>D</keycap></keycombo>
+              <keycap>S</keycap></keycombo>
             </shortcut>
             <guimenu>Tools</guimenu>
             <guimenuitem>Disk Usage</guimenuitem>
@@ -1326,6 +1371,7 @@
         </listitem>
       </varlistentry>
       <!-- vertical bar -->
+      <!-- disabled due to KrJS does not compile (cannot find kjsembed from kdelibs
       <varlistentry>
         <term>
           <menuchoice>
@@ -1344,197 +1390,16 @@
           Console</link>.</para>
         </listitem>
       </varlistentry>
- 
+      -->
       <varlistentry>
         <term>
           <menuchoice>
-            <!-- <shortcut> <keycombo action="simul">&Alt;&Ctrl;<keycap>J</keycap></keycombo> </shortcut> -->
             <guimenu>Tools</guimenu>
-            <guimenuitem>Empty trash</guimenuitem>
+            <guimenuitem>Empty Trash</guimenuitem>
           </menuchoice>
         </term>
         <listitem>
           <para>Empty the <link linkend="deleting">trash bin</link>.</para>
-        </listitem>
-      </varlistentry>
-      <!--<varlistentry>-->
-      <!--<term>-->
-      <!--<menuchoice>-->
-      <!--<shortcut>-->
-      <!--<keycombo action="simul">&Ctrl;<keycap>`</keycap></keycombo>-->
-      <!--</shortcut>-->
-      <!--<guimenu>Tools</guimenu>-->
-      <!--<guimenuitem>User Menu</guimenuitem>-->
-      <!--</menuchoice>-->
-      <!--</term>-->
-      <!--<listitem>-->
-      <!--<para>-->
-      <!--Please use at this moment the <link linkend="useractions-menu">Useractions menu</link> instead.-->
-      <!--Our plans for the Usermenu are to make user-configurable KActionMenus.-->
-      <!--With this one could make a UserMenu containing &eg; all music-related actions and place-->
-      <!--this in the button-bar.... (or anywhere else).-->
-      <!--</para>-->
-      <!--</listitem>-->
-      <!--</varlistentry>-->
-    </variablelist>
-  </sect1>
-  <sect1 id="settings-menu">
-    <title>Settings Menu</title>
-    <variablelist>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <guimenu>Settings</guimenu>
-            <guimenuitem>Show Toolbar</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Shows the <link linkend="mainwindow">Main Toolbar</link> if
-          checked.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <guimenu>Settings</guimenu>
-            <guimenuitem>Show Actions Toolbar</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Shows the <link linkend="actions_toolbar">Actions Toolbar</link> if
-          checked.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <guimenu>Settings</guimenu>
-            <guimenuitem>Show Statusbar</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Shows the 
-          <link linkend="mainwindow">Statusbar</link> if
-          chosen.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <guimenu>Settings</guimenu>
-            <guimenuitem>Show FN Keys bar</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Shows the <link linkend="fnkeys">FN Keys Bar</link> if
-          checked.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <guimenu>Settings</guimenu>
-            <guimenuitem>Show Command Line</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Shows the 
-          <link linkend="cmdline">Command Line</link> if
-          checked.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <shortcut>
-              <keycombo action="simul">
-              &Alt;&Ctrl;
-              <keycap>T</keycap></keycombo>
-            </shortcut>
-            <guimenu>Settings</guimenu>
-            <guimenuitem>Show Terminal Emulator</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Show the 
-          <link linkend="cmdline">Terminal Emulator</link> if
-          checked.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry id="configure-shortcuts">
-        <term>
-          <menuchoice>
-            <guimenu>Settings</guimenu>
-            <guimenuitem>Configure Shortcuts</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <indexterm>
-            <primary>Configure</primary>
-            <secondary>Shortcuts</secondary>
-          </indexterm>
-          <para>Opens a dialog which allows you to configure the
-          &krusader; key bindings.</para>
-          <para>With the 
-          <guibutton>Import shortcuts</guibutton> and 
-          <guibutton>Export shortcuts</guibutton> buttons you can
-          load and save a Key-binding profile. This allows
-          &krusader; to have the <trademark class="copyright">Total Commander</trademark>,
-          <application>Midnight Commander</application>, foo-commander, or your custom
-          Key-bindings. The only limitation is that global
-          &kde; key-bindings and some
-          &krusader; key-bindings can not be changed yet,
-          as well as some features in foo-commander that we either
-          do not have or need. The Key-bindings are stored in 
-          <filename>$KDEDIR/share/apps/krusader</filename>, 
-          <filename>foo.keymap.info</filename> contains a
-          description, 
-          <filename>foo.keymap</filename> is an ini file that holds
-          the Key-bindings. Until &krusader;-1.70.1 this
-          was a binary file, &krusader; is backwards
-          compatible for importing this legacy binary format. If a 
-          <filename>*.keymap.info</filename> text file exists,
-          &krusader; will display it, showing additional
-          information regarding the loaded Key-bindings file. Here
-          you have a chance to exit without importing the proposed
-          Key-bindings file.</para>
-          <tip>
-            <para>A <trademark class="copyright">Total Commander</trademark> Key-bindings file is
-            provided. Please 
-            <link linkend="help_krusader"> upload your favorite
-            Key-bindings schemes</link> so that they become
-            available for the &krusader; community.
-            Thanks!</para>
-          </tip>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <guimenu>Settings</guimenu>
-            <guimenuitem>Configure Toolbars</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Opens a dialog which allows you to configure the
-          <link linkend="mainwindow">Main Toolbar</link> or the
-          <link linkend="actions_toolbar">Actions Toolbar</link>. You can add action
-          buttons of your favourite <link linkend="useractions">UserActions</link> to
-          the desired toolbar.</para>
-        </listitem>
-      </varlistentry>
-      <varlistentry>
-        <term>
-          <menuchoice>
-            <guimenu>Settings</guimenu>
-            <guimenuitem>Configure
-            &krusader;</guimenuitem>
-          </menuchoice>
-        </term>
-        <listitem>
-          <para>Opens 
-          <link linkend="konfigurator">Konfigurator</link> - the
-          &krusader; configuration center.</para>
         </listitem>
       </varlistentry>
     </variablelist>
@@ -1556,6 +1421,17 @@
         </term>
         <listitem>
           <para>Opens a new tab in the active panel.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Window</guimenu>
+	    <guimenuitem>Lock Tab/Unlock Tab</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Locks then unlocks current tab in the active panel.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -1606,6 +1482,28 @@
           <para>Closes the current tab in the active panel. This
           command is only available if there is more than one tab
           in the active panel.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Window</guimenu>
+            <guimenuitem>Close Inactive Tabs</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Closes all the tabs in the active panel except for the active.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Window</guimenu>
+            <guimenuitem>Close Duplicated Tabs</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Closes the duplicated tabs in the active panel.</para>
         </listitem>
       </varlistentry>
       <varlistentry>
@@ -1740,6 +1638,205 @@
           automated with 
           <guilabel>"Save settings on exit"</guilabel> in
           <link linkend="konfigurator">Konfigurator Startup page</link></para>
+        </listitem>
+      </varlistentry>
+    </variablelist>
+  </sect1>
+  <sect1 id="settings-menu">
+    <title>Settings Menu</title>
+    <variablelist>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Settings</guimenu>
+            <guimenuitem>Show Main Toolbar</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Shows the <link linkend="mainwindow">Main Toolbar</link> if
+          checked.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Settings</guimenu>
+            <guimenuitem>Show Actions Toolbar</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Shows the <link linkend="actions_toolbar">Actions Toolbar</link> if
+          checked.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Settings</guimenu>
+            <guimenuitem>Show Statusbar</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Shows the 
+          <link linkend="mainwindow">Statusbar</link> if
+          chosen.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Settings</guimenu>
+            <guimenuitem>Show FN Keys Bar</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Shows the <link linkend="fnkeys">FN Keys Bar</link> if
+          checked.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <shortcut>
+              <keycombo action="simul">
+              &Ctrl;&Alt;
+              <keycap>T</keycap></keycombo>
+            </shortcut>
+            <guimenu>Settings</guimenu>
+            <guimenuitem>Show Terminal Emulator</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Show the 
+          <link linkend="cmdline">Terminal Emulator</link> if
+          checked.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Settings</guimenu>
+            <guimenuitem>Show Command Line</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Shows the 
+          <link linkend="cmdline">Command Line</link> if
+          checked.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Settings</guimenu>
+            <guimenuitem>Command Execution Mode Setup</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Allows you to choose command execution mode. You can choose one
+	    of the following options.</para>
+	  <itemizedlist>
+            <listitem>
+              <para>
+              <guimenuitem>Start and Forget</guimenuitem>: start execution and do not wait for the results.</para>
+            </listitem>
+            <listitem>
+              <para>
+                <guimenuitem>Display Separated Standard and Error Output</guimenuitem>: show the output to stdout and stderr on the separate panels.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+		<guimenuitem>Display Mixed Standard and Error Output</guimenuitem>: show the output to stdout and stderr on the single panel (default).
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                <guimenuitem>Start in New Terminal</guimenuitem>: execute the command in the new terminal window.
+              </para>
+            </listitem>
+            <listitem>
+              <para>
+                <guimenuitem>Send to Embedded Terminal Emulator</guimenuitem>: send the command to the embedded terminal emulator.
+              </para>
+            </listitem>
+	  </itemizedlist>
+	</listitem>
+      </varlistentry>
+      <varlistentry id="configure-shortcuts">
+        <term>
+          <menuchoice>
+            <guimenu>Settings</guimenu>
+            <guimenuitem>Configure Shortcuts</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <indexterm>
+            <primary>Configure</primary>
+            <secondary>Shortcuts</secondary>
+          </indexterm>
+          <para>Opens a dialog which allows you to configure the
+          &krusader; key bindings.</para>
+          <para>With the 
+          <guibutton>Import shortcuts</guibutton> and 
+          <guibutton>Export shortcuts</guibutton> buttons you can
+          load and save a Key-binding profile. This allows
+          &krusader; to have the <trademark class="copyright">Total Commander</trademark>,
+          <application>Midnight Commander</application>, foo-commander, or your custom
+          Key-bindings. The only limitation is that global
+          &kde; key-bindings and some
+          &krusader; key-bindings can not be changed yet,
+          as well as some features in foo-commander that we either
+          do not have or need. The Key-bindings are stored in 
+          <filename>$KDEDIR/share/apps/krusader</filename>, 
+          <filename>foo.keymap.info</filename> contains a
+          description, 
+          <filename>foo.keymap</filename> is an ini file that holds
+          the Key-bindings. Until &krusader;-1.70.1 this
+          was a binary file, &krusader; is backwards
+          compatible for importing this legacy binary format. If a 
+          <filename>*.keymap.info</filename> text file exists,
+          &krusader; will display it, showing additional
+          information regarding the loaded Key-bindings file. Here
+          you have a chance to exit without importing the proposed
+          Key-bindings file.</para>
+          <tip>
+            <para>A <trademark class="copyright">Total Commander</trademark> Key-bindings file is
+            provided. Please 
+            <link linkend="help_krusader"> upload your favorite
+            Key-bindings schemes</link> so that they become
+            available for the &krusader; community.
+            Thanks!</para>
+          </tip>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Settings</guimenu>
+            <guimenuitem>Configure Toolbars</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Opens a dialog which allows you to configure the
+          <link linkend="mainwindow">Main Toolbar</link> or the
+          <link linkend="actions_toolbar">Actions Toolbar</link>. You can add action
+          buttons of your favourite <link linkend="useractions">UserActions</link> to
+          the desired toolbar.</para>
+        </listitem>
+      </varlistentry>
+      <varlistentry>
+        <term>
+          <menuchoice>
+            <guimenu>Settings</guimenu>
+            <guimenuitem>Configure
+            &krusader;</guimenuitem>
+          </menuchoice>
+        </term>
+        <listitem>
+          <para>Opens 
+          <link linkend="konfigurator">Konfigurator</link> - the
+          &krusader; configuration center.</para>
         </listitem>
       </varlistentry>
     </variablelist>

@@ -1017,7 +1017,7 @@ void ListPanel::keyPressEvent(QKeyEvent *e)
         break;
     case Qt::Key_Down :
         if (e->modifiers() == Qt::ControlModifier) {   // give the keyboard focus to the command line
-            if (MAIN_VIEW->cmdLine->isVisible())
+            if (MAIN_VIEW->cmdLine()->isVisible())
                 MAIN_VIEW->cmdLineFocus();
             else
                 MAIN_VIEW->focusTerminalEmulator();
@@ -1045,7 +1045,7 @@ void ListPanel::keyPressEvent(QKeyEvent *e)
         // if we got this, it means that the view is not doing
         // the quick search thing, so send the characters to the commandline, if normal key
         if (e->modifiers() == Qt::NoModifier)
-            MAIN_VIEW->cmdLine->addText(e->text());
+            MAIN_VIEW->cmdLine()->addText(e->text());
 
         //e->ignore();
     }
