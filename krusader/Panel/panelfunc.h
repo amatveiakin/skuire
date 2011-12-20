@@ -37,6 +37,7 @@
 
 #include <QtCore/QObject>
 #include <QtCore/QTimer>
+#include <QClipboard>
 #include <kservice.h>
 
 
@@ -124,6 +125,7 @@ protected slots:
     void doRefresh();
     void slotFileCreated(KJob *job); // a file has been created by editNewFile()
     void historyGotoPos(int pos);
+    void clipboardChanged(QClipboard::Mode mode);
 
 protected:
     KUrl cleanPath(const KUrl &url);
@@ -140,6 +142,8 @@ protected:
     KUrl                 syncURL;
     KUrl                 fileToCreate; // file that's to be created by editNewFile()
     bool                 urlManuallyEntered;
+
+    static QPointer<ListPanelFunc> copyToClipboardOrigin;
 
 private:
     KUrl getVirtualBaseURL();

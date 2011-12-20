@@ -102,6 +102,8 @@ A
 #include "viewactions.h"
 
 
+QPointer<ListPanelFunc> ListPanelFunc::copyToClipboardOrigin;
+
 ListPanelFunc::ListPanelFunc(ListPanel *parent) : QObject(parent),
         panel(parent), vfsP(0), urlManuallyEntered(false)
 {
@@ -910,7 +912,7 @@ void ListPanelFunc::goInside(KFileItem item)
     } else if (url.isLocalFile()) {
         bool encrypted;
         QString mime = item.mimetype();
-        QString type = KRarcHandler::getType(encrypted, url.path(), mime, false);
+        QString type = KRarcHandler::getType(encrypted, url.path(), mime, false, true);
 
         if (KRarcHandler::arcSupported(type)) {    // archive autodetection
             // here we check whether KDE supports tar
@@ -1297,6 +1299,14 @@ vfs* ListPanelFunc::files()
     return vfsP;
 }
 
+void ListPanelFunc::clipboardChanged(QClipboard::Mode mode)
+{
+    if (mode == QClipboard::Clipboard && this == copyToClipboardOrigin) {
+        disconnect(QApplication::clipboard(), 0, this, 0);
+        copyToClipboardOrigin = 0;
+    }
+}
+
 void ListPanelFunc::copyToClipboard(bool move)
 {
     if (files()->vfs_getOrigin().equals(KUrl("virt:/"), KUrl::CompareWithoutTrailingSlash)) {
@@ -1309,24 +1319,31 @@ void ListPanelFunc::copyToClipboard(bool move)
 
     KUrl::List urls = panel->view->getSelectedUrls(true);
     if (urls.count()) {
-        QStringList fileNames; //TODO remove this
-        foreach(const KUrl &url, urls)
-            fileNames << url.fileName();
-
         QMimeData *mimeData = new QMimeData;
         mimeData->setData("application/x-kde-cutselection", move ? "1" : "0");
         urls.populateMimeData(mimeData);
 
+        if (copyToClipboardOrigin)
+            disconnect(QApplication::clipboard(), 0, copyToClipboardOrigin, 0);
+        copyToClipboardOrigin = this;
+
         QApplication::clipboard()->setMimeData(mimeData, QClipboard::Clipboard);
 
-        if (move && files()->vfs_getType() == vfs::VFS_VIRT)
-            (static_cast<virt_vfs*>(files()))->vfs_removeFiles(&fileNames);
+        connect(QApplication::clipboard(), SIGNAL(changed(QClipboard::Mode)), this, SLOT(clipboardChanged(QClipboard::Mode)));
     }
 }
 
 void ListPanelFunc::pasteFromClipboard()
 {
     QClipboard * cb = QApplication::clipboard();
+
+    ListPanelFunc *origin = 0;
+
+    if (copyToClipboardOrigin) {
+        disconnect(QApplication::clipboard(), 0, copyToClipboardOrigin, 0);
+        origin = copyToClipboardOrigin;
+        copyToClipboardOrigin = 0;
+    }
 
     bool move = false;
     const QMimeData *data = cb->mimeData();
@@ -1341,6 +1358,11 @@ void ListPanelFunc::pasteFromClipboard()
         return ;
 
     KUrl destUrl = panel->virtualPath();
+
+    if(origin && KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
+        origin->panel->view->saveSelection();
+        origin->panel->view->changeSelection(urls, false, false);
+    }
 
     files()->vfs_addFiles(&urls, move ? KIO::CopyJob::Move : KIO::CopyJob::Copy, otherFunc()->files(),
                           "", PM_DEFAULT);
