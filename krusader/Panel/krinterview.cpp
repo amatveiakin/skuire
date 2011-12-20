@@ -146,11 +146,6 @@ void KrInterView::setSelected(const KrView::Item *item, bool select)
         _selection.remove(item);
 }
 
-bool KrInterView::isSelected(const QModelIndex &ndx)
-{
-    return isSelected(_model->itemAt(ndx));
-}
-
 QString KrInterView::getCurrentItem() const
 {
     if (!_model->ready())

@@ -134,7 +134,6 @@ public:
     virtual QModelIndex getCurrentIndex() {
         return _itemView->currentIndex();
     }
-    virtual bool isSelected(const QModelIndex &ndx);
     virtual uint numSelected() const {
         return _selection.count();
     }
