@@ -256,6 +256,7 @@ public:
     void zoomIn();
     void zoomOut();
 
+    static QString columnDescription(int column);
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //

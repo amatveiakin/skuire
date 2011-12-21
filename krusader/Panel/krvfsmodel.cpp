@@ -500,19 +500,8 @@ QVariant KrVfsModel::headerData(int section, Qt::Orientation orientation, int ro
     // ignore anything that's not display, and not horizontal
     if (role != Qt::DisplayRole || orientation != Qt::Horizontal)
         return QVariant();
-
-    switch (section) {
-    case KrViewProperties::Name: return i18n("Name");
-    case KrViewProperties::Ext: return i18n("Ext");
-    case KrViewProperties::Size: return i18n("Size");
-    case KrViewProperties::Type: return i18n("Type");
-    case KrViewProperties::Modified: return i18n("Modified");
-    case KrViewProperties::Permissions: return i18n("Perms");
-    case KrViewProperties::KrPermissions: return i18n("rwx");
-    case KrViewProperties::Owner: return i18n("Owner");
-    case KrViewProperties::Group: return i18n("Group");
-    }
-    return QString();
+    else
+        return KrView::columnDescription(section);
 }
 
 const QModelIndex & KrVfsModel::itemIndex(const KrView::Item *item)
