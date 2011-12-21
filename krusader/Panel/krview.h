@@ -256,6 +256,9 @@ public:
     void zoomIn();
     void zoomOut();
 
+    // lowercase id for the column (untranslated)
+    static QString columnId(int column);
+    // translated column name
     static QString columnDescription(int column);
 
     /////////////////////////////////////////////////////////////

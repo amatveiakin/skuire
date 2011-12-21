@@ -1206,6 +1206,23 @@ void KrView::stopQuickFilter(bool refreshView)
     op()->stopQuickFilter(refreshView);
 }
 
+QString KrView::columnId(int column)
+{
+    switch (column) {
+    case KrViewProperties::Name: return "name";
+    case KrViewProperties::Ext: return "ext";
+    case KrViewProperties::Size: return "size";
+    case KrViewProperties::Type: return "type";
+    case KrViewProperties::Modified: return "modified";
+    case KrViewProperties::Permissions: return "perms";
+    case KrViewProperties::KrPermissions: return "rwx";
+    case KrViewProperties::Owner: return "owner";
+    case KrViewProperties::Group: return "group";
+    default:
+        return QString();
+    }
+}
+
 QString KrView::columnDescription(int column)
 {
     switch (column) {
