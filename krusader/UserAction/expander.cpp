@@ -55,15 +55,15 @@ using namespace std;
 #include "tstring.h"
 
 
-inline void exp_placeholder::setError(Expander& exp, const Error& e)
+void exp_placeholder::setError(Expander& exp, const Error& e)
 {
     exp.setError(e);
 }
-inline QStringList exp_placeholder::splitEach(const TagString& s)
+QStringList exp_placeholder::splitEach(const TagString& s)
 {
     return Expander::splitEach(s);
 }
-inline exp_placeholder::exp_placeholder()
+exp_placeholder::exp_placeholder()
 {
 }
 
@@ -135,11 +135,6 @@ SIMPLE_PLACEHOLDER_CLASS(exp_Path)
 SIMPLE_PLACEHOLDER_CLASS(exp_Count)
 
 /**
-  * expands %_Filter% ('_' is replaced by 'a', 'o', 'r' or 'l' to indicate the active, other, right or left panel) with the correspondend filter (ie: "*.cpp")
-  */
-SIMPLE_PLACEHOLDER_CLASS(exp_Filter)
-
-/**
   * expands %_Current% ('_' is replaced by 'a', 'o', 'r' or 'l' to indicate the active, other, right or left panel) with the current item ( != the selected onec)
   */
 SIMPLE_PLACEHOLDER_CLASS(exp_Current);
@@ -206,11 +201,6 @@ SIMPLE_PLACEHOLDER_CLASS(exp_Profile);
   * This is setting marks in the string where he is later split up for each {all, selected, files, dirs}
   */
 SIMPLE_PLACEHOLDER_CLASS(exp_Each);
-
-/**
-  * This sets the sorting on a specific colunm
-  */
-SIMPLE_PLACEHOLDER_CLASS(exp_ColSort);
 
 /**
   * This sets relation between the left and right panel
@@ -317,19 +307,6 @@ TagString exp_Count::expFunc(const KrPanel* panel, const QStringList& parameter,
     }
 
     return TagString(QString("%1").arg(n));
-}
-
-exp_Filter::exp_Filter()
-{
-    _expression = "Filter";
-    _description = i18n("Filter Mask (*.h, *.cpp, etc.)");
-    _needPanel = true;
-}
-TagString exp_Filter::expFunc(const KrPanel* panel, const QStringList&, const bool&, Expander& exp) const
-{
-    NEED_PANEL
-//FIXME
-//     return panel->view->filterMask().nameFilter();
 }
 
 exp_Current::exp_Current()
@@ -766,78 +743,6 @@ TagString exp_Each::expFunc(const KrPanel* panel, const QStringList& parameter, 
     return ret;
 }
 
-exp_ColSort::exp_ColSort()
-{
-    _expression = "ColSort";
-    _description = i18n("Set Sorting for This Panel...");
-    _needPanel = true;
-
-    addParameter(exp_parameter(i18n("Choose a column:"), "__choose:Name;Ext;Type;Size;Modified;Perms;rwx;Owner;Group", true));
-    addParameter(exp_parameter(i18n("Choose a sort sequence:"), "__choose:Toggle;Asc;Desc", false));
-}
-TagString exp_ColSort::expFunc(const KrPanel* panel, const QStringList& parameter, const bool&, Expander& exp) const
-{
-    NEED_PANEL
-//FIXME
-#if 0
-    if (parameter.count() == 0 || parameter[0].isEmpty()) {
-        setError(exp, Error(Error::exp_S_FATAL, Error::exp_C_ARGUMENT, i18n("Expander: no column specified for %_ColSort(column)%")));
-        return QString();
-    }
-
-    KrViewProperties::ColumnType oldColumn = panel->view->properties()->sortColumn;
-    KrViewProperties::ColumnType column = oldColumn;
-
-    if (parameter[0].toLower() == "name") {
-        column = KrViewProperties::Name;
-    } else
-        if (parameter[0].toLower() == "ext") {
-            column = KrViewProperties::Ext;
-        } else
-            if (parameter[0].toLower() == "type") {
-                column = KrViewProperties::Type;
-            } else
-                if (parameter[0].toLower() == "size") {
-                    column = KrViewProperties::Size;
-                } else
-                    if (parameter[0].toLower() == "modified") {
-                        column = KrViewProperties::Modified;
-                    } else
-                        if (parameter[0].toLower() == "perms") {
-                            column = KrViewProperties::Permissions;
-                        } else
-                            if (parameter[0].toLower() == "rwx") {
-                                column = KrViewProperties::KrPermissions;
-                            } else
-                                if (parameter[0].toLower() == "owner") {
-                                    column = KrViewProperties::Owner;
-                                } else
-                                    if (parameter[0].toLower() == "group") {
-                                        column = KrViewProperties::Group;
-                                    } else {
-                                        setError(exp, Error(Error::exp_S_WARNING, Error::exp_C_ARGUMENT, i18n("Expander: unknown column specified for %_ColSort(%1)%", parameter[0])));
-                                        return QString();
-                                    }
-
-    bool descending = panel->view->properties()->sortOptions & KrViewProperties::Descending;
-
-    if (parameter.count() <= 1 || (parameter[1].toLower() != "asc" && parameter[1].toLower() != "desc")) { // no sortdir parameter
-        if(column == oldColumn) // reverse direction if column is unchanged
-            descending = !descending;
-        else // otherwise set to ascending
-            descending = false;
-    } else { // sortdir specified
-        if (parameter[1].toLower() == "asc")
-            descending = false;
-        else // == desc
-            descending = true;
-    }
-
-    panel->view->setSortMode(column, descending);
-#endif
-    return QString();  // this doesn't return anything, that's normal!
-}
-
 exp_PanelSize::exp_PanelSize()
 {
     _expression = "PanelSize";
@@ -1177,7 +1082,6 @@ QList<const exp_placeholder*>& Expander::_placeholder()
     if(!ret.count()) {
         ret << new exp_View;
         ret << new exp_PanelSize;
-        ret << new exp_ColSort;
         ret << new exp_Each;
         ret << new exp_Profile;
         ret << new exp_NewSearch;
@@ -1191,7 +1095,6 @@ QList<const exp_placeholder*>& Expander::_placeholder()
         ret << new exp_ListFile;
         ret << new exp_List;
         ret << new exp_Current;
-        ret << new exp_Filter;
         ret << new exp_Count;
         ret << new exp_Path;
 #ifdef __KJSEMBED__
@@ -1199,4 +1102,9 @@ QList<const exp_placeholder*>& Expander::_placeholder()
 #endif
     }
     return ret;
+}
+
+void Expander::registerPlaceholder(const exp_placeholder *placeholder)
+{
+    _placeholder() << placeholder;
 }

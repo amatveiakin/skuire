@@ -237,6 +237,9 @@ public:
     const Error& error() const {
         return _err;
     }
+
+    static void registerPlaceholder(const exp_placeholder *placeholder);
+
 protected:
     /**
      * This expands a whole commandline by calling for each Placeholder the corresponding expander
@@ -277,7 +280,7 @@ protected:
     friend class exp_placeholder;
 
 private:
-    static QList <const exp_placeholder*>& _placeholder();
+    static QList <const exp_placeholder*> &_placeholder();
     Error _err;
     QStringList resultList;
 };

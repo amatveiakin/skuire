@@ -85,6 +85,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "Panel/listpanelactions.h"
 #include "Panel/krview.h"
 #include "Panel/krviewfactory.h"
+#include "Panel/viewmodule.h"
 #include "UserAction/kraction.h"
 #include "UserAction/expander.h"
 #include "UserAction/useraction.h"
@@ -103,7 +104,6 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "Queue/queue_mgr.h"
 #include "Konfigurator/kgprotocols.h"
 #include "BookMan/krbookmarkhandler.h"
-
 
 
 #ifdef __KJSEMBED__
@@ -163,6 +163,8 @@ Krusader::Krusader() : KParts::MainWindow(0,
     // create an icon loader
     krLoader = KIconLoader::global();
 //   iconLoader->addExtraDesktopThemes();
+
+    ViewModule::init();
 
     // create MountMan
     KrGlobal::mountMan = new KMountMan(this);
