@@ -1,5 +1,6 @@
 /*****************************************************************************
  * Copyright (C) 2009 Csaba Karai <cskarai@freemail.hu>                      *
+ * Copyright (C) 2011 Jan Lepper <jan_lepper@gmx.de>                         *
  *                                                                           *
  * This program is free software; you can redistribute it and/or modify      *
  * it under the terms of the GNU General Public License as published by      *

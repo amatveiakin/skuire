@@ -2,6 +2,7 @@
                                  krview.cpp
                             -------------------
    copyright            : (C) 2000-2002 by Shie Erlich & Rafi Yanai
+                          (C) 2011 + by Jan Lepper <jan_lepper@gmx.de>
    e-mail               : krusader@users.sourceforge.net
    web site             : http://krusader.sourceforge.net
 ---------------------------------------------------------------------------
