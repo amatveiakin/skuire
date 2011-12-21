@@ -75,7 +75,10 @@ ViewActions::ViewActions(QObject *parent, KrMainWindow *mainWindow) :
 
 inline KrView *ViewActions::view()
 {
-    return _mainWindow->activeView();
+    //FIXME- handle the case of no active view
+    KrView *v = qobject_cast<KrView*>(_mainWindow->activeView()->self());
+    Q_ASSERT(v);
+    return v;
 }
 
 // zoom

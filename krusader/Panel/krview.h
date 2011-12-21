@@ -186,6 +186,11 @@ public:
         saveSettingsOfType(grp, KrViewProperties::AllProperties);
     }
     virtual void restoreSettings(KConfigGroup grp);
+    virtual void disableSorting() {
+        setSortMode(KrViewProperties::NoColumn, false);
+    }
+    virtual void startQuickFilter();
+    virtual void enableUpdateDefaultSettings(bool enable);
 
 
     /////////////////////////////////////////////////////////////
@@ -237,8 +242,6 @@ public:
     void setFilter(KrViewProperties::FilterSpec filter);
     void setFilter(KrViewProperties::FilterSpec filter, FilterSettings customFilter, bool applyToDirs);
 
-    void enableUpdateDefaultSettings(bool enable);
-
     void customSelection(bool select);
     void selectRegion(KFileItem item1, KFileItem item2, bool select, bool clearFirst = false);
     QString itemDescription(KUrl url, bool itemIsUpUrl);
@@ -252,7 +255,6 @@ public:
     }
     void zoomIn();
     void zoomOut();
-    void startQuickFilter();
 
 
     /////////////////////////////////////////////////////////////

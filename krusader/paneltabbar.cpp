@@ -21,6 +21,7 @@
 #include "paneltabbar.h"
 
 #include "defaults.h"
+#include "krglobal.h"
 #include "tabactions.h"
 #include "Panel/listpanel.h"
 

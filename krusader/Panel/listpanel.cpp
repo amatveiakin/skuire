@@ -108,6 +108,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "quickfilter.h"
 #include "dirhistoryqueue.h"
 #include "urlrequester.h"
+#include "view.h"
 
 
 class ActionButton : public QToolButton
@@ -454,9 +455,10 @@ void ListPanel::changeType(int type)
     if (panelType != type) {
         QString current = view->getCurrentItem();
         KUrl::List selection = view->getSelectedUrls(false);
-        bool filterApplysToDirs = view->properties()->filterApplysToDirs;
-        KrViewProperties::FilterSpec filter = view->filter();
-        FilterSettings filterSettings = view->properties()->filterSettings;
+//FIXME
+//         bool filterApplysToDirs = view->properties()->filterApplysToDirs;
+//         KrViewProperties::FilterSpec filter = view->filter();
+//         FilterSettings filterSettings = view->properties()->filterSettings;
 
         panelType = type;
         quickSearch->setFocusProxy(0);
@@ -466,7 +468,8 @@ void ListPanel::changeType(int type)
         delete view;
 
         createView();
-        view->setFilter(filter, filterSettings, filterApplysToDirs);
+//FIXME
+//         view->setFilter(filter, filterSettings, filterApplysToDirs);
         view->setSelection(selection);
         view->setCurrentItem(current);
         view->makeItemVisible(view->currentUrl());

@@ -46,7 +46,7 @@
 #include "calcspacethread.h"
 
 class KrPanel;
-class KrView;
+class View;
 
 
 /**
@@ -68,7 +68,7 @@ class KrCalcSpaceDialog : public KDialog
     bool m_canceled; // true: cancel was pressed
     int m_timerCounter; // internal counter. The timer runs faster as the rehresh (see comment there)
     const KUrl::List m_items;
-    KrView *m_view;
+    View *m_view;
 
     void calculationFinished(); // called if the calculation is done
     void showResult(); // show the current result in teh dialog

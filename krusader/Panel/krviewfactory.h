@@ -36,8 +36,10 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include <QtGui/QKeySequence>
 #include <QtGui/QWidget>
 
-class KrView;
+class View;
+class KrView; //FIXME - remove
 class KConfig;
+
 
 class KrViewInstance
 {
@@ -62,7 +64,7 @@ public:
         return m_shortcut;
     }
 
-    virtual KrView *create(QWidget *w, KConfig *cfg) = 0;
+    virtual View *create(QWidget *w, KConfig *cfg) = 0;
 
 protected:
     int                            m_id;
@@ -70,7 +72,7 @@ protected:
     QString                        m_description;
     QString                        m_icon;
     QKeySequence                   m_shortcut;
-    QList<KrView*>                 m_objects;
+    QList<KrView*>                 m_objects; //FIXME change to View
 };
 
 
@@ -81,7 +83,7 @@ public:
     KrViewInstanceImpl(int id, QString name, QString desc, QString icon, QKeySequence shortcut) :
         KrViewInstance(id, name, desc, icon, shortcut) {}
 
-    virtual KrView *create(QWidget *w, KConfig *cfg) {
+    virtual View *create(QWidget *w, KConfig *cfg) {
         return new T(w, *this, cfg);
     }
 };
@@ -90,7 +92,7 @@ class KrViewFactory
 {
     friend class KrViewInstance;
 public:
-    static KrView *                createView(int id, QWidget * widget, KConfig *cfg);
+    static View *                  createView(int id, QWidget * widget, KConfig *cfg);
     static KrViewInstance *        viewInstance(int id);
     static const QList<KrViewInstance*>& registeredViews() {
         return self().m_registeredViews;

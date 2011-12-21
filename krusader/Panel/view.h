@@ -94,6 +94,9 @@ public:
     virtual void saveSettings(KConfigGroup grp) = 0;
     // call this to restore this view's settings after restart
     virtual void restoreSettings(KConfigGroup grp) = 0;
+    virtual void disableSorting() = 0;
+    virtual void startQuickFilter() = 0;
+    virtual void enableUpdateDefaultSettings(bool enable) = 0;
 
     /////////////////////////////////////////////////////////////
     // helper functions                                        //

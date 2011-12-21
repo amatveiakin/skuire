@@ -35,6 +35,9 @@
 
 #include <kfileitem.h>
 #include <kurl.h>
+#include <klineedit.h>
+#include <kconfiggroup.h>
+
 #include <qwidget.h>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
@@ -52,15 +55,18 @@
 #include <QHideEvent>
 #include <QKeyEvent>
 #include <QEvent>
-#include <klineedit.h>
 #include <QtCore/QPointer>
 
 #include "krpanel.h"
-#include "krview.h"
 #include "../Dialogs/krsqueezedtextlabel.h"
 
 #define PROP_SYNC_BUTTON_ON               1
 #define PROP_LOCKED                       2
+
+namespace KIO
+{
+    class Job;
+}
 
 class vfs;
 class KrView;

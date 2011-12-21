@@ -84,7 +84,7 @@ public:
     virtual QWidget *widget() {
         return this;
     }
-    virtual KrView *activeView();
+    virtual View *activeView();
     ViewActions *viewActions() {
         return _viewActions;
     }

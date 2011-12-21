@@ -38,7 +38,7 @@
 
 class ListPanelFunc;
 class ListPanel;
-class KrView;
+class View;
 
 class KrPanel
 {
@@ -60,7 +60,7 @@ public:
 
     ListPanel *gui;
     ListPanelFunc *func;
-    KrView *view;
+    View *view;
 
 protected:
     AbstractPanelManager *_manager;

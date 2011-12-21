@@ -24,7 +24,7 @@
 #include "../panelmanager.h"
 #include "../Panel/listpanel.h"
 #include "../Panel/panelfunc.h"
-#include "../Panel/krview.h"
+#include "../Panel/view.h"
 #include "../Synchronizer/synchronizergui.h"
 #include "../Search/krsearchdialog.h"
 #include "../GUI/profilemanager.h"
@@ -328,8 +328,8 @@ exp_Filter::exp_Filter()
 TagString exp_Filter::expFunc(const KrPanel* panel, const QStringList&, const bool&, Expander& exp) const
 {
     NEED_PANEL
-
-    return panel->view->filterMask().nameFilter();
+//FIXME
+//     return panel->view->filterMask().nameFilter();
 }
 
 exp_Current::exp_Current()
@@ -778,7 +778,8 @@ exp_ColSort::exp_ColSort()
 TagString exp_ColSort::expFunc(const KrPanel* panel, const QStringList& parameter, const bool&, Expander& exp) const
 {
     NEED_PANEL
-
+//FIXME
+#if 0
     if (parameter.count() == 0 || parameter[0].isEmpty()) {
         setError(exp, Error(Error::exp_S_FATAL, Error::exp_C_ARGUMENT, i18n("Expander: no column specified for %_ColSort(column)%")));
         return QString();
@@ -833,7 +834,7 @@ TagString exp_ColSort::expFunc(const KrPanel* panel, const QStringList& paramete
     }
 
     panel->view->setSortMode(column, descending);
-
+#endif
     return QString();  // this doesn't return anything, that's normal!
 }
 

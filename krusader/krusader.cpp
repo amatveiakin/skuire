@@ -843,7 +843,7 @@ bool Krusader::queryExit()
     return true;
 }
 
-KrView *Krusader::activeView()
+View *Krusader::activeView()
 {
     return ACTIVE_PANEL->view;
 }

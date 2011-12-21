@@ -66,6 +66,7 @@ A
 #include "dirhistoryqueue.h"
 #include "krcalcspacedialog.h"
 #include "listpanel.h"
+#include "view.h"
 #include "krerrordisplay.h"
 #include "listpanelactions.h"
 #include "quickfilter.h"
@@ -637,7 +638,7 @@ void ListPanelFunc::moveFiles(bool enqueue)
     }
 }
 
-// called from SLOTS to begin the renaming process
+// called from rename action to begin the renaming process
 void ListPanelFunc::rename()
 {
     panel->view->renameCurrentItem();

@@ -69,7 +69,7 @@
 #include "../VFS/virt_vfs.h"
 #include "../VFS/krquery.h"
 #include "../KViewer/krviewer.h"
-#include "../Panel/krview.h"
+#include "../Panel/view.h"
 #include "../Panel/krviewfactory.h"
 #include "../Panel/quickfilter.h"
 #include "../Panel/krpanel.h"
@@ -440,7 +440,7 @@ void KrSearchDialog::startSearch()
     mainStopBtn->setEnabled(true);
     mainFeedToListBoxBtn->setEnabled(false);
     result->clear();
-    resultView->setSortMode(KrViewProperties::NoColumn, 0);
+    resultView->disableSorting();
     searchingLabel->setText("");
     foundLabel->setText(i18n("Found 0 matches."));
     searcherTabs->setCurrentIndex(2); // show the results page

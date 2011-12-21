@@ -20,7 +20,7 @@
 #define __KRMAINWINDOW_H__
 
 class QWidget;
-class KrView;
+class View;
 class QAction;
 class KActionCollection;
 class ViewActions;
@@ -30,7 +30,7 @@ class KrMainWindow
 {
 public:
     virtual QWidget *widget() = 0;
-    virtual KrView *activeView() = 0;
+    virtual View *activeView() = 0;
     virtual ViewActions *viewActions() = 0;
     virtual KActionCollection *actions() = 0;
 
