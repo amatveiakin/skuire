@@ -15,6 +15,7 @@ set(Panel_SRCS
     krcalcspacedialog.cpp 
     krpopupmenu.cpp 
     krpreviewpopup.cpp 
+    view.cpp
     krview.cpp 
     panelfunc.cpp
     krpanel.cpp

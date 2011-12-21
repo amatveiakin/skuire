@@ -23,6 +23,8 @@
 #include <QtGui/QDialog>
 #include <QtGui/QPainter>
 #include <QtGui/QLineEdit>
+#include <QKeyEvent>
+
 
 KrInterViewItemDelegate::KrInterViewItemDelegate(QObject *parent) :
         QItemDelegate(parent), _currentlyEdited(-1), _dontDraw(false) {}

@@ -28,6 +28,7 @@
 #include <QItemSelection>
 #include <QItemSelectionRange>
 #include <QApplication>
+#include <QKeyEvent>
 
 #include <kmenu.h>
 #include <klocale.h>

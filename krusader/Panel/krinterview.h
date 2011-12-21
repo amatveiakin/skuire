@@ -80,8 +80,11 @@ protected:
 };
 
 
-class KrInterView : public KrView, public ViewWidgetParent, public CalcSpaceClient
+class KrInterView : public QObject, public KrView, public ViewWidgetParent, public CalcSpaceClient
 {
+    Q_OBJECT
+    Q_INTERFACES(KrView)
+
 public:
     enum
     {
@@ -92,9 +95,9 @@ public:
     KrInterView(QWidget *parent, KrViewInstance &instance, KConfig *cfg);
     virtual ~KrInterView();
 
-    // ViewWidgetParent implementation
-    virtual const KrViewProperties *properties() {
-        return KrView::properties();
+    // View implementation
+    virtual QObject *self() {
+        return this;
     }
 
     // KrView implementation
@@ -121,10 +124,6 @@ public:
     virtual bool isItemVisible(KUrl url);
     virtual QRect itemRectGlobal(KUrl url);
     virtual QPixmap icon(KUrl url);
-    virtual bool isCurrentItemSelected();
-    virtual void selectCurrentItem(bool select);
-    virtual void pageDown();
-    virtual void pageUp();
     virtual QString currentDescription();
     virtual bool quickSearch(const QString &term, int direction);
     virtual QWidget *widget() {
@@ -141,7 +140,6 @@ public:
     virtual void renameCurrentItem();
     virtual void clear();
     virtual void refresh();
-    virtual void sort();
     virtual void refreshColors();
     virtual void redraw();
     virtual void prepareForActive();
@@ -150,8 +148,12 @@ public:
     virtual void makeCurrentVisible();
     virtual void setFileIconSize(int size);
     virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending);
-    virtual void saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties);
     virtual void copySettingsFrom(KrView*);
+
+    // ViewWidgetParent implementation
+    virtual const KrViewProperties *properties() {
+        return KrView::properties();
+    }
 
     void sortModeUpdated(int column, Qt::SortOrder order);
 
@@ -167,9 +169,6 @@ public:
     AbstractDirLister *dirLister() {
         return _dirLister;
     }
-
-    //FIXME dummy
-    virtual void updateView() {}
 
 protected:
     class DummySelectionModel : public QItemSelectionModel
@@ -197,8 +196,9 @@ protected:
     // KrCalcSpaceDialog::Client implementation
     virtual void updateItemSize(KUrl url, KIO::filesize_t newSize);
 
+    // implementation of routines used internally by KrView
     virtual void setup();
-    virtual void setCurrentItem(ItemSpec item);
+    virtual void setCurrentItemBySpec(ItemSpec spec);
     virtual KIO::filesize_t calcSize();
     virtual KIO::filesize_t calcSelectedSize();
     virtual QRect itemRect(KUrl itemUrl);
@@ -206,18 +206,21 @@ protected:
     virtual Item *itemFromUrl(KUrl url) const;
     virtual void refreshIcons();
     virtual void gotPreview(KFileItem item, QPixmap preview);
-
+    virtual bool isCurrentItemSelected();
+    virtual void selectCurrentItem(bool select);
+    virtual void pageDown();
+    virtual void pageUp();
+    virtual void saveSettingsOfType(KConfigGroup grp, KrViewProperties::PropertyType properties);
+    virtual void doRestoreSettings(KConfigGroup grp);
     virtual void newItems(const KFileItemList& items);
     virtual void itemsDeleted(const KFileItemList& items);
     virtual void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items);
-
-    virtual void doRestoreSettings(KConfigGroup grp);
 
     QRect itemRect(const QModelIndex &index);
 
     void currentChanged(const QModelIndex &current);
     void setCurrentIndex(QModelIndex index);
-    inline KrView::Item *currentViewItem();
+    KrView::Item *currentViewItem();
 
 
     KrVfsModel *_model;

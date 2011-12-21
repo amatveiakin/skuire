@@ -24,6 +24,9 @@
 #include "../defaults.h"
 
 #include <QApplication>
+#include <QMouseEvent>
+#include <QDragEnterEvent>
+#include <QDragMoveEvent>
 
 #define CANCEL_TWO_CLICK_RENAME {_singleClicked = false;_renameTimer.stop();}
 

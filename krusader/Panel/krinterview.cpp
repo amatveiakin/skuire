@@ -30,6 +30,8 @@
 #include "krinterdetailedview.h"
 #include "krinterbriefview.h"
 
+#include <QHelpEvent>
+
 
 int ViewWidget::elementWidth(const QModelIndex & index)
 {
@@ -158,11 +160,6 @@ QString KrInterView::getCurrentItem() const
 void KrInterView::makeCurrentVisible()
 {
     _itemView->scrollTo(_itemView->currentIndex());
-}
-
-void KrInterView::sort()
-{
-    _model->sort();
 }
 
 void KrInterView::prepareForActive()
@@ -425,10 +422,10 @@ void KrInterView::updateItemSize(KUrl url, KIO::filesize_t newSize)
     }
 }
 
-void KrInterView::setCurrentItem(ItemSpec item)
+void KrInterView::setCurrentItemBySpec(ItemSpec spec)
 {
     QModelIndex newIndex, currentIndex = _itemView->currentIndex();
-    switch (item) {
+    switch (spec) {
         case First:
             newIndex = _model->index(0, 0, QModelIndex());
             break;
@@ -752,9 +749,9 @@ int KrInterView::itemsPerPage()
     return _widget->itemsPerPage();
 }
 
-void KrInterView::saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties)
+void KrInterView::saveSettingsOfType(KConfigGroup grp, KrViewProperties::PropertyType properties)
 {
-    KrView::saveSettings(grp, properties);
+    KrView::saveSettingsOfType(grp, properties);
     _widget->saveSettings(grp, properties);
 }
 

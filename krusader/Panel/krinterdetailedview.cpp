@@ -24,6 +24,7 @@
 #include <QHashIterator>
 #include <QHeaderView>
 #include <QApplication>
+#include <QContextMenuEvent>
 
 #include <klocale.h>
 #include <kdirlister.h>

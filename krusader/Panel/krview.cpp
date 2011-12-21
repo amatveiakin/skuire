@@ -141,12 +141,12 @@ void KrView::Operator::handleQuickSearchEvent(QKeyEvent * e)
         break;
     }
     case Qt::Key_Home:
-        _view->setCurrentItem(KrView::Last);
+        _view->setCurrentItemBySpec(KrView::Last);
         if (!_view->currentItem().isNull())
             quickSearch(_quickSearch->text(), 1);
         break;
     case Qt::Key_End:
-        _view->setCurrentItem(KrView::First);
+        _view->setCurrentItemBySpec(KrView::First);
         if (!_view->currentItem().isNull())
             quickSearch(_quickSearch->text(), -1);
         break;
@@ -420,7 +420,7 @@ const QString &KrView::Item::mtimeString() const
     return _mtimeString;
 }
 
-const QString &KrView::Item::permissionsString() const
+QString KrView::Item::permissionsString() const
 {
     if (_view->properties()->numericPermissions) {
         if (_numericPermissions.isNull())
@@ -673,12 +673,6 @@ QString KrView::statistics()
     return tmp;
 }
 
-void KrView::changeSelection(const KRQuery& filter, bool select)
-{
-    KConfigGroup grpSvr(_config, "Look&Feel");
-    changeSelection(filter, select, grpSvr.readEntry("Mark Dirs", _MarkDirs));
-}
-
 // good old dialog box
 void KrView::renameCurrentItem()
 {
@@ -739,7 +733,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
     case Qt::Key_Insert: {
         selectCurrentItem(!isCurrentItemSelected());
         if (KrSelectionMode::getSelectionHandler()->insertMovesDown())
-            setCurrentItem(Next);
+            setCurrentItemBySpec(Next);
         return true;
     }
     case Qt::Key_Space: {
@@ -752,7 +746,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
                 _emitter->emitCalcSpace(item);
             }
             if (KrSelectionMode::getSelectionHandler()->spaceMovesDown())
-                setCurrentItem(Next);
+                setCurrentItemBySpec(Next);
         }
         return true;
     }
@@ -783,7 +777,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         } else {
             if (e->modifiers() == Qt::ShiftModifier)
                 selectCurrentItem(!isCurrentItemSelected());
-            setCurrentItem(Prev);
+            setCurrentItemBySpec(Prev);
         }
         return true;
     case Qt::Key_Down :
@@ -792,13 +786,13 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         } else {
             if (e->modifiers() == Qt::ShiftModifier)
                 selectCurrentItem(!isCurrentItemSelected());
-            setCurrentItem(Next);
+            setCurrentItemBySpec(Next);
         }
         return true;
     case Qt::Key_Home: {
         if ((e->modifiers() & Qt::ShiftModifier) && !currentItemIsUpUrl()) /* Shift+Home */
             selectRegion(firstItem(), currentItem(), true, true);
-        setCurrentItem(First);
+        setCurrentItemBySpec(First);
     }
     return true;
     case Qt::Key_End:
@@ -806,7 +800,7 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
             KFileItem first = currentItemIsUpUrl() ? firstItem() : currentItem();
             selectRegion(first, lastItem(), true, true);
         } else
-            setCurrentItem(Last);
+            setCurrentItemBySpec(Last);
         return true;
     case Qt::Key_PageDown:
         pageDown();
@@ -896,7 +890,7 @@ int KrView::defaultFileIconSize() const
 
 void KrView::saveDefaultSettings(KrViewProperties::PropertyType properties)
 {
-    saveSettings(KConfigGroup(_config, _instance.name()), properties);
+    saveSettingsOfType(KConfigGroup(_config, _instance.name()), properties);
     _emitter->emitRefreshActions();
 }
 
@@ -905,7 +899,7 @@ void KrView::restoreDefaultSettings()
     restoreSettings(KConfigGroup(_config, _instance.name()));
 }
 
-void KrView::saveSettings(KConfigGroup group, KrViewProperties::PropertyType properties)
+void KrView::saveSettingsOfType(KConfigGroup group, KrViewProperties::PropertyType properties)
 {
     if(properties & KrViewProperties::PropIconSize)
         group.writeEntry("IconSize", fileIconSize());
@@ -1196,7 +1190,7 @@ void KrView::prepareForPassive()
     _operator->prepareForPassive();
 }
 
-KrView::EmitterBase *KrView::emitter()
+View::Emitter *KrView::emitter()
 {
     return _emitter;
 }

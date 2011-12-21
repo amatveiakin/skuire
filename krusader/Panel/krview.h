@@ -30,29 +30,26 @@
 #ifndef KRVIEW_H
 #define KRVIEW_H
 
+#include "view.h"
+
 #include <QtGui/QPixmap>
 #include <QtCore/QVariant>
 #include <QtCore/QHash>
 #include <QtCore/QRegExp>
-#include <QDropEvent>
 #include <QList>
 #include <QTimer>
-#include <kfileitem.h>
-#include "../krglobal.h"
-#include "../VFS/krquery.h"
+
 #include "../Filter/filtersettings.h"
 
 #include <kdebug.h>
 
 #define MAX_BRIEF_COLS 5
 
+class QKeyEvent;
+
 class KrView;
-class KrQuickSearch;
 class KrPreviews;
-class KrViewInstance;
-class QuickFilter;
 class AbstractDirLister;
-class CalcSpaceClient;
 
 
 // KrViewProperties
@@ -129,7 +126,7 @@ public:
  *
  * IMPORTANT NOTE: every one who subclasses this must call initProperties() in the constructor !!!
  */
-class KrView
+class KrView : public View
 {
     // instantiating a new view
     // 1. new KrView
@@ -139,10 +136,9 @@ class KrView
 
 public:
     class Item;
-    class EmitterBase;
     class Emitter;
     class Operator;
-    
+
     class IconSizes : public QVector<int>
     {
     public:
@@ -153,54 +149,47 @@ public:
 
     friend class KrView::Operator;
 
+    virtual ~KrView();
+
     /////////////////////////////////////////////////////////////
     // pure virtual functions                                  //
     /////////////////////////////////////////////////////////////
-    virtual CalcSpaceClient *calcSpaceClient() = 0;
-    virtual void refresh() = 0;
-    virtual uint count() const = 0;
-    virtual uint calcNumDirs() const = 0;
-    virtual KFileItemList getItems(KRQuery mask = KRQuery(), bool dirs = true, bool files = true) = 0;
-    virtual KFileItemList getSelectedItems(bool currentIfNoSelection) = 0;
-    virtual KFileItemList getVisibleItems() = 0;
-    virtual void changeSelection(KUrl::List urls, bool select, bool clearFirst) = 0;
-    virtual void changeSelection(const KRQuery& filter, bool select, bool includeDirs) = 0;
     virtual void invertSelection() = 0;
-    virtual bool isItemSelected(KUrl url) = 0;
-    // first item after ".."
-    virtual KFileItem firstItem() = 0;
-    virtual KFileItem lastItem() = 0;
-    virtual KFileItem currentItem() = 0;
-    // indicates that ".." is the current item
-    // in this case currentItem() return a null item
-    virtual bool currentItemIsUpUrl() = 0;
-    virtual void setCurrentItem(KUrl url) = 0;
-    virtual bool isItemVisible(KUrl url) = 0;
-    virtual QRect itemRectGlobal(KUrl url) = 0;
-    virtual void makeItemVisible(KUrl url) = 0;
     virtual void selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst = false) = 0;
-    virtual KFileItem itemAt(const QPoint &pos, bool *isUpUrl = 0, bool includingUpUrl = false) = 0;
-    virtual QPixmap icon(KUrl url) = 0;
-    virtual bool isCurrentItemSelected() = 0;
-    virtual void selectCurrentItem(bool select) = 0;
-    virtual void pageDown() = 0;
-    virtual void pageUp() = 0;
-    virtual QString currentDescription() = 0;
-    virtual void makeCurrentVisible() = 0;
-    virtual uint numSelected() const = 0;
-    virtual void updateView() = 0;
-    virtual void sort() = 0;
-    virtual void refreshColors() = 0;
-    virtual void redraw() = 0;
-    virtual void showContextMenu() = 0;
-    virtual QWidget *widget() = 0;
-    virtual int itemsPerPage() = 0;
+
+    /////////////////////////////////////////////////////////////
+    // View implementation                                     //
+    /////////////////////////////////////////////////////////////
+    virtual View::Emitter *emitter();
+    virtual void init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
+    virtual KrViewInstance *instance() {
+        return &_instance;
+    }
+    virtual void setDirLister(AbstractDirLister *lister);
+    virtual void saveSelection();
+    virtual void clearSavedSelection();
+    virtual QString statistics();
+    virtual void renameCurrentItem();
+    virtual void stopQuickFilter(bool refreshView = true);
+    virtual KUrl urlToMakeCurrent() const {
+        return _urlToMakeCurrent;
+    }
+    virtual void setUrlToMakeCurrent(KUrl url) {
+        _urlToMakeCurrent = url;
+    }
+    virtual void prepareForActive() {
+        _focused = true;
+    }
+    virtual void prepareForPassive();
+    virtual void saveSettings(KConfigGroup grp) {
+        saveSettingsOfType(grp, KrViewProperties::AllProperties);
+    }
+    virtual void restoreSettings(KConfigGroup grp);
+
 
     /////////////////////////////////////////////////////////////
     // virtual functions                                       //
     /////////////////////////////////////////////////////////////
-    virtual ~KrView();
-    virtual void init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
     virtual void selectAllIncludingDirs() {
         changeSelection(KRQuery("*"), true, true);
     }
@@ -209,24 +198,17 @@ public:
         return _previews != 0;
     }
     virtual void applySettingsToOthers();
-    virtual void setDirLister(AbstractDirLister *lister);
     virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending) {
         sortModeUpdated(sortColumn, descending);
     }
     virtual void setFileIconSize(int size);
     // save this view's settings to be restored after restart
-    virtual void saveSettings(KConfigGroup grp,
-        KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
     virtual bool handleKeyEvent(QKeyEvent *e);
-    virtual void prepareForActive() {
-        _focused = true;
-    }
-    virtual void prepareForPassive();
-    virtual void renameCurrentItem(); // Rename current item. returns immediately
 
     /////////////////////////////////////////////////////////////
     // non-virtual functions                                   //
     /////////////////////////////////////////////////////////////
+
     inline int fileIconSize() const {
         return _fileIconSize;
     }
@@ -234,25 +216,15 @@ public:
         return _focused;
     }
 
-    KrViewInstance *instance() {
-        return &_instance;
-    }
-
-    EmitterBase *emitter();
-
     // save this view's settings as default for new views of this type
     void saveDefaultSettings(KrViewProperties::PropertyType properties = KrViewProperties::AllProperties);
     // restore the default settings for this view type
     void restoreDefaultSettings();
-    // call this to restore this view's settings after restart
-    void restoreSettings(KConfigGroup grp);
 
-    void saveSelection();
     void restoreSelection();
     bool canRestoreSelection() {
         return !_savedSelection.isEmpty();
     }
-    void clearSavedSelection();
 
     bool isFiltered(const KFileItem &item) const;
     const KRQuery& filterMask() const {
@@ -265,58 +237,11 @@ public:
     void setFilter(KrViewProperties::FilterSpec filter, FilterSettings customFilter, bool applyToDirs);
 
     void enableUpdateDefaultSettings(bool enable);
-    KUrl currentUrl() {
-        return currentItem().isNull() ? KUrl() : currentItem().url();
-    }
-    void setCurrentItem(KFileItem item) {
-        setCurrentItem(item.isNull() ? KUrl() : item.url());
-    }
-    KUrl::List getSelectedUrls(bool currentUrlIfNoSelection) {
-        return getSelectedItems(currentUrlIfNoSelection).urlList();
-    }
-    void select(const KRQuery& filter = KRQuery("*")) {
-        changeSelection(filter, true);
-    }
-    void unselect(const KRQuery& filter = KRQuery("*")) {
-        changeSelection(filter, false);
-    }
+
     void customSelection(bool select);
-    void changeSelection(const KRQuery& filter, bool select);
-    void setSelection(KUrl::List urls) {
-        changeSelection(urls, true, true);
-    }
-    void setSelection(KUrl url) {
-        setSelection(KUrl::List(url));
-    }
-    void setSelection(KFileItem item) {
-        setSelection(item.isNull() ? KUrl() : item.url());
-    }
-    void selectItem(KFileItem item, bool select) {
-        if(!item.isNull())
-            selectItem(item.url(), select);
-    }
-    void selectItem(KUrl url, bool select) {
-        changeSelection(KUrl::List(url), select, false);
-    }
-    void toggleSelected(KUrl url) {
-        selectItem(url, !isItemSelected(url));
-    }
-    void toggleSelected(KFileItem item) {
-        selectItem(item, !isItemSelected(item));
-    }
-    bool isItemSelected(KFileItem item) {
-        return item.isNull() ? false : isItemSelected(item.url());
-    }
     void selectRegion(KFileItem item1, KFileItem item2, bool select, bool clearFirst = false);
     QString itemDescription(KUrl url, bool itemIsUpUrl);
 
-    KUrl urlToMakeCurrent() const {
-        return _urlToMakeCurrent;
-    }
-    void setUrlToMakeCurrent(KUrl url) {
-        _urlToMakeCurrent = url;
-    }
-    QString statistics();
     const KrViewProperties* properties() const {
         return _properties;
     }
@@ -327,7 +252,7 @@ public:
     void zoomIn();
     void zoomOut();
     void startQuickFilter();
-    void stopQuickFilter(bool refreshView = true);
+
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
@@ -345,6 +270,7 @@ public:
     // deprecated functions end                                //
     /////////////////////////////////////////////////////////////
 
+
     static const IconSizes iconSizes;
 
 protected:
@@ -361,18 +287,24 @@ protected:
     virtual void gotPreview(KFileItem item, QPixmap preview) = 0;
     virtual KIO::filesize_t calcSize() = 0;
     virtual KIO::filesize_t calcSelectedSize() = 0;
-    virtual void setCurrentItem(ItemSpec item) = 0;
+    virtual void setCurrentItemBySpec(ItemSpec spec) = 0;
     virtual const Item *dummyItem() const = 0;
     virtual void refreshIcons() = 0;
     virtual void newItems(const KFileItemList& items) = 0;
     virtual void itemsDeleted(const KFileItemList& items) = 0;
     virtual void refreshItems(const QList<QPair<KFileItem, KFileItem> >& items) = 0;
+    virtual bool isCurrentItemSelected() = 0;
+    virtual void selectCurrentItem(bool select) = 0;
+    virtual void pageDown() = 0;
+    virtual void pageUp() = 0;
+    virtual void redraw() = 0;
 
     virtual KrViewProperties * createViewProperties() {
         return new KrViewProperties();
     }
     virtual void initProperties();
     virtual Operator *createOperator(KrQuickSearch *quickSearch, QuickFilter *quickFilter);
+    virtual void saveSettingsOfType(KConfigGroup grp, KrViewProperties::PropertyType properties);
     virtual void doRestoreSettings(KConfigGroup grp);
 
     bool quickSearchMatch(const KFileItem &item, QString term);
@@ -401,6 +333,8 @@ protected:
     QRegExp _quickFilterMask;
 };
 
+Q_DECLARE_INTERFACE (KrView, "org.krusader.KrView/0.1")
+
 
 class KrView::Item : public KFileItem
 {
@@ -422,7 +356,7 @@ public:
     void setCalculatedSize(KIO::filesize_t s);
     const QString &sizeString() const;
     const QString &mtimeString() const;
-    const QString &permissionsString() const;
+    QString permissionsString() const;
     const QString &iconName() const;
     const QPixmap &icon() const;
     void clearIcon();
@@ -447,32 +381,7 @@ protected:
 };
 
 
-class KrView::EmitterBase : public QObject
-{
-    Q_OBJECT
-signals:
-    void currentChanged(KFileItem item);
-    void renameItem(KFileItem item, QString newName);
-    void executed(KFileItem item);
-    void goInside(KFileItem item);
-    void middleButtonClicked(KFileItem item, bool itemIsUpUrl);
-    void calcSpace(KFileItem item);
-    void selectionChanged();
-    void gotDrop(QDropEvent *e);
-    void letsDrag(KUrl::List urls, QPixmap icon);
-    void itemDescription(QString &desc);
-    void contextMenu(const QPoint &point);
-    void emptyContextMenu(const QPoint& point);
-    void needFocus();
-    void previewJobStarted(KJob *job);
-    void goHome();
-    void deleteFiles(bool reallyDelete);
-    void dirUp();
-    void refreshActions();
-};
-
-
-class KrView::Emitter : public KrView::EmitterBase
+class KrView::Emitter : public View::Emitter
 {
 public:
     void emitSelectionChanged() {
