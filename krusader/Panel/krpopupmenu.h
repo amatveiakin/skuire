@@ -36,6 +36,8 @@
 class KActionCollection;
 class KrPanel;
 
+class QSignalMapper;
+
 // should be renamed to KrContextMenu or similar
 class KrPopupMenu : public KMenu
 {
@@ -44,13 +46,22 @@ public:
     static void run(QPoint pos, KrPanel *panel, bool onlyOpenWith = false);
     static void run(KrPanel *panel, bool onlyOpenWith = false);
 
+protected slots:
+    void performAction(int id);
+
 protected:
     KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith);
     ~KrPopupMenu();
-    void performAction(int id);
     void addEmptyMenuEntries(); // adds the choices for a menu without selected items
     void addCreateNewMenu(); // adds a "create new" submenu
     void addOpenWithEntries(KMenu *menu); // adds a "open with" submenu
+    QAction *addAction(int id, QString text, KMenu *menu);
+    QAction *addAction(int id, QString text) {
+        return addAction(id, text, this);
+    }
+    void addAction(QAction *action) {
+        KMenu::addAction(action);
+    }
 
     enum ID {
         OPEN_ID,
@@ -98,6 +109,7 @@ private:
     KFileItemList items; // list of selected items
     KFileItem item; // the (first) selected item
     KService::List offers;
+    QSignalMapper *mapper;
 #ifdef __LIBKONQ__
     KonqPopupMenu *konqMenu;
     KonqMenuActions *konqMenuActions;
