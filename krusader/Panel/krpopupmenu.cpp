@@ -102,6 +102,8 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) 
 
     connect(mapper, SIGNAL(mapped(int)), SLOT(performAction(int)));
 
+    bool isLocalDir = panel->url().isLocalFile();
+
     items = panel->view->getSelectedItems(true);
     if (items.isEmpty()) {
         addCreateNewMenu();
@@ -147,7 +149,7 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) 
     }
 
     // ------------- Preview - normal vfs only ?
-    if (panel->func->files()->vfs_getType() == vfs::VFS_NORMAL) {
+    if (isLocalDir) {
         // create the preview popup
         preview.setItems(items);
         QAction *pAct = addMenu(&preview);
@@ -209,13 +211,13 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) 
     // -------- DELETE
     addAction(DELETE_ID, i18n("Delete"));
     // -------- SHRED - only one file
-    /*      if ( panel->func->files() ->vfs_getType() == vfs::VFS_NORMAL &&
+    /*      if (isLocalDir &&
                 !item.isDir() && !multipleSelections )
                 addAction(SHRED_ID, i18n( "Shred" )); */
 
     // ---------- link handling
     // create new shortcut or redirect links - only on local directories:
-    if (panel->func->files() ->vfs_getType() == vfs::VFS_NORMAL) {
+    if (isLocalDir) {
         addSeparator();
         addAction(NEW_SYMLINK_ID, i18n("New Symlink..."), &linkPopup);
         addAction(NEW_LINK_ID, i18n("New Hardlink..."), &linkPopup);
@@ -227,11 +229,11 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) 
     addSeparator();
 
     // ---------- calculate space
-    if (panel->func->files() ->vfs_getType() == vfs::VFS_NORMAL && (item.isDir() || multipleSelections))
+    if (isLocalDir && (item.isDir() || multipleSelections))
         addAction(panel->gui->actions()->actCalculate);
 
     // ---------- mount/umount/eject
-    if (panel->func->files() ->vfs_getType() == vfs::VFS_NORMAL && item.isDir() && !multipleSelections) {
+    if (isLocalDir && item.isDir() && !multipleSelections) {
         if (krMtMan.getStatus(item.url().path(KUrl::RemoveTrailingSlash)) == KMountMan::MOUNTED)
             addAction(UNMOUNT_ID, i18n("Unmount"));
         else if (krMtMan.getStatus(item.url().path(KUrl::RemoveTrailingSlash)) == KMountMan::NOT_MOUNTED)
@@ -362,7 +364,7 @@ void KrPopupMenu::performAction(int id)
                     if ( KMessageBox::warningContinueCancel( krApp,
                          i18n("<qt>Do you really want to shred <b>%1</b>? Once shred, the file is gone forever!</qt>", item->name()),
                          QString(), KStandardGuiItem::cont(), KStandardGuiItem::cancel(), "Shred" ) == KMessageBox::Continue )
-                       KShred::shred( panel->func->files() ->vfs_getFile( item->name() ).path( KUrl::RemoveTrailingSlash ) );
+                       KShred::shred(item.url().pathOrUrl(KUrl::RemoveTrailingSlash ));
                   break;*/
     case OPEN_KONQ_ID :
         KToolInvocation::startServiceByDesktopName("konqueror", item.url().pathOrUrl());
