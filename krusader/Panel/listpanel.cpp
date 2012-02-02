@@ -393,6 +393,11 @@ ListPanel::~ListPanel()
 //     delete layout;
 }
 
+AbstractDirLister *ListPanel::dirLister()
+{
+    return func->dirLister;
+}
+
 void ListPanel::reparent(QWidget *parent, AbstractPanelManager *manager)
 {
     setParent(parent);

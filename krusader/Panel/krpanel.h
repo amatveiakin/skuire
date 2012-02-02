@@ -39,6 +39,7 @@
 class ListPanelFunc;
 class ListPanel;
 class View;
+class AbstractDirLister;
 
 class KrPanel
 {
@@ -52,6 +53,8 @@ public:
     }
 
     KUrl url() const;
+
+    virtual AbstractDirLister *dirLister() = 0;
 
     AbstractPanelManager *manager() {
         return _manager;
