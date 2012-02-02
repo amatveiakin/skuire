@@ -172,7 +172,7 @@ void KRslots::compareContent()
         // next try: are in the current panel exacty 2 files selected?
         url1 = (*lstActive)[0].url();
         url2 = (*lstActive)[1].url();
-    } else if (ACTIVE_PANEL->otherPanel()->func->files()->vfs_search(ACTIVE_VIEW->getCurrentItem())) {
+    } else if (ACTIVE_PANEL->otherPanel()->func->files()->vfs_search(ACTIVE_VIEW->getCurrentItem())) { //FIXME: use INACTIVE_PANEL->dirLister()->findByName()
         // next try: is in the other panel a file with the same name?
         url1 = ACTIVE_PANEL->func->files()->vfs_getFile(ACTIVE_VIEW->getCurrentItem());
         url2 = ACTIVE_PANEL->otherPanel()->func->files()->vfs_getFile(ACTIVE_VIEW->getCurrentItem());
@@ -191,6 +191,8 @@ void KRslots::compareContent()
 //TODO move this to panelfunc ?
 void KRslots::compareContent(KUrl url1, KUrl url2)
 {
+    //FIXME - don't use KIO::NetAccess
+
     QString diffProg;
     QStringList lst = Krusader::supportedTools();
     if (lst.contains("DIFF")) diffProg = lst[lst.indexOf("DIFF") + 1];
@@ -621,7 +623,7 @@ void KRslots::slotCombine()
                             QString shorter  = commonName.left(commonName.length() - 1);
                             QString testFile = shorter.leftJustified(commonLength, fillLetter);
 
-                            if (ACTIVE_FUNC->files()->vfs_search(testFile) == 0)
+                            if (ACTIVE_FUNC->files()->vfs_search(testFile) == 0) //FIXME: use !ACTIVE_PANEL->dirLister()->findByName(testFile).isNull()
                                 break;
                             else {
                                 commonName = shorter;
