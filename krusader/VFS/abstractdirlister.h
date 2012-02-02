@@ -34,6 +34,7 @@ public:
   virtual bool isRoot() = 0;
   virtual int numItems() = 0;
   virtual KFileItemList items() = 0;
+  virtual KFileItem findByName(QString name) = 0;
 
 signals:
   void started();

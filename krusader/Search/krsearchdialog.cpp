@@ -99,6 +99,10 @@ public:
         _foundText.clear();
     }
 
+    virtual KFileItem findByName(QString name) {
+        return _items.findByName(name);
+    }
+
     //FIXME change this to take a KFileItem as parameter
     void addItem(QString url, KIO::filesize_t size, time_t mtime, QString perm, QString foundText)
     {

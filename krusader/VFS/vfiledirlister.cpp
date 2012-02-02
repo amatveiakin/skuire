@@ -52,6 +52,17 @@ KFileItemList VfileDirLister::items()
     return list;
 }
 
+KFileItem VfileDirLister::findByName(QString name)
+{
+    if (_files) {
+        if (vfile *vf = _files->search(name))
+            return vf->toFileItem();
+        else
+            return KFileItem();
+    } else
+        return KFileItem();
+}
+
 void VfileDirLister::setFiles(VfileContainer *files)
 {
     if(_files && files == _files)

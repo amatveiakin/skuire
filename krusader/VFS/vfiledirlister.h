@@ -33,6 +33,7 @@ public:
     virtual bool isRoot();
     virtual int numItems();
     virtual KFileItemList items();
+    virtual KFileItem findByName(QString name);
 
     void setFiles(VfileContainer*);
 
