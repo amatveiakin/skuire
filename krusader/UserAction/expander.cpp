@@ -270,9 +270,9 @@ TagString exp_Path::expFunc(const KrPanel* panel, const QStringList& parameter, 
     QString result;
 
     if (useUrl)
-        result = panel->func->files()->vfs_getOrigin().url() + '/';
+        result = panel->url().url() + '/';
     else
-        result = panel->func->files()->vfs_getOrigin().path() + '/';
+        result = panel->url().path() + '/';
 
     if (parameter.count() > 0 && parameter[0].toLower() == "no")    // don't escape spaces
         return TagString(result);
@@ -322,18 +322,19 @@ TagString exp_Current::expFunc(const KrPanel* panel, const QStringList& paramete
 {
     NEED_PANEL
 
-    QString item = panel->view->getCurrentItem();
+    KFileItem item = panel->view->currentItem();
 
     QString result;
 
-    if (parameter.count() > 0 && parameter[0].toLower() == "yes")    // omit the current path
-        result = item;
-    else {
-        KUrl url = panel->func->files()->vfs_getFile(item);
-        if (useUrl)
-            result = url.url();
-        else
-            result = url.path();
+    if (!item.isNull()) {
+        if (parameter.count() > 0 && parameter[0].toLower() == "yes")    // omit the current path
+            result = item.name();
+        else {
+            if (useUrl)
+                result = item.url().url();
+            else
+                result = item.url().path();
+        }
     }
 
     if (parameter.count() > 1 && parameter[1].toLower() == "no")    // don't escape spaces

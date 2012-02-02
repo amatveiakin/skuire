@@ -153,7 +153,7 @@ bool TerminalDock::applyShortcuts(QKeyEvent * ke)
             return true;
         }
         if (ke->modifiers() & Qt::ShiftModifier) {
-            QString path = vfs::pathOrUrl(ACTIVE_FUNC->files()->vfs_getOrigin(), KUrl::AddTrailingSlash);
+            QString path = ACTIVE_PANEL->url().pathOrUrl(KUrl::AddTrailingSlash);
             filename = path + filename;
         }
 
