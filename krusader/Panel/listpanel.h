@@ -94,6 +94,13 @@ public:
     ListPanel(QWidget *parent, AbstractPanelManager *manager, KConfigGroup cfg = KConfigGroup());
     ~ListPanel();
 
+
+    //TODO: remove this
+    bool canDelete();
+    //TODO: remove this
+    void requestDelete();
+
+
     virtual void otherPanelChanged();
 
     void start(KUrl url = KUrl(), bool immediate = false);

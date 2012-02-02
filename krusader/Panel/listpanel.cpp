@@ -1331,3 +1331,14 @@ void ListPanel::newTab(KFileItem item, bool itemIsUpUrl)
     else if (item.isDir())
         newTab(item.url(), true);
 }
+
+bool ListPanel::canDelete()
+{
+    return func && func->files() && !func->files()->vfs_canDelete();
+}
+
+void ListPanel::requestDelete()
+{
+    connect(func->files(), SIGNAL(deleteAllowed()), this, SLOT(deleteLater()));
+    func->files()->vfs_requestDelete();
+}

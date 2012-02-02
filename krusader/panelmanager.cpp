@@ -350,32 +350,14 @@ void PanelManager::slotPreviousTab()
     _tabbar->setCurrentIndex(nextInd);
 }
 
-void PanelManager::refreshAllTabs(bool invalidate)
-{
-    int i = 0;
-    while (i < _tabbar->count()) {
-        ListPanel *panel = _tabbar->getPanel(i);
-        if (panel && panel->func) {
-            vfs * vfs = panel->func->files();
-            if (vfs) {
-                if (invalidate)
-                    vfs->vfs_invalidate();
-                vfs->vfs_refresh();
-            }
-        }
-        ++i;
-    }
-}
-
 void PanelManager::deletePanel(ListPanel * p)
 {
     disconnect(p);
-    if (p && p->func && p->func->files() && !p->func->files()->vfs_canDelete()) {
-        connect(p->func->files(), SIGNAL(deleteAllowed()), p, SLOT(deleteLater()));
-        p->func->files()->vfs_requestDelete();
-        return;
-    }
-    delete p;
+
+    if (p->canDelete())
+        delete p;
+    else
+        p->requestDelete();
 }
 
 void PanelManager::slotCloseInactiveTabs()
