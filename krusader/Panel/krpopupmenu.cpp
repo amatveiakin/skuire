@@ -195,25 +195,23 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) 
 
     // ---------- COPY
     addAction(COPY_ID, i18n("Copy..."));
-    if (panel->func->files() ->vfs_isWritable()) {
-        // ------- MOVE
-        addAction(MOVE_ID, i18n("Move..."));
-        // ------- RENAME - only one file
-        if (!multipleSelections && !inTrash)
-            addAction(RENAME_ID, i18n("Rename"));
+    // ------- MOVE
+    addAction(MOVE_ID, i18n("Move..."));
+    // ------- RENAME - only one file
+    if (!multipleSelections && !inTrash)
+        addAction(RENAME_ID, i18n("Rename"));
 
-        // -------- MOVE TO TRASH
-        KConfigGroup saver(krConfig, "General");
-        bool trash = saver.readEntry("Move To Trash", _MoveToTrash);
-        if (trash && !inTrash)
-            addAction(TRASH_ID, i18n("Move to Trash"));
-        // -------- DELETE
-        addAction(DELETE_ID, i18n("Delete"));
-        // -------- SHRED - only one file
-        /*      if ( panel->func->files() ->vfs_getType() == vfs::VFS_NORMAL &&
-                    !item.isDir() && !multipleSelections )
-                 addAction(SHRED_ID, i18n( "Shred" )); */
-    }
+    // -------- MOVE TO TRASH
+    KConfigGroup saver(krConfig, "General");
+    bool trash = saver.readEntry("Move To Trash", _MoveToTrash);
+    if (trash && !inTrash)
+        addAction(TRASH_ID, i18n("Move to Trash"));
+    // -------- DELETE
+    addAction(DELETE_ID, i18n("Delete"));
+    // -------- SHRED - only one file
+    /*      if ( panel->func->files() ->vfs_getType() == vfs::VFS_NORMAL &&
+                !item.isDir() && !multipleSelections )
+                addAction(SHRED_ID, i18n( "Shred" )); */
 
     // ---------- link handling
     // create new shortcut or redirect links - only on local directories:
@@ -259,10 +257,8 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) 
     // --------- copy/paste
     addSeparator();
     addAction(COPY_CLIP_ID, i18n("Copy to Clipboard"));
-    if (panel->func->files() ->vfs_isWritable()) {
-        addAction(MOVE_CLIP_ID, i18n("Cut to Clipboard"));
-        addAction(PASTE_CLIP_ID, i18n("Paste from Clipboard"));
-    }
+    addAction(MOVE_CLIP_ID, i18n("Cut to Clipboard"));
+    addAction(PASTE_CLIP_ID, i18n("Paste from Clipboard"));
     addSeparator();
 
     // --------- properties
