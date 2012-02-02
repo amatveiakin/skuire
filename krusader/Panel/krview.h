@@ -261,6 +261,9 @@ public:
     // translated column name
     static QString columnDescription(int column);
 
+    static bool isShowHidden();
+    static bool toggleShowHidden();
+
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
     /////////////////////////////////////////////////////////////

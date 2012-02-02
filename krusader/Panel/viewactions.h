@@ -69,6 +69,7 @@ public slots:
     void focusPanel();
     void quickFilter();
     void togglePreviews(bool show);
+    void toggleHidden();
 
     void refreshActions();
 
@@ -78,6 +79,8 @@ public:
     KToggleAction *actTogglePreviews;
 
 protected:
+    KToggleAction *actToggleHidden;
+
     KrView *view();
 };
 

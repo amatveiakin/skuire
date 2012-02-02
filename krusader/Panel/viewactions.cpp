@@ -64,6 +64,7 @@ ViewActions::ViewActions(QObject *parent, KrMainWindow *mainWindow) :
     action(i18n("Apply settings to other tabs"), 0, 0, SLOT(applySettingsToOthers()), "view_apply_settings_to_others");
     action(i18n("QuickFilter"), 0, Qt::CTRL + Qt::Key_I, SLOT(quickFilter()), "quick_filter");
     actTogglePreviews = toggleAction(i18n("Show Previews"), 0, 0, SLOT(togglePreviews(bool)), "toggle previews");
+    actToggleHidden = toggleAction(i18n("Show &Hidden Files"), 0, Qt::CTRL + Qt::Key_Period, SLOT(toggleHidden()), "toggle hidden files");
     KAction *actSaveaveDefaultSettings = action(i18n("Save settings as default"), 0, 0, SLOT(saveDefaultSettings()), "view_save_default_settings");
 
     // tooltips
@@ -179,6 +180,11 @@ void ViewActions::togglePreviews(bool show)
     view()->showPreviews(show);
 }
 
+void ViewActions::toggleHidden()
+{
+    actToggleHidden->setChecked(KrView::toggleShowHidden());
+}
+
 void ViewActions::refreshActions()
 {
     actDefaultZoom->setEnabled(view()->defaultFileIconSize() != view()->fileIconSize());
@@ -187,4 +193,5 @@ void ViewActions::refreshActions()
     actZoomIn->setEnabled(idx < (KrView::iconSizes.count() - 1));
     actRestoreSelection->setEnabled(view()->canRestoreSelection());
     actTogglePreviews->setChecked(view()->previewsShown());
+    actToggleHidden->setChecked(KrView::isShowHidden());
 }

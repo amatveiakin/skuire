@@ -81,7 +81,6 @@ public slots:
     void insertFileName(bool full_path);
     void rootKrusader();
     void swapPanels();
-    void toggleHidden();
     void toggleSwapSides();
     void configToolbar();
     void configKeys();

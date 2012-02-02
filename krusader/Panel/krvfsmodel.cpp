@@ -57,9 +57,11 @@ void KrVfsModel::refresh()
         _items << _dummyItem;
     }
 
+    bool showHidden = KrView::isShowHidden();
+
     foreach(KFileItem item, _view->dirLister()->items()) {
         //TODO: more efficient allocation
-        if(_view->isFiltered(item))
+        if((!showHidden && item.isHidden()) || _view->isFiltered(item))
             continue;
 
         _items << new KrView::Item(item, _view);

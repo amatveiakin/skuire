@@ -332,17 +332,6 @@ void KRslots::configChanged(bool isGUIRestartNeeded)
     krApp->configChanged();
 }
 
-void KRslots::toggleHidden()
-{
-    KConfigGroup group(krConfig, "Look&Feel");
-    bool show = !group.readEntry("Show Hidden", _ShowHidden);
-    KrActions::actToggleHidden->setChecked(show);
-    group.writeEntry("Show Hidden", show);
-
-    MAIN_VIEW->leftManager()->refreshAllTabs(true);
-    MAIN_VIEW->rightManager()->refreshAllTabs(true);
-}
-
 void KRslots::swapPanels()
 {
     KUrl leftURL = LEFT_PANEL->func->files()->vfs_getOrigin();

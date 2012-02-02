@@ -101,7 +101,6 @@ KAction **KrActions::execTypeArray[] = {&actExecStartAndForget, &actExecCollectS
 KToggleAction *KrActions::actToggleFnkeys = 0;
 KToggleAction *KrActions::actToggleCmdline = 0;
 KToggleAction *KrActions::actShowStatusBar = 0;
-KToggleAction *KrActions::actToggleHidden = 0;
 KToggleAction *KrActions::actCompareDirs = 0;
 
 
@@ -183,8 +182,6 @@ void KrActions::setupActions(Krusader *krusaderApp)
     NEW_KTOGGLEACTION(actToggleTerminal, i18n("Show Terminal &Emulator"), 0, Qt::ALT + Qt::CTRL + Qt::Key_T, SLOTS, SLOT(toggleTerminal()), "toggle terminal emulator");
 
 
-    NEW_KTOGGLEACTION(actToggleHidden, i18n("Show &Hidden Files"), 0, Qt::CTRL + Qt::Key_Period, SLOTS, SLOT(toggleHidden()), "toggle hidden files");
-
     NEW_KACTION(actSwapPanels, i18n("S&wap Panels"), 0, Qt::CTRL + Qt::Key_U, SLOTS, SLOT(swapPanels()), "swap panels");
 
     NEW_KACTION(actEmptyTrash, i18n("Empty Trash"), "trash-empty", 0, SLOTS, SLOT(emptyTrash()), "emptytrash");
@@ -192,7 +189,6 @@ void KrActions::setupActions(Krusader *krusaderApp)
     NEW_KACTION(actTrashBin, i18n("Trash bin"), KrTrashHandler::trashIcon(), 0, SLOTS, SLOT(trashBin()), "trashbin");
 
     NEW_KACTION(actSwapSides, i18n("Sw&ap Sides"), 0, Qt::CTRL + Qt::SHIFT + Qt::Key_U, SLOTS, SLOT(toggleSwapSides()), "toggle swap sides");
-    actToggleHidden->setChecked(KConfigGroup(krConfig, "Look&Feel").readEntry("Show Hidden", _ShowHidden));
 
     // and then the DONE actions
     NEW_KACTION(actCmdlinePopup, i18n("popup cmdline"), 0, Qt::CTRL + Qt::Key_Slash, SLOTS, SLOT(cmdlinePopup()), "cmdline popup");

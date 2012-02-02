@@ -1239,3 +1239,22 @@ QString KrView::columnDescription(int column)
         return QString();
     }
 }
+
+bool KrView::isShowHidden()
+{
+    return KConfigGroup(krConfig, "Look&Feel").readEntry("Show Hidden", _ShowHidden);
+}
+
+bool KrView::toggleShowHidden()
+{
+    KConfigGroup group(krConfig, "Look&Feel");
+    bool show = !group.readEntry("Show Hidden", _ShowHidden);
+    group.writeEntry("Show Hidden", show);
+
+    foreach(KrViewInstance *inst, KrViewFactory::registeredViews()) {
+        foreach(KrView *view, inst->m_objects)
+            view->refresh();
+    }
+
+    return show;
+}
