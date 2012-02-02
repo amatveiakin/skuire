@@ -33,7 +33,7 @@ A
 #include "panelfunc.h"
 #include "../krusaderview.h"
 
-KUrl KrPanel::virtualPath() const
+KUrl KrPanel::url() const
 {
     return func->files()->vfs_getOrigin();
 }

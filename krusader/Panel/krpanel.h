@@ -46,7 +46,13 @@ public:
     KrPanel(AbstractPanelManager *manager) :
         gui(0), func(0), view(0), _manager(manager) {}
 
-    KUrl virtualPath() const;
+    //TODO: remove this
+    KUrl virtualPath() const {
+        return url();
+    }
+
+    KUrl url() const;
+
     AbstractPanelManager *manager() {
         return _manager;
     }
