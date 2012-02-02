@@ -52,7 +52,7 @@ public:
         return url();
     }
 
-    KUrl url() const;
+    virtual KUrl url() const = 0;
 
     virtual AbstractDirLister *dirLister() = 0;
 

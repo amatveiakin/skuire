@@ -393,6 +393,11 @@ ListPanel::~ListPanel()
 //     delete layout;
 }
 
+KUrl ListPanel::url() const
+{
+    return func->files()->vfs_getOrigin();
+}
+
 AbstractDirLister *ListPanel::dirLister()
 {
     return func->dirLister;

@@ -100,6 +100,7 @@ public:
     //TODO: remove this
     void requestDelete();
 
+    virtual KUrl url() const;
     virtual AbstractDirLister *dirLister();
 
     virtual void otherPanelChanged();

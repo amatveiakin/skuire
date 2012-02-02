@@ -32,8 +32,3 @@ A
 #include "krpanel.h"
 #include "panelfunc.h"
 #include "../krusaderview.h"
-
-KUrl KrPanel::url() const
-{
-    return func->files()->vfs_getOrigin();
-}

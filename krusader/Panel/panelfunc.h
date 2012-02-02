@@ -107,8 +107,6 @@ public:
     ListPanelFunc(ListPanel *parent);
     ~ListPanelFunc();
 
-    vfs* files();  // return a pointer to the vfs
-
     inline vfile* getVFile(const QString& name) {
         return files()->vfs_search(name);
     }
@@ -133,6 +131,8 @@ protected:
     void openUrlInternal(const KUrl& url, KUrl urlToMakeCurrent,
                          bool immediately, bool disableLock, bool manuallyEntered);
     void runCommand(QString cmd);
+
+    vfs* files();  // return a pointer to the vfs
 
     ListPanel*           panel;     // our ListPanel
     DirHistoryQueue*     history;
