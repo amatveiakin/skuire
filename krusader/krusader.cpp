@@ -361,7 +361,7 @@ bool Krusader::versionControl()
     return retval;
 }
 
-void Krusader::statusBarUpdate(QString& mess)
+void Krusader::statusBarUpdate(QString mess)
 {
     // change the message on the statusbar for 2 seconds
     if (status) // ugly!!!! But as statusBar() creates a status bar if there is no, I have to ask status to prevent

@@ -445,7 +445,7 @@ void ListPanel::createView()
     connect(view->emitter(), SIGNAL(goInside(KFileItem)), func, SLOT(goInside(KFileItem)));
     connect(view->emitter(), SIGNAL(needFocus()), this, SLOT(slotFocusOnMe()));
     connect(view->emitter(), SIGNAL(selectionChanged()), this, SLOT(slotUpdateTotals()));
-    connect(view->emitter(), SIGNAL(itemDescription(QString&)), krApp, SLOT(statusBarUpdate(QString&)));
+    connect(view->emitter(), SIGNAL(itemDescription(QString)), krApp, SLOT(statusBarUpdate(QString)));
     connect(view->emitter(), SIGNAL(contextMenu(const QPoint &)), this, SLOT(popRightClickMenu(const QPoint &)));
     connect(view->emitter(), SIGNAL(emptyContextMenu(const QPoint &)),
             this, SLOT(popEmptyRightClickMenu(const QPoint &)));

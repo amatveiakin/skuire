@@ -174,7 +174,7 @@ signals:
     void selectionChanged();
     void gotDrop(QDropEvent *e);
     void letsDrag(KUrl::List urls, QPixmap icon);
-    void itemDescription(QString &desc);
+    void itemDescription(QString desc);
     void contextMenu(const QPoint &point);
     void emptyContextMenu(const QPoint& point);
     void needFocus();

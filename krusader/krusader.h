@@ -122,7 +122,7 @@ public:
     void moveToTop();
 
 public slots:
-    void statusBarUpdate(QString& mess);
+    void statusBarUpdate(QString mess);
     // in use by Krusader only
     void saveSettings();
     void savePosition();

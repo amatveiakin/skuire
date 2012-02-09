@@ -1,6 +1,9 @@
     ADDED: action: Open With Menu - shortcut: CTRL + Enter
     ADDED: action: Open With... - shortcut: CTRL + O
 
+    FIXED:  [ 293370 ]  After a file deletion old file name is still shown
+                        in the status bar 
+
 
 master
 ==========================

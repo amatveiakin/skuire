@@ -403,7 +403,7 @@ public:
     void emitGotDrop(QDropEvent *e) {
         emit gotDrop(e);
     }
-    void emitItemDescription(QString &desc) {
+    void emitItemDescription(QString desc) {
         emit itemDescription(desc);
     }
     void emitContextMenu(const QPoint &point) {

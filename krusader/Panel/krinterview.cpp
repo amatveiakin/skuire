@@ -726,6 +726,7 @@ void KrInterView::itemsDeleted(const KFileItemList& items)
 
     makeCurrentVisible();
     _emitter->emitSelectionChanged();
+    _emitter->emitItemDescription(currentDescription());
 }
 
 QRect KrInterView::itemRect(const QModelIndex &index)
