@@ -307,7 +307,6 @@ void vfs::calculateURLSize(KUrl url,  KIO::filesize_t* totalSize, unsigned long*
 
     if (url.isLocalFile()) {
         vfs_calcSpaceLocal(url.path(KUrl::RemoveTrailingSlash), totalSize, totalFiles, totalDirs, stop);
-        return;
     } else {
         stat_busy = true;
         KIOJobWrapper * statJob = KIOJobWrapper::stat(url);
@@ -324,14 +323,14 @@ void vfs::calculateURLSize(KUrl url,  KIO::filesize_t* totalSize, unsigned long*
             *totalSize += kfi.size();
             return;
         }
-    }
 
-    KIOJobWrapper* kds  = KIOJobWrapper::directorySize(url);
-    kds->connectTo(SIGNAL(result(KJob*)), this, SLOT(slotKdsResult(KJob*)));
-    kds->start();
-    while (!(*stop)) {
-        // we are in a sepetate thread - so sleeping is OK
-        usleep(1000);
+        KIOJobWrapper* kds  = KIOJobWrapper::directorySize(url);
+        kds->connectTo(SIGNAL(result(KJob*)), this, SLOT(slotKdsResult(KJob*)));
+        kds->start();
+        while (!(*stop)) {
+            // we are in a sepetate thread - so sleeping is OK
+            usleep(1000);
+        }
     }
 }
 
