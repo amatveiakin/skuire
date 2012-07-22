@@ -146,6 +146,9 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
             case KrViewProperties::Name:
                 return "..";
             case KrViewProperties::Size: {
+            if (vf == _dummyVfile)
+                return QVariant();
+
             QString sizeStr = KRpermHandler::parseSize(vf->vfile_getSize(), properties()->humanReadableSize);
 
             // Running dots
@@ -190,17 +193,24 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
 //                 case 3: progressStr = QChar(0x222c) + QString(" ") ; break;
 //             }
 
+            bool showProgress = (vf->vfile_getSizeInfo() & vfile::SizeIsBeingCalculated);
+
             switch (vf->vfile_getSizeInfo() & vfile::SizeAccuracy) {
                 case vfile::SizeAccurate:
-                    return sizeStr + ' ';
+                    return (showProgress ? progressStr + ' ' : "") + sizeStr + ' ';
+
                 case vfile::SizeInaccurate:
-                    return (vf->vfile_getSize() > 0) ? (QChar(0x2265) /* more or equal sign */ + ' ' + sizeStr + ' ') : "?";
-                case vfile::SizeUnknown: {
-                    if (vf->vfile_getSizeInfo() & vfile::SizeIsBeingCalculated)
-                        return progressStr;
+                    if (vf->vfile_getSize() <= 0)
+                        return (showProgress ? progressStr + ' ' : "") + '?' + ' ';
+                    else
+                        return (showProgress ? progressStr : QChar(0x2265) /* more or equal sign */) + ' ' + sizeStr + ' ';
+
+                    if (showProgress)
+                        return progressStr + ' ';
                     else {
                         //HACK add <> brackets AFTER translating - otherwise KUIT thinks it's a tag
-                        return vf->vfile_isDir() ? QString("<%1>").arg(i18nc("'DIR' instead of file size in detailed view (for directories)", "DIR")) : "";
+                        return (vf->vfile_isDir() ? QString("<%1>").arg(i18nc("'DIR' instead of file size in detailed view (for directories)", "DIR")) : "") + ' ';
+                     }
                     }
                 }
             }
