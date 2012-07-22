@@ -372,6 +372,9 @@ ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager,
 
     connect(&KrColorCache::getColorCache(), SIGNAL(colorsRefreshed()), this, SLOT(refreshColors()));
     connect(krApp, SIGNAL(shutdown()), SLOT(inlineRefreshCancel()));
+    connect(&animationTimer, SIGNAL(timeout()), this, SLOT(animate()));
+
+    animationTimer.start(50);
 }
 
 ListPanel::~ListPanel()
@@ -1350,4 +1353,11 @@ void ListPanel::onUrlRefreshed()
 {
     emit pathChanged(this);
     updateButtons();
+}
+
+void ListPanel::animate()
+{
+    for (KrViewItem* item = view->getFirst(); item != 0; item = view->getNext(item))
+        if (item->isAnimated())
+            item->redraw();
 }

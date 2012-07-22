@@ -217,6 +217,7 @@ protected slots:
     void newTab(const KUrl &url, bool nextToThis = false) {
         _manager->newTab(url, nextToThis ? this : 0);
     }
+    void animate();
 
 signals:
     void signalStatus(QString msg);         // emmited when we need to update the status bar
@@ -236,6 +237,7 @@ protected:
     KJob *previewJob;
     KIO::Job *inlineRefreshJob;
     CurrentViewCallback *_currentViewCb;
+    QTimer animationTimer;
 
     QPixmap currDragPix;
     QWidget *clientArea;

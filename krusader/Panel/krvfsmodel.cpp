@@ -147,6 +147,49 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
                 return "..";
             case KrViewProperties::Size: {
             QString sizeStr = KRpermHandler::parseSize(vf->vfile_getSize(), properties()->humanReadableSize);
+
+            // Running dots
+//             QString progressStr = "...";
+//             progressStr.insert(3 - QTime::currentTime().msec() / 250, ' ');
+
+            // Rotating stick
+//             QString progressStr;
+//             switch (QTime::currentTime().msec() / 250) {
+//                 case 0: progressStr = '-'; break;
+//                 case 1: progressStr = '/'; break;
+//                 case 2: progressStr = '|'; break;
+//                 case 3: progressStr = '\\'; break;
+//             }
+
+            // Left-to-right
+//             QString progressStr;
+//             switch (QTime::currentTime().msec() / 167) {
+//                 case 0: progressStr = QChar(0x258f); break;
+//                 case 1: progressStr = QChar(0x258c); break;
+//                 case 2: progressStr = QChar(0x2588); break;
+//                 case 3: progressStr = QChar(0x2590); break;
+//                 case 4: progressStr = QChar(0x2595); break;
+//                 case 5: progressStr = ' '; break;
+//             }
+
+            // Clock
+            QString progressStr;
+            switch (QTime::currentTime().msec() / 250) {
+                case 0: progressStr = QChar(0x25f7); break;
+                case 1: progressStr = QChar(0x25f6); break;
+                case 2: progressStr = QChar(0x25f5); break;
+                case 3: progressStr = QChar(0x25f4); break;
+            }
+
+            // The most relevant animation :-)
+//             QString progressStr;
+//             switch (QTime::currentTime().msec() / 250) {
+//                 case 0: progressStr = QChar(0x222b) + QString("  "); break;
+//                 case 1: progressStr = QChar(0x222c) + QString(" ") ; break;
+//                 case 2: progressStr = QChar(0x222d) + QString("")  ; break;
+//                 case 3: progressStr = QChar(0x222c) + QString(" ") ; break;
+//             }
+
             switch (vf->vfile_getSizeInfo() & vfile::SizeAccuracy) {
                 case vfile::SizeAccurate:
                     return sizeStr + ' ';
@@ -154,7 +197,7 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
                     return (vf->vfile_getSize() > 0) ? (QChar(0x2265) /* more or equal sign */ + ' ' + sizeStr + ' ') : "?";
                 case vfile::SizeUnknown: {
                     if (vf->vfile_getSizeInfo() & vfile::SizeIsBeingCalculated)
-                        return "...";
+                        return progressStr;
                     else {
                         //HACK add <> brackets AFTER translating - otherwise KUIT thinks it's a tag
                         return vf->vfile_isDir() ? QString("<%1>").arg(i18nc("'DIR' instead of file size in detailed view (for directories)", "DIR")) : "";
