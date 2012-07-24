@@ -80,7 +80,7 @@ protected:
     ActionGroup _gui, _func;
     KAction *actF2, *actF3, *actF4, *actF5, *actF6, *actF7, *actF8, *actF9;
     KAction *actShiftF5, *actShiftF6;
-    KAction *actProperties, *actPack, *actUnpack, *actTest,  *actCompDirs, *actCalculate, *actSync;
+    KAction *actProperties, *actPack, *actUnpack, *actTest,  *actCompDirs, *actCalcSpace, *actSync;
     KAction *actFTPConnect, *actFTPNewConnect, *actFTPDisconnect;
     KAction *actLocationBar, *actJumpBack, *actSetJumpBack;
     KAction *actCreateChecksum, *actMatchChecksum;

@@ -100,7 +100,7 @@ ListPanelActions::ListPanelActions(QObject *parent, AbstractTwinPanelFM *mainWin
     action(i18n("Open With..."), 0, Qt::CTRL + Qt::Key_O, _func, SLOT(openWith()), "open_with");
     actProperties = action(i18n("&Properties..."), 0, Qt::ALT + Qt::Key_Return, _func, SLOT(properties()), "properties");
     actCompDirs = action(i18n("&Compare Directories"), "view-split-left-right", Qt::ALT + Qt::SHIFT + Qt::Key_C, _gui, SLOT(compareDirs()), "compare dirs");
-    actCalculate = action(i18n("Calculate &Occupied Space"), "accessories-calculator", 0, _func, SLOT(calcSpace()), "calculate");
+    actCalcSpace = action(i18n("Calculate &Occupied Space"), "accessories-calculator", 0, _func, SLOT(calcSpace()), "calculate");
     actPack = action(i18n("Pac&k..."), "archive-insert", Qt::ALT + Qt::SHIFT + Qt::Key_P, _func, SLOT(pack()), "pack");
     actUnpack = action(i18n("&Unpack..."), "archive-extract", Qt::ALT + Qt::SHIFT + Qt::Key_U, _func, SLOT(unpack()), "unpack");
     actCreateChecksum = action(i18n("Create Checksum..."), "binary", 0, _func, SLOT(createChecksum()), "create checksum");
