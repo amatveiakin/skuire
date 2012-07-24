@@ -97,6 +97,7 @@ public slots:
     void unpack();
     void testArchive();
     void calcSpace(); // calculate the occupied space and show it in a dialog
+    void calcAllDirsSpace();
     void properties();
     void cut() {
         copyToClipboard(true);

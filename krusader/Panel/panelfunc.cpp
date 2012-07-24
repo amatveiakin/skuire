@@ -1135,6 +1135,13 @@ void ListPanelFunc::calcSpace(KFileItem item)
     connect(kds, SIGNAL(result(KJob*)), this, SLOT(slotKdsResult(KJob*)));
 }
 
+void ListPanelFunc::calcAllDirsSpace()
+{
+    for (KrViewItem *viewItem = panel->view->getFirst(); viewItem != 0; viewItem = panel->view->getNext(viewItem))
+        if (viewItem->getVfile()->vfile_isDir() && !viewItem->isDummy())
+            calcSpace(viewItem);
+}
+
 void ListPanelFunc::FTPDisconnect()
 {
     // you can disconnect only if connected !

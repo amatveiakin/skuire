@@ -56,6 +56,7 @@
    </Menu>
    <Separator/>
    <Action name="calculate" />
+   <Action name="calculate all dirs" />
    <Action name="properties" />
   </Menu>
   <Menu name="myview" >
