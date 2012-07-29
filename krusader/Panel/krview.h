@@ -52,6 +52,7 @@ class KrView;
 class KrViewInstance;
 class KrPreviews;
 class AbstractDirLister;
+class KFileItemList;
 
 
 // KrViewProperties
@@ -198,6 +199,7 @@ public:
     /////////////////////////////////////////////////////////////
     // virtual functions                                       //
     /////////////////////////////////////////////////////////////
+    virtual void getSelectedKFileItems(KFileItemList& fileItems);
     virtual void selectAllIncludingDirs() {
         changeSelection(KRQuery("*"), true, true);
     }

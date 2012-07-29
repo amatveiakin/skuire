@@ -1163,12 +1163,13 @@ void ListPanelFunc::newFTPconnection()
 
 void ListPanelFunc::properties()
 {
-    KFileItemList items = panel->view()->getSelectedItems(true);
-    if (items.isEmpty())
-        return ;
+    KFileItemList fileItems;
+    panel->view->getSelectedKFileItems(fileItems);
+    if (fileItems.isEmpty())
+        return;
 
     // Show the properties dialog
-    KPropertiesDialog *dlg = new KPropertiesDialog(items, krMainWindow);
+    KPropertiesDialog *dlg = new KPropertiesDialog(fileItems, krMainWindow);
     connect(dlg, SIGNAL(applied()), SLOT(refresh()));
     dlg->show();
 }

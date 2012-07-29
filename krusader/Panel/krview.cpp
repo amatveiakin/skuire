@@ -51,6 +51,7 @@
 #include <QtGui/QPainter>
 #include <QPixmap>
 #include <QAction>
+#include <kfileitem.h>
 #include <kmimetype.h>
 #include <klocale.h>
 #include <kinputdialog.h>
@@ -704,6 +705,16 @@ void KrView::updatePreviews()
         _previews->update();
 }
 
+    }
+}
+
+void KrView::getSelectedKFileItems(KFileItemList& fileItems)
+{
+    KrViewItemList viewItems;
+    getSelectedKrViewItems(&viewItems);
+    foreach (KrViewItem* item, viewItems) {
+        vfile* vf = item->getMutableVfile();
+        fileItems.append(KFileItem(vf->vfile_getEntry(), vf->vfile_getUrl()));
 QString KrView::statistics()
 {
     KIO::filesize_t size = calcSize();
