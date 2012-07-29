@@ -715,16 +715,18 @@ QString KrView::statistics()
                     %3=filesize of selected items,%4=filesize in Bytes, \
                     %5=filesize of all items in directory,%6=filesize in Bytes",
                     "%1 out of %2, %3 (%4) out of %5 (%6)",
-                    numSelected(), count(), KIO::convertSize(selectedSize),
-                    KRpermHandler::parseSize(selectedSize),
-                    KIO::convertSize(size),
-                    KRpermHandler::parseSize(size));
+                    numSelected(), count(),
+                    KRpermHandler::parseSize(selectedSize, true),
+                    KRpermHandler::parseSize(selectedSize, false),
+                    KRpermHandler::parseSize(size, true),
+                    KRpermHandler::parseSize(size, false));
     } else {
         tmp = i18nc("%1=number of selected items,%2=total number of items, \
                     %3=filesize of selected items,%4=filesize of all items in directory",
                     "%1 out of %2, %3 out of %4",
-                    numSelected(), count(), KIO::convertSize(selectedSize),
-                    KIO::convertSize(size));
+                    numSelected(), count(),
+                    KRpermHandler::parseSize(selectedSize, true),
+                    KRpermHandler::parseSize(size, true));
     }
 
     // notify if we're running a filtered view

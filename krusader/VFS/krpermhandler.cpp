@@ -281,24 +281,28 @@ bool KRpermHandler::fileExist(QString path, QString name)
     return false;
 }
 
-QString KRpermHandler::parseSize(KIO::filesize_t val)
+QString KRpermHandler::parseSize(KIO::filesize_t val, bool humanReadable)
 {
-    return KGlobal::locale()->formatNumber(QString::number(val), false, 0);
+    if (humanReadable) {
+        return KIO::convertSize(val);
+    } else {
+        return KGlobal::locale()->formatNumber(QString::number(val), false, 0);
 #if 0
-    QString temp;
-    temp.sprintf("%llu", val);
-    if (temp.length() <= 3) return temp;
-    unsigned int i = temp.length() % 3;
-    if (i == 0) i = 3;
-    QString size = temp.left(i) + ",";
-    while (i + 3 < temp.length()) {
-        size = size + temp.mid(i, 3) + ",";
-        i += 3;
-    }
-    size = size + temp.right(3);
+        QString temp;
+        temp.sprintf("%llu", val);
+        if (temp.length() <= 3) return temp;
+        unsigned int i = temp.length() % 3;
+        if (i == 0) i = 3;
+        QString size = temp.left(i) + ",";
+        while (i + 3 < temp.length()) {
+            size = size + temp.mid(i, 3) + ",";
+            i += 3;
+        }
+        size = size + temp.right(3);
 
-    return size;
+        return size;
 #endif
+    }
 }
 
 QString KRpermHandler::date2qstring(QString date)

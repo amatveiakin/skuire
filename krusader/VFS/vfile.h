@@ -30,6 +30,7 @@
 #define VFILE_H
 
 // QT includes
+#include <QtCore/QFlags>
 #include <QtCore/QString>
 #include <QtCore/QObject>
 // System includes
@@ -53,6 +54,35 @@ class vfile : public QObject
     Q_OBJECT
 
 public:
+    /// Describles reliability of size information
+    enum SizeInformationFlag {
+
+        /// The size is always known for a normal file.
+        /// For a folder this means size calculation was called and finished without error.
+        /// \note Exaclty one of SizeKnown, SizeInaccurate and SizeUnknown flags should be defined.
+        SizeAccurate    = 0x0001,
+
+        /// Folder size calculation was called but there were errors: unsifficient permissions
+        /// to descent to a subfolder, newtork timed out, etc.
+        /// \note The size known is always less of equal than the real size in this case,
+        ///       since we always assume that child's size is 0 in case of any errors.
+        /// \note Exaclty one of SizeKnown, SizeInaccurate and SizeUnknown flags should be defined.
+        SizeInaccurate  = 0x0002,
+
+        /// The default state for a folder (until someone called size calculation).
+        /// \note Exaclty one of SizeKnown, SizeInaccurate and SizeUnknown flags should be defined.
+        SizeUnknown     = 0x0004,
+
+        /// A mask to check size accuracy.
+        SizeAccuracy    = SizeAccurate | SizeInaccurate | SizeUnknown,
+
+        /// Folder size is being calculated at this moment.
+        SizeIsBeingCalculated = 0x0008,
+    };
+
+    Q_DECLARE_FLAGS (SizeInformation, SizeInformationFlag);
+
+
     vfile() {}
 
     vfile(const KFileItem &item);
@@ -102,6 +132,9 @@ public:
     inline const QString&   vfile_getName()    const {
         return vfile_name;
     }
+    inline SizeInformation  vfile_getSizeInfo() const {
+        return vfile_sizeInfo;
+    }
     inline KIO::filesize_t  vfile_getSize()    const {
         return vfile_size;
     }
@@ -145,12 +178,22 @@ public:
     char                    vfile_isReadable()   const;
     char                    vfile_isWriteable()  const;
     char                    vfile_isExecutable() const;
+
+    /**
+     * Tell vfile that directory's space calculation begun.
+     * used ONLY when calculating a directory's space, needs to change the
+     * displayed size of the viewitem and thus the vfile. For INTERNAL USE !
+     */
+    inline void             vfile_sizeCalculationBegin()        {
+        vfile_sizeInfo |= SizeIsBeingCalculated;
+    }
     /**
      * Set the file size.
      * used ONLY when calculating a directory's space, needs to change the
      * displayed size of the viewitem and thus the vfile. For INTERNAL USE !
      */
-    inline void             vfile_setSize(KIO::filesize_t size) {
+    inline void             vfile_setSize(KIO::filesize_t size, bool accurate = true) {
+        vfile_sizeInfo = accurate ? SizeAccurate : SizeInaccurate;
         vfile_size = size;
     }
     inline void             vfile_setUrl(const KUrl& url)       {
@@ -177,7 +220,8 @@ private:
 protected:
     // the file information list
     QString          vfile_name;     //< file name
-    KIO::filesize_t  vfile_size;     //< file size
+    SizeInformation  vfile_sizeInfo; //< flag, shows reliability of vfile_size value
+    KIO::filesize_t  vfile_size;     //< file size, 0 if (vfile_sizeInfo == SizeUnknown)
     mode_t           vfile_mode;     //< file mode
     uid_t            vfile_ownerId;  //< file owner id
     gid_t            vfile_groupId;  //< file group id
@@ -202,6 +246,8 @@ protected:
     static bool      vfile_userDefinedFolderIcons;
     static bool      vfile_useMimeTypeMagic;
 };
+
+Q_DECLARE_OPERATORS_FOR_FLAGS (vfile::SizeInformation);
 
 
 #endif

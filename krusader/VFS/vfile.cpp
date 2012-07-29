@@ -63,6 +63,7 @@ vfile::vfile(const QString& name,                   // useful construtor
              const int rwx)
 {
     vfile_name = name;
+    vfile_sizeInfo = SizeAccurate;
     vfile_size = size;
     vfile_owner.clear();
     vfile_ownerId = owner;
@@ -77,8 +78,10 @@ vfile::vfile(const QString& name,                   // useful construtor
     vfile_symDest = symDest;
     vfile_mode = mode;
     vfile_isdir = (perm[ 0 ] == 'd');
-    if (vfile_isDir() && !vfile_symLink)
+    if (vfile_isDir() && !vfile_symLink) {
+        vfile_sizeInfo = SizeUnknown;
         vfile_size = 0;
+    }
     vfile_rwx = rwx;
     vfile_acl_loaded = false;
 }
@@ -100,6 +103,7 @@ vfile::vfile(const QString& name,                   // useful construtor
              const QString& aclDfltString)
 {
     vfile_name = name;
+    vfile_sizeInfo = SizeAccurate;
     vfile_size = size;
     vfile_owner = owner;
     vfile_group = group;
@@ -114,8 +118,10 @@ vfile::vfile(const QString& name,                   // useful construtor
     vfile_symDest = symDest;
     vfile_mode = mode;
     vfile_isdir = (perm[ 0 ] == 'd');
-    if (vfile_isDir() && !vfile_symLink)
+    if (vfile_isDir() && !vfile_symLink) {
+        vfile_sizeInfo = SizeUnknown;
         vfile_size = 0;
+    }
     vfile_acl = aclString;
     vfile_def_acl = aclDfltString;
     vfile_has_acl = !aclString.isNull() || !aclDfltString.isNull();
@@ -313,6 +319,7 @@ bool vfile::operator==(const vfile& vf) const
         const_cast<vfile *>(&vf)->vfile_loadACL();
 
     equal = (vfile_name     == vf.vfile_getName()) &&
+            (vfile_sizeInfo == vf.vfile_getSizeInfo()) &&
             (vfile_size     == vf.vfile_getSize()) &&
             (vfile_perm     == vf.vfile_getPerm()) &&
             (vfile_time_t   == vf.vfile_getTime_t()) &&
@@ -329,6 +336,7 @@ bool vfile::operator==(const vfile& vf) const
 vfile& vfile::operator= (const vfile & vf)
 {
     vfile_name       = vf.vfile_name      ;
+    vfile_sizeInfo   = vf.vfile_sizeInfo ;
     vfile_size       = vf.vfile_size      ;
     vfile_mode       = vf.vfile_mode      ;
     vfile_ownerId    = vf.vfile_ownerId   ;

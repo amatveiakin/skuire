@@ -146,10 +146,21 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
             case KrViewProperties::Name:
                 return "..";
             case KrViewProperties::Size: {
-                //HACK add <> brackets AFTER translating - otherwise KUIT thinks it's a tag
-                static QString label = QString("<") +
-                    i18nc("'DIR' instead of file size in detailed view (for directories)", "DIR") + ">";
-                return label;
+            QString sizeStr = KRpermHandler::parseSize(vf->vfile_getSize(), properties()->humanReadableSize);
+            switch (vf->vfile_getSizeInfo() & vfile::SizeAccuracy) {
+                case vfile::SizeAccurate:
+                    return sizeStr + ' ';
+                case vfile::SizeInaccurate:
+                    return (vf->vfile_getSize() > 0) ? (QChar(0x2265) /* more or equal sign */ + ' ' + sizeStr + ' ') : "?";
+                case vfile::SizeUnknown: {
+                    if (vf->vfile_getSizeInfo() & vfile::SizeIsBeingCalculated)
+                        return "...";
+                    else {
+                        //HACK add <> brackets AFTER translating - otherwise KUIT thinks it's a tag
+                        return vf->vfile_isDir() ? QString("<%1>").arg(i18nc("'DIR' instead of file size in detailed view (for directories)", "DIR")) : "";
+                    }
+                }
+            }
             }
             default:
                 return QString();

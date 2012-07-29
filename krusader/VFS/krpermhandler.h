@@ -73,7 +73,7 @@ public:
     static bool fileExist(QString Path, QString name);
 
     static QString mode2QString(mode_t m);
-    static QString parseSize(KIO::filesize_t val);
+    static QString parseSize(KIO::filesize_t val, bool humanReadable = false);
     static QString date2qstring(QString date);
     static time_t  QString2time(QString date);
 
