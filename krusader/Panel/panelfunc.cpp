@@ -53,6 +53,7 @@ A
 #include <krun.h>
 #include <kinputdialog.h>
 #include <kdebug.h>
+#include <kio/directorysizejob.h>
 #include <kio/netaccess.h>
 #include <kio/jobuidelegate.h>
 #include <ktempdir.h>
@@ -550,6 +551,20 @@ void ListPanelFunc::slotFileCreated(KJob *job)
         KMessageBox::sorry(krMainWindow, job->errorString());
 
     fileToCreate = KUrl();
+}
+
+void ListPanelFunc::slotKdsResult(KJob* job)
+{
+    KIO::DirectorySizeJob* kds = static_cast<KIO::DirectorySizeJob*>(job);
+    KrViewItem* viewItem = panel->view->findItemByName(kdsFileName);
+    kdsFileName.clear();
+    if (viewItem) {
+        if (kds->error())
+            viewItem->getMutableVfile()->vfile_setSize(0, false);
+        else
+            viewItem->getMutableVfile()->vfile_setSize(kds->totalSize(), true);
+        viewItem->redraw();
+    }
 }
 
 void ListPanelFunc::moveFiles(bool enqueue)
@@ -1100,9 +1115,14 @@ void ListPanelFunc::calcSpace(KFileItem item)
     // there's a folder we can't enter (permissions). in that case, the returned
     // size will not be correct.
     //
-    KrCalcSpaceDialog dlg(krMainWindow, panel, KUrl::List(item.url()), true);
-    dlg.exec();
-    panel->slotUpdateTotals();
+    if (!kdsFileName.isEmpty())
+        return;
+    vfile* vf = item->getMutableVfile();
+    vf->vfile_sizeCalculationBegin();
+    item->redraw();
+    KIO::DirectorySizeJob* kds = KIO::directorySize(vf->vfile_getUrl());
+    kdsFileName = vf->vfile_getName();
+    connect(kds, SIGNAL(result(KJob*)), this, SLOT(slotKdsResult(KJob*)));
 }
 
 void ListPanelFunc::FTPDisconnect()

@@ -124,6 +124,7 @@ public:
 protected slots:
     void doRefresh();
     void slotFileCreated(KJob *job); // a file has been created by editNewFile()
+    void slotKdsResult(KJob* job);
     void historyGotoPos(int pos);
     void clipboardChanged(QClipboard::Mode mode);
 
@@ -144,6 +145,7 @@ protected:
     KUrl                 syncURL;
     KUrl                 fileToCreate; // file that's to be created by editNewFile()
     bool                 urlManuallyEntered;
+    QString              kdsFileName;
 
     static QPointer<ListPanelFunc> copyToClipboardOrigin;
 

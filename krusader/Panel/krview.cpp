@@ -803,8 +803,10 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
         if (!item.isNull()) {
             selectCurrentItem(!isCurrentItemSelected());
 
-            if (item.isDir() && item.size() <= 0 &&
-                    KrSelectionMode::getSelectionHandler()->spaceCalculatesDiskSpace()) {
+            // Even if we think we know the current size it's a good idea to recalculate it since folder content may have changed.
+            if (!item->isDummy() && viewItem->getVfile()->vfile_isDir() &&
+                    !(item->getVfile()->vfile_getSizeInfo() & vfile::SizeIsBeingCalculated) &&
+                    KrSelectionMode::getSelectionHandler()->spaceCalculatesDiskSpace() && item->isSelected()) {
                 _emitter->emitCalcSpace(item);
             }
             if (KrSelectionMode::getSelectionHandler()->spaceMovesDown())
