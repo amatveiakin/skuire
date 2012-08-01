@@ -44,6 +44,7 @@
 class ListPanel;
 class DirHistoryQueue;
 class VfileDirLister;
+namespace KIO { class DirectorySizeJob; }
 
 class ListPanelFunc : public QObject
 {
@@ -134,6 +135,7 @@ protected:
     void openUrlInternal(const KUrl& url, KUrl urlToMakeCurrent,
                          bool immediately, bool disableLock, bool manuallyEntered);
     void runCommand(QString cmd);
+    void cancelCalcSpace();
 
     vfs* files();  // return a pointer to the vfs
 
@@ -145,6 +147,7 @@ protected:
     KUrl                 syncURL;
     KUrl                 fileToCreate; // file that's to be created by editNewFile()
     bool                 urlManuallyEntered;
+    KIO::DirectorySizeJob* kdsJob;
     QString              kdsFileName;
 
     static QPointer<ListPanelFunc> copyToClipboardOrigin;

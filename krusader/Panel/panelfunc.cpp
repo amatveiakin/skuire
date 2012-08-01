@@ -119,7 +119,7 @@ public:
 QPointer<ListPanelFunc> ListPanelFunc::copyToClipboardOrigin;
 
 ListPanelFunc::ListPanelFunc(ListPanel *parent) : QObject(parent),
-        panel(parent), vfsP(0), urlManuallyEntered(false)
+        panel(parent), vfsP(0), urlManuallyEntered(false), kdsJob(0)
 {
     dirLister = new VfileDirLister();
     history = new DirHistoryQueue(panel);
@@ -251,6 +251,8 @@ void ListPanelFunc::doRefresh()
     delayTimer.stop();
 
     KUrl url = history->currentUrl();
+
+    cancelCalcSpace();
 
     if(!url.isValid()) {
         //FIXME go back in history here ?
@@ -555,16 +557,19 @@ void ListPanelFunc::slotFileCreated(KJob *job)
 
 void ListPanelFunc::slotKdsResult(KJob* job)
 {
-    KIO::DirectorySizeJob* kds = static_cast<KIO::DirectorySizeJob*>(job);
+    if (!kdsJob)
+        return;
+    Q_ASSERT(job == kdsJob);
     KrViewItem* viewItem = panel->view->findItemByName(kdsFileName);
-    kdsFileName.clear();
     if (viewItem) {
-        if (kds->error())
+        if (kdsJob->error())
             viewItem->getMutableVfile()->vfile_setSize(0, false);
         else
-            viewItem->getMutableVfile()->vfile_setSize(kds->totalSize(), true);
+            viewItem->getMutableVfile()->vfile_setSize(kdsJob->totalSize(), true);
         viewItem->redraw();
     }
+    kdsJob = 0;
+    kdsFileName.clear();
 }
 
 void ListPanelFunc::moveFiles(bool enqueue)
@@ -845,6 +850,15 @@ void ListPanelFunc::runCommand(QString cmd)
         KMessageBox::error(0, i18n("Could not start %1", cmd));
 }
 
+void ListPanelFunc::cancelCalcSpace()
+{
+    if (kdsJob) {
+        kdsJob->kill();
+        kdsJob = 0;
+    }
+    kdsFileName.clear();
+}
+
 void ListPanelFunc::runService(const KService &service, KUrl::List urls)
 {
     krOut<<service.name()<<endl;
@@ -1120,9 +1134,9 @@ void ListPanelFunc::calcSpace(KFileItem item)
     vfile* vf = item->getMutableVfile();
     vf->vfile_sizeCalculationBegin();
     item->redraw();
-    KIO::DirectorySizeJob* kds = KIO::directorySize(vf->vfile_getUrl());
+    kdsJob = KIO::directorySize(vf->vfile_getUrl());
     kdsFileName = vf->vfile_getName();
-    connect(kds, SIGNAL(result(KJob*)), this, SLOT(slotKdsResult(KJob*)));
+    connect(kdsJob, SIGNAL(result(KJob*)), this, SLOT(slotKdsResult(KJob*)));
 }
 
 void ListPanelFunc::FTPDisconnect()
