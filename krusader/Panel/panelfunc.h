@@ -147,8 +147,7 @@ protected:
     KUrl                 syncURL;
     KUrl                 fileToCreate; // file that's to be created by editNewFile()
     bool                 urlManuallyEntered;
-    KIO::DirectorySizeJob* kdsJob;
-    QString              kdsFileName;
+    QHash<KIO::DirectorySizeJob*, QString> kdsFileNameMap;
 
     static QPointer<ListPanelFunc> copyToClipboardOrigin;
 

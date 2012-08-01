@@ -119,7 +119,7 @@ public:
 QPointer<ListPanelFunc> ListPanelFunc::copyToClipboardOrigin;
 
 ListPanelFunc::ListPanelFunc(ListPanel *parent) : QObject(parent),
-        panel(parent), vfsP(0), urlManuallyEntered(false), kdsJob(0)
+        panel(parent), vfsP(0), urlManuallyEntered(false)
 {
     dirLister = new VfileDirLister();
     history = new DirHistoryQueue(panel);
@@ -557,19 +557,16 @@ void ListPanelFunc::slotFileCreated(KJob *job)
 
 void ListPanelFunc::slotKdsResult(KJob* job)
 {
-    if (!kdsJob)
-        return;
-    Q_ASSERT(job == kdsJob);
-    KrViewItem* viewItem = panel->view->findItemByName(kdsFileName);
+    KIO::DirectorySizeJob* kds = static_cast<KIO::DirectorySizeJob*>(job);
+    Q_ASSERT(kdsFileNameMap.contains(kds));
+    KrViewItem* viewItem = panel->view->findItemByName(kdsFileNameMap.take(kds));
     if (viewItem) {
-        if (kdsJob->error())
+        if (kds->error())
             viewItem->getMutableVfile()->vfile_setSize(0, false);
         else
-            viewItem->getMutableVfile()->vfile_setSize(kdsJob->totalSize(), true);
+            viewItem->getMutableVfile()->vfile_setSize(kds->totalSize(), true);
         viewItem->redraw();
     }
-    kdsJob = 0;
-    kdsFileName.clear();
 }
 
 void ListPanelFunc::moveFiles(bool enqueue)
@@ -852,11 +849,11 @@ void ListPanelFunc::runCommand(QString cmd)
 
 void ListPanelFunc::cancelCalcSpace()
 {
-    if (kdsJob) {
-        kdsJob->kill();
-        kdsJob = 0;
+    while (!kdsFileNameMap.empty()) {
+        KIO::DirectorySizeJob* job = kdsFileNameMap.begin().key();
+        job->kill();
+        kdsFileNameMap.remove(job);
     }
-    kdsFileName.clear();
 }
 
 void ListPanelFunc::runService(const KService &service, KUrl::List urls)
@@ -1129,14 +1126,13 @@ void ListPanelFunc::calcSpace(KFileItem item)
     // there's a folder we can't enter (permissions). in that case, the returned
     // size will not be correct.
     //
-    if (!kdsFileName.isEmpty())
-        return;
     vfile* vf = item->getMutableVfile();
     vf->vfile_sizeCalculationBegin();
     item->redraw();
-    kdsJob = KIO::directorySize(vf->vfile_getUrl());
-    kdsFileName = vf->vfile_getName();
-    connect(kdsJob, SIGNAL(result(KJob*)), this, SLOT(slotKdsResult(KJob*)));
+    KIO::DirectorySizeJob* kds = KIO::directorySize(vf->vfile_getUrl());
+    Q_ASSERT(!kdsFileNameMap.contains(kds));  // Assert is too unreallistic. TODO: Remove
+    kdsFileNameMap.insert(kds, vf->vfile_getName());
+    connect(kds, SIGNAL(result(KJob*)), this, SLOT(slotKdsResult(KJob*)));
 }
 
 void ListPanelFunc::FTPDisconnect()
