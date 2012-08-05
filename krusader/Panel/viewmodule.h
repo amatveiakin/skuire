@@ -23,6 +23,7 @@ class ViewModule
 {
 public:
     static void init();
+    static void configChanged();
 };
 
 #endif // __VIEWMODULE_H__

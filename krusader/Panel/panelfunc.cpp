@@ -343,6 +343,7 @@ void ListPanelFunc::doRefresh()
     }
     vfsP->vfs_setQuiet(false);
     panel->view->setUrlToMakeCurrent(KUrl());
+    panel->origin->setStartDir(panel->url().prettyUrl());
 
     panel->setCursor(Qt::ArrowCursor);
 
@@ -1003,7 +1004,7 @@ void ListPanelFunc::execute(KFileItem item)
         openUrl(url);
     } else {
         if (KRun::isExecutableFile(url, mime))
-            runCommand(url.path());
+            runCommand(KShell::quoteArg(url.path()));
         else {
             KService::Ptr service = KMimeTypeTrader::self()->preferredService(mime);
             if(service)
@@ -1286,7 +1287,8 @@ void ListPanelFunc::refreshActions()
     panel->_actions->actFTPDisconnect->setEnabled(vfsType == vfs::VFS_FTP);       // disconnect an FTP session
     panel->_actions->actCreateChecksum->setEnabled(vfsType == vfs::VFS_NORMAL);
     panel->_actions->actDirUp->setEnabled(!files()->isRoot());
-    panel->_actions->actRoot->setEnabled(!files()->isRoot());
+    panel->_actions->actRoot->setEnabled(!panel->virtualPath().equals(KUrl(ROOT_DIR),
+                                         KUrl::CompareWithoutTrailingSlash));
     panel->_actions->actHome->setEnabled(!atHome());
     panel->_actions->actHistoryBackward->setEnabled(history->canGoBack());
     panel->_actions->actHistoryForward->setEnabled(history->canGoForward());

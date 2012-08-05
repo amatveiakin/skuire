@@ -1245,16 +1245,18 @@ bool KrView::isShowHidden()
     return KConfigGroup(krConfig, "Look&Feel").readEntry("Show Hidden", _ShowHidden);
 }
 
-bool KrView::toggleShowHidden()
+void KrView::showHidden(bool show)
 {
     KConfigGroup group(krConfig, "Look&Feel");
-    bool show = !group.readEntry("Show Hidden", _ShowHidden);
     group.writeEntry("Show Hidden", show);
 
+    refreshAllViews();
+}
+
+void KrView::refreshAllViews()
+{
     foreach(KrViewInstance *inst, KrViewFactory::registeredViews()) {
         foreach(KrView *view, inst->m_objects)
             view->refresh();
     }
-
-    return show;
 }

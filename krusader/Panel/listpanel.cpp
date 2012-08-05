@@ -1327,7 +1327,8 @@ void ListPanel::updateButtons()
     backButton->setEnabled(func->history->canGoBack());
     forwardButton->setEnabled(func->history->canGoForward());
     historyButton->setEnabled(func->history->count() > 1);
-    cdRootButton->setEnabled(!func->files()->isRoot());
+    cdRootButton->setEnabled(!virtualPath().equals(KUrl(ROOT_DIR),
+                                    KUrl::CompareWithoutTrailingSlash));
     cdUpButton->setEnabled(!func->files()->isRoot());
     cdHomeButton->setEnabled(!func->atHome());
 }

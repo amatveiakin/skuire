@@ -68,10 +68,11 @@ public slots:
     void applySettingsToOthers();
     void focusPanel();
     void quickFilter();
-    void togglePreviews(bool show);
-    void toggleHidden();
+    void showPreviews(bool show);
+    void showHidden(bool show);
 
     void refreshActions();
+    void configChanged();
 
 public:
     KAction *actZoomIn, *actZoomOut, *actDefaultZoom;

@@ -63,8 +63,8 @@ ViewActions::ViewActions(QObject *parent, KrMainWindow *mainWindow) :
     action(i18n("Set Focus to the Panel"), 0, Qt::Key_Escape, SLOT(focusPanel()), "focus_panel");
     action(i18n("Apply settings to other tabs"), 0, 0, SLOT(applySettingsToOthers()), "view_apply_settings_to_others");
     action(i18n("QuickFilter"), 0, Qt::CTRL + Qt::Key_I, SLOT(quickFilter()), "quick_filter");
-    actTogglePreviews = toggleAction(i18n("Show Previews"), 0, 0, SLOT(togglePreviews(bool)), "toggle previews");
-    actToggleHidden = toggleAction(i18n("Show &Hidden Files"), 0, Qt::CTRL + Qt::Key_Period, SLOT(toggleHidden()), "toggle hidden files");
+    actTogglePreviews = toggleAction(i18n("Show Previews"), 0, 0, SLOT(showPreviews(bool)), "toggle previews");
+    actToggleHidden = toggleAction(i18n("Show &Hidden Files"), 0, Qt::CTRL + Qt::Key_Period, SLOT(showHidden(bool)), "toggle hidden files");
     KAction *actSaveaveDefaultSettings = action(i18n("Save settings as default"), 0, 0, SLOT(saveDefaultSettings()), "view_save_default_settings");
 
     // tooltips
@@ -175,14 +175,14 @@ void ViewActions::quickFilter()
     view()->startQuickFilter();
 }
 
-void ViewActions::togglePreviews(bool show)
+void ViewActions::showPreviews(bool show)
 {
     view()->showPreviews(show);
 }
 
-void ViewActions::toggleHidden()
+void ViewActions::showHidden(bool show)
 {
-    actToggleHidden->setChecked(KrView::toggleShowHidden());
+    KrView::showHidden(show);
 }
 
 void ViewActions::refreshActions()
@@ -194,4 +194,9 @@ void ViewActions::refreshActions()
     actRestoreSelection->setEnabled(view()->canRestoreSelection());
     actTogglePreviews->setChecked(view()->previewsShown());
     actToggleHidden->setChecked(KrView::isShowHidden());
+}
+
+void ViewActions::configChanged()
+{
+    refreshActions();
 }

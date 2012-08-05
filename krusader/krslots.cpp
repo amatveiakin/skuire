@@ -458,8 +458,8 @@ void KRslots::rootKrusader()
 
     KProcess proc;
     proc << KrServices::fullPathName("kdesu") << "-c" << KrServices::fullPathName("krusader")
-    + " --left=" + LEFT_PANEL->url().url()
-    + " --right=" + RIGHT_PANEL->url().url();
+    + " --left=" + KrServices::quote(LEFT_PANEL->url().pathOrUrl())
+    + " --right=" + KrServices::quote(RIGHT_PANEL->url().pathOrUrl());
 
     if (!proc.startDetached())
         KMessageBox::error(0, i18n("Error executing %1!", proc.program()[0]));

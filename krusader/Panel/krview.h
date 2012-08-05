@@ -262,7 +262,9 @@ public:
     static QString columnDescription(int column);
 
     static bool isShowHidden();
-    static bool toggleShowHidden();
+    static void showHidden(bool show);
+
+    static void refreshAllViews();
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //

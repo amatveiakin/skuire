@@ -8,8 +8,25 @@
 master
 ==========================
 
-    CHANGED: disabled krarc ioslave because of bug 280939 resulting in data loss.
+    CHANGED: user action manager starts with the "Basic Properties" tab active
+    CHANGED: detailed view: "Automatically Resize Columns" setting is remembered
 
+    FIXED: [ 108892 ] "Combine Files" overwrites existing target file without confirmation
+    FIXED: Queue manager closed when any of the queues finished
+    FIXED: [ 300922 ] crash when pause sftp transfer via queue on quit
+    FIXED: [ 271265 ] krusader should search for kdesu executable in /usr/lib{64,}/kde4/libexec/
+           - thanks to Anssi Hannula / Ahmad Samir
+    FIXED: [ 290304 ] Panel option "always sort dirs by name" doesn't work
+    FIXED: [ 297926 ] state of the menu item 'Show hidden files' and the current setting is different
+    FIXED: [ 234296 ] crash when closing disk usage view
+    FIXED: [ 296718 ] execution of files that have spaces in their path doesn't work anymore
+    FIXED: [ 294618 ] using "open with" on video files
+           causes their thumbnails to be created, even when not needed
+    FIXED: root mode action doesn't work if a panel url contains spaces
+    FIXED: relative url completion in address-bar only works in home dir
+    FIXED: [ 242566 ] Cannot F3-View .vcf vCard files
+    FIXED: Root action (which opens the root dir of the local filesystem)
+           is disabled in the root dir of nonlocal filesystems
     FIXED: when cutting to clipboard from virt:/ the virtual entries are immediately removed
     FIXED: Unselecting files before copy/move operation doesn't work for copy&paste
     FIXED: [ 277259 ] Unselecting files before copy/move operation doesn't work in the same panel
@@ -17,8 +34,6 @@ master
     FIXED: [ 276310 ] crash when trying to delete already deleted file
     FIXED: [ 277578 ] Crash on cancelling calculation of occupied space on smb share
     FIXED: krusader hangs for some time when opening a bz2(and possibly gzip)-compressed archive
-    FIXED: [ 280939 ] krusader deletes zip archive when cut&pasting it into itself
-           NOTE: the fix is to disable krarc, see CHANGED section
     FIXED: loading defaults on the Panel page in Konfigurator has no effect
     FIXED: changes to "Show new/close tab buttons" don't take effect immediately
     FIXED: when options requiring a gui restart are changed, the panel history is lost

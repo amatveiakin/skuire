@@ -59,7 +59,7 @@
     &krusader; there and click the 
     <guibutton>BookMan II</guibutton> button and select 
     <guimenuitem>Bookmark Current</guimenuitem>. When the 
-    <guilabel>Bookmark Current</guilabel> dialog box appears, the
+    <guilabel>Add Bookmark</guilabel> dialog box appears, the
     &URL; line will say 
     <filename class="directory">/usr/tmp</filename>. 
     <guilabel>Name</guilabel> is for the name you would like to give
@@ -172,9 +172,8 @@
     <itemizedlist>
       <listitem>
         <para>
-        <guilabel>Media</guilabel> uses &kde;'s 
-        <link linkend="konfig-advanced">Media protocol</link> 
-        <filename>media:/</filename></para>
+        <guilabel>Trash bin</guilabel> uses &kde;'s 
+        <filename>trash:/</filename> protocol.</para>
       </listitem>
       <listitem>
         <para>
@@ -234,17 +233,6 @@
     need more information, please read the
     <application>KeditBookmarks</application> or the &konqueror;
     handbook.</para>
-    <!-- OLD
-<screenshot>
-  <screeninfo><application>KeditBookmarks</application> Bookmark Manager</screeninfo>
-  <mediaobject>
-  <imageobject><imagedata fileref="bookmanedit.png" format="PNG"/></imageobject>
-  <imageobject><imagedata fileref="bookmanedit.png" format="EPS"/></imageobject>
-  <textobject><phrase><application>KeditBookmarks</application> edit and organize your Bookmarks</phrase></textobject>
-  <caption><para><application>KeditBookmarks</application>: Bookmark Manager.</para></caption>
-  </mediaobject>
-</screenshot>
--->
     <figure id="screenshot-bookmanedit" float="1">
       <title><application>KeditBookmarks</application> Bookmark Manager</title>
       <mediaobject>

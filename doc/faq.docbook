@@ -127,7 +127,7 @@
           <para>Take a look at the <link linkend="compilation">Krusader dependencies</link> paragraph  of our install chapter.</para>
           <para>
           If you need more details please take a look
-          at the <ulink url="http://packages.ubuntu.com/jaunty/krusader">Krusader requirements</ulink> on Ubuntu.
+          at the <ulink url="http://packages.ubuntu.com/precise/krusader">Krusader requirements</ulink> on Ubuntu.
 	  The "depends" are required, the "suggests" make Krusader more powerful.</para>
           <para></para>
           <!-- Empty line to make it more readable -->
@@ -1482,7 +1482,7 @@
         </question>
         <answer>
           <para>If you are interested in translating the &krusader; GUI or documentation, please contact the
-               <ulink url="http://l10n.kde.org/teams-list.php">KDE translation team</ulink> of your lanuage.</para>
+               <ulink url="http://l10n.kde.org/teams-list.php">KDE translation team</ulink> of your language.</para>
           <para></para>
           <!-- Empty line to make it more readable -->
         </answer>

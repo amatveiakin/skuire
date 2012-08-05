@@ -19,8 +19,14 @@
 #include "viewmodule.h"
 
 #include "viewexpplaceholders.h"
+#include "krview.h"
 
 void ViewModule::init()
 {
     ViewExpPlaceholders::init();
+}
+
+void ViewModule::configChanged()
+{
+    KrView::refreshAllViews();
 }

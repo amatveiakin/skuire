@@ -43,7 +43,28 @@ class Combiner : public QProgressDialog
 {
     Q_OBJECT
 
+public:
+    Combiner(QWidget* parent,  KUrl baseURLIn, KUrl destinationURLIn, bool unixNamingIn = false);
+    ~Combiner();
+
+    void combine();
+
+private slots:
+    void statDest();
+    void statDestResult(KJob* job);
+    void combineSplitFileDataReceived(KIO::Job *, const QByteArray &byteArray);
+    void combineSplitFileFinished(KJob *job);
+    void combineDataReceived(KIO::Job *, const QByteArray &);
+    void combineReceiveFinished(KJob *);
+    void combineDataSend(KIO::Job *, QByteArray &);
+    void combineSendFinished(KJob *);
+    void combineWritePercent(KJob *, unsigned long);
+
 private:
+    void openNextFile();
+    void combineAbortJobs();
+
+
     KUrl            splURL;
     KUrl            readURL;
     KUrl            writeURL;
@@ -56,7 +77,6 @@ private:
     QString         splitFile;
     QString         error;
 
-
     bool            hasValidSplitFile;
     QString         expectedFileName;
     KIO::filesize_t expectedSize;
@@ -66,29 +86,11 @@ private:
     int             permissions;
     KIO::filesize_t receivedSize;
 
+    KIO::Job         *statJob;
     KIO::TransferJob *combineReadJob;
     KIO::TransferJob *combineWriteJob;
 
     bool            unixNaming;
-
-public:
-    Combiner(QWidget* parent,  KUrl baseURLIn, KUrl destinationURLIn, bool unixNamingIn = false);
-    ~Combiner();
-
-    void combine();
-
-public slots:
-    void combineSplitFileDataReceived(KIO::Job *, const QByteArray &byteArray);
-    void combineSplitFileFinished(KJob *job);
-    void combineDataReceived(KIO::Job *, const QByteArray &);
-    void combineReceiveFinished(KJob *);
-    void combineDataSend(KIO::Job *, QByteArray &);
-    void combineSendFinished(KJob *);
-    void combineWritePercent(KJob *, unsigned long);
-
-private:
-    void openNextFile();
-    void combineAbortJobs();
 };
 
 #endif /* __COMBINER_H__ */

@@ -501,6 +501,9 @@ void Krusader::configChanged() {
                 sysTray->show();
         }
     }
+
+    ViewModule::configChanged();
+    _viewActions->configChanged();
 }
 
 void Krusader::slotClose() {
