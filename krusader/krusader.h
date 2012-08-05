@@ -111,7 +111,7 @@ public:
         KParts::MainWindow::plugActionList(name, list);
     }
 
-    void configChanged();
+    void configChanged(bool isGUIRestartNeeded);
     /**
      * This returns a defferent icon if krusader runs with root-privileges
      * @return a character string with the specitif icon-name

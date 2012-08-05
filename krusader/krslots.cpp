@@ -56,13 +56,11 @@
 #include "kractions.h"
 #include "krusaderview.h"
 #include "Panel/listpanel.h"
-#include "Panel/krselectionmode.h"
 #include "Dialogs/krdialogs.h"
 #include "Dialogs/krspwidgets.h"
 #include "Dialogs/krkeydialog.h"
 #include "GUI/krusaderstatus.h"
 #include "Panel/panelfunc.h"
-#include "Konfigurator/konfigurator.h"
 #include "MountMan/kmountman.h"
 #include "defaults.h"
 #include "resources.h"
@@ -297,41 +295,6 @@ void KRslots::insertFileName(bool full_path)
 void KRslots::refresh(const KUrl& u)
 {
     ACTIVE_FUNC->openUrl(u);
-}
-
-void KRslots::runKonfigurator(bool firstTime)
-{
-    Konfigurator *konfigurator = new Konfigurator(firstTime);
-    connect(konfigurator, SIGNAL(configChanged(bool)), SLOT(configChanged(bool)));
-
-    konfigurator->exec();
-
-    delete konfigurator;
-}
-
-void KRslots::configChanged(bool isGUIRestartNeeded)
-{
-    if (isGUIRestartNeeded) {
-        krApp->setUpdatesEnabled(false);
-        KConfigGroup group(krConfig, "Look&Feel");
-        vfile::vfile_loadUserDefinedFolderIcons(group.readEntry("Load User Defined Folder Icons", _UserDefinedFolderIcons));
-
-        bool leftActive = ACTIVE_PANEL->gui->isLeft();
-        MAIN_VIEW->leftManager()->slotRecreatePanels();
-        MAIN_VIEW->rightManager()->slotRecreatePanels();
-        if(leftActive)
-            LEFT_PANEL->slotFocusOnMe();
-        else
-            RIGHT_PANEL->slotFocusOnMe();
-        MAIN_VIEW->fnKeys()->updateShortcuts();
-        KrSelectionMode::resetSelectionHandler();
-        krApp->setUpdatesEnabled(true);
-    }
-
-    // really ugly, but reload the Fn keys just in case - csaba: any better idea?
-    MAIN_VIEW->fnKeys()->updateShortcuts();
-
-    krApp->configChanged();
 }
 
 void KRslots::swapPanels()

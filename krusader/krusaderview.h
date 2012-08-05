@@ -67,6 +67,7 @@ public:
     virtual ~KrusaderView() {}
     void start(KConfigGroup &cfg, bool restoreSettings, QStringList leftTabs, QStringList rightTabs);
     void updateGUI(KConfigGroup &cfg);
+    void recreatePanels();
     void saveSettings(KConfigGroup &cfg);
     void cmdLineFocus();  // command line receive's keyboard focus
     void cmdLineUnFocus();// return focus from command line to active panel

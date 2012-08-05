@@ -20,6 +20,7 @@
 
 #include "viewexpplaceholders.h"
 #include "krview.h"
+#include "krselectionmode.h"
 
 void ViewModule::init()
 {
@@ -28,5 +29,6 @@ void ViewModule::init()
 
 void ViewModule::configChanged()
 {
+    KrSelectionMode::resetSelectionHandler();
     KrView::refreshAllViews();
 }

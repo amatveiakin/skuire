@@ -32,6 +32,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 
 #include "krview.h"
 #include "../krmainwindow.h"
+#include "../krusaderapp.h"
 
 #include <klocale.h>
 #include <ktoggleaction.h>
@@ -72,6 +73,8 @@ ViewActions::ViewActions(QObject *parent, KrMainWindow *mainWindow) :
     actSelectAll->setToolTip(i18n("Select all files in the current directory"));
     actUnselectAll->setToolTip(i18n("Unselect all selected files"));
     actSaveaveDefaultSettings->setToolTip(i18n("Save settings as default for new instances of this view type"));
+
+    connect(KrusaderApp::self(), SIGNAL(configChanged()), SLOT(configChanged()));
 }
 
 inline KrView *ViewActions::view()

@@ -69,6 +69,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include <kdeversion.h>
 
 #include "krusaderversion.h"
+#include "krusaderapp.h"
 #include "kicons.h"
 #include "krusaderview.h"
 #include "defaults.h"
@@ -277,7 +278,7 @@ Krusader::Krusader() : KParts::MainWindow(0,
     updateGUI(true);
 
     if (runKonfig)
-        SLOTS->runKonfigurator(true);
+        KrusaderApp::self()->runKonfigurator(true);
 
     if (!runKonfig) {
         KConfigGroup cfg(krConfig, "Private");
@@ -485,7 +486,21 @@ void Krusader::saveSettings() {
     krConfig->sync();
 }
 
-void Krusader::configChanged() {
+void Krusader::configChanged(bool isGUIRestartNeeded)
+{
+    if (isGUIRestartNeeded) {
+        setUpdatesEnabled(false);
+        KConfigGroup group(krConfig, "Look&Feel");
+        vfile::vfile_loadUserDefinedFolderIcons(group.readEntry("Load User Defined Folder Icons", _UserDefinedFolderIcons));
+
+        MAIN_VIEW->recreatePanels();
+
+        setUpdatesEnabled(true);
+    }
+
+    //FIXME - really ugly, but reload the Fn keys just in case
+    MAIN_VIEW->fnKeys()->updateShortcuts();
+
     KConfigGroup group(krConfig, "Look&Feel");
     bool minimizeToTray = group.readEntry("Minimize To Tray", _MinimizeToTray);
     bool singleInstanceMode = group.readEntry("Single Instance Mode", _SingleInstanceMode);
@@ -503,7 +518,6 @@ void Krusader::configChanged() {
     }
 
     ViewModule::configChanged();
-    _viewActions->configChanged();
 }
 
 void Krusader::slotClose() {

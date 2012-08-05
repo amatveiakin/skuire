@@ -179,6 +179,19 @@ void KrusaderView::updateGUI(KConfigGroup &cfg)
     };
 }
 
+void KrusaderView::recreatePanels()
+{
+    bool leftActive = ACTIVE_PANEL->gui->isLeft();
+    leftManager()->slotRecreatePanels();
+    rightManager()->slotRecreatePanels();
+    if(leftActive)
+        LEFT_PANEL->slotFocusOnMe();
+    else
+        RIGHT_PANEL->slotFocusOnMe();
+
+    fnKeys()->updateShortcuts();
+}
+
 void KrusaderView::setPanelSize(bool leftPanel, int percent)
 {
     QList<int> panelSizes = horiz_splitter->sizes();

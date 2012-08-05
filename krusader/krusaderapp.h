@@ -27,14 +27,27 @@ class QFocusEvent;
 class KrusaderApp: public KApplication
 {
     Q_OBJECT
+
 public:
     KrusaderApp();
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
+    void runKonfigurator(bool firstTime);
+
+    static KrusaderApp* self();
 
 signals:
     void windowActive();
     void windowInactive();
+    void configChanged();
+
+public slots:
+    void runKonfigurator() {
+        runKonfigurator(false);
+    }
+
+protected slots:
+    void slotConfigChanged(bool isGUIRestartNeeded);
 };
 
 #endif // KRUSADERAPP_H

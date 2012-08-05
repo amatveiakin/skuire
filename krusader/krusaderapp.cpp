@@ -19,7 +19,16 @@
 
 #include "krusaderapp.h"
 
+#include "Konfigurator/konfigurator.h"
+#include "krusader.h"
+
+
 KrusaderApp::KrusaderApp(): KApplication() {}
+
+KrusaderApp* KrusaderApp::self()
+{
+    return qobject_cast<KrusaderApp*>(qApp);
+}
 
 void KrusaderApp::focusInEvent(QFocusEvent *event)
 {
@@ -29,4 +38,21 @@ void KrusaderApp::focusInEvent(QFocusEvent *event)
 void KrusaderApp::focusOutEvent(QFocusEvent *event)
 {
     emit windowInactive();
+}
+
+void KrusaderApp::runKonfigurator(bool firstTime)
+{
+    Konfigurator *konfigurator = new Konfigurator(firstTime);
+    connect(konfigurator, SIGNAL(configChanged(bool)), SLOT(slotConfigChanged(bool)));
+
+    konfigurator->exec();
+
+    delete konfigurator;
+}
+
+void KrusaderApp::slotConfigChanged(bool isGUIRestartNeeded)
+{
+    krApp->configChanged(isGUIRestartNeeded);
+
+    emit configChanged();
 }

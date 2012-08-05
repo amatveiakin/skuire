@@ -92,10 +92,6 @@ public slots:
     /** called by actExec* actions to choose the built-in command line mode */
     void execTypeSetup();
     void refresh(const KUrl& u);
-    void runKonfigurator(bool firstTime = false);
-    void startKonfigurator() {
-        runKonfigurator(false);
-    }
     void search();           // call the search module
     void locate();
     void runTerminal(const QString & dir, const QStringList & args);
@@ -119,9 +115,6 @@ public slots:
     void windowInactive(); // called when another application steals the focus
     void jsConsole();
     void saveNewToolbarConfig();
-
-protected slots:
-    void configChanged(bool isGUIRestartNeeded);
 
 protected:
     KrMainWindow *_mainWindow;

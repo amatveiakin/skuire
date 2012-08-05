@@ -38,6 +38,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include <QMenu>
 
 #include "defaults.h"
+#include "krusaderapp.h"
 #include "krusader.h"
 #include "krusaderview.h"
 #include "krslots.h"
@@ -250,7 +251,7 @@ void KrActions::setupActions(Krusader *krusaderApp)
     NEW_KACTION(actSyncDirs, i18n("Synchronize &Directories..."), "folder-sync", Qt::CTRL + Qt::Key_Y, SLOTS, SLOT(slotSynchronizeDirs()), "sync dirs");
     NEW_KACTION(actDiskUsage, i18n("D&isk Usage..."), "kr_diskusage", Qt::ALT + Qt::SHIFT + Qt::Key_S, SLOTS, SLOT(slotDiskUsage()), "disk usage");
     NEW_KACTION(actQueueManager, i18n("&Queue Manager..."), "document-multiple", Qt::ALT + Qt::SHIFT + Qt::Key_Q, SLOTS, SLOT(slotQueueManager()), "queue manager");
-    NEW_KACTION(actKonfigurator, i18n("Configure &Krusader..."), "configure", 0, SLOTS, SLOT(startKonfigurator()), "konfigurator");
+    NEW_KACTION(actKonfigurator, i18n("Configure &Krusader..."), "configure", 0, KrusaderApp::self(), SLOT(runKonfigurator()), "konfigurator");
     NEW_KACTION(actSavePosition, i18n("Save &Position"), 0, 0, krusaderApp, SLOT(savePosition()), "save position");
     NEW_KACTION(actCompare, i18n("Compare b&y Content..."), "kmultiple", 0, SLOTS, SLOT(compareContent()), "compare");
     NEW_KACTION(actMultiRename, i18n("Multi &Rename..."), "krename", Qt::SHIFT + Qt::Key_F9, SLOTS, SLOT(multiRename()), "multirename");
