@@ -32,21 +32,17 @@
 #ifndef KRCALCSPACEDIALOG_H
 #define KRCALCSPACEDIALOG_H
 
-/* --=={ Patch by Heiner <h.eichmann@gmx.de> }==-- */
+#include <QPointer>
 
-// KDE Includes
 #include <kdialog.h>
-#include <QtCore/QMutex>
-#include <kio/jobclasses.h>
-// Qt Includes
-#include <QtCore/QThread>
-#include <QLabel>
-// Krusader Includes
+#include <kio/directorysizejob.h>
 #include "calcspacethread.h"
 
 class AbstractListPanel;
 class AbstractView;
 
+class QLabel;
+class QTimer;
 
 /**
  * Dialog calculating showing the number of files and directories and its total
@@ -58,41 +54,31 @@ class KrCalcSpaceDialog : public KDialog
 {
     Q_OBJECT
 
-    class QTimer * m_pollTimer;
+    const KFileItemList m_lstItems;
+    QPointer<KIO::DirectorySizeJob> m_dirSizeJob;
+    bool m_finished;
+    QTimer* m_updateTimer;
 
-    CalcSpaceThread *m_thread;
+    KIO::filesize_t m_totalSize;
+    unsigned long m_totalFiles;
+    unsigned long m_totalDirs;
+    bool m_resultIsAccurate;  // false in we were unable to access some subfolders
 
-    QLabel * m_label;
-    bool m_autoClose; // true: wait 3 sec. before showing the dialog. Close it, when done
-    bool m_canceled; // true: cancel was pressed
-    int m_timerCounter; // internal counter. The timer runs faster as the rehresh (see comment there)
-    const KUrl::List m_items;
-    AbstractView *m_view;
+    QLabel* m_label;
 
-    void calculationFinished(); // called if the calculation is done
-    void showResult(); // show the current result in teh dialog
+    void getDataFromJob();
+    void showResult(); // show the current result in the dialog
 
 protected slots:
-    void timer(); // poll timer was fired
-    void slotCancel(); // cancel was pressed
+    void updateData();
+    void calculationFinished(KJob* job);  // the job has finished
 
 public:
-    // autoclose: wait 3 sec. before showing the dialog. Close it, when done
-    KrCalcSpaceDialog(QWidget *parent, AbstractListPanel * panel, const KUrl::List items, bool autoclose);
+    KrCalcSpaceDialog(QWidget* parent, const KFileItemList& lstItems);
     ~KrCalcSpaceDialog();
 
-    void getStats(KIO::filesize_t  &totalSize,
-                  unsigned long &totalFiles,
-                  unsigned long &totalDirs) const {
-        m_thread->getStats(totalSize, totalFiles, totalDirs);
-    }
-    bool wasCanceled() const {
-        return m_canceled;
-    } // cancel was pressed; result is probably wrong
-
 public slots:
-    void exec(); // start calculation
+    int exec(); // start calculation
 };
-/* End of patch by Heiner <h.eichmann@gmx.de> */
 
 #endif

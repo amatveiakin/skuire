@@ -1109,10 +1109,10 @@ void ListPanelFunc::calcSpace()
     if (urls.isEmpty()) {
         urls = panel->view()->getItems().urlList();
         if (urls.isEmpty())
-            return ; // nothing to do
+            return; // nothing to do
     }
 
-    KrCalcSpaceDialog dlg(krMainWindow, panel, urls, false);
+    KrCalcSpaceDialog dlg(krMainWindow, urls);
     dlg.exec();
     panel->slotUpdateTotals();
 }
