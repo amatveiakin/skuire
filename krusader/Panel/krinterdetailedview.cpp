@@ -106,12 +106,12 @@ void KrInterDetailedView::restoreSettings(KConfigGroup grp)
 
 void KrInterDetailedView::saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties)
 {
-    grp.writeEntry("AutoResizeColumns", _autoResizeColumns);
-
     if (properties & KrViewProperties::PropColumns) {
         QByteArray state = header()->saveState();
         grp.writeEntry("Saved State", state);
     }
+    if (properties & KrViewProperties::PropAutoResizeColumns)
+        grp.writeEntry("AutoResizeColumns", _autoResizeColumns);
 }
 
 int KrInterDetailedView::itemsPerPage()
@@ -248,6 +248,7 @@ void KrInterDetailedView::showContextMenu(const QPoint & p)
 
     if (res == actAutoResize) {
         _autoResizeColumns = actAutoResize->isChecked();
+        _parent->settingsChanged(KrViewProperties::PropAutoResizeColumns);
         recalculateColumnSizes();
     } else {
         int idx = actions.indexOf(res);
@@ -258,10 +259,10 @@ void KrInterDetailedView::showContextMenu(const QPoint & p)
             header()->showSection(idx);
         else
             header()->hideSection(idx);
-    }
 
-    _parent->visibleColumnsChanged();
-    _parent->settingsChanged(KrViewProperties::PropColumns);
+        _parent->settingsChanged(KrViewProperties::PropColumns);
+        _parent->visibleColumnsChanged();
+    }
 }
 
 void KrInterDetailedView::sectionResized(int column, int oldSize, int newSize)

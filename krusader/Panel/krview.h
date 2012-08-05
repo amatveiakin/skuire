@@ -78,8 +78,8 @@ public:
     {}
 
     enum PropertyType { NoProperty = 0x0, PropIconSize = 0x1, PropShowPreviews = 0x2,
-                        PropSortMode = 0x4, PropColumns = 0x8, PropFilter = 0x10,
-                        AllProperties = PropIconSize | PropShowPreviews | PropSortMode | PropColumns | PropFilter
+                        PropSortMode = 0x4, PropColumns = 0x8, PropFilter = 0x10, PropAutoResizeColumns = 0x20,
+                        AllProperties = PropIconSize | PropShowPreviews | PropSortMode | PropColumns | PropFilter | PropAutoResizeColumns
                       };
     enum ColumnType { NoColumn = -1, Name = 0x0, Ext = 0x1, Size = 0x2, Type = 0x3, Modified = 0x4,
                       Permissions = 0x5, KrPermissions = 0x6, Owner = 0x7, Group = 0x8, MAX_COLUMNS = 0x09
