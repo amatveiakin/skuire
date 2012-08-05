@@ -404,7 +404,7 @@ PanelPopup::PanelPopup(QSplitter *parent, bool left, FileManagerWindow *mainWind
     qsettingsBtn->setIcon(krLoader->loadIcon("configure", KIconLoader::Toolbar, 16));
     qsettingsBtn->setFixedSize(20, 20);
     qsettingsBtn->setToolTip(i18n("Select group dialog"));
-    connect(qsettingsBtn, SIGNAL(clicked()), _mainWindow->viewActions()->actSelect, SLOT(trigger()));
+    connect(qsettingsBtn, SIGNAL(clicked()), _mainWindow->viewActions(), SLOT(markGroup()));
 
     qlayout->addWidget(selectLabel, 0, 0);
     qlayout->addWidget(quickSelectCombo, 0, 1);

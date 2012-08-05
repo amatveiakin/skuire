@@ -74,13 +74,10 @@ public slots:
     void refreshActions();
     void configChanged();
 
-public:
+protected:
     KAction *actZoomIn, *actZoomOut, *actDefaultZoom;
     KAction *actSelect, *actUnselect, *actSelectAll, *actUnselectAll, *actInvert, *actRestoreSelection;
-    KToggleAction *actTogglePreviews;
-
-protected:
-    KToggleAction *actToggleHidden;
+    KToggleAction *actTogglePreviews, *actToggleHidden;
 
     KrView *view();
 };
