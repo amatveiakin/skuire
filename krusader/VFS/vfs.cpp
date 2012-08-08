@@ -135,9 +135,7 @@ bool vfs::vfs_refresh()
     // and populate it
     KConfigGroup ga(krConfig, "Advanced");
     int maxIncrementalRefreshFileNr = ga.readEntry("Max Incremental Refresh File Nr", 50);
-    KConfigGroup gl(krConfig, "Look&Feel");
-    bool showHidden = gl.readEntry("Show Hidden", _ShowHidden);
-    bool res = populateVfsList(vfs_getOrigin(), showHidden);
+    bool res = populateVfsList(vfs_getOrigin(), true);
 
     QString name;
     if (res) {
@@ -222,12 +220,10 @@ bool vfs::vfs_refresh(const KUrl& origin)
 
     vfs_busy = true;
 
-    KConfigGroup group(krConfig, "Look&Feel");
-    bool showHidden = group.readEntry("Show Hidden", _ShowHidden);
 
     vfs_tempFilesP->clear();
     // and re-populate it
-    if (!populateVfsList(origin, showHidden)) {
+    if (!populateVfsList(origin, true)) {
         vfs_busy = false;
         return false;
     }
@@ -397,8 +393,7 @@ QList<vfile*> vfs::vfs_search(const KRQuery& filter)
 
 bool vfs::vfs_showHidden()
 {
-    KConfigGroup gl(krConfig, "Look&Feel");
-    return gl.readEntry("Show Hidden", _ShowHidden);
+    return true;
 }
 
 #include "vfs.moc"
