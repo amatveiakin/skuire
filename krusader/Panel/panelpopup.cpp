@@ -398,18 +398,21 @@ PanelPopup::PanelPopup(QSplitter *parent, bool left, FileManagerWindow *mainWind
     qstoreBtn->setFixedSize(20, 20);
     qstoreBtn->setToolTip(i18n("Store the current selection"));
     connect(qstoreBtn, SIGNAL(clicked()), this, SLOT(quickSelectStore()));
-
+//FIXME
+#if 0
     QToolButton *qsettingsBtn = new QToolButton(quickPanel);
     qsettingsBtn->setIcon(krLoader->loadIcon("configure", KIconLoader::Toolbar, 16));
     qsettingsBtn->setFixedSize(20, 20);
     qsettingsBtn->setToolTip(i18n("Select group dialog"));
     connect(qsettingsBtn, SIGNAL(clicked()), _mainWindow->viewActions(), SLOT(markGroup()));
-
+#endif
     qlayout->addWidget(selectLabel, 0, 0);
     qlayout->addWidget(quickSelectCombo, 0, 1);
     qlayout->addWidget(qselectBtn, 0, 2);
     qlayout->addWidget(qstoreBtn, 0, 3);
+#if 0
     qlayout->addWidget(qsettingsBtn, 0, 4);
+#endif
 
     quickPanel->setProperty("KrusaderWidgetId", QVariant(QuickPanel));
     stack->addWidget(quickPanel);

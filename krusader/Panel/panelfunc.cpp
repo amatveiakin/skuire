@@ -1292,7 +1292,6 @@ void ListPanelFunc::refreshActions()
     panel->_actions->actHome->setEnabled(!atHome());
     panel->_actions->actHistoryBackward->setEnabled(history->canGoBack());
     panel->_actions->actHistoryForward->setEnabled(history->canGoForward());
-    krApp->viewActions()->refreshActions();
 }
 
 vfs* ListPanelFunc::files()

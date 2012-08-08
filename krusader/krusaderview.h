@@ -63,7 +63,8 @@ class KrusaderView : public QWidget
     Q_OBJECT
 
 public:
-    KrusaderView(QWidget *parent = 0);
+    KrusaderView(QWidget *parent, CurrentPanelCallback *currentPanelCb,
+                                  CurrentViewCallback *currentViewCb);
     virtual ~KrusaderView() {}
     void start(KConfigGroup &cfg, bool restoreSettings, QStringList leftTabs, QStringList rightTabs);
     void updateGUI(KConfigGroup &cfg);
@@ -137,6 +138,8 @@ private:
     TerminalDock  *_terminalDock;             // docking widget for terminal emulator
     QSplitter  *horiz_splitter, *vert_splitter;
     QList<int>   verticalSplitterSizes;
+    CurrentPanelCallback *_currentPanelCb;
+    CurrentViewCallback *_currentViewCb;
     PanelManager *activeMng, *leftMng, *rightMng;       // saving them for panel swaps
     QGridLayout *mainLayout, *terminal_layout;
 };

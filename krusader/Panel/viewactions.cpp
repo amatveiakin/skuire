@@ -85,6 +85,11 @@ inline KrView *ViewActions::view()
     return v;
 }
 
+void ViewActions::onViewCreated(View *view)
+{
+    connect(view->emitter(), SIGNAL(refreshActions()), SLOT(refreshActions()));
+}
+
 // zoom
 
 void ViewActions::zoomIn()

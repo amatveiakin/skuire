@@ -59,7 +59,12 @@
 #include "krservices.h"
 #include "Panel/krviewfactory.h"
 
-KrusaderView::KrusaderView(QWidget *parent) : QWidget(parent),
+KrusaderView::KrusaderView(QWidget *parent,
+                           CurrentPanelCallback *currentPanelCb,
+                           CurrentViewCallback *currentViewCb) :
+    QWidget(parent),
+    _currentPanelCb(currentPanelCb),
+    _currentViewCb(currentViewCb),
     activeMng(0)
 {
 }
@@ -210,7 +215,8 @@ void KrusaderView::setPanelSize(bool leftPanel, int percent)
 
 PanelManager *KrusaderView::createManager(bool left)
 {
-    PanelManager *p = new PanelManager(horiz_splitter, krApp, left);
+    PanelManager *p = new PanelManager(horiz_splitter, krApp, left,
+                                       _currentPanelCb, _currentViewCb);
     connect(p, SIGNAL(draggingTab(PanelManager*, QMouseEvent*)),
                      SLOT(draggingTab(PanelManager*, QMouseEvent*)));
     connect(p, SIGNAL(draggingTabFinished(PanelManager*, QMouseEvent*)),
@@ -306,6 +312,8 @@ void KrusaderView::slotSetActiveManager(PanelManager *manager)
 {
     activeMng = manager;
     slotPathChanged(manager->currentPanel()->gui);
+    _currentPanelCb->onCurrentPanelChanged(manager->currentPanel());
+    _currentViewCb->onCurrentViewChanged(manager->currentPanel()->view);
 }
 
 void KrusaderView::swapSides()

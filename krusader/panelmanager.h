@@ -35,6 +35,7 @@ class KConfig;
 class QStackedWidget;
 class QToolButton;
 class ListPanel;
+class CurrentViewCallback;
 class FileManagerWindow;
 class TabActions;
 
@@ -52,7 +53,9 @@ public:
      * (self, other, active), which enables it to manage pointers held by the panels transparently.
      * It also receives a bool (left) which is true if the manager is the left one, or false otherwise.
      */
-    PanelManager(QWidget *parent, FileManagerWindow* mainWindow, bool left);
+    PanelManager(QWidget *parent, FileManagerWindow* mainWindow, bool left,
+                 CurrentPanelCallback *currentPanelCb,
+                 CurrentViewCallback *currentViewCb);
 
     void saveSettings(KConfigGroup config, bool localOnly = true, bool saveHistory = false);
     void loadSettings(KConfigGroup config);
@@ -132,6 +135,8 @@ private:
     void disconnectPanel(ListPanel *p);
 
     PanelManager *_otherManager;
+    CurrentPanelCallback *_currentPanelCb;
+    CurrentViewCallback *_currentViewCb;
     TabActions *_actions;
     QGridLayout *_layout;
     QHBoxLayout *_barLayout;

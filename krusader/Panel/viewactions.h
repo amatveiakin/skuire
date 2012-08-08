@@ -44,6 +44,11 @@ class ViewActions : public ActionsBase
 public:
     ViewActions(QObject *parent, KrMainWindow *mainWindow);
 
+    virtual void onViewCreated(View *view);
+    virtual void onViewChanged() {
+        refreshActions();
+    }
+
 public slots:
     //zoom 
     void zoomIn();

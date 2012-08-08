@@ -76,4 +76,12 @@ protected:
     AbstractPanelManager *_manager;
 };
 
+class CurrentViewCallback
+{
+public:
+    virtual ~CurrentViewCallback() {}
+    virtual void onViewCreated(View *view) = 0;
+    virtual void onCurrentViewChanged(View *view) = 0;
+};
+
 #endif

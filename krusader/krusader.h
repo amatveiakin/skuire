@@ -37,6 +37,8 @@
 #endif
 
 #include "filemanagerwindow.h"
+#include "abstractpanelmanager.h"
+#include "Panel/krpanel.h"
 
 // KDE includes
 #include <kapplication.h>
@@ -70,8 +72,11 @@ class QueueManager;
 class ViewActions;
 class ListPanelActions;
 class TabActions;
+class ActionsBase;
 
-class Krusader : public KParts::MainWindow, public FileManagerWindow
+
+class Krusader : public KParts::MainWindow, public FileManagerWindow,
+                 public CurrentViewCallback, public CurrentPanelCallback
 {
     Q_OBJECT
     Q_CLASSINFO("D-Bus Interface", "org.krusader.Instance")
@@ -85,9 +90,6 @@ public:
         return this;
     }
     virtual View *activeView();
-    ViewActions *viewActions() {
-        return _viewActions;
-    }
     virtual KActionCollection *actions() {
         return actionCollection();
     }
@@ -95,6 +97,15 @@ public:
     virtual AbstractPanelManager *activeManager();
     virtual AbstractPanelManager *leftManager();
     virtual AbstractPanelManager *rightManager();
+
+    // CurrentViewCallback implementation
+    void onViewCreated(View *view);
+    void onCurrentViewChanged(View *view);
+
+    // CurrentPanelCallback implementation
+    void onPanelCreated(KrPanel *panel);
+    void onCurrentPanelChanged(KrPanel *panel);
+
     virtual PopularUrls *popularUrls() {
         return _popularUrls;
     }
@@ -179,12 +190,13 @@ signals:
     void shutdown();
 
 private:
+    KrPanel *activePanel();
     static void supportedTool(QStringList &tools, QString toolType,
                               QStringList names, QString confName);
 
     KrActions *_krActions;
-    ViewActions *_viewActions;
     ListPanelActions *_listPanelActions;
+    QList<ActionsBase*> _allActions;
     TabActions *_tabActions;
     KSystemTrayIcon *sysTray;
     QPoint       oldPos;

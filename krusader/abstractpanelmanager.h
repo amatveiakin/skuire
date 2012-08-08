@@ -33,5 +33,12 @@ public:
     virtual void newTab(const KUrl&, KrPanel *nextTo = 0) = 0;
 };
 
+class CurrentPanelCallback
+{
+public:
+    virtual ~CurrentPanelCallback() {}
+    virtual void onPanelCreated(KrPanel *panel) = 0;
+    virtual void onCurrentPanelChanged(KrPanel *panel) = 0;
+};
 
 #endif // __ABSTRACTPANELMANAGER_H__

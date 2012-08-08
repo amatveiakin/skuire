@@ -180,7 +180,7 @@ Krusader::Krusader() : KParts::MainWindow(0,
     queueManager = new QueueManager();
 
     // create the main view
-    MAIN_VIEW = new KrusaderView(this);
+    MAIN_VIEW = new KrusaderView(this, this, this);
 
     // setup all the krusader's actions
     setupActions();
@@ -435,14 +435,44 @@ void Krusader::resizeEvent(QResizeEvent *e) {
 void Krusader::setupActions() {
     KrActions::setupActions(this);
     _krActions = new KrActions(this);
-    _viewActions = new ViewActions(this, this);
+    ActionsBase *viewActions = new ViewActions(this, this);
     _listPanelActions = new ListPanelActions(this, this);
     _tabActions = new TabActions(this, this);
+    _allActions << viewActions << _listPanelActions << _tabActions;
 }
 
 ///////////////////////////////////////////////////////////////////////////
 //////////////////// implementation of slots //////////////////////////////
 ///////////////////////////////////////////////////////////////////////////
+
+
+void Krusader::onViewCreated(View *view)
+{
+    foreach(ActionsBase *actions, _allActions)
+        actions->onViewCreated(view);
+}
+
+void Krusader::onCurrentViewChanged(View *view)
+{
+    if (activeView() == view) {
+        foreach(ActionsBase *actions, _allActions)
+            actions->onActiveViewChanged();
+    }
+}
+
+void Krusader::onPanelCreated(KrPanel *panel)
+{
+    foreach(ActionsBase *actions, _allActions)
+        actions->onPanelCreated(panel);
+}
+
+void Krusader::onCurrentPanelChanged(KrPanel *panel)
+{
+    if (activePanel() == panel) {
+        foreach(ActionsBase *actions, _allActions)
+            actions->onActivePanelChanged();
+    }
+}
 
 void Krusader::savePosition() {
     KConfigGroup cfg(krConfig, "Private");
@@ -871,7 +901,12 @@ bool Krusader::queryExit()
 
 View *Krusader::activeView()
 {
-    return ACTIVE_PANEL->view;
+    return activePanel() ? activePanel()->view : 0;
+}
+
+KrPanel *Krusader::activePanel()
+{
+    return activeManager() ? activeManager()->currentPanel() : 0;
 }
 
 AbstractPanelManager *Krusader::activeManager()

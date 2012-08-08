@@ -91,7 +91,8 @@ class ListPanel : public QWidget, public KrPanel
 
 public:
     // constructor create the panel, but DOESN'T fill it with data, use start()
-    ListPanel(QWidget *parent, AbstractPanelManager *manager, KConfigGroup cfg = KConfigGroup());
+    ListPanel(QWidget *parent, AbstractPanelManager *manager,
+              CurrentViewCallback *currentViewCb, KConfigGroup cfg = KConfigGroup());
     ~ListPanel();
 
 
@@ -217,6 +218,7 @@ protected:
     KJob *previewJob;
     KIO::Job *inlineRefreshJob;
     ListPanelActions *_actions;
+    CurrentViewCallback *_currentViewCb;
 
     QPixmap currDragPix;
     QWidget *clientArea;

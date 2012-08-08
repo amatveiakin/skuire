@@ -137,10 +137,12 @@ protected:
 /////////////////////////////////////////////////////
 //      The list panel constructor       //
 /////////////////////////////////////////////////////
-ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager, KConfigGroup cfg) :
+ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager, 
+                     CurrentViewCallback *currentViewCb, KConfigGroup cfg) :
         QWidget(parent), KrPanel(manager),
         panelType(-1), colorMask(255), compareMode(false), statsAgent(0),
-        previewJob(0), inlineRefreshJob(0), quickSearch(0), cdRootButton(0), cdUpButton(0),
+        previewJob(0), inlineRefreshJob(0), _currentViewCb(currentViewCb),
+        quickSearch(0), cdRootButton(0), cdUpButton(0),
         popupBtn(0), popup(0), vfsError(0), _locked(false)
 {
     if(cfg.isValid())
@@ -448,12 +450,14 @@ void ListPanel::createView()
     connect(view->emitter(), SIGNAL(letsDrag(KUrl::List, QPixmap)), this, SLOT(startDragging(KUrl::List, QPixmap)));
     connect(view->emitter(), SIGNAL(gotDrop(QDropEvent *)), this, SLOT(handleDropOnView(QDropEvent *)));
     connect(view->emitter(), SIGNAL(previewJobStarted(KJob*)), this, SLOT(slotPreviewJobStarted(KJob*)));
-    connect(view->emitter(), SIGNAL(refreshActions()), krApp->viewActions(), SLOT(refreshActions()));
     connect(view->emitter(), SIGNAL(currentChanged(KFileItem)), func->history, SLOT(saveCurrentItem()));
 
     view->setDirLister(func->dirLister);
 
     func->refreshActions();
+
+    _currentViewCb->onViewCreated(view);
+    _currentViewCb->onCurrentViewChanged(view);
 }
 
 void ListPanel::changeType(int type)

@@ -41,9 +41,12 @@
 
 #define HIDE_ON_SINGLE_TAB  false
 
-PanelManager::PanelManager(QWidget *parent, FileManagerWindow* mainWindow, bool left) :
+PanelManager::PanelManager(QWidget *parent, FileManagerWindow* mainWindow, bool left,
+                CurrentPanelCallback *currentPanelCb, CurrentViewCallback *currentViewCb) :
         QWidget(parent),
         _otherManager(0),
+        _currentPanelCb(currentPanelCb),
+        _currentViewCb(currentViewCb),
         _actions(mainWindow->tabActions()),
         _layout(0),
         _left(left),
@@ -117,7 +120,6 @@ void PanelManager::activate()
 }
 
 void PanelManager::slotCurrentTabChanged(int index)
-// void PanelManager::slotChangePanel(ListPanel *p, bool makeActive)
 {
     ListPanel *p = _tabbar->getPanel(index);
 
@@ -133,6 +135,8 @@ void PanelManager::slotCurrentTabChanged(int index)
         prev->slotFocusOnMe(false); //FIXME - necessary ?
     _self->slotFocusOnMe(this == ACTIVE_MNG);
 
+    _currentViewCb->onCurrentViewChanged(_self->view);
+    _currentPanelCb->onCurrentPanelChanged(_self);
     emit pathChanged(p);
 
     if(otherManager())
@@ -141,8 +145,9 @@ void PanelManager::slotCurrentTabChanged(int index)
 
 ListPanel* PanelManager::createPanel(KConfigGroup cfg)
 {
-    ListPanel * p = new ListPanel(_stack, this, cfg);
+    ListPanel * p = new ListPanel(_stack, this, _currentViewCb, cfg);
     connectPanel(p);
+    _currentPanelCb->onPanelCreated(p);
     return p;
 }
 
