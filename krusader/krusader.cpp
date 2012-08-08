@@ -323,6 +323,10 @@ Krusader::~Krusader()
     if (!isExiting)    // save the settings if it was not saved (SIGTERM)
         saveSettings();
 
+    foreach(ActionsBase *actions, _allActions)
+        delete actions;
+    _allActions.clear();
+
     delete MAIN_VIEW;
     MAIN_VIEW = 0;
     App = 0;
