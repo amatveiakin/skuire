@@ -46,6 +46,8 @@ KrInterDetailedView::KrInterDetailedView(QWidget *parentWidget, ViewWidgetParent
     ViewWidget(parent, mouseHandler),
     _autoResizeColumns(true)
 {
+    Q_UNUSED(cfg)
+
     setRootIsDecorated(false);
 
     header()->installEventFilter(this);
