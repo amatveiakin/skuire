@@ -248,8 +248,6 @@ bool itemLessThan(SortProps *sp, SortProps *sp2)
             return !sp->isAscending();
     }
 
-    bool alwaysSortDirsByName = (sp->properties()->sortOptions & KrViewProperties::AlwaysSortDirsByName);
-
     int column = sp->column();
 
     if (dirsFirst && isdir1 && isdir2 &&

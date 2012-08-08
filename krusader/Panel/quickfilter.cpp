@@ -47,5 +47,6 @@ QuickFilter::QuickFilter(QWidget *parent) : QWidget(parent)
 
 void QuickFilter::setMatch(bool match)
 {
+    Q_UNUSED(match)
     // TODO
 }
