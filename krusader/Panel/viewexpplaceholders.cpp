@@ -38,6 +38,10 @@ public:
 
 TagString ViewExpPlaceholder::expFunc(const KrPanel* panel, const TagStringList& parameter, const bool& useUrl, Expander& exp) const
 {
+    Q_UNUSED(useUrl)
+    Q_UNUSED(parameter)
+    Q_UNUSED(exp)
+
     QStringList lst;
     for (TagStringList::const_iterator it = parameter.begin(), end = parameter.end();it != end;++it) {
         if ((*it).isSimple())
@@ -58,7 +62,7 @@ TagString ViewExpPlaceholder::expFunc(const KrPanel* panel, const TagStringList&
         return expFuncImpl(view, lst, exp);
     else {
         setError(exp, Error(Error::exp_S_FATAL, Error::exp_C_WORLD,
-                            i18n("View doesn't implement the necessary interface", description())));
+                            i18n("%1 View doesn't implement the necessary interface", expression())));
         return QString();
     }
 }
@@ -83,6 +87,9 @@ ExpFilter::ExpFilter()
 
 TagString ExpFilter::expFuncImpl(KrView *view, const QStringList& parameter, Expander &exp) const
 {
+    Q_UNUSED(parameter)
+    Q_UNUSED(exp)
+
     return view->filterMask().nameFilter();
 }
 
