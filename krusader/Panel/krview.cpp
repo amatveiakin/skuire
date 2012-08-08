@@ -548,6 +548,11 @@ KrView::~KrView()
     _emitter = 0;
 }
 
+ViewType *KrView::type()
+{
+    return instance();
+}
+
 void KrView::init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter)
 {
     _mainWindow = mainWindow;

@@ -84,7 +84,6 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "panelmanager.h"
 #include "Panel/listpanelactions.h"
 #include "Panel/krview.h"
-#include "Panel/krviewfactory.h"
 #include "UserAction/kraction.h"
 #include "UserAction/expander.h"
 #include "UserAction/useraction.h"

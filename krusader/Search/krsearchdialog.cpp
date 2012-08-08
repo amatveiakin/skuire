@@ -70,12 +70,12 @@
 #include "../VFS/krquery.h"
 #include "../KViewer/krviewer.h"
 #include "../Panel/view.h"
-#include "../Panel/krviewfactory.h"
 #include "../Panel/quickfilter.h"
 #include "../Panel/krpanel.h"
 #include "../Panel/panelfunc.h"
 #include "../Filter/filtertabs.h"
 #include "../Filter/generalfilter.h"
+#include "viewfactory.h"
 
 
 #define RESULTVIEW_TYPE 0
@@ -247,8 +247,7 @@ KrSearchDialog::KrSearchDialog(QString profile, QWidget* parent)
     quickFilter->hide();
     resultLayout->addWidget(quickFilter, 2, 0);
     // the view
-    resultView = KrViewFactory::createView(RESULTVIEW_TYPE, resultTab, krConfig);
-    resultView->init(this, quickSearch, quickFilter);
+    resultView = ViewFactory::self()->createView(RESULTVIEW_TYPE, resultTab, krConfig, this, quickSearch, quickFilter);
     resultView->restoreSettings(KConfigGroup(&group, "ResultView"));
     resultView->enableUpdateDefaultSettings(false);
     resultView->prepareForActive();

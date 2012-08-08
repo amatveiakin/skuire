@@ -25,7 +25,6 @@
 #include "filemanagerwindow.h"
 #include "Panel/listpanel.h"
 #include "Panel/panelfunc.h"
-#include "Panel/krviewfactory.h"
 
 #include <qstackedwidget.h>
 #include <QtGui/QToolButton>

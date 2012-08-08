@@ -51,6 +51,19 @@ View *ViewModule::createView(int id, QWidget *parent, KConfig *cfg, QWidget *mai
     return view;
 }
 
+QList<ViewType*> ViewModule::registeredViews()
+{
+    QList<ViewType*> list;
+    foreach(KrViewInstance *inst, KrViewFactory::registeredViews())
+        list << inst;
+    return list;
+}
+
+int ViewModule::defaultViewId()
+{
+    return KrViewFactory::defaultViewId();
+}
+
 void ViewModule::configChanged()
 {
     KrSelectionMode::resetSelectionHandler();

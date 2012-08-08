@@ -33,8 +33,8 @@ class QDropEvent;
 class CalcSpaceClient;
 class KrQuickSearch;
 class QuickFilter;
-class KrViewInstance;
 class AbstractDirLister;
+class ViewType;
 
 
 class View
@@ -47,7 +47,7 @@ public:
     /////////////////////////////////////////////////////////////
     // pure virtual functions                                  //
     /////////////////////////////////////////////////////////////
-    virtual KrViewInstance *instance() = 0;
+    virtual ViewType *type() = 0;
     virtual QObject *self() = 0;
     virtual Emitter *emitter() = 0;
     virtual CalcSpaceClient *calcSpaceClient() = 0;

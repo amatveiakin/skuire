@@ -39,6 +39,8 @@ public:
     // ViewFactory implementation
     virtual View *createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
                              KrQuickSearch *quickSearch, QuickFilter *quickFilter);
+    virtual QList<ViewType*> registeredViews();
+    virtual int defaultViewId();
 
 private slots:
     void configChanged();

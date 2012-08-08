@@ -1,6 +1,5 @@
 /*****************************************************************************
- * Copyright (C) 2002 Shie Erlich <erlich@users.sourceforge.net>             *
- * Copyright (C) 2002 Rafi Yanai <yanai@users.sourceforge.net>               *
+ * Copyright (C) 2012 Jan Lepper <jan_lepper@gmx.de>                         *
  *                                                                           *
  * This program is free software; you can redistribute it and/or modify      *
  * it under the terms of the GNU General Public License as published by      *
@@ -17,53 +16,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef KRUSADERAPP_H
-#define KRUSADERAPP_H
+#include "viewtype.h"
 
-#include <kapplication.h>
-#include <QList>
-
-class QFocusEvent;
-
-class Module;
-
-
-class KrusaderApp: public KApplication
+ViewType::ViewType(int id, QString name, QString desc, QString icon, QKeySequence shortcut) :
+    m_id(id), m_name(name), m_description(desc), m_icon(icon), m_shortcut(shortcut)
 {
-    Q_OBJECT
-
-public:
-    KrusaderApp();
-
-    void initModules();
-    void focusInEvent(QFocusEvent *event);
-    void focusOutEvent(QFocusEvent *event);
-    void runKonfigurator(bool firstTime);
-    const QList<Module*> &modules() {
-        return _modules;
-    }
-    // return 0 when module is not found
-    Module *findModule(QString name);
-    // exit with error when module is not found
-    Module *module(QString name);
-
-    static KrusaderApp* self();
-
-signals:
-    void windowActive();
-    void windowInactive();
-    void configChanged();
-
-public slots:
-    void runKonfigurator() {
-        runKonfigurator(false);
-    }
-
-protected slots:
-    void slotConfigChanged(bool isGUIRestartNeeded);
-
-protected:
-    QList<Module*> _modules;
-};
-
-#endif // KRUSADERAPP_H
+}

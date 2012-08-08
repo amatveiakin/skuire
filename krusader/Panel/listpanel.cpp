@@ -94,6 +94,8 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "../GUI/mediabutton.h"
 #include "../GUI/syncbrowsebutton.h"
 #include "../UserAction/useractionpopupmenu.h"
+#include "viewtype.h"
+#include "viewfactory.h"
 
 #include "listpanelactions.h"
 #include "viewactions.h"
@@ -101,7 +103,6 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "panelpopup.h"
 #include "panelfunc.h"
 #include "krpopupmenu.h"
-#include "krviewfactory.h"
 #include "krcolorcache.h"
 #include "krerrordisplay.h"
 #include "krlayoutfactory.h"
@@ -410,16 +411,15 @@ void ListPanel::reparent(QWidget *parent, AbstractPanelManager *manager)
 int ListPanel::defaultPanelType()
 {
     KConfigGroup group(krConfig, "Look&Feel");
-    return group.readEntry("Default Panel Type", KrViewFactory::defaultViewId());
+    return group.readEntry("Default Panel Type", ViewFactory::self()->defaultViewId());
 }
 
 void ListPanel::createView()
 {
-    view = KrViewFactory::createView(panelType, splt, krConfig);
-    view->init(krApp, quickSearch, quickFilter);
+    view = ViewFactory::self()->createView(panelType, splt, krConfig, krApp, quickSearch, quickFilter);
 
-    // KrViewFactory may create a different view type than requested
-    panelType = view->instance()->id();
+    // ViewFactory may create a different view type than requested
+    panelType = view->type()->id();
 
     if(this == ACTIVE_PANEL)
         view->prepareForActive();

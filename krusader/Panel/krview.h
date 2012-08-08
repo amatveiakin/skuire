@@ -49,6 +49,7 @@
 class QKeyEvent;
 
 class KrView;
+class KrViewInstance;
 class KrPreviews;
 class AbstractDirLister;
 
@@ -161,11 +162,9 @@ public:
     /////////////////////////////////////////////////////////////
     // View implementation                                     //
     /////////////////////////////////////////////////////////////
+    virtual ViewType *type();
     virtual View::Emitter *emitter();
     virtual void init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
-    virtual KrViewInstance *instance() {
-        return &_instance;
-    }
     virtual void setDirLister(AbstractDirLister *lister);
     virtual void saveSelection();
     virtual void clearSavedSelection();
@@ -220,6 +219,10 @@ public:
     }
     inline bool isFocused() const {
         return _focused;
+    }
+
+    KrViewInstance *instance() {
+        return &_instance;
     }
 
     // save this view's settings as default for new views of this type

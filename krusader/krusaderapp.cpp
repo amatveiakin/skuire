@@ -21,6 +21,7 @@
 
 #include "Konfigurator/konfigurator.h"
 #include "module.h"
+// #include "viewfactory.h"
 #include "krusader.h"
 
 
@@ -50,6 +51,17 @@ Module *KrusaderApp::findModule(QString name)
             return m;
     }
     return 0;
+}
+
+Module *KrusaderApp::module(QString name)
+{
+    Module *m = findModule(name);
+    if (!m) {
+        qFatal("Can't find module: %s", name.toLocal8Bit().data());
+        abort();
+    }
+    else
+        return m;
 }
 
 void KrusaderApp::focusInEvent(QFocusEvent* /*event*/)

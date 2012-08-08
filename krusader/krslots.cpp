@@ -51,7 +51,6 @@
 #endif
 
 #include "KViewer/krviewer.h"
-#include "Panel/krviewfactory.h"
 #include "krusader.h"
 #include "kractions.h"
 #include "krusaderview.h"

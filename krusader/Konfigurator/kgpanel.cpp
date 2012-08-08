@@ -43,10 +43,12 @@
 #include <kfiledialog.h>
 #include <kglobal.h>
 #include <kstandarddirs.h>
+
+#include "viewtype.h"
+#include "viewfactory.h"
 #include "../GUI/krtreewidget.h"
-#include "../Panel/krselectionmode.h"
 #include "../Panel/krview.h"
-#include "../Panel/krviewfactory.h"
+#include "../Panel/krselectionmode.h"
 #include "../Panel/krlayoutfactory.h"
 
 enum {
@@ -279,7 +281,7 @@ void KgPanel::setupLayoutTab()
     grid->addWidget(cmb, 3, 1);
 }
 
-void KgPanel::setupView(KrViewInstance *instance, QWidget *parent)
+void KgPanel::setupView(ViewType *instance, QWidget *parent)
 {
     QGridLayout *grid = createGridLayout(parent);
 
@@ -372,7 +374,7 @@ void KgPanel::setupPanelTab()
 
     hbox->addWidget(new QLabel(i18n("Sort method:"), panelGrp));
 
-    KONFIGURATOR_NAME_VALUE_PAIR sortMethods[] = {{ i18n("Alphabetical"),                QString::number(KrViewProperties::Alphabetical) },
+    KONFIGURATOR_NAME_VALUE_PAIR sortMethods[] = {{ i18n("Alphabetical"), QString::number(KrViewProperties::Alphabetical) },
         { i18n("Alphabetical and numbers"),    QString::number(KrViewProperties::AlphabeticalNumbers) },
         { i18n("Character code"),              QString::number(KrViewProperties::CharacterCode) },
         { i18n("Character code and numbers"),  QString::number(KrViewProperties::CharacterCodeNumbers) },
@@ -418,18 +420,20 @@ void KgPanel::setupPanelTab()
 
     hbox->addWidget(new QLabel(i18n("Default view mode:"), panelGrp));
 
-    QList<KrViewInstance *> views = KrViewFactory::registeredViews();
+    ViewFactory *factory = ViewFactory::self();
+
+    QList<ViewType *> views = factory->registeredViews();
     const int viewsSize = views.size();
     KONFIGURATOR_NAME_VALUE_PAIR *panelTypes = new KONFIGURATOR_NAME_VALUE_PAIR[ viewsSize ];
 
     QString defType = "0";
 
     for (int i = 0; i != viewsSize; i++) {
-        KrViewInstance * inst = views[ i ];
+        ViewType * inst = views[ i ];
         panelTypes[ i ].text = inst->description();
         panelTypes[ i ].text.remove('&');
         panelTypes[ i ].value = QString("%1").arg(inst->id());
-        if (inst->id() == KrViewFactory::defaultViewId())
+        if (inst->id() == factory->defaultViewId())
             defType = QString("%1").arg(inst->id());
     }
 

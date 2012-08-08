@@ -33,10 +33,12 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 
 #include "listpanel.h"
 #include "panelfunc.h"
-#include "krviewfactory.h"
+
 #include "../filemanagerwindow.h"
 #include "../Dialogs/krdialogs.h"
 #include "../KViewer/krviewer.h"
+#include "viewtype.h"
+#include "viewfactory.h"
 
 #include <QSignalMapper>
 #include <QActionGroup>
@@ -52,16 +54,16 @@ ListPanelActions::ListPanelActions(QObject *parent, FileManagerWindow *mainWindo
     connect(mapper, SIGNAL(mapped(int)), SLOT(setView(int)));
     QActionGroup *group = new QActionGroup(this);
     group->setExclusive(true);
-    QList<KrViewInstance*> views = KrViewFactory::registeredViews();
+    QList<ViewType*> views = ViewFactory::self()->registeredViews();
     for(int i = 0; i < views.count(); i++) {
-        KrViewInstance *inst = views[i];
-        KAction *action = new KAction(KIcon(inst->icon()), inst->description(), group);
-        action->setShortcut(inst->shortcut());
+        ViewType *viewType = views[i];
+        KAction *action = new KAction(KIcon(viewType->icon()), viewType->description(), group);
+        action->setShortcut(viewType->shortcut());
         action->setCheckable(true);
         connect(action, SIGNAL(triggered()), mapper, SLOT(map()));
-        mapper->setMapping(action, inst->id());
+        mapper->setMapping(action, viewType->id());
         _mainWindow->actions()->addAction("view" + QString::number(i), action);
-        setViewActions.insert(inst->id(), action);
+        setViewActions.insert(viewType->id(), action);
     }
 
     // standard actions

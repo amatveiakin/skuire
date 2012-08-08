@@ -19,12 +19,17 @@
 #ifndef __VIEWFACTORY_H__
 #define __VIEWFACTORY_H__
 
+#include <QList>
+#include <QtPlugin>
+
 
 class View;
 class QWidget;
 class KConfig;
 class KrQuickSearch;
 class QuickFilter;
+class ViewType;
+
 
 class ViewFactory
 {
@@ -32,6 +37,10 @@ public:
     virtual ~ViewFactory() {}
     virtual View *createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
                              KrQuickSearch *quickSearch, QuickFilter *quickFilter) = 0;
+    virtual QList<ViewType*> registeredViews() = 0;
+    virtual int defaultViewId() = 0;
+
+    static ViewFactory *self();
 };
 
 Q_DECLARE_INTERFACE (ViewFactory, "org.krusader.ViewFactory/0.1")

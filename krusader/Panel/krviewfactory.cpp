@@ -39,7 +39,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include <klocale.h>
 
 KrViewInstance::KrViewInstance(int id, QString name, QString desc, QString icon, QKeySequence shortcut) :
-        m_id(id), m_name(name), m_description(desc), m_icon(icon), m_shortcut(shortcut)
+        ViewType(id, name, desc, icon, shortcut)
 {
     KrViewFactory::self().registerView(this);
 }
