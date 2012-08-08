@@ -34,6 +34,7 @@ class KrusaderApp: public KApplication
 
 public:
     KrusaderApp();
+    ~KrusaderApp();
 
     void initModules();
     void focusInEvent(QFocusEvent *event);

@@ -33,6 +33,13 @@ KrusaderApp::KrusaderApp(): KApplication()
     _modules << ViewModule_create();
 }
 
+KrusaderApp::~KrusaderApp()
+{
+    foreach(Module *m, _modules)
+        delete m;
+    _modules.clear();
+}
+
 KrusaderApp* KrusaderApp::self()
 {
     return qobject_cast<KrusaderApp*>(qApp);
