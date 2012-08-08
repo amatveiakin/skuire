@@ -144,7 +144,7 @@ private:
     PanelTabBar *_tabbar;
     QStackedWidget *_stack;
     QToolButton *_newTab;
-    ListPanel *_self;
+    ListPanel *_currentPanel;
 };
 
 

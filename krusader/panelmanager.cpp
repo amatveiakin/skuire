@@ -50,7 +50,7 @@ PanelManager::PanelManager(QWidget *parent, FileManagerWindow* mainWindow, bool 
         _actions(mainWindow->tabActions()),
         _layout(0),
         _left(left),
-        _self(0)
+        _currentPanel(0)
 {
     _layout = new QGridLayout(this);
     _layout->setContentsMargins(0, 0, 0, 0);
@@ -123,20 +123,20 @@ void PanelManager::slotCurrentTabChanged(int index)
 {
     ListPanel *p = _tabbar->getPanel(index);
 
-    if (!p || p == _self)
+    if (!p || p == _currentPanel)
         return;
 
-    ListPanel *prev = _self;
-    _self = p;
+    ListPanel *prev = _currentPanel;
+    _currentPanel = p;
 
-    _stack->setCurrentWidget(_self);
+    _stack->setCurrentWidget(_currentPanel);
 
     if(prev)
         prev->slotFocusOnMe(false); //FIXME - necessary ?
-    _self->slotFocusOnMe(this == ACTIVE_MNG);
+    _currentPanel->slotFocusOnMe(this == ACTIVE_MNG);
 
-    _currentViewCb->onCurrentViewChanged(_self->view);
-    _currentPanelCb->onCurrentPanelChanged(_self);
+    _currentViewCb->onCurrentViewChanged(_currentPanel->view);
+    _currentPanelCb->onCurrentPanelChanged(_currentPanel);
     emit pathChanged(p);
 
     if(otherManager())
@@ -321,9 +321,9 @@ void PanelManager::slotRecreatePanels()
         _stack->insertWidget(i, newPanel);
         _tabbar->changePanel(i, newPanel);
 
-        if (_self == oldPanel) {
-            _self = newPanel;
-            _stack->setCurrentWidget(_self);
+        if (_currentPanel == oldPanel) {
+            _currentPanel = newPanel;
+            _stack->setCurrentWidget(_currentPanel);
         }
 
         _stack->removeWidget(oldPanel);
@@ -336,8 +336,8 @@ void PanelManager::slotRecreatePanels()
         krConfig->deleteGroup(grpName);
     }
     tabsCountChanged();
-    _self->slotFocusOnMe(this == ACTIVE_MNG);
-    emit pathChanged(_self);
+    _currentPanel->slotFocusOnMe(this == ACTIVE_MNG);
+    emit pathChanged(_currentPanel);
 }
 
 void PanelManager::slotNextTab()
@@ -427,7 +427,7 @@ void PanelManager::newTabs(const QStringList& urls) {
 
 KrPanel *PanelManager::currentPanel()
 {
-    return _self;
+    return _currentPanel;
 }
 
 #include "panelmanager.moc"
