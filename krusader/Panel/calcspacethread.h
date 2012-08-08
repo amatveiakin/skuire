@@ -54,6 +54,10 @@ class CalcSpaceClient
 {
     friend class CalcSpaceThread;
 
+public:
+    virtual ~CalcSpaceClient() {}
+
+protected:
     virtual void updateItemSize(KUrl url, KIO::filesize_t size) = 0;
 };
 

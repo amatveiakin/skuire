@@ -273,8 +273,6 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
 
     emit layoutAboutToBeChanged();
 
-    int count = _items.count();
-
     QModelIndexList oldPersistentList = persistentIndexList();
 
     KrSort::Sorter sorter = createSorter();

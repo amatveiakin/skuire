@@ -34,6 +34,8 @@ KrItemView::KrItemView(QWidget *parentWidget, ViewWidgetParent *parent,
     QAbstractItemView(parentWidget),
     ViewWidget(parent, mouseHandler)
 {
+    Q_UNUSED(cfg)
+
     setSelectionMode(QAbstractItemView::NoSelection);
 
     setStyle(new KrStyleProxy());

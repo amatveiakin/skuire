@@ -106,6 +106,7 @@ public:
     //FIXME change this to take a KFileItem as parameter
     void addItem(QString url, KIO::filesize_t size, time_t mtime, QString perm, QString foundText)
     {
+        Q_UNUSED(perm)
         KIO::UDSEntry entry;
         entry.insert(KIO::UDSEntry::UDS_NAME, url);
         entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME, mtime);

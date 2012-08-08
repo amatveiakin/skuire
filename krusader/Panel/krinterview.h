@@ -34,6 +34,7 @@ class KrMouseHandler;
 class ViewWidgetParent
 {
 public:
+    virtual ~ViewWidgetParent() {}
     virtual const KrViewProperties *properties() = 0;
     virtual int maxTextHeight() = 0;
     virtual bool handleKeyEvent(QKeyEvent *e) = 0;
