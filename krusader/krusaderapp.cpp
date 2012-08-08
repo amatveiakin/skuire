@@ -43,6 +43,15 @@ void KrusaderApp::initModules()
         m->init();
 }
 
+Module *KrusaderApp::findModule(QString name)
+{
+    foreach(Module *m, _modules) {
+        if (m->name() == name)
+            return m;
+    }
+    return 0;
+}
+
 void KrusaderApp::focusInEvent(QFocusEvent* /*event*/)
 {
     emit windowActive();

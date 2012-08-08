@@ -16,32 +16,24 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __VIEWMODULE_H__
-#define __VIEWMODULE_H__
-
-#include "module.h"
-#include "viewfactory.h"
+#ifndef __VIEWFACTORY_H__
+#define __VIEWFACTORY_H__
 
 
-class ViewModule : public Module, public ViewFactory
+class View;
+class QWidget;
+class KConfig;
+class KrQuickSearch;
+class QuickFilter;
+
+class ViewFactory
 {
-    Q_OBJECT
-    Q_INTERFACES(ViewFactory)
-
 public:
-    // Module implementation
-    virtual QString name() {
-        return "view";
-    }
-    virtual void init();
-    virtual ActionsBase *createActions(QObject *parent, KrMainWindow *mainWindow);
-
-    // ViewFactory implementation
+    virtual ~ViewFactory() {}
     virtual View *createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
-                             KrQuickSearch *quickSearch, QuickFilter *quickFilter);
-
-private slots:
-    void configChanged();
+                             KrQuickSearch *quickSearch, QuickFilter *quickFilter) = 0;
 };
 
-#endif // __VIEWMODULE_H__
+Q_DECLARE_INTERFACE (ViewFactory, "org.krusader.ViewFactory/0.1")
+
+#endif // __VIEWFACTORY_H__

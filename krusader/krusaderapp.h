@@ -42,6 +42,7 @@ public:
     const QList<Module*> &modules() {
         return _modules;
     }
+    Module *findModule(QString name);
 
     static KrusaderApp* self();
 

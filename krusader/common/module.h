@@ -31,6 +31,7 @@ class Module : public QObject
 
 public:
     virtual ~Module() {}
+    virtual QString name() = 0;
     virtual void init() {}
     virtual ActionsBase *createActions(QObject *parent, KrMainWindow *mainWindow);
 };

@@ -20,14 +20,17 @@
 
 #include "viewexpplaceholders.h"
 #include "krview.h"
+#include "krviewfactory.h"
 #include "viewactions.h"
 #include "krselectionmode.h"
 #include "../krusaderapp.h"
+
 
 Module *ViewModule_create()
 {
     return new ViewModule();
 }
+
 
 void ViewModule::init()
 {
@@ -38,6 +41,14 @@ void ViewModule::init()
 ActionsBase *ViewModule::createActions(QObject *parent, KrMainWindow *mainWindow)
 {
     return new ViewActions(parent, mainWindow);
+}
+
+View *ViewModule::createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
+                             KrQuickSearch *quickSearch, QuickFilter *quickFilter)
+{
+    View *view = KrViewFactory::createView(id, parent, cfg);
+    view->init(mainWindow, quickSearch, quickFilter);
+    return view;
 }
 
 void ViewModule::configChanged()
