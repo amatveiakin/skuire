@@ -36,7 +36,7 @@
 #include "../krusader.h"
 #include "../krusaderview.h"
 #include "../Panel/krpanel.h"
-#include "../Panel/krview.h"
+#include "../Panel/view.h"
 #include "../Panel/panelfunc.h"
 
 UserAction::UserAction()

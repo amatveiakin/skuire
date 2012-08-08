@@ -21,7 +21,7 @@
 #include "dirhistoryqueue.h"
 
 #include "krpanel.h"
-#include "krview.h"
+#include "view.h"
 #include "../defaults.h"
 
 #include <kdebug.h>

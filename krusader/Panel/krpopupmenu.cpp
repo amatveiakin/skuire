@@ -32,7 +32,7 @@
 #include <kactioncollection.h>
 
 #include "listpanel.h"
-#include "krview.h"
+#include "view.h"
 #include "panelfunc.h"
 #include "listpanelactions.h"
 #include "../krservices.h"
