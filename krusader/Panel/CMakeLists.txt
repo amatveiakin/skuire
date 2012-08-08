@@ -35,7 +35,7 @@ set(Panel_SRCS
 
 kde4_add_library(Panel STATIC ${Panel_SRCS})
 
-target_link_libraries(Panel Dialogs GUI KViewer ${KDE4_KFILE_LIBS} )
+target_link_libraries(Panel common Dialogs GUI KViewer ${KDE4_KFILE_LIBS} )
 
 
 if(LIBKONQ_FOUND)

@@ -20,11 +20,24 @@
 
 #include "viewexpplaceholders.h"
 #include "krview.h"
+#include "viewactions.h"
 #include "krselectionmode.h"
+#include "../krusaderapp.h"
+
+Module *ViewModule_create()
+{
+    return new ViewModule();
+}
 
 void ViewModule::init()
 {
     ViewExpPlaceholders::init();
+    connect(KrusaderApp::self(), SIGNAL(configChanged()), this, SLOT(configChanged()));
+}
+
+ActionsBase *ViewModule::createActions(QObject *parent, KrMainWindow *mainWindow)
+{
+    return new ViewActions(parent, mainWindow);
 }
 
 void ViewModule::configChanged()

@@ -21,18 +21,27 @@
 #define KRUSADERAPP_H
 
 #include <kapplication.h>
+#include <QList>
+
 class QFocusEvent;
 
-// declare a dummy kapplication, just to get Qt's focusin focusout events
+class Module;
+
+
 class KrusaderApp: public KApplication
 {
     Q_OBJECT
 
 public:
     KrusaderApp();
+
+    void initModules();
     void focusInEvent(QFocusEvent *event);
     void focusOutEvent(QFocusEvent *event);
     void runKonfigurator(bool firstTime);
+    const QList<Module*> &modules() {
+        return _modules;
+    }
 
     static KrusaderApp* self();
 
@@ -48,6 +57,9 @@ public slots:
 
 protected slots:
     void slotConfigChanged(bool isGUIRestartNeeded);
+
+protected:
+    QList<Module*> _modules;
 };
 
 #endif // KRUSADERAPP_H

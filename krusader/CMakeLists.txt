@@ -1,4 +1,5 @@
 include_directories(${KDE4_INCLUDES})
+include_directories("${CMAKE_CURRENT_SOURCE_DIR}/common")
 
 configure_file(krusaderversion.h.cmake ${CMAKE_CURRENT_BINARY_DIR}/krusaderversion.h)
 
@@ -12,6 +13,7 @@ else(LIBKONQ_FOUND)
     message(STATUS "libkonq library not found")
 endif(LIBKONQ_FOUND)
 
+add_subdirectory(common)
 add_subdirectory(ActionMan)
 add_subdirectory(BookMan)
 add_subdirectory(Dialogs)
@@ -58,6 +60,7 @@ kde4_add_app_icon(krusader_SRCS "${CMAKE_CURRENT_SOURCE_DIR}/hi*-app-krusader_us
 kde4_add_executable(krusader ${krusader_SRCS})
 
 target_link_libraries(krusader
+                      common
                       Panel
                       BookMan
                       Dialogs

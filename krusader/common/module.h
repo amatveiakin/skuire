@@ -16,21 +16,23 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __VIEWMODULE_H__
-#define __VIEWMODULE_H__
+#ifndef __MODULE_H__
+#define __MODULE_H__
 
-#include "module.h"
+#include <QObject>
 
-class ViewModule : public Module
+class ActionsBase;
+class KrMainWindow;
+
+
+class Module : public QObject
 {
     Q_OBJECT
 
 public:
-    virtual void init();
+    virtual ~Module() {}
+    virtual void init() {}
     virtual ActionsBase *createActions(QObject *parent, KrMainWindow *mainWindow);
-
-private slots:
-    void configChanged();
 };
 
-#endif // __VIEWMODULE_H__
+#endif // __MODULE_H__

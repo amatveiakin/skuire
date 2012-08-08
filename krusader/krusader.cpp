@@ -82,11 +82,9 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "krglobal.h"
 #include "kractions.h"
 #include "panelmanager.h"
-#include "Panel/viewactions.h"
 #include "Panel/listpanelactions.h"
 #include "Panel/krview.h"
 #include "Panel/krviewfactory.h"
-#include "Panel/viewmodule.h"
 #include "UserAction/kraction.h"
 #include "UserAction/expander.h"
 #include "UserAction/useraction.h"
@@ -106,7 +104,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "Konfigurator/kgprotocols.h"
 #include "BookMan/krbookmarkhandler.h"
 #include "KViewer/krviewer.h"
-
+#include "module.h"
 
 #ifdef __KJSEMBED__
 #include "KrJS/krjs.h"
@@ -166,7 +164,7 @@ Krusader::Krusader() : KParts::MainWindow(0,
     krLoader = KIconLoader::global();
 //   iconLoader->addExtraDesktopThemes();
 
-    ViewModule::init();
+    KrusaderApp::self()->initModules();
 
     // create MountMan
     KrGlobal::mountMan = new KMountMan(this);
@@ -435,10 +433,14 @@ void Krusader::resizeEvent(QResizeEvent *e) {
 void Krusader::setupActions() {
     KrActions::setupActions(this);
     _krActions = new KrActions(this);
-    ActionsBase *viewActions = new ViewActions(this, this);
     _listPanelActions = new ListPanelActions(this, this);
     _tabActions = new TabActions(this, this);
-    _allActions << viewActions << _listPanelActions << _tabActions;
+    _allActions << _listPanelActions << _tabActions;
+
+    foreach(Module *module, KrusaderApp::self()->modules()) {
+        if (ActionsBase *actions = module->createActions(this, this))
+            _allActions << actions;
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////
@@ -553,8 +555,6 @@ void Krusader::configChanged(bool isGUIRestartNeeded)
                 sysTray->show();
         }
     }
-
-    ViewModule::configChanged();
 }
 
 void Krusader::slotClose() {

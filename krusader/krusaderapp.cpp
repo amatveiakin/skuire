@@ -20,14 +20,27 @@
 #include "krusaderapp.h"
 
 #include "Konfigurator/konfigurator.h"
+#include "module.h"
 #include "krusader.h"
 
 
-KrusaderApp::KrusaderApp(): KApplication() {}
+Module *ViewModule_create();
+
+
+KrusaderApp::KrusaderApp(): KApplication()
+{
+    _modules << ViewModule_create();
+}
 
 KrusaderApp* KrusaderApp::self()
 {
     return qobject_cast<KrusaderApp*>(qApp);
+}
+
+void KrusaderApp::initModules()
+{
+    foreach(Module *m, _modules)
+        m->init();
 }
 
 void KrusaderApp::focusInEvent(QFocusEvent* /*event*/)
