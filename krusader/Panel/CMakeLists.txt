@@ -1,4 +1,6 @@
 set(Panel_SRCS
+    viewconfigtab.cpp
+    selectionmodeconfigtab.cpp
     calcspacethread.cpp
     urlrequester.cpp
     kritemview.cpp

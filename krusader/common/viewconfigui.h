@@ -16,40 +16,20 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __VIEWMODULE_H__
-#define __VIEWMODULE_H__
+#ifndef __VIEWCONFIGGUI_H__
+#define __VIEWCONFIGGUI_H__
 
-#include "module.h"
+class QWidget;
+class KonfiguratorPage;
 
-#include "viewfactory.h"
-#include "viewconfigui.h"
-
-
-class ViewModule : public Module, public ViewFactory, public ViewConfigUI
+class ViewConfigUI
 {
-    Q_OBJECT
-    Q_INTERFACES(ViewFactory ViewConfigUI)
-
 public:
-    // Module implementation
-    virtual QString name() {
-        return "view";
-    }
-    virtual void init();
-    virtual ActionsBase *createActions(QObject *parent, KrMainWindow *mainWindow);
-
-    // ViewConfigUI implementation
-    virtual QWidget *createViewCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId);
-    virtual QWidget *createSelectionModeCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId);
-
-    // ViewFactory implementation
-    virtual View *createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
-                             KrQuickSearch *quickSearch, QuickFilter *quickFilter);
-    virtual QList<ViewType*> registeredViews();
-    virtual int defaultViewId();
-
-private slots:
-    void configChanged();
+    virtual ~ViewConfigUI() {}
+    virtual QWidget *createViewCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId) = 0;
+    virtual QWidget *createSelectionModeCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId) = 0;
 };
 
-#endif // __VIEWMODULE_H__
+Q_DECLARE_INTERFACE (ViewConfigUI, "org.krusader.ViewConfigUI/0.1")
+
+#endif // __VIEWCONFIGGUI_H__

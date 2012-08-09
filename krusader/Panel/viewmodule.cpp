@@ -23,6 +23,9 @@
 #include "krviewfactory.h"
 #include "viewactions.h"
 #include "krselectionmode.h"
+#include "viewconfigtab.h"
+#include "selectionmodeconfigtab.h"
+
 #include "../krusaderapp.h"
 
 
@@ -62,6 +65,16 @@ QList<ViewType*> ViewModule::registeredViews()
 int ViewModule::defaultViewId()
 {
     return KrViewFactory::defaultViewId();
+}
+
+QWidget *ViewModule::createViewCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId)
+{
+    return new ViewConfigTab(parent, page, tabId);
+}
+
+QWidget *ViewModule::createSelectionModeCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId)
+{
+    return new SelectionModeConfigTab(parent, page, tabId);
 }
 
 void ViewModule::configChanged()

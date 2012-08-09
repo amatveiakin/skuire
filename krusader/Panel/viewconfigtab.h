@@ -16,40 +16,25 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __VIEWMODULE_H__
-#define __VIEWMODULE_H__
+#ifndef __VIEWCONFIGTAB_H__
+#define __VIEWCONFIGTAB_H__
 
-#include "module.h"
-
-#include "viewfactory.h"
-#include "viewconfigui.h"
+#include <QWidget>
 
 
-class ViewModule : public Module, public ViewFactory, public ViewConfigUI
+class ViewType;
+class KonfiguratorPage;
+
+
+class ViewConfigTab : public QWidget
 {
     Q_OBJECT
-    Q_INTERFACES(ViewFactory ViewConfigUI)
 
 public:
-    // Module implementation
-    virtual QString name() {
-        return "view";
-    }
-    virtual void init();
-    virtual ActionsBase *createActions(QObject *parent, KrMainWindow *mainWindow);
+    ViewConfigTab(QWidget* parent, KonfiguratorPage *page, int tabId);
 
-    // ViewConfigUI implementation
-    virtual QWidget *createViewCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId);
-    virtual QWidget *createSelectionModeCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId);
-
-    // ViewFactory implementation
-    virtual View *createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
-                             KrQuickSearch *quickSearch, QuickFilter *quickFilter);
-    virtual QList<ViewType*> registeredViews();
-    virtual int defaultViewId();
-
-private slots:
-    void configChanged();
+private:
+    void setupView(ViewType *instance, QWidget *parent, KonfiguratorPage *page, int tabId);
 };
 
-#endif // __VIEWMODULE_H__
+#endif // __VIEWCONFIGPAGE_H__

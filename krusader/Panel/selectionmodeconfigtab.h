@@ -16,40 +16,33 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __VIEWMODULE_H__
-#define __VIEWMODULE_H__
+#ifndef __SELECTIONMODECONFIGTAB_H__
+#define __SELECTIONMODECONFIGTAB_H__
 
-#include "module.h"
+#include <QWidget>
 
-#include "viewfactory.h"
-#include "viewconfigui.h"
+class KonfiguratorPage;
+class KonfiguratorRadioButtons;
+class KonfiguratorCheckBoxGroup;
+class KrTreeWidget;
 
 
-class ViewModule : public Module, public ViewFactory, public ViewConfigUI
+class SelectionModeConfigTab : public QWidget
 {
     Q_OBJECT
-    Q_INTERFACES(ViewFactory ViewConfigUI)
 
 public:
-    // Module implementation
-    virtual QString name() {
-        return "view";
-    }
-    virtual void init();
-    virtual ActionsBase *createActions(QObject *parent, KrMainWindow *mainWindow);
-
-    // ViewConfigUI implementation
-    virtual QWidget *createViewCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId);
-    virtual QWidget *createSelectionModeCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId);
-
-    // ViewFactory implementation
-    virtual View *createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
-                             KrQuickSearch *quickSearch, QuickFilter *quickFilter);
-    virtual QList<ViewType*> registeredViews();
-    virtual int defaultViewId();
+    SelectionModeConfigTab(QWidget* parent, KonfiguratorPage *page, int tabId);
 
 private slots:
-    void configChanged();
+    void slotMouseCheckBoxChanged();
+    void slotSelectionModeChanged();
+
+private:
+    KrTreeWidget* mousePreview;
+    KonfiguratorRadioButtons  *mouseRadio;
+    KonfiguratorCheckBoxGroup *mouseCheckboxes;
 };
 
-#endif // __VIEWMODULE_H__
+#endif // __SELECTIONMODECONFIGTAB_H__
+

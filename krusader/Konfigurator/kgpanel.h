@@ -35,6 +35,8 @@
 
 class KrTreeWidget;
 class ViewType;
+class ViewConfigUI;
+
 
 class KgPanel : public KonfiguratorPage
 {
@@ -50,15 +52,10 @@ protected:
     KonfiguratorCheckBoxGroup* quicksearchCheckboxes;
     KonfiguratorCheckBoxGroup *pnlcbs;
     KonfiguratorCheckBoxGroup *panelToolbarActive;
-    KonfiguratorRadioButtons  *mouseRadio;
-    KonfiguratorCheckBoxGroup *mouseCheckboxes;
-    KrTreeWidget* mousePreview;
 
 protected slots:
     void slotDisable();
     void slotEnablePanelToolbar();
-    void slotSelectionModeChanged();
-    void slotMouseCheckBoxChanged();
 
 private:
     void setupMiscTab();
@@ -67,6 +64,8 @@ private:
     void setupMouseModeTab();
     void setupLayoutTab();
     void setupView(ViewType *instance, QWidget *parent);
+    ViewConfigUI *viewConfigUI();
+
     QTabWidget *tabWidget;
 };
 
