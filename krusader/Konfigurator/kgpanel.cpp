@@ -49,8 +49,6 @@
 #include "module.h"
 #include "viewconfigui.h"
 #include "../krusaderapp.h"
-#include "../Panel/krview.h"
-#include "../Panel/krselectionmode.h"
 #include "../Panel/krlayoutfactory.h"
 
 enum {

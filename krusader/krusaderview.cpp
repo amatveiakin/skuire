@@ -57,7 +57,7 @@
 #include "GUI/profilemanager.h"
 #include "Dialogs/percentalsplitter.h"
 #include "krservices.h"
-#include "Panel/krviewfactory.h"
+
 
 KrusaderView::KrusaderView(QWidget *parent,
                            CurrentPanelCallback *currentPanelCb,
