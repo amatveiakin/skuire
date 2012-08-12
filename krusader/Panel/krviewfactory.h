@@ -48,6 +48,7 @@ class KrViewInstance : public ViewType
 
 public:
     KrViewInstance(int id, QString name, QString desc, QString icon, QKeySequence shortcut);
+    virtual ~KrViewInstance() {}
 
     virtual View *create(QWidget *w, KConfig *cfg) = 0;
 

@@ -39,9 +39,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 class ViewType
 {
 public:
-
     ViewType(int id, QString name, QString desc, QString icon, QKeySequence shortcut);
-    virtual ~ViewType() {}
 
     inline int                     id()                    {
         return m_id;
