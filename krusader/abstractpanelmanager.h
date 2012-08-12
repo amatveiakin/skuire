@@ -27,6 +27,7 @@ class AbstractPanelManager
 {
 public:
     virtual ~AbstractPanelManager() {}
+    virtual bool isActive() = 0;
     virtual bool isLeft() = 0;
     virtual AbstractPanelManager *otherManager() = 0;
     virtual KrPanel *currentPanel() = 0;

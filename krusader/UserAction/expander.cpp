@@ -484,7 +484,7 @@ TagString exp_Goto::expFunc(const KrPanel* panel, const QStringList& parameter, 
             MAIN_VIEW->rightManager()->slotNewTab(parameter[0]);
     } else {
         panel->func->openUrl(parameter[0], KUrl());
-        panel->gui->slotFocusOnMe();
+        panel->view->widget()->setFocus();
     }
 
     return QString();  // this doesn't return anything, that's normal!

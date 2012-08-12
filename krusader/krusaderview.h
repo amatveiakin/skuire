@@ -66,9 +66,8 @@ public:
     KrusaderView(QWidget *parent, CurrentPanelCallback *currentPanelCb,
                                   CurrentViewCallback *currentViewCb);
     virtual ~KrusaderView() {}
-    void start(KConfigGroup &cfg, bool restoreSettings, QStringList leftTabs, QStringList rightTabs);
+    void init(KConfigGroup &cfg, bool restoreSettings, QStringList leftTabs, QStringList rightTabs);
     void updateGUI(KConfigGroup &cfg);
-    void recreatePanels();
     void saveSettings(KConfigGroup &cfg);
     void cmdLineFocus();  // command line receive's keyboard focus
     void cmdLineUnFocus();// return focus from command line to active panel
@@ -102,10 +101,10 @@ public:
         return horiz_splitter != 0 ? horiz_splitter->orientation() == Qt::Vertical : false;
     }
     void swapSides();
+    void setActivePanel(bool leftPanel);
     void setPanelSize(bool leftPanel, int percent);
 
 public slots:
-    void slotSetActiveManager(PanelManager *manager);
     void slotPathChanged(ListPanel *p);
     void slotTerminalEmulator(bool);
     // Tab - switch focus
@@ -126,6 +125,9 @@ public slots:
 
     void draggingTab(PanelManager *from, QMouseEvent *e);
     void draggingTabFinished(PanelManager *from, QMouseEvent *e);
+
+protected slots:
+    void setActiveManager(PanelManager *manager);
 
 private:
     int getFocusCandidates(QVector<QWidget*> &widgets);

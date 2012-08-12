@@ -265,10 +265,6 @@ void PanelTabBar::mousePressEvent(QMouseEvent* e)
 
     setCurrentIndex(clickedTab);
 
-    ListPanel *p =  getPanel(clickedTab);
-    if(p)
-        p->slotFocusOnMe();
-
     if (e->button() == Qt::RightButton) {
         // show the popup menu
         _panelActionMenu->menu()->popup(e->globalPos());

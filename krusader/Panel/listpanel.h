@@ -86,7 +86,11 @@ class ListPanelActions;
 
 class ListPanel : public QWidget, public KrPanel
 {
+    class ActionButton;
+
     friend class ListPanelFunc;
+    friend class ListPanel::ActionButton;
+
     Q_OBJECT
 
 public:
@@ -137,12 +141,16 @@ public:
     void saveSettings(KConfigGroup cfg, bool localOnly, bool saveHistory = false);
     void restoreSettings(KConfigGroup cfg);
 
+    bool isActive() {
+        return _manager->isActive() && this == _manager->currentPanel()->gui;
+    }
+    void activeStateChanged(); // to be called by panel manager
+
 public slots:
     void gotStats(const QString &mountPoint, quint64 kBSize, quint64 kBUsed, quint64 kBAvail);  // displays filesystem status
     void popRightClickMenu(const QPoint&);
     void popEmptyRightClickMenu(const QPoint &);
     void compareDirs(bool otherPanelToo = true);
-    void slotFocusOnMe(bool focus = true);
     void slotUpdateTotals();
     void slotStartUpdate();                   // internal
     void slotGetStats(const KUrl& url);            // get the disk-free stats
@@ -184,6 +192,7 @@ protected:
 
 protected slots:
     void updatePopupPanel(KFileItem item);
+    void slotFocusOnMe();
     void handleDropOnView(QDropEvent *, QWidget *destWidget = 0); // handles drops on the view only
     void startDragging(KUrl::List, QPixmap);
     void slotPreviewJobStarted(KJob *job);
@@ -203,7 +212,7 @@ protected slots:
 signals:
     void signalStatus(QString msg);         // emmited when we need to update the status bar
     void pathChanged(ListPanel *panel);
-    void activate();   // emitted when the user changes panels
+    void activate(); // request to become the active panel
     void finishedDragging();              // currently
     void refreshColors(bool active);
 

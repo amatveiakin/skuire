@@ -358,7 +358,7 @@ void ListPanelFunc::doRefresh()
             panel->otherPanel()->gui->syncBrowseButton->setChecked(false);
         else if(urlManuallyEntered) {
             panel->origin->setUrl(url.prettyUrl());
-            if(panel == ACTIVE_PANEL)
+            if(panel->isActive())
                 panel->origin->edit();
         }
     }
@@ -1257,7 +1257,7 @@ void ListPanelFunc::refreshActions()
 {
     panel->updateButtons();
 
-    if(ACTIVE_PANEL != panel)
+    if(!panel->isActive())
         return;
 
     vfs::VFS_TYPE vfsType = files() ->vfs_getType();

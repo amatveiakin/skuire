@@ -112,7 +112,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "view.h"
 
 
-class ActionButton : public QToolButton
+class ListPanel::ActionButton : public QToolButton
 {
 public:
     ActionButton(QWidget *parent, ListPanel *panel, KAction *action, QString text = QString()) :
@@ -421,7 +421,7 @@ void ListPanel::createView()
     // ViewFactory may create a different view type than requested
     panelType = view->type()->id();
 
-    if(this == ACTIVE_PANEL)
+    if(isActive())
         view->prepareForActive();
     else
         view->prepareForPassive();
@@ -505,7 +505,7 @@ void ListPanel::setProperties(int prop)
 bool ListPanel::eventFilter(QObject * watched, QEvent * e)
 {
     if(view && watched == view->widget()) {
-        if(e->type() == QEvent::FocusIn && this != ACTIVE_PANEL && !isHidden())
+        if(e->type() == QEvent::FocusIn && !isActive() && !isHidden())
             slotFocusOnMe();
         else if(e->type() == QEvent::ShortcutOverride) {
             QKeyEvent *ke = static_cast<QKeyEvent*>(e);
@@ -682,29 +682,30 @@ void ListPanel::compareDirs(bool otherPanelToo)
 void ListPanel::refreshColors()
 {
     view->refreshColors();
-    emit refreshColors(this == ACTIVE_PANEL);
+    emit refreshColors(isActive());
 }
 
-void ListPanel::slotFocusOnMe(bool focus)
+void ListPanel::slotFocusOnMe()
 {
-    krApp->setUpdatesEnabled(false);
-
-    if(focus) {
-        assert(_manager->currentPanel() == this);
+    if(!isActive())
         emit activate();
-        _actions->activePanelChanged();
+    Q_ASSERT(isActive());
+
+    activeStateChanged(); // can't hurt
+}
+
+void ListPanel::activeStateChanged()
+{
+    if(isActive()) {
+        _actions->activePanelChanged(); //FIXME move
         func->refreshActions();
         updatePopupPanel(view->currentItem());
         view->prepareForActive();
-        otherPanel()->gui->slotFocusOnMe(false);
     } else
         view->prepareForPassive();
 
-    origin->setActive(focus);
+    origin->setActive(isActive());
     refreshColors();
-    update();
-
-    krApp->setUpdatesEnabled(true);
 }
 
 // this is used to start the panel
@@ -732,10 +733,6 @@ void ListPanel::slotStartUpdate()
 {
     if (inlineRefreshJob)
         inlineRefreshListResult(0);
-
-    if (this == ACTIVE_PANEL) {
-        slotFocusOnMe();
-    }
 
     setCursor(Qt::BusyCursor);
 
@@ -1204,8 +1201,7 @@ void ListPanel::slotVfsError(QString msg)
 
 void ListPanel::showButtonMenu(QToolButton *b)
 {
-    if(this != ACTIVE_PANEL)
-        slotFocusOnMe();
+    Q_ASSERT(isActive());
 
     if(b->isHidden())
         b->menu()->exec(mapToGlobal(clientArea->pos()));

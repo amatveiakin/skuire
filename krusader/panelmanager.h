@@ -56,7 +56,7 @@ public:
     PanelManager(QWidget *parent, FileManagerWindow* mainWindow, bool left,
                  CurrentPanelCallback *currentPanelCb,
                  CurrentViewCallback *currentViewCb);
-
+    void init();
     void saveSettings(KConfigGroup config, bool localOnly = true, bool saveHistory = false);
     void loadSettings(KConfigGroup config);
     int findTab(KUrl url);
@@ -73,8 +73,10 @@ public:
     void setOtherManager(PanelManager *other) {
         _otherManager = other;
     }
+    void activeStateChanged();
 
     // AbstractPanelManager implementation
+    virtual bool isActive();
     virtual bool isLeft() {
         return _left;
     }
@@ -111,7 +113,6 @@ public slots:
     void slotPreviousTab();
     void slotCloseTab();
     void slotCloseTab(int index);
-    void slotRecreatePanels();
     void slotCloseInactiveTabs();
     void slotCloseDuplicatedTabs();
 
@@ -129,12 +130,14 @@ private:
     void deletePanel(ListPanel *p);
     void updateTabbarPos();
     void tabsCountChanged();
-    ListPanel* addPanel(bool setCurrent = true, KConfigGroup cfg = KConfigGroup(), KrPanel *nextTo = 0);
-    ListPanel* createPanel(KConfigGroup cfg);
+    ListPanel* createPanel(bool setCurrent = true, KConfigGroup cfg = KConfigGroup(), KrPanel *nextTo = 0);
+    void addPanel(KrPanel *panel, bool setCurrent, KrPanel *nextTo = 0);
     void connectPanel(ListPanel *p);
     void disconnectPanel(ListPanel *p);
 
     PanelManager *_otherManager;
+    FileManagerWindow* _mainWindow;
+    ListPanel *_currentPanel;
     CurrentPanelCallback *_currentPanelCb;
     CurrentViewCallback *_currentViewCb;
     TabActions *_actions;
@@ -144,7 +147,6 @@ private:
     PanelTabBar *_tabbar;
     QStackedWidget *_stack;
     QToolButton *_newTab;
-    ListPanel *_currentPanel;
 };
 
 

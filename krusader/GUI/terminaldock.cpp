@@ -95,7 +95,7 @@ bool TerminalDock::initialise()
             if (focusW) {
                 focusW->setFocus();
             } else {
-                ACTIVE_PANEL->gui->slotFocusOnMe();
+                _mainWindow->activeView()->widget()->setFocus();
             }
         }
         initialised = true;
@@ -178,7 +178,7 @@ bool TerminalDock::applyShortcuts(QKeyEvent * ke)
     } else if ((ke->key() ==  Qt::Key_Up)
                && ((ke->modifiers()  == Qt::ControlModifier)
                    || (ke->modifiers()  == (Qt::ControlModifier | Qt::ShiftModifier)))) {
-        ACTIVE_PANEL->gui->slotFocusOnMe();
+        _mainWindow->activeView()->widget()->setFocus();
         return true;
     }
 

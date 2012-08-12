@@ -233,7 +233,7 @@ Krusader::Krusader() : KParts::MainWindow(0,
         rightTabs.clear();
     }
     // starting the panels
-    MAIN_VIEW->start(gs, startProfile.isEmpty(), leftTabs, rightTabs);
+    MAIN_VIEW->init(gs, startProfile.isEmpty(), leftTabs, rightTabs);
 
     // create the user menu
     userMenu = new UserMenu(this);
@@ -532,15 +532,27 @@ void Krusader::configChanged(bool isGUIRestartNeeded)
 {
     if (isGUIRestartNeeded) {
         setUpdatesEnabled(false);
+
         KConfigGroup group(krConfig, "Look&Feel");
         vfile::vfile_loadUserDefinedFolderIcons(group.readEntry("Load User Defined Folder Icons", _UserDefinedFolderIcons));
 
-        MAIN_VIEW->recreatePanels();
+        QString sessionName = "CurrentSession-" + QString::number(qApp->applicationPid());
+        KConfigGroup savedSession(krConfig, sessionName);
+
+        MAIN_VIEW->saveSettings(savedSession);
+        delete MAIN_VIEW;
+        MAIN_VIEW = new KrusaderView(this, this, this);
+        MAIN_VIEW->init(savedSession, true, QStringList(), QStringList());
+        setCentralWidget(MAIN_VIEW);
+
+        krConfig->deleteGroup(sessionName);
+
+        updateGUI(true);
 
         setUpdatesEnabled(true);
     }
 
-    //FIXME - really ugly, but reload the Fn keys just in case
+    //FIXME - move to KrusaderView - FIXME - really ugly, but reload the Fn keys just in case
     MAIN_VIEW->fnKeys()->updateShortcuts();
 
     KConfigGroup group(krConfig, "Look&Feel");

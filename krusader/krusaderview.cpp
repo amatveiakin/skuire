@@ -49,6 +49,7 @@
 #include "defaults.h"
 #include "Panel/listpanel.h"
 #include "Panel/panelfunc.h"
+#include "Panel/view.h"
 #include "GUI/kcmdline.h"
 #include "GUI/kfnkeys.h"
 #include "GUI/terminaldock.h"
@@ -69,7 +70,7 @@ KrusaderView::KrusaderView(QWidget *parent,
 {
 }
 
-void KrusaderView::start(KConfigGroup &cfg, bool restoreSettings, QStringList leftTabs, QStringList rightTabs)
+void KrusaderView::init(KConfigGroup &cfg, bool restoreSettings, QStringList leftTabs, QStringList rightTabs)
 {
     ////////////////////////////////
     // make a 1x1 mainLayout, it will auto-expand:
@@ -87,10 +88,13 @@ void KrusaderView::start(KConfigGroup &cfg, bool restoreSettings, QStringList le
     _cmdLine = new KCMDLine(this);
 
     // add a panel manager for each side of the splitter
-    leftMng  = createManager(true);
+    leftMng = createManager(true);
     rightMng = createManager(false);
     leftMng->setOtherManager(rightMng);
     rightMng->setOtherManager(leftMng);
+
+    leftMng->init();
+    rightMng->init();
 
     // make the left panel focused at program start
     activeMng = leftMng;
@@ -108,7 +112,7 @@ void KrusaderView::start(KConfigGroup &cfg, bool restoreSettings, QStringList le
     mainLayout->activate();
 
     // get the last saved sizes of the splitter
-    KConfigGroup group(krConfig, "Private");
+    KConfigGroup group(krConfig, "Private"); //FIXME load this from saved session
     QList<int> lst = group.readEntry("Splitter Sizes", QList<int>());
     if (lst.count() == 0) {
         lst.push_back(100);
@@ -129,10 +133,12 @@ void KrusaderView::start(KConfigGroup &cfg, bool restoreSettings, QStringList le
         leftUrl = leftTabs[0];
     if(rightTabs.count())
         rightUrl = rightTabs[0];
+
     leftPanel()->start(leftUrl);
     rightPanel()->start(rightUrl);
 
-    ACTIVE_PANEL->gui->slotFocusOnMe();  // left starts out active
+    inactiveManager()->activeStateChanged();
+    activeManager()->activeStateChanged();
 
     for (int i = 1; i < leftTabs.count(); i++)
         leftMng->slotNewTab(leftTabs[ i ], false);
@@ -149,11 +155,9 @@ void KrusaderView::start(KConfigGroup &cfg, bool restoreSettings, QStringList le
             leftMng->loadSettings(KConfigGroup(&cfg, "Left Tab Bar"));
         if(!rightTabs.count())
             rightMng->loadSettings(KConfigGroup(&cfg, "Right Tab Bar"));
-        if (cfg.readEntry("Left Side Is Active", false))
-            leftPanel()->slotFocusOnMe();
-        else
-            rightPanel()->slotFocusOnMe();
+        setActivePanel(cfg.readEntry("Left Side Is Active", false));
     }
+
 }
 
 void KrusaderView::updateGUI(KConfigGroup &cfg)
@@ -184,19 +188,6 @@ void KrusaderView::updateGUI(KConfigGroup &cfg)
     };
 }
 
-void KrusaderView::recreatePanels()
-{
-    bool leftActive = ACTIVE_PANEL->gui->isLeft();
-    leftManager()->slotRecreatePanels();
-    rightManager()->slotRecreatePanels();
-    if(leftActive)
-        LEFT_PANEL->slotFocusOnMe();
-    else
-        RIGHT_PANEL->slotFocusOnMe();
-
-    fnKeys()->updateShortcuts();
-}
-
 void KrusaderView::setPanelSize(bool leftPanel, int percent)
 {
     QList<int> panelSizes = horiz_splitter->sizes();
@@ -223,7 +214,7 @@ PanelManager *KrusaderView::createManager(bool left)
                      SLOT(draggingTabFinished(PanelManager*, QMouseEvent*)));
     connect(p, SIGNAL(pathChanged(ListPanel*)), SLOT(slotPathChanged(ListPanel*)));
     connect(p, SIGNAL(setActiveManager(PanelManager*)),
-                     SLOT(slotSetActiveManager(PanelManager*)));
+                     SLOT(setActiveManager(PanelManager*)));
 
     return p;
 }
@@ -299,21 +290,35 @@ void KrusaderView::cmdLineFocus()    // command line receive's keyboard focus
 
 void KrusaderView::cmdLineUnFocus()   // return focus to the active panel
 {
-    ACTIVE_PANEL->gui->slotFocusOnMe();
+    ACTIVE_PANEL->view->widget()->setFocus();
+}
+
+void KrusaderView::setActiveManager(PanelManager *manager)
+{
+    krApp->setUpdatesEnabled(false);
+
+    activeMng = manager;
+
+    inactiveManager()->activeStateChanged();
+    activeManager()->activeStateChanged();
+
+    _currentPanelCb->onCurrentPanelChanged(manager->currentPanel());
+    _currentViewCb->onCurrentViewChanged(manager->currentPanel()->view);
+
+    slotPathChanged(manager->currentPanel()->gui);
+
+    krApp->setUpdatesEnabled(true);
+}
+
+void KrusaderView::setActivePanel(bool leftPanel)
+{
+    setActiveManager(leftPanel ? leftMng : rightMng);
 }
 
 // Tab - switch focus
 void KrusaderView::panelSwitch()
 {
-    ACTIVE_PANEL->otherPanel()->gui->slotFocusOnMe();
-}
-
-void KrusaderView::slotSetActiveManager(PanelManager *manager)
-{
-    activeMng = manager;
-    slotPathChanged(manager->currentPanel()->gui);
-    _currentPanelCb->onCurrentPanelChanged(manager->currentPanel());
-    _currentViewCb->onCurrentViewChanged(manager->currentPanel()->view);
+    setActiveManager(inactiveManager());
 }
 
 void KrusaderView::swapSides()
@@ -350,7 +355,7 @@ void KrusaderView::slotTerminalEmulator(bool show)
     static bool menuBarShown = true;
 
     if (!show) {    // hiding the terminal
-        ACTIVE_PANEL->gui->slotFocusOnMe();
+        ACTIVE_PANEL->view->widget()->setFocus();
         if (_terminalDock->isTerminalVisible() && !fullscreen)
             verticalSplitterSizes = vert_splitter->sizes();
 
@@ -457,10 +462,7 @@ void KrusaderView::loadPanelProfiles(QString group)
     KConfigGroup ldg(krConfig, group);
     leftMng->loadSettings(KConfigGroup(&ldg, "Left Tabs"));
     rightMng->loadSettings(KConfigGroup(&ldg, "Right Tabs"));
-    if (ldg.readEntry("Left Side Is Active", true))
-        leftPanel()->slotFocusOnMe();
-    else
-        rightPanel()->slotFocusOnMe();
+    setActivePanel(ldg.readEntry("Left Side Is Active", false));
 }
 
 void KrusaderView::savePanelProfiles(QString group)
@@ -548,3 +550,4 @@ void KrusaderView::draggingTabFinished(PanelManager *from, QMouseEvent *e)
 
 
 #include "krusaderview.moc"
+

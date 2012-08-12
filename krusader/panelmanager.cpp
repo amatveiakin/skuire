@@ -44,12 +44,17 @@ PanelManager::PanelManager(QWidget *parent, FileManagerWindow* mainWindow, bool 
                 CurrentPanelCallback *currentPanelCb, CurrentViewCallback *currentViewCb) :
         QWidget(parent),
         _otherManager(0),
+        _mainWindow(mainWindow),
+        _currentPanel(0),
         _currentPanelCb(currentPanelCb),
         _currentViewCb(currentViewCb),
         _actions(mainWindow->tabActions()),
         _layout(0),
-        _left(left),
-        _currentPanel(0)
+        _left(left)
+{
+}
+
+void PanelManager::init()
 {
     _layout = new QGridLayout(this);
     _layout->setContentsMargins(0, 0, 0, 0);
@@ -88,9 +93,19 @@ PanelManager::PanelManager(QWidget *parent, FileManagerWindow* mainWindow, bool 
 
     setLayout(_layout);
 
-    addPanel(true);
+    createPanel(true);
 
     tabsCountChanged();
+}
+
+bool PanelManager::isActive()
+{
+    return _mainWindow->activeManager() == this;
+}
+
+void PanelManager::activeStateChanged()
+{
+    _currentPanel->activeStateChanged();
 }
 
 void PanelManager::tabsCountChanged()
@@ -113,8 +128,9 @@ void PanelManager::tabsCountChanged()
 
 void PanelManager::activate()
 {
-    assert(sender() == (currentPanel()->gui));
+    Q_ASSERT(sender() == (currentPanel()->gui));
     emit setActiveManager(this);
+    Q_ASSERT(isActive());
     _actions->refreshActions();
 }
 
@@ -131,23 +147,16 @@ void PanelManager::slotCurrentTabChanged(int index)
     _stack->setCurrentWidget(_currentPanel);
 
     if(prev)
-        prev->slotFocusOnMe(false); //FIXME - necessary ?
-    _currentPanel->slotFocusOnMe(this == ACTIVE_MNG);
+        prev->activeStateChanged();
+    _currentPanel->activeStateChanged();
 
     _currentViewCb->onCurrentViewChanged(_currentPanel->view);
     _currentPanelCb->onCurrentPanelChanged(_currentPanel);
+
     emit pathChanged(p);
 
-    if(otherManager())
+    if(otherManager() && otherManager()->currentPanel())
         otherManager()->currentPanel()->otherPanelChanged();
-}
-
-ListPanel* PanelManager::createPanel(KConfigGroup cfg)
-{
-    ListPanel * p = new ListPanel(_stack, this, _currentViewCb, cfg);
-    connectPanel(p);
-    _currentPanelCb->onPanelCreated(p);
-    return p;
 }
 
 void PanelManager::connectPanel(ListPanel *p)
@@ -164,20 +173,28 @@ void PanelManager::disconnectPanel(ListPanel *p)
     disconnect(p, SIGNAL(pathChanged(ListPanel*)), _tabbar, 0);
 }
 
-ListPanel* PanelManager::addPanel(bool setCurrent, KConfigGroup cfg, KrPanel *nextTo)
+ListPanel* PanelManager::createPanel(bool setCurrent, KConfigGroup cfg, KrPanel *nextTo)
 {
     // create the panel and add it into the widgetstack
-    ListPanel * p = createPanel(cfg);
-    _stack->addWidget(p);
+    ListPanel * p = new ListPanel(_stack, this, _currentViewCb, cfg);
+    _currentPanelCb->onPanelCreated(p);
+
+    addPanel(p, setCurrent, nextTo);
+
+    return p;
+}
+
+void PanelManager::addPanel(KrPanel *panel, bool setCurrent, KrPanel *nextTo)
+{
+    _stack->addWidget(panel->gui);
+    connectPanel(panel->gui);
 
     // now, create the corrosponding tab
-    int index = _tabbar->addPanel(p, setCurrent, nextTo);
+    int index = _tabbar->addPanel(panel->gui, setCurrent, nextTo);
     tabsCountChanged();
 
     if (setCurrent)
         slotCurrentTabChanged(index);
-
-    return p;
 }
 
 void PanelManager::saveSettings(KConfigGroup config, bool localOnly, bool saveHistory)
@@ -207,7 +224,7 @@ void PanelManager::loadSettings(KConfigGroup config)
         if(i < numTabsOld)
             panel = _tabbar->getPanel(i);
         else
-            panel = addPanel(false, grpTab);
+            panel = createPanel(false, grpTab);
         panel->restoreSettings(grpTab);
     }
 
@@ -233,24 +250,18 @@ void PanelManager::moveTabToOtherSide()
         return;
 
     ListPanel *p;
-    _tabbar->removeCurrentPanel(p);
+    _tabbar->removeCurrentPanel(p); // this should result in a panel switch
+    // now the new panel should be active
     _stack->removeWidget(p);
     disconnectPanel(p);
 
     p->reparent(_otherManager->_stack, _otherManager);
-    _otherManager->connectPanel(p);
-    _otherManager->_stack->addWidget(p);
-    _otherManager->_tabbar->addPanel(p, true);
-
-    _otherManager->tabsCountChanged();
-    tabsCountChanged();
-
-    p->slotFocusOnMe();
+    _otherManager->addPanel(p, true);
 }
 
 void PanelManager::slotNewTab(const KUrl& url, bool setCurrent, KrPanel *nextTo)
 {
-    ListPanel *p = addPanel(setCurrent, KConfigGroup(), nextTo);
+    ListPanel *p = createPanel(setCurrent, KConfigGroup(), nextTo);
     p->start(url);
 }
 
@@ -271,9 +282,6 @@ void PanelManager::slotCloseTab(int index)
 
     ListPanel *oldp;
 
-//     if (index == _tabbar->currentIndex())
-//         slotChangePanel(_tabbar->removeCurrentPanel(oldp), false);
-//     else
     _tabbar->removePanel(index, oldp); //this automatically changes the current panel
 
     _stack->removeWidget(oldp);
@@ -301,42 +309,6 @@ int PanelManager::activeTab()
 void PanelManager::setActiveTab(int index)
 {
     _tabbar->setCurrentIndex(index);
-}
-
-void PanelManager::slotRecreatePanels()
-{
-    updateTabbarPos();
-
-    for (int i = 0; i != _tabbar->count(); i++) {
-        QString grpName = "PanelManager_" + QString::number(qApp->applicationPid());
-        krConfig->deleteGroup(grpName); // make sure the group is empty
-        KConfigGroup cfg(krConfig, grpName);
-
-        ListPanel *oldPanel = _tabbar->getPanel(i);
-        oldPanel->saveSettings(cfg, false, true);
-        disconnect(oldPanel);
-
-        ListPanel *newPanel = createPanel(cfg);
-        _stack->insertWidget(i, newPanel);
-        _tabbar->changePanel(i, newPanel);
-
-        if (_currentPanel == oldPanel) {
-            _currentPanel = newPanel;
-            _stack->setCurrentWidget(_currentPanel);
-        }
-
-        _stack->removeWidget(oldPanel);
-        deletePanel(oldPanel);
-
-        newPanel->restoreSettings(cfg);
-
-        _tabbar->updateTab(newPanel);
-
-        krConfig->deleteGroup(grpName);
-    }
-    tabsCountChanged();
-    _currentPanel->slotFocusOnMe(this == ACTIVE_MNG);
-    emit pathChanged(_currentPanel);
 }
 
 void PanelManager::slotNextTab()
