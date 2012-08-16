@@ -842,7 +842,7 @@ void Synchronizer::swapSides()
 
 void Synchronizer::setScrolling(bool scroll)
 {
-    if (autoScroll = scroll) {
+    if ((autoScroll = scroll)) {
         int oldFileCount = fileCount;
         refresh(true);
         fileCount = oldFileCount;
