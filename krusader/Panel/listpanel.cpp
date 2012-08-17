@@ -463,7 +463,7 @@ void ListPanel::createView()
 void ListPanel::changeType(int type)
 {
     if (panelType != type) {
-        QString current = view->getCurrentItem();
+        KFileItem current = view->currentItem();
         KUrl::List selection = view->getSelectedUrls(false);
 //FIXME
 //         bool filterApplysToDirs = view->properties()->filterApplysToDirs;
@@ -480,6 +480,7 @@ void ListPanel::changeType(int type)
         createView();
 //FIXME
 //         view->setFilter(filter, filterSettings, filterApplysToDirs);
+        view->refresh();
         view->setSelection(selection);
         view->setCurrentItem(current);
         view->makeItemVisible(view->currentUrl());
