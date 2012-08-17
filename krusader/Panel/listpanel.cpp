@@ -470,12 +470,13 @@ void ListPanel::changeType(int type)
 //         KrViewProperties::FilterSpec filter = view->filter();
 //         FilterSettings filterSettings = view->properties()->filterSettings;
 
-        panelType = type;
         quickSearch->setFocusProxy(0);
 
         // otherwise eventFilter() might be called during destruction and crash
         view->widget()->removeEventFilter(this);
         delete view;
+
+        panelType = type;
 
         createView();
 //FIXME
