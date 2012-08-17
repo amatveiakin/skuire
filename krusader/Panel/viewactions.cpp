@@ -77,7 +77,7 @@ ViewActions::ViewActions(QObject *parent, KrMainWindow *mainWindow) :
     connect(KrusaderApp::self(), SIGNAL(configChanged()), SLOT(configChanged()));
 }
 
-inline KrView *ViewActions::view()
+inline KrView *ViewActions::activeView()
 {
     //FIXME- handle the case of no active view
     KrView *v = qobject_cast<KrView*>(_mainWindow->activeView()->self());
@@ -88,104 +88,106 @@ inline KrView *ViewActions::view()
 void ViewActions::onViewCreated(View *view)
 {
     connect(view->emitter(), SIGNAL(refreshActions()), SLOT(refreshActions()));
+    if (activeView() == view)
+        refreshActions();
 }
 
 // zoom
 
 void ViewActions::zoomIn()
 {
-    view()->zoomIn();
+    activeView()->zoomIn();
 }
 
 void ViewActions::zoomOut()
 {
-    view()->zoomOut();
+    activeView()->zoomOut();
 }
 
 void ViewActions::defaultZoom()
 {
-    view()->setDefaultFileIconSize();
+    activeView()->setDefaultFileIconSize();
 }
 
 // filter
 
 void ViewActions::allFilter()
 {
-    view()->setFilter(KrViewProperties::All);
+    activeView()->setFilter(KrViewProperties::All);
 }
 #if 0
 void ViewActions::execFilter()
 {
-    view()->setFilter(KrViewProperties::All);
+    activeView()->setFilter(KrViewProperties::All);
 }
 #endif
 void ViewActions::customFilter()
 {
-    view()->setFilter(KrViewProperties::Custom);
+    activeView()->setFilter(KrViewProperties::Custom);
 }
 
 void ViewActions::showOptionsMenu()
 {
-    view()->showContextMenu();
+    activeView()->showContextMenu();
 }
 
 // selection
 
 void ViewActions::markAll()
 {
-    view()->changeSelection(KRQuery("*"), true);
+    activeView()->changeSelection(KRQuery("*"), true);
 }
 
 void ViewActions::unmarkAll()
 {
-    view()->changeSelection(KRQuery("*"), false);
+    activeView()->changeSelection(KRQuery("*"), false);
 }
 
 void ViewActions::markGroup()
 {
-    view()->customSelection(true);
+    activeView()->customSelection(true);
 }
 
 void ViewActions::unmarkGroup()
 {
-    view()->customSelection(false);
+    activeView()->customSelection(false);
 }
 
 void ViewActions::invertSelection()
 {
-    view()->invertSelection();
+    activeView()->invertSelection();
 }
 
 void ViewActions::restoreSelection()
 {
-    view()->restoreSelection();
+    activeView()->restoreSelection();
 }
 
 // other stuff
 
 void ViewActions::saveDefaultSettings()
 {
-    view()->saveDefaultSettings();
+    activeView()->saveDefaultSettings();
 }
 
 void ViewActions::applySettingsToOthers()
 {
-    view()->applySettingsToOthers();
+    activeView()->applySettingsToOthers();
 }
 
 void ViewActions::focusPanel()
 {
-    view()->widget()->setFocus();
+    activeView()->widget()->setFocus();
 }
 
 void ViewActions::quickFilter()
 {
-    view()->startQuickFilter();
+    activeView()->startQuickFilter();
 }
 
 void ViewActions::showPreviews(bool show)
 {
-    view()->showPreviews(show);
+    activeView()->showPreviews(show);
 }
 
 void ViewActions::showHidden(bool show)
@@ -195,12 +197,12 @@ void ViewActions::showHidden(bool show)
 
 void ViewActions::refreshActions()
 {
-    actDefaultZoom->setEnabled(view()->defaultFileIconSize() != view()->fileIconSize());
-    int idx = KrView::iconSizes.indexOf(view()->fileIconSize());
+    actDefaultZoom->setEnabled(activeView()->defaultFileIconSize() != activeView()->fileIconSize());
+    int idx = KrView::iconSizes.indexOf(activeView()->fileIconSize());
     actZoomOut->setEnabled(idx > 0);
     actZoomIn->setEnabled(idx < (KrView::iconSizes.count() - 1));
-    actRestoreSelection->setEnabled(view()->canRestoreSelection());
-    actTogglePreviews->setChecked(view()->previewsShown());
+    actRestoreSelection->setEnabled(activeView()->canRestoreSelection());
+    actTogglePreviews->setChecked(activeView()->previewsShown());
     actToggleHidden->setChecked(KrView::isShowHidden());
 }
 

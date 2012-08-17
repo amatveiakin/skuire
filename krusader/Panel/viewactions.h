@@ -84,7 +84,7 @@ protected:
     KAction *actSelect, *actUnselect, *actSelectAll, *actUnselectAll, *actInvert, *actRestoreSelection;
     KToggleAction *actTogglePreviews, *actToggleHidden;
 
-    KrView *view();
+    KrView *activeView();
 };
 
 #endif // __VIEWACTIONS_H__
