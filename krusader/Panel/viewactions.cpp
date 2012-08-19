@@ -79,10 +79,12 @@ ViewActions::ViewActions(QObject *parent, KrMainWindow *mainWindow) :
 
 inline KrView *ViewActions::activeView()
 {
-    //FIXME- handle the case of no active view
-    KrView *v = qobject_cast<KrView*>(_mainWindow->activeView()->self());
-    Q_ASSERT(v);
-    return v;
+    if (AbstractView *view = _mainWindow->activeView()) {
+        KrView *v = qobject_cast<KrView*>(view->self());
+        Q_ASSERT(v);
+        return v;
+    } else
+        return 0;
 }
 
 void ViewActions::onViewCreated(AbstractView *view)
