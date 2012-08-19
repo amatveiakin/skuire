@@ -24,13 +24,13 @@
 #include "../panelmanager.h"
 #include "../Panel/listpanel.h"
 #include "../Panel/panelfunc.h"
-#include "../Panel/view.h"
 #include "../Synchronizer/synchronizergui.h"
 #include "../Search/krsearchdialog.h"
 #include "../GUI/profilemanager.h"
 #include "../VFS/preservingcopyjob.h"
 #include "../KViewer/krviewer.h"
 #include "../krservices.h"
+#include "abstractview.h"
 
 #ifdef __KJSEMBED__
 #include "../KrJS/krjs.h"

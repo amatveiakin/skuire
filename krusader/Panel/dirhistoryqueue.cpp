@@ -21,10 +21,11 @@
 #include "dirhistoryqueue.h"
 
 #include "krpanel.h"
-#include "view.h"
 #include "../defaults.h"
+#include "abstractview.h"
 
 #include <kdebug.h>
+
 
 DirHistoryQueue::DirHistoryQueue(KrPanel *panel) :
     _panel(panel), _state(0), _currentPos(0)

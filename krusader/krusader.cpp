@@ -82,7 +82,6 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "krglobal.h"
 #include "kractions.h"
 #include "panelmanager.h"
-#include "Panel/view.h"
 #include "Panel/listpanelactions.h"
 #include "UserAction/kraction.h"
 #include "UserAction/expander.h"
@@ -104,6 +103,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "BookMan/krbookmarkhandler.h"
 #include "KViewer/krviewer.h"
 #include "module.h"
+#include "abstractview.h"
 
 #ifdef __KJSEMBED__
 #include "KrJS/krjs.h"

@@ -91,7 +91,7 @@
 #include "krtrashhandler.h"
 #include "BookMan/krbookmarkhandler.h"
 #include "BookMan/krbookmarkbutton.h"
-#include "Panel/view.h"
+#include "abstractview.h"
 
 
 #define ACTIVE_VIEW _mainWindow->activeView()

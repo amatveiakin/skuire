@@ -32,7 +32,6 @@
 #include <kactioncollection.h>
 
 #include "listpanel.h"
-#include "view.h"
 #include "panelfunc.h"
 #include "listpanelactions.h"
 #include "../krservices.h"
@@ -43,6 +42,7 @@
 #include "../krusaderview.h"
 #include "../panelmanager.h"
 #include "../krtrashhandler.h"
+#include "abstractview.h"
 
 #ifdef __LIBKONQ__
 #include <konq_popupmenu.h>

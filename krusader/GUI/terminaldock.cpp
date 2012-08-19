@@ -44,9 +44,10 @@
 #include "../VFS/vfs.h"
 #include "../Panel/listpanel.h"
 #include "../Panel/panelfunc.h"
-#include "../Panel/view.h"
 #include "../Panel/listpanelactions.h"
 #include "../krservices.h"
+#include "abstractview.h"
+
 
 /**
  * A widget containing the konsolepart for the Embedded terminal emulator

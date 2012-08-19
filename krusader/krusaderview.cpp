@@ -49,7 +49,6 @@
 #include "defaults.h"
 #include "Panel/listpanel.h"
 #include "Panel/panelfunc.h"
-#include "Panel/view.h"
 #include "GUI/kcmdline.h"
 #include "GUI/kfnkeys.h"
 #include "GUI/terminaldock.h"
@@ -58,6 +57,7 @@
 #include "GUI/profilemanager.h"
 #include "Dialogs/percentalsplitter.h"
 #include "krservices.h"
+#include "abstractview.h"
 
 
 KrusaderView::KrusaderView(QWidget *parent,

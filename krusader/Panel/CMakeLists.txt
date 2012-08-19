@@ -19,7 +19,6 @@ set(Panel_SRCS
     krpreviewpopup.cpp 
     viewmodule.cpp
     viewexpplaceholders.cpp
-    view.cpp
     krview.cpp 
     panelfunc.cpp
     krpanel.cpp

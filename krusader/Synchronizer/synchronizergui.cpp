@@ -34,7 +34,6 @@
 #include "../krusaderview.h"
 #include "../Panel/listpanel.h"
 #include "../Panel/panelfunc.h"
-#include "../Panel/view.h"
 #include "../VFS/krpermhandler.h"
 #include "../KViewer/krviewer.h"
 #include "../Dialogs/krspwidgets.h"
@@ -44,6 +43,8 @@
 #include "../kicons.h"
 #include "synchronizedialog.h"
 #include "feedtolistboxdialog.h"
+#include "abstractview.h"
+
 #include <QtGui/QLayout>
 #include <QtGui/QGroupBox>
 #include <QResizeEvent>

@@ -18,8 +18,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __VIEW_H__
-#define __VIEW_H__
+#ifndef __ABSTRACTVIEW_H__
+#define __ABSTRACTVIEW_H__
 
 #include "../defaults.h"
 #include "../krglobal.h"
@@ -185,4 +185,4 @@ signals:
     void refreshActions();
 };
 
-#endif // __VIEW_H__
+#endif // __ABSTRACTVIEW_H__

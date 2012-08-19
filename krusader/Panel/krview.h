@@ -31,7 +31,7 @@
 #ifndef KRVIEW_H
 #define KRVIEW_H
 
-#include "view.h"
+#include "abstractview.h"
 
 #include <QtGui/QPixmap>
 #include <QtCore/QVariant>

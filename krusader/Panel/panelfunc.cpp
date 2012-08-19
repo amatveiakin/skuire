@@ -66,7 +66,6 @@ A
 #include "dirhistoryqueue.h"
 #include "krcalcspacedialog.h"
 #include "listpanel.h"
-#include "view.h"
 #include "krerrordisplay.h"
 #include "listpanelactions.h"
 #include "quickfilter.h"
@@ -96,6 +95,7 @@ A
 #include "../KViewer/krviewer.h"
 #include "../GUI/syncbrowsebutton.h"
 #include "../Queue/queue_mgr.h"
+#include "abstractview.h"
 
 //HACK
 #include "../krusader.h"

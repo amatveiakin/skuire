@@ -41,11 +41,11 @@ A
 #include <kcursor.h>
 
 #include "krpanel.h"
-#include "view.h"
 #include "panelfunc.h"
 #include "../krglobal.h"
 #include "../VFS/krpermhandler.h"
 #include "../VFS/krvfshandler.h"
+#include "abstractview.h"
 
 
 KrCalcSpaceDialog::KrCalcSpaceDialog(QWidget *parent, KrPanel * panel, KUrl::List items, bool autoclose) :

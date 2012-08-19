@@ -109,7 +109,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "quickfilter.h"
 #include "dirhistoryqueue.h"
 #include "urlrequester.h"
-#include "view.h"
+#include "abstractview.h"
 
 
 class ListPanel::ActionButton : public QToolButton

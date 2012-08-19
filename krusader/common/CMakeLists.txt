@@ -1,6 +1,7 @@
 set(common_SRCS
     module.cpp
     viewtype.cpp
-    viewfactory.cpp)
+    viewfactory.cpp
+    abstractview.cpp)
 
 kde4_add_library(common STATIC ${common_SRCS})
