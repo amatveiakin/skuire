@@ -23,7 +23,7 @@
 #include <QtPlugin>
 
 
-class View;
+class AbstractView;
 class QWidget;
 class KConfig;
 class KrQuickSearch;
@@ -35,7 +35,7 @@ class ViewFactory
 {
 public:
     virtual ~ViewFactory() {}
-    virtual View *createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
+    virtual AbstractView *createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
                              KrQuickSearch *quickSearch, QuickFilter *quickFilter) = 0;
     virtual QList<ViewType*> registeredViews() = 0;
     virtual int defaultViewId() = 0;

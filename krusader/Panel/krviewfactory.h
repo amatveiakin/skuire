@@ -38,7 +38,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 
 #include "viewtype.h"
 
-class View;
+class AbstractView;
 class KrView;
 class KConfig;
 
@@ -50,7 +50,7 @@ public:
     KrViewInstance(int id, QString name, QString desc, QString icon, QKeySequence shortcut);
     virtual ~KrViewInstance() {}
 
-    virtual View *create(QWidget *w, KConfig *cfg) = 0;
+    virtual AbstractView *create(QWidget *w, KConfig *cfg) = 0;
 
 protected:
     QList<KrView*> m_objects;
@@ -63,7 +63,7 @@ public:
     KrViewInstanceImpl(int id, QString name, QString desc, QString icon, QKeySequence shortcut) :
         KrViewInstance(id, name, desc, icon, shortcut) {}
 
-    virtual View *create(QWidget *w, KConfig *cfg) {
+    virtual AbstractView *create(QWidget *w, KConfig *cfg) {
         return new T(w, *this, cfg);
     }
 };
@@ -73,7 +73,7 @@ class KrViewFactory
     friend class KrViewInstance;
 
 public:
-    static View *                  createView(int id, QWidget * widget, KConfig *cfg);
+    static AbstractView *          createView(int id, QWidget * widget, KConfig *cfg);
     static KrViewInstance *        viewInstance(int id);
     static const QList<KrViewInstance*>& registeredViews() {
         return self().m_registeredViews;

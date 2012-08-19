@@ -85,7 +85,7 @@ inline KrView *ViewActions::activeView()
     return v;
 }
 
-void ViewActions::onViewCreated(View *view)
+void ViewActions::onViewCreated(AbstractView *view)
 {
     connect(view->emitter(), SIGNAL(refreshActions()), SLOT(refreshActions()));
     if (activeView() == view)

@@ -27,14 +27,14 @@
 
 class KrMainWindow;
 class KrPanel;
-class View;
+class AbstractView;
 
 class ActionsBase : public QObject
 {
     Q_OBJECT
 
 public:
-    virtual void onViewCreated(View*) {}
+    virtual void onViewCreated(AbstractView*) {}
     virtual void onActiveViewChanged() {}
     virtual void onPanelCreated(KrPanel*) {}
     virtual void onActivePanelChanged()  {}

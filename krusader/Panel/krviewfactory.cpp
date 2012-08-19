@@ -75,7 +75,7 @@ void KrViewFactory::init()
 //         i18n("&Brief View"), "view-list-icons", Qt::ALT + Qt::SHIFT + Qt::Key_B);
 }
 
-View *KrViewFactory::createView(int id, QWidget *widget, KConfig *cfg)
+AbstractView *KrViewFactory::createView(int id, QWidget *widget, KConfig *cfg)
 {
     return viewInstance(id)->create(widget, cfg);
 }

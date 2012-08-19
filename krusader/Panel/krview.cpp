@@ -1195,7 +1195,7 @@ void KrView::prepareForPassive()
     _operator->prepareForPassive();
 }
 
-View::Emitter *KrView::emitter()
+AbstractView::Emitter *KrView::emitter()
 {
     return _emitter;
 }

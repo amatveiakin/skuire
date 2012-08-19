@@ -37,12 +37,12 @@ class AbstractDirLister;
 class ViewType;
 
 
-class View
+class AbstractView
 {
 public:
     class Emitter;
 
-    virtual ~View() {}
+    virtual ~AbstractView() {}
 
     /////////////////////////////////////////////////////////////
     // pure virtual functions                                  //
@@ -160,7 +160,7 @@ public:
 };
 
 
-class View::Emitter : public QObject
+class AbstractView::Emitter : public QObject
 {
     Q_OBJECT
 

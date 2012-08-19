@@ -96,7 +96,7 @@ public:
     KrInterView(QWidget *parent, KrViewInstance &instance, KConfig *cfg);
     virtual ~KrInterView();
 
-    // View implementation
+    // AbstractView implementation
     virtual QObject *self() {
         return this;
     }

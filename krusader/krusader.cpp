@@ -451,13 +451,13 @@ void Krusader::setupActions() {
 ///////////////////////////////////////////////////////////////////////////
 
 
-void Krusader::onViewCreated(View *view)
+void Krusader::onViewCreated(AbstractView *view)
 {
     foreach(ActionsBase *actions, _allActions)
         actions->onViewCreated(view);
 }
 
-void Krusader::onCurrentViewChanged(View *view)
+void Krusader::onCurrentViewChanged(AbstractView *view)
 {
     if (activeView() == view) {
         foreach(ActionsBase *actions, _allActions)
@@ -914,7 +914,7 @@ bool Krusader::queryExit()
     return true;
 }
 
-View *Krusader::activeView()
+AbstractView *Krusader::activeView()
 {
     return activePanel() ? activePanel()->view : 0;
 }

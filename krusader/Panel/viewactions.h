@@ -44,7 +44,7 @@ class ViewActions : public ActionsBase
 public:
     ViewActions(QObject *parent, KrMainWindow *mainWindow);
 
-    virtual void onViewCreated(View *view);
+    virtual void onViewCreated(AbstractView *view);
     virtual void onViewChanged() {
         refreshActions();
     }

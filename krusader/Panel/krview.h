@@ -128,7 +128,7 @@ public:
  *
  * IMPORTANT NOTE: every one who subclasses this must call initProperties() in the constructor !!!
  */
-class KrView : public View
+class KrView : public AbstractView
 {
     // instantiating a new view
     // 1. new KrView
@@ -160,10 +160,10 @@ public:
     virtual void selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst = false) = 0;
 
     /////////////////////////////////////////////////////////////
-    // View implementation                                     //
+    // AbstractView implementation                                     //
     /////////////////////////////////////////////////////////////
     virtual ViewType *type();
-    virtual View::Emitter *emitter();
+    virtual AbstractView::Emitter *emitter();
     virtual void init(QWidget *mainWindow, KrQuickSearch *quickSearch, QuickFilter *quickFilter);
     virtual void setDirLister(AbstractDirLister *lister);
     virtual void saveSelection();
@@ -396,7 +396,7 @@ protected:
 };
 
 
-class KrView::Emitter : public View::Emitter
+class KrView::Emitter : public AbstractView::Emitter
 {
 public:
     void emitSelectionChanged() {

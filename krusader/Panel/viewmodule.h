@@ -43,7 +43,7 @@ public:
     virtual QWidget *createSelectionModeCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId);
 
     // ViewFactory implementation
-    virtual View *createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
+    virtual AbstractView *createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
                              KrQuickSearch *quickSearch, QuickFilter *quickFilter);
     virtual QList<ViewType*> registeredViews();
     virtual int defaultViewId();

@@ -46,10 +46,10 @@ ActionsBase *ViewModule::createActions(QObject *parent, KrMainWindow *mainWindow
     return new ViewActions(parent, mainWindow);
 }
 
-View *ViewModule::createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
+AbstractView *ViewModule::createView(int id, QWidget *parent, KConfig *cfg, QWidget *mainWindow,
                              KrQuickSearch *quickSearch, QuickFilter *quickFilter)
 {
-    View *view = KrViewFactory::createView(id, parent, cfg);
+    AbstractView *view = KrViewFactory::createView(id, parent, cfg);
     view->init(mainWindow, quickSearch, quickFilter);
     return view;
 }

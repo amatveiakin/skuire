@@ -89,7 +89,7 @@ public:
     virtual QWidget *widget() {
         return this;
     }
-    virtual View *activeView();
+    virtual AbstractView *activeView();
     virtual KActionCollection *actions() {
         return actionCollection();
     }
@@ -99,8 +99,8 @@ public:
     virtual AbstractPanelManager *rightManager();
 
     // CurrentViewCallback implementation
-    void onViewCreated(View *view);
-    void onCurrentViewChanged(View *view);
+    void onViewCreated(AbstractView *view);
+    void onCurrentViewChanged(AbstractView *view);
 
     // CurrentPanelCallback implementation
     void onPanelCreated(KrPanel *panel);

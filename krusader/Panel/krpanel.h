@@ -38,7 +38,7 @@
 
 class ListPanelFunc;
 class ListPanel;
-class View;
+class AbstractView;
 class AbstractDirLister;
 
 class KrPanel
@@ -70,7 +70,7 @@ public:
 
     ListPanel *gui;
     ListPanelFunc *func;
-    View *view;
+    AbstractView *view;
 
 protected:
     AbstractPanelManager *_manager;
@@ -80,8 +80,8 @@ class CurrentViewCallback
 {
 public:
     virtual ~CurrentViewCallback() {}
-    virtual void onViewCreated(View *view) = 0;
-    virtual void onCurrentViewChanged(View *view) = 0;
+    virtual void onViewCreated(AbstractView *view) = 0;
+    virtual void onCurrentViewChanged(AbstractView *view) = 0;
 };
 
 #endif
