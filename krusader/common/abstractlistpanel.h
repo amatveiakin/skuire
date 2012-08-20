@@ -32,7 +32,7 @@
 #ifndef __ABSTRACTLISTPANEL_H__
 #define __ABSTRACTLISTPANEL_H__
 
-#include "../abstractpanelmanager.h"
+#include "abstractpanelmanager.h"
 
 #include <kurl.h>
 #include <kconfiggroup.h>

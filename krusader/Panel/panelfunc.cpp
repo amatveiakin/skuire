@@ -75,7 +75,6 @@ A
 #include "../krslots.h"
 #include "../kractions.h"
 #include "../defaults.h"
-#include "../abstractpanelmanager.h"
 #include "../krservices.h"
 #include "../VFS/vfiledirlister.h"
 #include "../VFS/vfile.h"
@@ -96,6 +95,7 @@ A
 #include "../GUI/syncbrowsebutton.h"
 #include "../Queue/queue_mgr.h"
 #include "abstractview.h"
+#include "abstractpanelmanager.h"
 
 //HACK
 #include "../krusader.h"
