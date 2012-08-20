@@ -39,7 +39,6 @@
 #include "../kractions.h"
 #include "../krusaderapp.h"
 #include "../krusaderview.h"
-#include "../filemanagerwindow.h"
 #include "kcmdline.h"
 #include "../VFS/vfs.h"
 #include "../Panel/listpanel.h"
@@ -47,6 +46,7 @@
 #include "../Panel/listpanelactions.h"
 #include "../krservices.h"
 #include "abstractview.h"
+#include "abstracttwinpanelfm.h"
 
 
 /**

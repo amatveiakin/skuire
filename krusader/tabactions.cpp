@@ -20,9 +20,9 @@
 
 #include "tabactions.h"
 
-#include "filemanagerwindow.h"
 #include "panelmanager.h"
 #include "Panel/listpanel.h"
+#include "abstracttwinpanelfm.h"
 
 #include <klocale.h>
 #include <kaction.h>

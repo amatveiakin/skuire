@@ -16,8 +16,8 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __FILEMANAGERWINDOW_H__
-#define __FILEMANAGERWINDOW_H__
+#ifndef __ABSTRACTTWINPANELFM_H__
+#define __ABSTRACTTWINPANELFM_H__
 
 #include "abstractmainwindow.h"
 #include "abstractpanelmanager.h"
@@ -51,4 +51,4 @@ public:
     }
 };
 
-#endif // __FILEMANAGERWINDOW_H__
+#endif // __ABSTRACTTWINPANELFM_H__

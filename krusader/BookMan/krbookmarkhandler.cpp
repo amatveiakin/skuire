@@ -21,11 +21,11 @@
 #include "kraddbookmarkdlg.h"
 #include "../krslots.h"
 #include "../kractions.h"
-#include "../filemanagerwindow.h"
 #include "../Dialogs/popularurls.h"
 #include "../VFS/vfs.h"
 #include "../Panel/listpanelactions.h"
 #include "abstractlistpanel.h"
+#include "abstracttwinpanelfm.h"
 
 #include <kiconloader.h>
 #include <kmessagebox.h>

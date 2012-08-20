@@ -36,7 +36,7 @@
 #include <config.h>
 #endif
 
-#include "filemanagerwindow.h"
+#include "abstracttwinpanelfm.h"
 #include "abstractpanelmanager.h"
 #include "abstractlistpanel.h"
 

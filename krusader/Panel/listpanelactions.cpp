@@ -34,11 +34,11 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "listpanel.h"
 #include "panelfunc.h"
 
-#include "../filemanagerwindow.h"
 #include "../Dialogs/krdialogs.h"
 #include "../KViewer/krviewer.h"
 #include "viewtype.h"
 #include "viewfactory.h"
+#include "abstracttwinpanelfm.h"
 
 #include <QSignalMapper>
 #include <QActionGroup>

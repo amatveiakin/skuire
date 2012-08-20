@@ -21,7 +21,6 @@
 
 #include "panelfunc.h"
 #include "../kicons.h"
-#include "../filemanagerwindow.h"
 #include "../defaults.h"
 #include "../Dialogs/krsqueezedtextlabel.h"
 #include "../KViewer/kimagefilepreview.h"
@@ -29,6 +28,7 @@
 #include "../KViewer/diskusageviewer.h"
 #include "abstractview.h"
 #include "abstractlistpanel.h"
+#include "abstracttwinpanelfm.h"
 
 #include <QtGui/QButtonGroup>
 #include <QtGui/QToolButton>

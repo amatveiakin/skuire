@@ -22,9 +22,9 @@
 #include "defaults.h"
 #include "tabactions.h"
 #include "krusaderview.h"
-#include "filemanagerwindow.h"
 #include "Panel/listpanel.h"
 #include "Panel/panelfunc.h"
+#include "abstracttwinpanelfm.h"
 
 #include <qstackedwidget.h>
 #include <QtGui/QToolButton>

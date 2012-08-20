@@ -37,9 +37,10 @@
 #include <kglobalsettings.h>
 
 #include "../defaults.h"
-#include "../filemanagerwindow.h"
 #include "../kractions.h"
 #include "../Panel/listpanelactions.h"
+#include "abstracttwinpanelfm.h"
+
 
 KFnKeys::KFnKeys(QWidget *parent, AbstractTwinPanelFM *mainWindow) :
         QWidget(parent), mainWindow(mainWindow)
