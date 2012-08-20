@@ -33,7 +33,7 @@
 #ifndef __LISTPANELACTIONS_H__
 #define __LISTPANELACTIONS_H__
 
-#include "../actionsbase.h"
+#include "actionsbase.h"
 
 #include <kaction.h>
 

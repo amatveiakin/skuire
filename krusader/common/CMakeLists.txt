@@ -1,5 +1,6 @@
 set(common_SRCS
     module.cpp
+    actionsbase.cpp
     viewtype.cpp
     viewfactory.cpp
     abstractview.cpp

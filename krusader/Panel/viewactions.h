@@ -32,7 +32,7 @@
 #ifndef __VIEWACTIONS_H__
 #define __VIEWACTIONS_H__
 
-#include "../actionsbase.h"
+#include "actionsbase.h"
 
 #include <kaction.h>
 
