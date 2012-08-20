@@ -131,9 +131,6 @@ public:
     }
     void changeType(int);
 
-    ListPanelActions *actions() {
-        return _actions;
-    }
     QString realPath() const;
     QString getCurrentName();
     void setButtons();
