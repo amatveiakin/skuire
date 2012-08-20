@@ -22,6 +22,7 @@
 #include <kurl.h>
 
 class AbstractListPanel;
+class AbstractTwinPanelFM;
 
 class AbstractPanelManager
 {
@@ -32,6 +33,7 @@ public:
     virtual AbstractPanelManager *otherManager() = 0;
     virtual AbstractListPanel *currentPanel() = 0;
     virtual void newTab(const KUrl&, AbstractListPanel *nextTo = 0) = 0;
+    virtual AbstractTwinPanelFM *mainWindow() = 0;
 };
 
 class CurrentPanelCallback

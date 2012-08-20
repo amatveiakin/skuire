@@ -87,6 +87,9 @@ public:
     virtual void newTab(const KUrl &url, AbstractListPanel *nextTo) {
         slotNewTab(url, true, nextTo);
     }
+    virtual AbstractTwinPanelFM *mainWindow() {
+        return _mainWindow;
+    }
 
 signals:
     void draggingTab(PanelManager *from, QMouseEvent*);
