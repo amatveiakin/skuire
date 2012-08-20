@@ -98,7 +98,6 @@ KrPopupMenu::KrPopupMenu(ListPanel *panel, QWidget *parent, bool onlyOpenWith) :
         mainWindow(panel->manager()->mainWindow()),
         empty(false),
         multipleSelections(false),
-        actions(0),
         mapper(new QSignalMapper(this))
 {
 #ifdef __LIBKONQ__
@@ -276,7 +275,6 @@ KrPopupMenu::KrPopupMenu(ListPanel *panel, QWidget *parent, bool onlyOpenWith) :
 KrPopupMenu::~KrPopupMenu()
 {
     items.clear();
-    if (actions) delete actions;
 #ifdef __LIBKONQ__
     if (konqMenu) delete konqMenu;
     if (konqMenuActions) delete konqMenuActions;

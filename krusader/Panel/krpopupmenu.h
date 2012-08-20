@@ -109,7 +109,6 @@ private:
     bool empty, multipleSelections;
     KMenu linkPopup, createNewPopup;
     KrPreviewPopup preview;
-    KActionCollection *actions;
     KFileItemList items; // list of selected items
     KFileItem item; // the (first) selected item
     KService::List offers;
