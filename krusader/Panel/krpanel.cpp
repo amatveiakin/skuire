@@ -30,5 +30,3 @@ A
 
 
 #include "krpanel.h"
-#include "panelfunc.h"
-#include "../krusaderview.h"
