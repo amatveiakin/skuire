@@ -33,6 +33,9 @@
 #ifndef LISTPANEL_H
 #define LISTPANEL_H
 
+#include "../Dialogs/krsqueezedtextlabel.h"
+#include "abstractlistpanel.h"
+
 #include <kfileitem.h>
 #include <kurl.h>
 #include <klineedit.h>
@@ -55,9 +58,6 @@
 #include <QKeyEvent>
 #include <QEvent>
 #include <QtCore/QPointer>
-
-#include "krpanel.h"
-#include "../Dialogs/krsqueezedtextlabel.h"
 
 #define PROP_SYNC_BUTTON_ON               1
 #define PROP_LOCKED                       2

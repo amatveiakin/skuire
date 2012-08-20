@@ -20,9 +20,9 @@
 
 #include "dirhistoryqueue.h"
 
-#include "krpanel.h"
 #include "../defaults.h"
 #include "abstractview.h"
+#include "abstractlistpanel.h"
 
 #include <kdebug.h>
 

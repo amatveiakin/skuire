@@ -21,8 +21,8 @@
 #include "viewexpplaceholders.h"
 
 #include "krview.h"
-#include "krpanel.h"
 #include "../UserAction/expander.h"
+#include "abstractlistpanel.h"
 
 #include <klocale.h>
 #include <QObject>

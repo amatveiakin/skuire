@@ -19,7 +19,6 @@
 
 #include "panelpopup.h"
 
-#include "krpanel.h"
 #include "panelfunc.h"
 #include "../kicons.h"
 #include "../filemanagerwindow.h"
@@ -29,6 +28,7 @@
 #include "../KViewer/panelviewer.h"
 #include "../KViewer/diskusageviewer.h"
 #include "abstractview.h"
+#include "abstractlistpanel.h"
 
 #include <QtGui/QButtonGroup>
 #include <QtGui/QToolButton>

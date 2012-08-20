@@ -26,7 +26,6 @@
 #include "../VFS/abstractdirlister.h"
 #include "../defaults.h"
 #include "../krglobal.h"
-#include "krpanel.h"
 #include "krcolorcache.h"
 #include "krsort.h"
 

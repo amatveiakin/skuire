@@ -29,8 +29,8 @@
 ***************************************************************************/
 
 
-#ifndef KRPANEL_H
-#define KRPANEL_H
+#ifndef __ABSTRACTLISTPANEL_H__
+#define __ABSTRACTLISTPANEL_H__
 
 #include "../abstractpanelmanager.h"
 
@@ -103,4 +103,4 @@ public:
     virtual void onCurrentViewChanged(AbstractView *view) = 0;
 };
 
-#endif
+#endif // __ABSTRACTLISTPANEL_H__

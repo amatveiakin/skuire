@@ -23,7 +23,7 @@
 #include "defaults.h"
 #include "krglobal.h"
 #include "tabactions.h"
-#include "Panel/krpanel.h"
+#include "abstractlistpanel.h"
 
 #include <QtCore/QEvent>
 #include <QtGui/QFontMetrics>

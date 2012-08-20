@@ -33,7 +33,6 @@
 #include "../krglobal.h"
 #include "../krslots.h"
 #include "../krusaderview.h"
-#include "../Panel/krpanel.h"
 #include "../Panel/panelfunc.h"
 #include "../GUI/krtreewidget.h"
 #include "../defaults.h"
@@ -43,6 +42,8 @@
 #include "../KViewer/krviewer.h"
 #include "../panelmanager.h"
 #include "../kicons.h"
+#include "abstractlistpanel.h"
+
 #include <klocale.h>
 #include <kprocess.h>
 #include <kfileitem.h>

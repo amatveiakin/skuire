@@ -40,12 +40,12 @@ A
 #include <klocale.h>
 #include <kcursor.h>
 
-#include "krpanel.h"
 #include "panelfunc.h"
 #include "../krglobal.h"
 #include "../VFS/krpermhandler.h"
 #include "../VFS/krvfshandler.h"
 #include "abstractview.h"
+#include "abstractlistpanel.h"
 
 
 KrCalcSpaceDialog::KrCalcSpaceDialog(QWidget *parent, AbstractListPanel * panel, KUrl::List items, bool autoclose) :

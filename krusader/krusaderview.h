@@ -32,6 +32,9 @@
 #ifndef KRUSADERVIEW_H
 #define KRUSADERVIEW_H
 
+#include "krglobal.h"
+#include "abstractlistpanel.h"
+
 // KDE includes
 #include <klocale.h>
 #include <kapplication.h>
@@ -44,11 +47,6 @@
 #include <QtGui/QPushButton>
 #include <QGridLayout>
 #include <QEvent>
-
-#include "krglobal.h"
-
-//HACK
-#include "Panel/krpanel.h"
 
 class PanelManager;
 class AbstractListPanel;

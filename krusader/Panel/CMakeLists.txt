@@ -21,7 +21,6 @@ set(Panel_SRCS
     viewexpplaceholders.cpp
     krview.cpp 
     panelfunc.cpp
-    krpanel.cpp
     listpanel.cpp
     listpanelframe.cpp
     panelpopup.cpp

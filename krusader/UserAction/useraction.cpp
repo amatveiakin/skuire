@@ -35,9 +35,9 @@
 #include "kraction.h"
 #include "../krusader.h"
 #include "../krusaderview.h"
-#include "../Panel/krpanel.h"
 #include "../Panel/panelfunc.h"
 #include "abstractview.h"
+#include "abstractlistpanel.h"
 
 
 UserAction::UserAction()

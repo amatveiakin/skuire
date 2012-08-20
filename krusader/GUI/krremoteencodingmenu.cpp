@@ -27,9 +27,9 @@
 #include <kio/scheduler.h>
 
 #include "../krglobal.h"
-#include "../Panel/krpanel.h"
 #include "../Panel/panelfunc.h"
 #include "../kicons.h"
+#include "abstractlistpanel.h"
 
 #define DATA_KEY    QString::fromLatin1("Charset")
 

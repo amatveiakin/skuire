@@ -24,8 +24,9 @@
 #include "../filemanagerwindow.h"
 #include "../Dialogs/popularurls.h"
 #include "../VFS/vfs.h"
-#include "../Panel/krpanel.h"
 #include "../Panel/listpanelactions.h"
+#include "abstractlistpanel.h"
+
 #include <kiconloader.h>
 #include <kmessagebox.h>
 #include <QtCore/QTextStream>

@@ -38,7 +38,7 @@
 
 #include "filemanagerwindow.h"
 #include "abstractpanelmanager.h"
-#include "Panel/krpanel.h"
+#include "abstractlistpanel.h"
 
 // KDE includes
 #include <kapplication.h>

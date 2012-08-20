@@ -61,12 +61,12 @@
 #include "../kicons.h"
 #include "../defaults.h"
 #include "../krglobal.h"
-#include "../Panel/krpanel.h"
 #include "../Panel/panelfunc.h"
 #include "filelightParts/Config.h"
 #include "dulines.h"
 #include "dulistview.h"
 #include "dufilelight.h"
+#include "abstractlistpanel.h"
 
 // these are the values that will exist in the menu
 #define DELETE_ID            90

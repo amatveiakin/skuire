@@ -46,8 +46,9 @@
 
 #include "krglobal.h"
 #include "kractions.h"
-#include "Panel/krpanel.h"
 #include "Panel/panelfunc.h"
+#include "abstractlistpanel.h"
+
 
 KrTrashWatcher * KrTrashHandler::_trashWatcher = 0;
 

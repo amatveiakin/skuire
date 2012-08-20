@@ -70,13 +70,12 @@
 #include "../VFS/krquery.h"
 #include "../KViewer/krviewer.h"
 #include "../Panel/quickfilter.h"
-#include "../Panel/krpanel.h"
 #include "../Panel/panelfunc.h"
 #include "../Filter/filtertabs.h"
 #include "../Filter/generalfilter.h"
 #include "viewfactory.h"
 #include "abstractview.h"
-
+#include "abstractlistpanel.h"
 
 #define RESULTVIEW_TYPE 0
 
