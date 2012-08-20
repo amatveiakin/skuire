@@ -78,10 +78,12 @@ public:
     QHash<int/*id*/, KAction*> setViewActions;
 
 protected:
-    KrPanel *activePanel();
-    KrPanel *leftPanel();
-    KrPanel *rightPanel();
+    ListPanel *activePanel();
+    ListPanel *leftPanel();
+    ListPanel *rightPanel();
     ListPanelFunc *activeFunc();
+    ListPanel *getListPanel(KrPanel *panel);
+    FileManagerWindow *mainWindow();
 
     ActionGroup _gui, _func;
 };

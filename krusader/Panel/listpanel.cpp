@@ -140,7 +140,7 @@ protected:
 /////////////////////////////////////////////////////
 ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager, 
                      CurrentViewCallback *currentViewCb, KConfigGroup cfg) :
-        QWidget(parent), KrPanel(manager),
+        KrPanel(parent, manager),
         panelType(-1), colorMask(255), compareMode(false), statsAgent(0),
         previewJob(0), inlineRefreshJob(0), _currentViewCb(currentViewCb),
         quickSearch(0), cdRootButton(0), cdUpButton(0),
@@ -150,7 +150,6 @@ ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager,
         panelType = cfg.readEntry("Type", -1);
     if (panelType == -1)
         panelType = defaultPanelType();
-    gui = this;
     func = new ListPanelFunc(this);
     _actions = krApp->listPanelActions();
 
@@ -566,7 +565,7 @@ void ListPanel::togglePanelPopup()
         lst << height() << 0;
         dynamic_cast<QSplitter*>(popup->parent())->setSizes(lst);
         if (ACTIVE_PANEL)
-            ACTIVE_PANEL->gui->slotFocusOnMe();
+            ACTIVE_PANEL->view->widget()->setFocus();
     }
 }
 
@@ -678,7 +677,7 @@ void ListPanel::compareDirs(bool otherPanelToo)
     view->setSelection(newSelection);
 
     if(otherPanelToo)
-        otherPanel()->gui->compareDirs(false);
+        otherPanel()->compareDirs(false);
 }
 
 void ListPanel::refreshColors()
@@ -1291,8 +1290,8 @@ void ListPanel::updatePopupPanel(KFileItem item)
     PanelPopup *p = 0;
     if(popup && !popup->isHidden())
         p = popup;
-    else if(otherPanel()->gui->popup && !otherPanel()->gui->popup->isHidden())
-        p = otherPanel()->gui->popup;
+    else if(otherPanel()->popup && !otherPanel()->popup->isHidden())
+        p = otherPanel()->popup;
     else
         return;
 

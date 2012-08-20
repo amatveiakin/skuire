@@ -34,7 +34,7 @@
 #include "../UserAction/useractionpopupmenu.h"
 
 class KActionCollection;
-class KrPanel;
+class ListPanel;
 
 class QSignalMapper;
 
@@ -43,14 +43,14 @@ class KrPopupMenu : public KMenu
 {
     Q_OBJECT
 public:
-    static void run(QPoint pos, KrPanel *panel, bool onlyOpenWith = false);
-    static void run(KrPanel *panel, bool onlyOpenWith = false);
+    static void run(QPoint pos, ListPanel *panel, bool onlyOpenWith = false);
+    static void run(ListPanel *panel, bool onlyOpenWith = false);
 
 protected slots:
     void performAction(int id);
 
 protected:
-    KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith);
+    KrPopupMenu(ListPanel *panel, QWidget *parent, bool onlyOpenWith);
     ~KrPopupMenu();
     void addEmptyMenuEntries(); // adds the choices for a menu without selected items
     void addCreateNewMenu(); // adds a "create new" submenu
@@ -101,7 +101,7 @@ protected:
 private:
     static void execMenu(KrPopupMenu *menu, QPoint pos);
 
-    KrPanel *panel;
+    ListPanel *panel;
     bool empty, multipleSelections;
     KMenu linkPopup, createNewPopup;
     KrPreviewPopup preview;

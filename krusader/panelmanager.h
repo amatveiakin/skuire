@@ -34,10 +34,10 @@
 class KConfig;
 class QStackedWidget;
 class QToolButton;
-class ListPanel;
 class CurrentViewCallback;
 class FileManagerWindow;
 class TabActions;
+
 
 /**
  * Implements tabbed-browsing by managing a list of tabs and corrosponding panels.
@@ -92,7 +92,7 @@ signals:
     void draggingTab(PanelManager *from, QMouseEvent*);
     void draggingTabFinished(PanelManager *from, QMouseEvent*);
     void setActiveManager(PanelManager *manager);
-    void pathChanged(ListPanel *panel);
+    void pathChanged(KrPanel *panel);
 
 public slots:
     /**
@@ -127,17 +127,17 @@ protected slots:
     }
 
 private:
-    void deletePanel(ListPanel *p);
+    void deletePanel(KrPanel *p);
     void updateTabbarPos();
     void tabsCountChanged();
-    ListPanel* createPanel(bool setCurrent = true, KConfigGroup cfg = KConfigGroup(), KrPanel *nextTo = 0);
+    KrPanel* createPanel(bool setCurrent = true, KConfigGroup cfg = KConfigGroup(), KrPanel *nextTo = 0);
     void addPanel(KrPanel *panel, bool setCurrent, KrPanel *nextTo = 0);
-    void connectPanel(ListPanel *p);
-    void disconnectPanel(ListPanel *p);
+    void connectPanel(KrPanel *p);
+    void disconnectPanel(KrPanel *p);
 
     PanelManager *_otherManager;
     FileManagerWindow* _mainWindow;
-    ListPanel *_currentPanel;
+    KrPanel *_currentPanel;
     CurrentPanelCallback *_currentPanelCb;
     CurrentViewCallback *_currentViewCb;
     TabActions *_actions;

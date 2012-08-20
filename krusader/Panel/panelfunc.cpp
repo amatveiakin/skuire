@@ -145,7 +145,7 @@ void ListPanelFunc::urlEntered(const KUrl &url)
 bool ListPanelFunc::isSyncing(const KUrl &url)
 {
     if(otherFunc()->otherFunc() == this &&
-       panel->otherPanel()->gui->syncBrowseButton->state() == SYNCBROWSE_CD &&
+       panel->otherPanel()->syncBrowseButton->state() == SYNCBROWSE_CD &&
        !otherFunc()->syncURL.isEmpty() &&
        otherFunc()->syncURL == url)
         return true;
@@ -194,7 +194,7 @@ void ListPanelFunc::openUrl(const KUrl& url, KUrl urlToMakeCurrent,
 
         syncURL.addPath(KUrl::relativeUrl(panel->virtualPath().url() + '/', url.url()));
         syncURL.cleanPath();
-        panel->otherPanel()->gui->setLocked(false);
+        panel->otherPanel()->setLocked(false);
         otherFunc()->openUrlInternal(syncURL, urlToMakeCurrent, false, false, false);
     }
     openUrlInternal(url, urlToMakeCurrent, false, false, manuallyEntered);
@@ -355,7 +355,7 @@ void ListPanelFunc::doRefresh()
     // put the attempted url in the origin bar and let the user change it
     if (refreshFailed) {
         if(isSyncing(url))
-            panel->otherPanel()->gui->syncBrowseButton->setChecked(false);
+            panel->otherPanel()->syncBrowseButton->setChecked(false);
         else if(urlManuallyEntered) {
             panel->origin->setUrl(url.prettyUrl());
             if(panel->isActive())

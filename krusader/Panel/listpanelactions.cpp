@@ -148,7 +148,7 @@ ListPanelActions::ListPanelActions(QObject *parent, FileManagerWindow *mainWindo
 
 void ListPanelActions::activePanelChanged()
 {
-    _gui.reconnect(activePanel()->gui);
+    _gui.reconnect(activePanel());
     _func.reconnect(activePanel()->func);
 }
 
@@ -157,22 +157,32 @@ void ListPanelActions::guiUpdated()
     QList<QAction*> actions;
     foreach(QAction *action, setViewActions.values())
         actions << action;
-    static_cast<FileManagerWindow*>(_mainWindow)->plugActionList("view_actionlist", actions);
+    mainWindow()->plugActionList("view_actionlist", actions);
 }
 
-inline KrPanel *ListPanelActions::activePanel()
+inline FileManagerWindow *ListPanelActions::mainWindow()
 {
-    return static_cast<FileManagerWindow*>(_mainWindow)->activePanel();
+    return static_cast<FileManagerWindow*>(_mainWindow);
 }
 
-inline KrPanel *ListPanelActions::leftPanel()
+inline ListPanel *ListPanelActions::getListPanel(KrPanel *panel)
 {
-    return static_cast<FileManagerWindow*>(_mainWindow)->leftPanel();
+    return qobject_cast<ListPanel*>(panel);
 }
 
-inline KrPanel *ListPanelActions::rightPanel()
+inline ListPanel *ListPanelActions::activePanel()
 {
-    return static_cast<FileManagerWindow*>(_mainWindow)->rightPanel();
+    return getListPanel(mainWindow()->activePanel());
+}
+
+inline ListPanel *ListPanelActions::leftPanel()
+{
+    return getListPanel(mainWindow()->leftPanel());
+}
+
+inline ListPanel *ListPanelActions::rightPanel()
+{
+    return getListPanel(mainWindow()->rightPanel());
 }
 
 inline ListPanelFunc *ListPanelActions::activeFunc()
@@ -184,37 +194,37 @@ inline ListPanelFunc *ListPanelActions::activeFunc()
 
 void ListPanelActions::setView(int id)
 {
-    activePanel()->gui->changeType(id);
+    activePanel()->changeType(id);
 }
 
 // navigation
 
 void ListPanelActions::openLeftBookmarks()
 {
-    leftPanel()->gui->openBookmarks();
+    leftPanel()->openBookmarks();
 }
 
 void ListPanelActions::openRightBookmarks()
 {
-    rightPanel()->gui->openBookmarks();
+    rightPanel()->openBookmarks();
 }
 
 void ListPanelActions::openLeftHistory()
 {
-    leftPanel()->gui->openHistory();
+    leftPanel()->openHistory();
 }
 
 void ListPanelActions::openRightHistory()
 {
-    rightPanel()->gui->openHistory();
+    rightPanel()->openHistory();
 }
 
 void ListPanelActions::openLeftMedia()
 {
-    leftPanel()->gui->openMedia();
+    leftPanel()->openMedia();
 }
 
 void ListPanelActions::openRightMedia()
 {
-    rightPanel()->gui->openMedia();
+    rightPanel()->openMedia();
 }

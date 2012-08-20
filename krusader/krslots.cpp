@@ -158,7 +158,7 @@ void KRslots::compareContent()
 {
     KFileItemList lstLeft = LEFT_PANEL->view->getSelectedItems(true);
     KFileItemList lstRight = RIGHT_PANEL->view->getSelectedItems(true);
-    KFileItemList* lstActive = (ACTIVE_PANEL->gui->isLeft() ? &lstLeft : &lstRight);
+    KFileItemList* lstActive = (ACTIVE_PANEL->isLeft() ? &lstLeft : &lstRight);
 
     KFileItem item1, item2;
 
@@ -668,20 +668,26 @@ void KRslots::slotQueueManager()
 // when window becomes focused, enable the refresh in the visible panels
 void KRslots::windowActive()
 {
+//FIXME
+#if 0
     if (MAIN_VIEW != 0) {  /* CRASH FIX: it's possible that the method is called after destroying the main view */
         LEFT_PANEL->panelActive();
         RIGHT_PANEL->panelActive();
     }
+#endif
 }
 
 // when another application becomes focused, do a windows-commander style refresh: don't
 // refresh at all until krusader becomes focused again
 void KRslots::windowInactive()
 {
+//FIXME
+#if 0
     if (MAIN_VIEW != 0) {  /* CRASH FIX: it's possible that the method is called after destroying the main view */
         LEFT_PANEL->panelInactive();
         RIGHT_PANEL->panelInactive();
     }
+#endif
 }
 
 void KRslots::emptyTrash()

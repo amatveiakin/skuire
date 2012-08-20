@@ -38,7 +38,6 @@
 #include <klineedit.h>
 #include <kconfiggroup.h>
 
-#include <qwidget.h>
 #include <QtGui/QLabel>
 #include <QtGui/QLayout>
 #include <QtCore/QString>
@@ -84,7 +83,7 @@ class KDiskFreeSpace;
 class KrErrorDisplay;
 class ListPanelActions;
 
-class ListPanel : public QWidget, public KrPanel
+class ListPanel : public KrPanel
 {
     class ActionButton;
 
@@ -110,20 +109,27 @@ public:
 
     virtual void otherPanelChanged();
 
-    void start(KUrl url = KUrl(), bool immediate = false);
+    virtual bool isLocked() {
+        return _locked;
+    }
+    virtual void setLocked(bool lock) {
+        _locked = lock;
+    }
+    virtual void saveSettings(KConfigGroup cfg, bool localOnly, bool saveHistory = false);
+    virtual void restoreSettings(KConfigGroup cfg);
+    virtual void start(KUrl url = KUrl(), bool immediate = false);
+    virtual void reparent(QWidget *parent, AbstractPanelManager *manager);
+    virtual void activeStateChanged(); // to be called by panel manager
+    virtual void getFocusCandidates(QVector<QWidget*> &widgets);
 
-    void reparent(QWidget *parent, AbstractPanelManager *manager);
+    ListPanel *otherPanel() {
+        return qobject_cast<ListPanel*>(KrPanel::otherPanel());
+    }
 
     int getType() {
         return panelType;
     }
     void changeType(int);
-    bool isLocked() {
-        return _locked;
-    }
-    void setLocked(bool lck) {
-        _locked = lck;
-    }
 
     ListPanelActions *actions() {
         return _actions;
@@ -136,15 +142,9 @@ public:
     int  getProperties();
     void setProperties(int);
 
-    void getFocusCandidates(QVector<QWidget*> &widgets);
-
-    void saveSettings(KConfigGroup cfg, bool localOnly, bool saveHistory = false);
-    void restoreSettings(KConfigGroup cfg);
-
     bool isActive() {
-        return _manager->isActive() && this == _manager->currentPanel()->gui;
+        return _manager->isActive() && this == _manager->currentPanel();
     }
-    void activeStateChanged(); // to be called by panel manager
 
 public slots:
     void gotStats(const QString &mountPoint, quint64 kBSize, quint64 kBUsed, quint64 kBAvail);  // displays filesystem status
@@ -211,8 +211,6 @@ protected slots:
 
 signals:
     void signalStatus(QString msg);         // emmited when we need to update the status bar
-    void pathChanged(ListPanel *panel);
-    void activate(); // request to become the active panel
     void finishedDragging();              // currently
     void refreshColors(bool active);
 

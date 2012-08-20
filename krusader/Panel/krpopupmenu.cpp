@@ -56,9 +56,9 @@ void KrPopupMenu::execMenu(KrPopupMenu *menu, QPoint pos)
     menu->exec(pos);
 }
 
-void KrPopupMenu::run(KrPanel *panel, bool onlyOpenWith)
+void KrPopupMenu::run(ListPanel *panel, bool onlyOpenWith)
 {
-    KrPopupMenu menu(panel, panel->gui, onlyOpenWith);
+    KrPopupMenu menu(panel, panel, onlyOpenWith);
     if(menu.item.isNull())
         return;
 
@@ -77,9 +77,9 @@ void KrPopupMenu::run(KrPanel *panel, bool onlyOpenWith)
     execMenu(&menu, pos);
 }
 
-void KrPopupMenu::run(QPoint pos, KrPanel *panel, bool onlyOpenWith)
+void KrPopupMenu::run(QPoint pos, ListPanel *panel, bool onlyOpenWith)
 {
-    KrPopupMenu menu(panel, panel->gui, onlyOpenWith);
+    KrPopupMenu menu(panel, panel, onlyOpenWith);
 
     QSize menuSize = menu.sizeHint();
     QSize screenSize = QApplication::desktop()->size();
@@ -92,9 +92,9 @@ void KrPopupMenu::run(QPoint pos, KrPanel *panel, bool onlyOpenWith)
     execMenu(&menu, pos);
 }
 
-KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) :
+KrPopupMenu::KrPopupMenu(ListPanel *panel, QWidget *parent, bool onlyOpenWith) :
         KMenu(parent),
-        panel(thePanel),
+        panel(panel),
         empty(false),
         multipleSelections(false),
         actions(0),
@@ -235,7 +235,7 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) 
 
     // ---------- calculate space
     if (isLocalDir && (item.isDir() || multipleSelections))
-        addAction(panel->gui->actions()->actCalculate);
+        addAction(panel->actions()->actCalculate);
 
     // ---------- mount/umount/eject
     if (isLocalDir && item.isDir() && !multipleSelections) {
@@ -269,7 +269,7 @@ KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) 
     addSeparator();
 
     // --------- properties
-    addAction(panel->gui->actions()->actProperties);
+    addAction(panel->actions()->actProperties);
 }
 
 KrPopupMenu::~KrPopupMenu()

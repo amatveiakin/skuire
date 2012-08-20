@@ -57,7 +57,7 @@ void TabActions::refreshActions()
     actMoveTabToOtherSide->setEnabled(tabCount > 1);
     actNextTab->setEnabled(tabCount > 1);
     actPreviousTab->setEnabled(tabCount > 1);
-    bool locked = activeManager()->currentPanel()->gui->isLocked();
+    bool locked = activeManager()->currentPanel()->isLocked();
     actLockTab->setText(locked ? i18n("Unlock Tab") : i18n("Lock Tab"));
 }
 

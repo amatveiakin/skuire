@@ -128,7 +128,7 @@ void PanelManager::tabsCountChanged()
 
 void PanelManager::activate()
 {
-    Q_ASSERT(sender() == (currentPanel()->gui));
+    Q_ASSERT(sender() == (currentPanel()));
     emit setActiveManager(this);
     Q_ASSERT(isActive());
     _actions->refreshActions();
@@ -136,12 +136,12 @@ void PanelManager::activate()
 
 void PanelManager::slotCurrentTabChanged(int index)
 {
-    ListPanel *p = _tabbar->getPanel(index);
+    KrPanel *p = _tabbar->getPanel(index);
 
     if (!p || p == _currentPanel)
         return;
 
-    ListPanel *prev = _currentPanel;
+    KrPanel *prev = _currentPanel;
     _currentPanel = p;
 
     _stack->setCurrentWidget(_currentPanel);
@@ -159,21 +159,21 @@ void PanelManager::slotCurrentTabChanged(int index)
         otherManager()->currentPanel()->otherPanelChanged();
 }
 
-void PanelManager::connectPanel(ListPanel *p)
+void PanelManager::connectPanel(KrPanel *p)
 {
     connect(p, SIGNAL(activate()), this, SLOT(activate()));
-    connect(p, SIGNAL(pathChanged(ListPanel*)), this, SIGNAL(pathChanged(ListPanel*)));
-    connect(p, SIGNAL(pathChanged(ListPanel*)), _tabbar, SLOT(updateTab(ListPanel*)));
+    connect(p, SIGNAL(pathChanged(KrPanel*)), this, SIGNAL(pathChanged(KrPanel*)));
+    connect(p, SIGNAL(pathChanged(KrPanel*)), _tabbar, SLOT(updateTab(KrPanel*)));
 }
 
-void PanelManager::disconnectPanel(ListPanel *p)
+void PanelManager::disconnectPanel(KrPanel *p)
 {
     disconnect(p, SIGNAL(activate()), this, 0);
-    disconnect(p, SIGNAL(pathChanged(ListPanel*)), this, 0);
-    disconnect(p, SIGNAL(pathChanged(ListPanel*)), _tabbar, 0);
+    disconnect(p, SIGNAL(pathChanged(KrPanel*)), this, 0);
+    disconnect(p, SIGNAL(pathChanged(KrPanel*)), _tabbar, 0);
 }
 
-ListPanel* PanelManager::createPanel(bool setCurrent, KConfigGroup cfg, KrPanel *nextTo)
+KrPanel* PanelManager::createPanel(bool setCurrent, KConfigGroup cfg, KrPanel *nextTo)
 {
     // create the panel and add it into the widgetstack
     ListPanel * p = new ListPanel(_stack, this, _currentViewCb, cfg);
@@ -186,11 +186,11 @@ ListPanel* PanelManager::createPanel(bool setCurrent, KConfigGroup cfg, KrPanel 
 
 void PanelManager::addPanel(KrPanel *panel, bool setCurrent, KrPanel *nextTo)
 {
-    _stack->addWidget(panel->gui);
-    connectPanel(panel->gui);
+    _stack->addWidget(panel);
+    connectPanel(panel);
 
     // now, create the corrosponding tab
-    int index = _tabbar->addPanel(panel->gui, setCurrent, nextTo);
+    int index = _tabbar->addPanel(panel, setCurrent, nextTo);
     tabsCountChanged();
 
     if (setCurrent)
@@ -206,7 +206,7 @@ void PanelManager::saveSettings(KConfigGroup config, bool localOnly, bool saveHi
         grpTabs.deleteGroup(grpTab);
 
     for(int i = 0; i < _tabbar->count(); i++) {
-        ListPanel *panel = _tabbar->getPanel(i);
+        KrPanel *panel = _tabbar->getPanel(i);
         KConfigGroup grpTab(&grpTabs, "Tab" + QString::number(i));
         panel->saveSettings(grpTab, localOnly, saveHistory);
     }
@@ -220,7 +220,7 @@ void PanelManager::loadSettings(KConfigGroup config)
 
     for(int i = 0;  i < numTabsNew; i++) {
         KConfigGroup grpTab(&grpTabs, "Tab" + QString::number(i));
-        ListPanel *panel;
+        KrPanel *panel;
         if(i < numTabsOld)
             panel = _tabbar->getPanel(i);
         else
@@ -249,7 +249,7 @@ void PanelManager::moveTabToOtherSide()
     if(tabCount() < 2)
         return;
 
-    ListPanel *p;
+    KrPanel *p;
     _tabbar->removeCurrentPanel(p); // this should result in a panel switch
     // now the new panel should be active
     _stack->removeWidget(p);
@@ -261,7 +261,7 @@ void PanelManager::moveTabToOtherSide()
 
 void PanelManager::slotNewTab(const KUrl& url, bool setCurrent, KrPanel *nextTo)
 {
-    ListPanel *p = createPanel(setCurrent, KConfigGroup(), nextTo);
+    KrPanel *p = createPanel(setCurrent, KConfigGroup(), nextTo);
     p->start(url);
 }
 
@@ -280,7 +280,7 @@ void PanelManager::slotCloseTab(int index)
     if (_tabbar->count() <= 1)    /* if this is the last tab don't close it */
         return ;
 
-    ListPanel *oldp;
+    KrPanel *oldp;
 
     _tabbar->removePanel(index, oldp); //this automatically changes the current panel
 
@@ -326,14 +326,16 @@ void PanelManager::slotPreviousTab()
     _tabbar->setCurrentIndex(nextInd);
 }
 
-void PanelManager::deletePanel(ListPanel * p)
+void PanelManager::deletePanel(KrPanel * p)
 {
     disconnect(p);
 
-    if (p->canDelete())
+    //HACK
+
+    if (((ListPanel*)p)->canDelete())
         delete p;
     else
-        p->requestDelete();
+        ((ListPanel*)p)->requestDelete();
 }
 
 void PanelManager::slotCloseInactiveTabs()
@@ -351,11 +353,11 @@ void PanelManager::slotCloseDuplicatedTabs()
 {
     int i = 0;
     while (i < _tabbar->count() - 1) {
-        ListPanel * panel1 = _tabbar->getPanel(i);
+        KrPanel *panel1 = _tabbar->getPanel(i);
         if (panel1 != 0) {
             for (int j = i + 1; j < _tabbar->count(); j++) {
-                ListPanel * panel2 = _tabbar->getPanel(j);
-                if (panel2 != 0 && panel1->virtualPath().equals(panel2->virtualPath(), KUrl::CompareWithoutTrailingSlash)) {
+                KrPanel *panel2 = _tabbar->getPanel(j);
+                if (panel2 != 0 && panel1->url().equals(panel2->url(), KUrl::CompareWithoutTrailingSlash)) {
                     if (j == activeTab()) {
                         slotCloseTab(i);
                         i--;
@@ -387,7 +389,7 @@ int PanelManager::findTab(KUrl url)
 
 void PanelManager::slotLockTab()
 {
-    currentPanel()->gui->setLocked(!currentPanel()->gui->isLocked());
+    currentPanel()->setLocked(!currentPanel()->isLocked());
     _actions->refreshActions();
 }
 

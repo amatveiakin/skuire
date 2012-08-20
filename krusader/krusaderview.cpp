@@ -212,39 +212,41 @@ PanelManager *KrusaderView::createManager(bool left)
                      SLOT(draggingTab(PanelManager*, QMouseEvent*)));
     connect(p, SIGNAL(draggingTabFinished(PanelManager*, QMouseEvent*)),
                      SLOT(draggingTabFinished(PanelManager*, QMouseEvent*)));
-    connect(p, SIGNAL(pathChanged(ListPanel*)), SLOT(slotPathChanged(ListPanel*)));
+    connect(p, SIGNAL(pathChanged(KrPanel*)), SLOT(slotPathChanged(KrPanel*)));
     connect(p, SIGNAL(setActiveManager(PanelManager*)),
                      SLOT(setActiveManager(PanelManager*)));
 
     return p;
 }
 
-ListPanel* KrusaderView::leftPanel()
+KrPanel* KrusaderView::leftPanel()
 {
-    return leftMng->currentPanel()->gui;
+    return leftMng->currentPanel();
 }
 
-ListPanel* KrusaderView::rightPanel()
+KrPanel* KrusaderView::rightPanel()
 {
-    return rightMng->currentPanel()->gui;
+    return rightMng->currentPanel();
 }
 
 // updates the command line whenever current panel or its path changes
 //////////////////////////////////////////////////////////
-void KrusaderView::slotPathChanged(ListPanel *p)
+void KrusaderView::slotPathChanged(KrPanel *p)
 {
     if(p == ACTIVE_PANEL) {
-        _cmdLine->setCurrent(p->realPath());
+        QString path = p->url().isLocalFile() ?
+                        p->url().path() : QDir::homePath();
+        _cmdLine->setCurrent(path);
         KConfigGroup cfg = krConfig->group("General");
         if (cfg.readEntry("Send CDs", _SendCDs)) { // hopefully, this is cached in kconfig
-            _terminalDock->sendCd(p->realPath());
+            _terminalDock->sendCd(path);
         }
     }
 }
 
 int KrusaderView::getFocusCandidates(QVector<QWidget*> &widgets)
 {
-    ACTIVE_PANEL->gui->getFocusCandidates(widgets);
+    ACTIVE_PANEL->getFocusCandidates(widgets);
     if(_terminalDock->isTerminalVisible())
         widgets << _terminalDock;
     if(_cmdLine->isVisible())
@@ -254,6 +256,7 @@ int KrusaderView::getFocusCandidates(QVector<QWidget*> &widgets)
         if(widgets[i] == focusWidget() || widgets[i]->focusWidget() == focusWidget())
             return i;
     }
+
     return -1;
 }
 
@@ -305,7 +308,7 @@ void KrusaderView::setActiveManager(PanelManager *manager)
     _currentPanelCb->onCurrentPanelChanged(manager->currentPanel());
     _currentViewCb->onCurrentViewChanged(manager->currentPanel()->view);
 
-    slotPathChanged(manager->currentPanel()->gui);
+    slotPathChanged(manager->currentPanel());
 
     krApp->setUpdatesEnabled(true);
 }
@@ -386,7 +389,7 @@ void KrusaderView::slotTerminalEmulator(bool show)
             vert_splitter->setSizes(verticalSplitterSizes);
 
         _terminalDock->show();
-        slotPathChanged(ACTIVE_PANEL->gui);
+        slotPathChanged(ACTIVE_PANEL);
 
         _terminalDock->setFocus();
 
@@ -470,7 +473,7 @@ void KrusaderView::savePanelProfiles(QString group)
     KConfigGroup svr(krConfig, group);
 
     svr.writeEntry("Vertical Mode", isVertical());
-    svr.writeEntry("Left Side Is Active", ACTIVE_PANEL->gui->isLeft());
+    svr.writeEntry("Left Side Is Active", ACTIVE_PANEL->isLeft());
     leftMng->saveSettings(KConfigGroup(&svr, "Left Tabs"), false);
     rightMng->saveSettings(KConfigGroup(&svr, "Right Tabs"), false);
 }
@@ -495,7 +498,7 @@ void KrusaderView::saveSettings(KConfigGroup &cfg)
     if (!getTerminalEmulatorSplitterSizes().isEmpty())
         cfg.writeEntry("Terminal Emulator Splitter Sizes", getTerminalEmulatorSplitterSizes());
     cfg.writeEntry("Vertical Mode", isVertical());
-    cfg.writeEntry("Left Side Is Active", ACTIVE_PANEL->gui->isLeft());
+    cfg.writeEntry("Left Side Is Active", ACTIVE_PANEL->isLeft());
     bool localOnly = true; //FIXME make configurable
     leftMng->saveSettings(KConfigGroup(&cfg, "Left Tab Bar"), localOnly, true);
     rightMng->saveSettings(KConfigGroup(&cfg, "Right Tab Bar"), localOnly, true);

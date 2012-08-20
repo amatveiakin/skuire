@@ -51,7 +51,7 @@
 #include "Panel/krpanel.h"
 
 class PanelManager;
-class ListPanel;
+class KrPanel;
 
 // forward declaration
 class KFnKeys;
@@ -95,8 +95,8 @@ public:
     TerminalDock *terminalDock() const {
         return _terminalDock;
     }
-    ListPanel* leftPanel();
-    ListPanel* rightPanel();
+    KrPanel* leftPanel();
+    KrPanel* rightPanel();
     bool isVertical() const {
         return horiz_splitter != 0 ? horiz_splitter->orientation() == Qt::Vertical : false;
     }
@@ -105,7 +105,7 @@ public:
     void setPanelSize(bool leftPanel, int percent);
 
 public slots:
-    void slotPathChanged(ListPanel *p);
+    void slotPathChanged(KrPanel *p);
     void slotTerminalEmulator(bool);
     // Tab - switch focus
     void panelSwitch();

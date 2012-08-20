@@ -35,17 +35,27 @@
 #include "../abstractpanelmanager.h"
 
 #include <kurl.h>
+#include <kconfiggroup.h>
+#include <QWidget>
+
 
 class ListPanelFunc;
-class ListPanel;
 class AbstractView;
 class AbstractDirLister;
 
-class KrPanel
+
+class KrPanel : public QWidget
 {
+    Q_OBJECT
+
+signals:
+    void activate(); // request to become the active panel
+    void pathChanged(KrPanel *panel);
+
 public:
-    KrPanel(AbstractPanelManager *manager) :
-        gui(0), func(0), view(0), _manager(manager) {}
+    KrPanel(QWidget *parent, AbstractPanelManager *manager) :
+        QWidget(parent),
+        func(0), view(0), _manager(manager) {}
     virtual ~KrPanel() {}
 
     //TODO: remove this
@@ -56,6 +66,16 @@ public:
     virtual KUrl url() const = 0;
 
     virtual AbstractDirLister *dirLister() = 0;
+
+    virtual bool isLocked() = 0;
+    virtual void setLocked(bool lock) = 0;
+    virtual void saveSettings(KConfigGroup cfg, bool localOnly, bool saveHistory = false) = 0;
+    virtual void restoreSettings(KConfigGroup cfg) = 0;
+    virtual void start(KUrl url = KUrl(), bool immediate = false) = 0;
+    virtual void reparent(QWidget *parent, AbstractPanelManager *manager) = 0;
+    virtual void activeStateChanged() = 0; // to be called by panel manager
+    virtual void getFocusCandidates(QVector<QWidget*> &widgets) = 0;
+
 
     AbstractPanelManager *manager() {
         return _manager;
@@ -68,7 +88,6 @@ public:
     }
     virtual void otherPanelChanged() {}
 
-    ListPanel *gui;
     ListPanelFunc *func;
     AbstractView *view;
 
