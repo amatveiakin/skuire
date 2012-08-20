@@ -76,7 +76,7 @@ KgPanel::KgPanel(bool first, QWidget* parent) :
 
 ViewConfigUI *KgPanel::viewConfigUI()
 {
-    ViewConfigUI *viewCfg = qobject_cast<ViewConfigUI*>(KrusaderApp::self()->module("view"));
+    ViewConfigUI *viewCfg = qobject_cast<ViewConfigUI*>(KrusaderApp::self()->module("View"));
     Q_ASSERT(viewCfg);
     return viewCfg;
 }

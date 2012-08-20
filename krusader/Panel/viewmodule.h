@@ -33,7 +33,7 @@ class ViewModule : public Module, public ViewFactory, public ViewConfigUI
 public:
     // Module implementation
     virtual QString name() {
-        return "view";
+        return "View";
     }
     virtual void init();
     virtual ActionsBase *createActions(QObject *parent, AbstractMainWindow *mainWindow);

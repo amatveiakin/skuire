@@ -24,7 +24,7 @@
 
 ViewFactory *ViewFactory::self()
 {
-    Module *viewModule = KrusaderApp::self()->module("view");
+    Module *viewModule = KrusaderApp::self()->module("View");
     ViewFactory *factory = qobject_cast<ViewFactory*>(viewModule);
     Q_ASSERT(factory);
     return factory;
