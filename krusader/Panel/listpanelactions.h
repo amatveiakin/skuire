@@ -39,7 +39,7 @@
 
 
 class FileManagerWindow;
-class KrPanel;
+class AbstractListPanel;
 class ListPanel;
 class ListPanelFunc;
 
@@ -82,7 +82,7 @@ protected:
     ListPanel *leftPanel();
     ListPanel *rightPanel();
     ListPanelFunc *activeFunc();
-    ListPanel *getListPanel(KrPanel *panel);
+    ListPanel *getListPanel(AbstractListPanel *panel);
     FileManagerWindow *mainWindow();
 
     ActionGroup _gui, _func;

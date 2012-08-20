@@ -26,13 +26,13 @@
 #include <kurl.h>
 #include <kconfiggroup.h>
 
-class KrPanel;
+class AbstractListPanel;
 
 class DirHistoryQueue : public QObject
 {
     Q_OBJECT
 public:
-    DirHistoryQueue(KrPanel *panel);
+    DirHistoryQueue(AbstractListPanel *panel);
     ~DirHistoryQueue();
 
     void clear();
@@ -70,7 +70,7 @@ public slots:
     void saveCurrentItem();
 
 private:
-    KrPanel* _panel;
+    AbstractListPanel* _panel;
     int _state; // increments when we move inside the history, or a new item is added
     int _currentPos;
     KUrl::List _urlQueue;

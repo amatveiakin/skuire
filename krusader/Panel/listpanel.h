@@ -83,7 +83,7 @@ class KDiskFreeSpace;
 class KrErrorDisplay;
 class ListPanelActions;
 
-class ListPanel : public KrPanel
+class ListPanel : public AbstractListPanel
 {
     class ActionButton;
 
@@ -123,7 +123,7 @@ public:
     virtual void getFocusCandidates(QVector<QWidget*> &widgets);
 
     ListPanel *otherPanel() {
-        return qobject_cast<ListPanel*>(KrPanel::otherPanel());
+        return qobject_cast<ListPanel*>(AbstractListPanel::otherPanel());
     }
 
     int getType() {

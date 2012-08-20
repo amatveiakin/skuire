@@ -165,7 +165,7 @@ inline FileManagerWindow *ListPanelActions::mainWindow()
     return static_cast<FileManagerWindow*>(_mainWindow);
 }
 
-inline ListPanel *ListPanelActions::getListPanel(KrPanel *panel)
+inline ListPanel *ListPanelActions::getListPanel(AbstractListPanel *panel)
 {
     return qobject_cast<ListPanel*>(panel);
 }

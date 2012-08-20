@@ -68,7 +68,7 @@ void TabActions::newTab()
 
 void TabActions::duplicateTab()
 {
-    KrPanel *activePanel = static_cast<FileManagerWindow*>(_mainWindow)->activePanel();
+    AbstractListPanel *activePanel = static_cast<FileManagerWindow*>(_mainWindow)->activePanel();
     activeManager()->newTab(activePanel->virtualPath(), activePanel);
 }
 

@@ -64,7 +64,7 @@ void PanelTabBar::insertAction(KAction* action)
     _panelActionMenu->addAction(action);
 }
 
-int PanelTabBar::addPanel(KrPanel *panel, bool setCurrent, KrPanel *nextTo)
+int PanelTabBar::addPanel(AbstractListPanel *panel, bool setCurrent, AbstractListPanel *nextTo)
 {
     int insertIndex = -1;
 
@@ -93,26 +93,26 @@ int PanelTabBar::addPanel(KrPanel *panel, bool setCurrent, KrPanel *nextTo)
     if (setCurrent)
         setCurrentIndex(newId);
 
-    connect(panel, SIGNAL(pathChanged(KrPanel*)), this, SLOT(updateTab(KrPanel*)));
+    connect(panel, SIGNAL(pathChanged(AbstractListPanel*)), this, SLOT(updateTab(AbstractListPanel*)));
 
     return newId;
 }
 
-KrPanel* PanelTabBar::getPanel(int tabIdx)
+AbstractListPanel* PanelTabBar::getPanel(int tabIdx)
 {
     QVariant v = tabData(tabIdx);
     if (v.isNull()) return 0;
-    return (KrPanel*)v.toLongLong();
+    return (AbstractListPanel*)v.toLongLong();
 }
 
-void PanelTabBar::changePanel(int tabIdx, KrPanel *panel)
+void PanelTabBar::changePanel(int tabIdx, AbstractListPanel *panel)
 {
     QVariant v;
     v.setValue((long long)panel);
     setTabData(tabIdx, v);
 }
 
-KrPanel* PanelTabBar::removePanel(int index, KrPanel* &panelToDelete)
+AbstractListPanel* PanelTabBar::removePanel(int index, AbstractListPanel* &panelToDelete)
 {
     panelToDelete = getPanel(index); // old panel to kill later
     disconnect(panelToDelete, 0, this, 0);
@@ -123,16 +123,16 @@ KrPanel* PanelTabBar::removePanel(int index, KrPanel* &panelToDelete)
     return getPanel(currentIndex());
 }
 
-KrPanel* PanelTabBar::removeCurrentPanel(KrPanel* &panelToDelete)
+AbstractListPanel* PanelTabBar::removeCurrentPanel(AbstractListPanel* &panelToDelete)
 {
     return removePanel(currentIndex(), panelToDelete);
 }
 
-void PanelTabBar::updateTab(KrPanel *panel)
+void PanelTabBar::updateTab(AbstractListPanel *panel)
 {
     // find which is the correct tab
     for (int i = 0; i < count(); i++) {
-        if ((KrPanel*)tabData(i).toLongLong() == panel) {
+        if ((AbstractListPanel*)tabData(i).toLongLong() == panel) {
             setTabText(i, squeeze(DISPLAY(panel->virtualPath()), i));
             break;
         }
@@ -142,7 +142,7 @@ void PanelTabBar::updateTab(KrPanel *panel)
 void PanelTabBar::duplicateTab()
 {
     int id = currentIndex();
-    emit newTab(((KrPanel*)tabData(id).toLongLong())->virtualPath());
+    emit newTab(((AbstractListPanel*)tabData(id).toLongLong())->virtualPath());
 }
 
 void PanelTabBar::closeTab()
@@ -309,7 +309,7 @@ void PanelTabBar::dragMoveEvent(QDragMoveEvent *e)
 void PanelTabBar::layoutTabs()
 {
    for (int i = 0; i < count(); i++)
-        setTabText(i, squeeze(DISPLAY(((KrPanel*)tabData(i).toLongLong())->virtualPath()), i));
+        setTabText(i, squeeze(DISPLAY(((AbstractListPanel*)tabData(i).toLongLong())->virtualPath()), i));
 }
 
 #include "paneltabbar.moc"

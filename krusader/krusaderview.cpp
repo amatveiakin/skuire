@@ -212,26 +212,26 @@ PanelManager *KrusaderView::createManager(bool left)
                      SLOT(draggingTab(PanelManager*, QMouseEvent*)));
     connect(p, SIGNAL(draggingTabFinished(PanelManager*, QMouseEvent*)),
                      SLOT(draggingTabFinished(PanelManager*, QMouseEvent*)));
-    connect(p, SIGNAL(pathChanged(KrPanel*)), SLOT(slotPathChanged(KrPanel*)));
+    connect(p, SIGNAL(pathChanged(AbstractListPanel*)), SLOT(slotPathChanged(AbstractListPanel*)));
     connect(p, SIGNAL(setActiveManager(PanelManager*)),
                      SLOT(setActiveManager(PanelManager*)));
 
     return p;
 }
 
-KrPanel* KrusaderView::leftPanel()
+AbstractListPanel* KrusaderView::leftPanel()
 {
     return leftMng->currentPanel();
 }
 
-KrPanel* KrusaderView::rightPanel()
+AbstractListPanel* KrusaderView::rightPanel()
 {
     return rightMng->currentPanel();
 }
 
 // updates the command line whenever current panel or its path changes
 //////////////////////////////////////////////////////////
-void KrusaderView::slotPathChanged(KrPanel *p)
+void KrusaderView::slotPathChanged(AbstractListPanel *p)
 {
     if(p == ACTIVE_PANEL) {
         QString path = p->url().isLocalFile() ?

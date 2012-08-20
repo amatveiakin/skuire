@@ -140,7 +140,7 @@ protected:
 /////////////////////////////////////////////////////
 ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager, 
                      CurrentViewCallback *currentViewCb, KConfigGroup cfg) :
-        KrPanel(parent, manager),
+        AbstractListPanel(parent, manager),
         panelType(-1), colorMask(255), compareMode(false), statsAgent(0),
         previewJob(0), inlineRefreshJob(0), _currentViewCb(currentViewCb),
         quickSearch(0), cdRootButton(0), cdUpButton(0),
@@ -934,7 +934,7 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
     QWidget *notify = (!e->source() ? 0 : e->source());
     tempFiles->vfs_addFiles(&URLs, mode, notify, dir);
     if(KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
-        KrPanel *p = (dragFromThisPanel ? this : otherPanel());
+        AbstractListPanel *p = (dragFromThisPanel ? this : otherPanel());
         p->view->saveSelection();
         p->view->unselect(KRQuery("*"));
     }

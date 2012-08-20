@@ -32,11 +32,11 @@
 class ViewExpPlaceholder : public exp_placeholder
 {
 public:
-    virtual TagString expFunc(const KrPanel* panel, const TagStringList& parameter, const bool& useUrl, Expander& exp) const;
+    virtual TagString expFunc(const AbstractListPanel* panel, const TagStringList& parameter, const bool& useUrl, Expander& exp) const;
     virtual TagString expFuncImpl(KrView *view, const QStringList& parameter, Expander &exp) const = 0;
 };
 
-TagString ViewExpPlaceholder::expFunc(const KrPanel* panel, const TagStringList& parameter, const bool& useUrl, Expander& exp) const
+TagString ViewExpPlaceholder::expFunc(const AbstractListPanel* panel, const TagStringList& parameter, const bool& useUrl, Expander& exp) const
 {
     Q_UNUSED(useUrl)
     Q_UNUSED(parameter)

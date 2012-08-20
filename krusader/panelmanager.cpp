@@ -136,12 +136,12 @@ void PanelManager::activate()
 
 void PanelManager::slotCurrentTabChanged(int index)
 {
-    KrPanel *p = _tabbar->getPanel(index);
+    AbstractListPanel *p = _tabbar->getPanel(index);
 
     if (!p || p == _currentPanel)
         return;
 
-    KrPanel *prev = _currentPanel;
+    AbstractListPanel *prev = _currentPanel;
     _currentPanel = p;
 
     _stack->setCurrentWidget(_currentPanel);
@@ -159,21 +159,21 @@ void PanelManager::slotCurrentTabChanged(int index)
         otherManager()->currentPanel()->otherPanelChanged();
 }
 
-void PanelManager::connectPanel(KrPanel *p)
+void PanelManager::connectPanel(AbstractListPanel *p)
 {
     connect(p, SIGNAL(activate()), this, SLOT(activate()));
-    connect(p, SIGNAL(pathChanged(KrPanel*)), this, SIGNAL(pathChanged(KrPanel*)));
-    connect(p, SIGNAL(pathChanged(KrPanel*)), _tabbar, SLOT(updateTab(KrPanel*)));
+    connect(p, SIGNAL(pathChanged(AbstractListPanel*)), this, SIGNAL(pathChanged(AbstractListPanel*)));
+    connect(p, SIGNAL(pathChanged(AbstractListPanel*)), _tabbar, SLOT(updateTab(AbstractListPanel*)));
 }
 
-void PanelManager::disconnectPanel(KrPanel *p)
+void PanelManager::disconnectPanel(AbstractListPanel *p)
 {
     disconnect(p, SIGNAL(activate()), this, 0);
-    disconnect(p, SIGNAL(pathChanged(KrPanel*)), this, 0);
-    disconnect(p, SIGNAL(pathChanged(KrPanel*)), _tabbar, 0);
+    disconnect(p, SIGNAL(pathChanged(AbstractListPanel*)), this, 0);
+    disconnect(p, SIGNAL(pathChanged(AbstractListPanel*)), _tabbar, 0);
 }
 
-KrPanel* PanelManager::createPanel(bool setCurrent, KConfigGroup cfg, KrPanel *nextTo)
+AbstractListPanel* PanelManager::createPanel(bool setCurrent, KConfigGroup cfg, AbstractListPanel *nextTo)
 {
     // create the panel and add it into the widgetstack
     ListPanel * p = new ListPanel(_stack, this, _currentViewCb, cfg);
@@ -184,7 +184,7 @@ KrPanel* PanelManager::createPanel(bool setCurrent, KConfigGroup cfg, KrPanel *n
     return p;
 }
 
-void PanelManager::addPanel(KrPanel *panel, bool setCurrent, KrPanel *nextTo)
+void PanelManager::addPanel(AbstractListPanel *panel, bool setCurrent, AbstractListPanel *nextTo)
 {
     _stack->addWidget(panel);
     connectPanel(panel);
@@ -206,7 +206,7 @@ void PanelManager::saveSettings(KConfigGroup config, bool localOnly, bool saveHi
         grpTabs.deleteGroup(grpTab);
 
     for(int i = 0; i < _tabbar->count(); i++) {
-        KrPanel *panel = _tabbar->getPanel(i);
+        AbstractListPanel *panel = _tabbar->getPanel(i);
         KConfigGroup grpTab(&grpTabs, "Tab" + QString::number(i));
         panel->saveSettings(grpTab, localOnly, saveHistory);
     }
@@ -220,7 +220,7 @@ void PanelManager::loadSettings(KConfigGroup config)
 
     for(int i = 0;  i < numTabsNew; i++) {
         KConfigGroup grpTab(&grpTabs, "Tab" + QString::number(i));
-        KrPanel *panel;
+        AbstractListPanel *panel;
         if(i < numTabsOld)
             panel = _tabbar->getPanel(i);
         else
@@ -249,7 +249,7 @@ void PanelManager::moveTabToOtherSide()
     if(tabCount() < 2)
         return;
 
-    KrPanel *p;
+    AbstractListPanel *p;
     _tabbar->removeCurrentPanel(p); // this should result in a panel switch
     // now the new panel should be active
     _stack->removeWidget(p);
@@ -259,9 +259,9 @@ void PanelManager::moveTabToOtherSide()
     _otherManager->addPanel(p, true);
 }
 
-void PanelManager::slotNewTab(const KUrl& url, bool setCurrent, KrPanel *nextTo)
+void PanelManager::slotNewTab(const KUrl& url, bool setCurrent, AbstractListPanel *nextTo)
 {
-    KrPanel *p = createPanel(setCurrent, KConfigGroup(), nextTo);
+    AbstractListPanel *p = createPanel(setCurrent, KConfigGroup(), nextTo);
     p->start(url);
 }
 
@@ -280,7 +280,7 @@ void PanelManager::slotCloseTab(int index)
     if (_tabbar->count() <= 1)    /* if this is the last tab don't close it */
         return ;
 
-    KrPanel *oldp;
+    AbstractListPanel *oldp;
 
     _tabbar->removePanel(index, oldp); //this automatically changes the current panel
 
@@ -326,7 +326,7 @@ void PanelManager::slotPreviousTab()
     _tabbar->setCurrentIndex(nextInd);
 }
 
-void PanelManager::deletePanel(KrPanel * p)
+void PanelManager::deletePanel(AbstractListPanel * p)
 {
     disconnect(p);
 
@@ -353,10 +353,10 @@ void PanelManager::slotCloseDuplicatedTabs()
 {
     int i = 0;
     while (i < _tabbar->count() - 1) {
-        KrPanel *panel1 = _tabbar->getPanel(i);
+        AbstractListPanel *panel1 = _tabbar->getPanel(i);
         if (panel1 != 0) {
             for (int j = i + 1; j < _tabbar->count(); j++) {
-                KrPanel *panel2 = _tabbar->getPanel(j);
+                AbstractListPanel *panel2 = _tabbar->getPanel(j);
                 if (panel2 != 0 && panel1->url().equals(panel2->url(), KUrl::CompareWithoutTrailingSlash)) {
                     if (j == activeTab()) {
                         slotCloseTab(i);
@@ -398,7 +398,7 @@ void PanelManager::newTabs(const QStringList& urls) {
         slotNewTab(KUrl(urls[i]));
 }
 
-KrPanel *PanelManager::currentPanel()
+AbstractListPanel *PanelManager::currentPanel()
 {
     return _currentPanel;
 }

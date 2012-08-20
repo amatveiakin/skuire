@@ -21,7 +21,7 @@
 
 #include <kurl.h>
 
-class KrPanel;
+class AbstractListPanel;
 
 class AbstractPanelManager
 {
@@ -30,16 +30,16 @@ public:
     virtual bool isActive() = 0;
     virtual bool isLeft() = 0;
     virtual AbstractPanelManager *otherManager() = 0;
-    virtual KrPanel *currentPanel() = 0;
-    virtual void newTab(const KUrl&, KrPanel *nextTo = 0) = 0;
+    virtual AbstractListPanel *currentPanel() = 0;
+    virtual void newTab(const KUrl&, AbstractListPanel *nextTo = 0) = 0;
 };
 
 class CurrentPanelCallback
 {
 public:
     virtual ~CurrentPanelCallback() {}
-    virtual void onPanelCreated(KrPanel *panel) = 0;
-    virtual void onCurrentPanelChanged(KrPanel *panel) = 0;
+    virtual void onPanelCreated(AbstractListPanel *panel) = 0;
+    virtual void onCurrentPanelChanged(AbstractListPanel *panel) = 0;
 };
 
 #endif // __ABSTRACTPANELMANAGER_H__

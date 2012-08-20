@@ -465,13 +465,13 @@ void Krusader::onCurrentViewChanged(AbstractView *view)
     }
 }
 
-void Krusader::onPanelCreated(KrPanel *panel)
+void Krusader::onPanelCreated(AbstractListPanel *panel)
 {
     foreach(ActionsBase *actions, _allActions)
         actions->onPanelCreated(panel);
 }
 
-void Krusader::onCurrentPanelChanged(KrPanel *panel)
+void Krusader::onCurrentPanelChanged(AbstractListPanel *panel)
 {
     if (activePanel() == panel) {
         foreach(ActionsBase *actions, _allActions)
@@ -919,7 +919,7 @@ AbstractView *Krusader::activeView()
     return activePanel() ? activePanel()->view : 0;
 }
 
-KrPanel *Krusader::activePanel()
+AbstractListPanel *Krusader::activePanel()
 {
     return activeManager() ? activeManager()->currentPanel() : 0;
 }

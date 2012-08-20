@@ -45,7 +45,7 @@
 #include "../VFS/vfs.h"
 #include "calcspacethread.h"
 
-class KrPanel;
+class AbstractListPanel;
 class AbstractView;
 
 
@@ -79,7 +79,7 @@ protected slots:
 
 public:
     // autoclose: wait 3 sec. before showing the dialog. Close it, when done
-    KrCalcSpaceDialog(QWidget *parent, KrPanel * panel, const KUrl::List items, bool autoclose);
+    KrCalcSpaceDialog(QWidget *parent, AbstractListPanel * panel, const KUrl::List items, bool autoclose);
     ~KrCalcSpaceDialog();
 
     void getStats(KIO::filesize_t  &totalSize,

@@ -44,19 +44,19 @@ class AbstractView;
 class AbstractDirLister;
 
 
-class KrPanel : public QWidget
+class AbstractListPanel : public QWidget
 {
     Q_OBJECT
 
 signals:
     void activate(); // request to become the active panel
-    void pathChanged(KrPanel *panel);
+    void pathChanged(AbstractListPanel *panel);
 
 public:
-    KrPanel(QWidget *parent, AbstractPanelManager *manager) :
+    AbstractListPanel(QWidget *parent, AbstractPanelManager *manager) :
         QWidget(parent),
         func(0), view(0), _manager(manager) {}
-    virtual ~KrPanel() {}
+    virtual ~AbstractListPanel() {}
 
     //TODO: remove this
     KUrl virtualPath() const {
@@ -80,7 +80,7 @@ public:
     AbstractPanelManager *manager() {
         return _manager;
     }
-    KrPanel *otherPanel() {
+    AbstractListPanel *otherPanel() {
         return _manager->otherManager()->currentPanel();
     }
     bool isLeft() const {

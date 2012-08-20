@@ -31,7 +31,7 @@
 class QMouseEvent;
 class KAction;
 class KActionMenu;
-class KrPanel;
+class AbstractListPanel;
 class TabActions;
 
 /**
@@ -49,24 +49,24 @@ public slots:
     /**
      * called by PanelManager with an already created panel, and creates the corrosponding tab
      */
-    int addPanel(KrPanel *panel, bool setCurrent = true, KrPanel *nextTo = 0);
+    int addPanel(AbstractListPanel *panel, bool setCurrent = true, AbstractListPanel *nextTo = 0);
 
-    KrPanel* getPanel(int tabIdx);
-    void changePanel(int tabIdx, KrPanel *panel);
+    AbstractListPanel* getPanel(int tabIdx);
+    void changePanel(int tabIdx, AbstractListPanel *panel);
     void layoutTabs();
 
     /**
      * when the user changes the current path in a panel, this method updates the tab accordingly
      */
-    void updateTab(KrPanel *panel);
+    void updateTab(AbstractListPanel *panel);
     /**
      * actually removes the current tab WITHOUT actually deleting the panel.
      * returns a pointer to the panel which is going to be displayed next.
      * panelToDelete returns a reference to the pointer of the soon-to-die panel, to
      * be used by PanelManager.
      */
-    KrPanel* removeCurrentPanel(KrPanel* &panelToDelete); // returns the panel focused after removing the current
-    KrPanel* removePanel(int index, KrPanel* &panelToDelete);
+    AbstractListPanel* removeCurrentPanel(AbstractListPanel* &panelToDelete); // returns the panel focused after removing the current
+    AbstractListPanel* removePanel(int index, AbstractListPanel* &panelToDelete);
 
 signals:
     /**

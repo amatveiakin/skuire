@@ -46,7 +46,7 @@ class KIconLoader;
 class KrusaderView;
 class UserAction;
 class QWidget;
-class KrPanel;
+class AbstractListPanel;
 class QAction;
 
 // global references to frequently used objects
@@ -63,7 +63,7 @@ public:
     static QWidget *mainWindow;
     static UserAction *userAction;
 //     static ListPanel  *activePanel;
-    static KrPanel *activePanel();
+    static AbstractListPanel *activePanel();
 
     //HACK - used by [ListerTextArea|KrSearchDialog|LocateDlg]:keyPressEvent()
     static KShortcut copyShortcut;

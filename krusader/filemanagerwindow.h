@@ -24,7 +24,7 @@
 
 class ListPanelActions;
 class TabActions;
-class KrPanel;
+class AbstractListPanel;
 class KrActions;
 class PopularUrls;
 
@@ -40,13 +40,13 @@ public:
     virtual TabActions *tabActions() = 0;
     virtual void plugActionList(const char *name, QList<QAction*> &list) = 0;
 
-    KrPanel *activePanel() {
+    AbstractListPanel *activePanel() {
         return activeManager()->currentPanel();
     }
-    KrPanel *leftPanel() {
+    AbstractListPanel *leftPanel() {
         return leftManager()->currentPanel();
     }
-    KrPanel *rightPanel() {
+    AbstractListPanel *rightPanel() {
         return rightManager()->currentPanel();
     }
 };

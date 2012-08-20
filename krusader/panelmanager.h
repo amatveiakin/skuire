@@ -83,8 +83,8 @@ public:
     virtual AbstractPanelManager *otherManager() {
         return _otherManager;
     }
-    virtual KrPanel *currentPanel();
-    virtual void newTab(const KUrl &url, KrPanel *nextTo) {
+    virtual AbstractListPanel *currentPanel();
+    virtual void newTab(const KUrl &url, AbstractListPanel *nextTo) {
         slotNewTab(url, true, nextTo);
     }
 
@@ -92,7 +92,7 @@ signals:
     void draggingTab(PanelManager *from, QMouseEvent*);
     void draggingTabFinished(PanelManager *from, QMouseEvent*);
     void setActiveManager(PanelManager *manager);
-    void pathChanged(KrPanel *panel);
+    void pathChanged(AbstractListPanel *panel);
 
 public slots:
     /**
@@ -105,7 +105,7 @@ public slots:
     }
     Q_SCRIPTABLE void newTabs(const QStringList& urls);
 
-    void slotNewTab(const KUrl& url, bool setCurrent = true, KrPanel *nextTo = 0);
+    void slotNewTab(const KUrl& url, bool setCurrent = true, AbstractListPanel *nextTo = 0);
     void slotNewTab();
     void slotLockTab();
     void slotNextTab();
@@ -127,17 +127,17 @@ protected slots:
     }
 
 private:
-    void deletePanel(KrPanel *p);
+    void deletePanel(AbstractListPanel *p);
     void updateTabbarPos();
     void tabsCountChanged();
-    KrPanel* createPanel(bool setCurrent = true, KConfigGroup cfg = KConfigGroup(), KrPanel *nextTo = 0);
-    void addPanel(KrPanel *panel, bool setCurrent, KrPanel *nextTo = 0);
-    void connectPanel(KrPanel *p);
-    void disconnectPanel(KrPanel *p);
+    AbstractListPanel* createPanel(bool setCurrent = true, KConfigGroup cfg = KConfigGroup(), AbstractListPanel *nextTo = 0);
+    void addPanel(AbstractListPanel *panel, bool setCurrent, AbstractListPanel *nextTo = 0);
+    void connectPanel(AbstractListPanel *p);
+    void disconnectPanel(AbstractListPanel *p);
 
     PanelManager *_otherManager;
     FileManagerWindow* _mainWindow;
-    KrPanel *_currentPanel;
+    AbstractListPanel *_currentPanel;
     CurrentPanelCallback *_currentPanelCb;
     CurrentViewCallback *_currentViewCb;
     TabActions *_actions;

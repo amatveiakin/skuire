@@ -103,8 +103,8 @@ public:
     void onCurrentViewChanged(AbstractView *view);
 
     // CurrentPanelCallback implementation
-    void onPanelCreated(KrPanel *panel);
-    void onCurrentPanelChanged(KrPanel *panel);
+    void onPanelCreated(AbstractListPanel *panel);
+    void onCurrentPanelChanged(AbstractListPanel *panel);
 
     virtual PopularUrls *popularUrls() {
         return _popularUrls;
@@ -190,7 +190,7 @@ signals:
     void shutdown();
 
 private:
-    KrPanel *activePanel();
+    AbstractListPanel *activePanel();
     static void supportedTool(QStringList &tools, QString toolType,
                               QStringList names, QString confName);
 

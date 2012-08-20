@@ -48,7 +48,7 @@ A
 #include "abstractview.h"
 
 
-KrCalcSpaceDialog::KrCalcSpaceDialog(QWidget *parent, KrPanel * panel, KUrl::List items, bool autoclose) :
+KrCalcSpaceDialog::KrCalcSpaceDialog(QWidget *parent, AbstractListPanel * panel, KUrl::List items, bool autoclose) :
         KDialog(parent), m_autoClose(autoclose), m_canceled(false), 
                 m_timerCounter(0), m_items(items), m_view(panel->view)
 {

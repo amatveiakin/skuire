@@ -26,7 +26,7 @@
 
 
 class KrMainWindow;
-class KrPanel;
+class AbstractListPanel;
 class AbstractView;
 
 class ActionsBase : public QObject
@@ -36,7 +36,7 @@ class ActionsBase : public QObject
 public:
     virtual void onViewCreated(AbstractView*) {}
     virtual void onActiveViewChanged() {}
-    virtual void onPanelCreated(KrPanel*) {}
+    virtual void onPanelCreated(AbstractListPanel*) {}
     virtual void onActivePanelChanged()  {}
 
 protected:

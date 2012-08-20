@@ -49,7 +49,7 @@ UserAction *KrGlobal::userAction = 0;
 KShortcut KrGlobal::copyShortcut;
 
 
-KrPanel *KrGlobal::activePanel()
+AbstractListPanel *KrGlobal::activePanel()
 {
     // active manager might not be set yet
     if(mainView->activeManager())
