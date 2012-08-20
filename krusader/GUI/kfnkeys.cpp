@@ -30,86 +30,71 @@
 
 #include "kfnkeys.h"
 
-#include <QGridLayout>
-#include <QtGui/QFontMetrics>
-
-#include <klocale.h>
-#include <kglobalsettings.h>
-
 #include "../defaults.h"
 #include "../kractions.h"
 #include "../Panel/listpanelactions.h"
-#include "abstracttwinpanelfm.h"
+#include "abstractmainwindow.h"
+
+#include <kdebug.h>
+#include <klocale.h>
+#include <kglobalsettings.h>
+
+#include <QHBoxLayout>
+#include <QtGui/QPushButton>
+#include <QtGui/QFontMetrics>
 
 
-KFnKeys::KFnKeys(QWidget *parent, AbstractTwinPanelFM *mainWindow) :
+struct KFnKeys::Button : public QPushButton
+{
+    Button(QWidget *parent, QString label, QString actionName) :
+            QPushButton(parent),
+            label(label), actionName(actionName) {}
+
+    QString label;
+    QString actionName;
+};
+
+
+KFnKeys::KFnKeys(QWidget *parent, AbstractMainWindow *mainWindow) :
         QWidget(parent), mainWindow(mainWindow)
 {
-    ////////////////////////////////
-#define SETUP(TARGET) {\
-        TARGET = new QPushButton(this); \
-        TARGET->setMinimumWidth(45);\
-        TARGET->setToolTip(mainWindow->listPanelActions()->act##TARGET->toolTip()); \
-        connect(TARGET, SIGNAL(clicked()), mainWindow->listPanelActions()->act##TARGET, SLOT(trigger())); \
-    }
-
     setFont(KGlobalSettings::generalFont());
-    layout = new QGridLayout(this); // 9 keys
+    layout = new QHBoxLayout(this);
     layout->setContentsMargins(0, 0, 0, 0);
     layout->setSpacing(0);
 
-    SETUP(F2);
-    SETUP(F3);
-    SETUP(F4);
-    SETUP(F5);
-    SETUP(F6);
-    SETUP(F7);
-    SETUP(F8);
-    SETUP(F9);
-
-    F10 = new QPushButton(this);
-    F10->setToolTip(i18n("Quit Krusader."));
-    connect(F10, SIGNAL(clicked()), mainWindow->krActions()->actF10, SLOT(trigger()));
-    F10->setMinimumWidth(45);
+    addButton(i18n("Term"), "F2_Terminal");
+    addButton(i18n("View"), "F3_View");
+    addButton(i18n("Edit"), "F4_Edit");
+    addButton(i18n("Copy"), "F5_Copy");
+    addButton(i18n("Move"), "F6_Move");
+    addButton(i18n("Mkdir"), "F7_Mkdir");
+    addButton(i18n("Delete"), "F8_Delete");
+    addButton(i18n("Rename"), "F9_Rename");
+    addButton(i18n("Quit"), "F10_Quit");
 
     updateShortcuts();
-    /*
-        // set a tighter box around the keys
-        int h = QFontMetrics(F2->font()).height()+2;
-        F2->setMaximumHeight(h); F3->setMaximumHeight(h);
-        F4->setMaximumHeight(h); F5->setMaximumHeight(h);
-        F6->setMaximumHeight(h); F7->setMaximumHeight(h);
-        F8->setMaximumHeight(h); F9->setMaximumHeight(h);
-        F10->setMaximumHeight(h);
-    */
-    layout->addWidget(F2, 0, 0);
-    layout->addWidget(F3, 0, 1);
-    layout->addWidget(F4, 0, 2);
-    layout->addWidget(F5, 0, 3);
-    layout->addWidget(F6, 0, 4);
-    layout->addWidget(F7, 0, 5);
-    layout->addWidget(F8, 0, 6);
-    layout->addWidget(F9, 0, 7);
-    layout->addWidget(F10, 0, 8);
+}
 
-    layout->activate();
+void KFnKeys::addButton(QString label, QString actionName)
+{
+    Button *button = new Button(this, label, actionName);
+    if (QAction *action = mainWindow->action(button->actionName))
+        connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+    else
+        kDebug()<<"no such action:"<<actionName;
+    buttons << button;
+    layout->addWidget(button);
 }
 
 void KFnKeys::updateShortcuts()
 {
-#define UPDATE(TARGET, TEXT)\
-    TARGET->setText(mainWindow->listPanelActions()->act##TARGET->shortcut().toString() + ' ' + TEXT);
-
-    UPDATE(F2, i18n("Term"));
-    UPDATE(F3, i18n("View"));
-    UPDATE(F4, i18n("Edit"));
-    UPDATE(F5, i18n("Copy"));
-    UPDATE(F6, i18n("Move"));
-    UPDATE(F7, i18n("Mkdir"));
-    UPDATE(F8, i18n("Delete"));
-    UPDATE(F9, i18n("Rename"));
-    F10->setText(mainWindow->krActions()->actF10->shortcut().toString() + i18n(" Quit"));
+    foreach(Button *button, buttons) {
+        if (QAction *action = mainWindow->action(button->actionName))
+            button->setText(action->shortcut().toString() + ' ' + button->label);
+        else
+            kDebug()<<"no such action:"<<button->actionName;
+    }
 }
 
 #include "kfnkeys.moc"
-

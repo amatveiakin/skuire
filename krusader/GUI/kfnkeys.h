@@ -33,11 +33,9 @@
 #define KFNKEYS_H
 
 #include <qwidget.h>
-#include <QtGui/QLayout>
-#include <QtGui/QPushButton>
-#include <QGridLayout>
 
-class AbstractTwinPanelFM;
+class AbstractMainWindow;
+class QLayout;
 
 // Function Keys widget
 ///////////////////////
@@ -47,13 +45,17 @@ class KFnKeys : public QWidget
 
 public:
     // constructor
-    KFnKeys(QWidget *parent, AbstractTwinPanelFM *mainWindow);
+    KFnKeys(QWidget *parent, AbstractMainWindow *mainWindow);
     void updateShortcuts();
 
 private:
-    QPushButton *F2 , *F3, *F4, *F5, *F6, *F7, *F8, *F9, *F10;
-    QGridLayout *layout;
-    AbstractTwinPanelFM *mainWindow;
+    struct Button;
+
+    void addButton(QString label, QString actionName);
+
+    QList<Button*> buttons;
+    QLayout *layout;
+    AbstractMainWindow *mainWindow;
 };
 
 #endif
