@@ -28,7 +28,7 @@ class AbstractListPanel;
 class KrActions;
 class PopularUrls;
 
-class FileManagerWindow : public KrMainWindow
+class FileManagerWindow : public AbstractMainWindow
 {
 public:
     virtual AbstractPanelManager *activeManager() = 0;

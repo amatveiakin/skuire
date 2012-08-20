@@ -85,7 +85,7 @@ public:
     Krusader();
     virtual ~Krusader();
 
-    // KrMainWindow implementation
+    // AbstractMainWindow implementation
     virtual QWidget *widget() {
         return this;
     }

@@ -37,7 +37,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include <klocale.h>
 #include <ktoggleaction.h>
 
-ViewActions::ViewActions(QObject *parent, KrMainWindow *mainWindow) :
+ViewActions::ViewActions(QObject *parent, AbstractMainWindow *mainWindow) :
     ActionsBase(parent, mainWindow)
 {
     // zoom

@@ -41,7 +41,7 @@ void ViewModule::init()
     connect(KrusaderApp::self(), SIGNAL(configChanged()), this, SLOT(configChanged()));
 }
 
-ActionsBase *ViewModule::createActions(QObject *parent, KrMainWindow *mainWindow)
+ActionsBase *ViewModule::createActions(QObject *parent, AbstractMainWindow *mainWindow)
 {
     return new ViewActions(parent, mainWindow);
 }

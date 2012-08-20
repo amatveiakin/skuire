@@ -18,7 +18,7 @@
 
 #include "module.h"
 
-ActionsBase *Module::createActions(QObject *parent, KrMainWindow *mainWindow)
+ActionsBase *Module::createActions(QObject *parent, AbstractMainWindow *mainWindow)
 {
     Q_UNUSED(parent)
     Q_UNUSED(mainWindow)

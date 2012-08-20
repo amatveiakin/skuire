@@ -42,7 +42,7 @@ class ViewActions : public ActionsBase
 {
     Q_OBJECT
 public:
-    ViewActions(QObject *parent, KrMainWindow *mainWindow);
+    ViewActions(QObject *parent, AbstractMainWindow *mainWindow);
 
     virtual void onViewCreated(AbstractView *view);
     virtual void onViewChanged() {

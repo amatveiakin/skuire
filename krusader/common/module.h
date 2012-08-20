@@ -22,7 +22,7 @@
 #include <QObject>
 
 class ActionsBase;
-class KrMainWindow;
+class AbstractMainWindow;
 
 
 class Module : public QObject
@@ -33,7 +33,7 @@ public:
     virtual ~Module() {}
     virtual QString name() = 0;
     virtual void init() {}
-    virtual ActionsBase *createActions(QObject *parent, KrMainWindow *mainWindow);
+    virtual ActionsBase *createActions(QObject *parent, AbstractMainWindow *mainWindow);
 };
 
 #endif // __MODULE_H__

@@ -36,7 +36,7 @@ public:
         return "view";
     }
     virtual void init();
-    virtual ActionsBase *createActions(QObject *parent, KrMainWindow *mainWindow);
+    virtual ActionsBase *createActions(QObject *parent, AbstractMainWindow *mainWindow);
 
     // ViewConfigUI implementation
     virtual QWidget *createViewCfgTab(QWidget* parent, KonfiguratorPage *page, int tabId);

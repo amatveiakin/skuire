@@ -25,7 +25,7 @@
 #include <kstandardaction.h>
 
 
-class KrMainWindow;
+class AbstractMainWindow;
 class AbstractListPanel;
 class AbstractView;
 
@@ -40,7 +40,7 @@ public:
     virtual void onActivePanelChanged()  {}
 
 protected:
-    ActionsBase(QObject *parent, KrMainWindow *mainWindow) : QObject(parent),
+    ActionsBase(QObject *parent, AbstractMainWindow *mainWindow) : QObject(parent),
                 _mainWindow(mainWindow) {}
     class ActionGroup
     {
@@ -77,7 +77,7 @@ protected:
     KAction *stdAction(KStandardAction::StandardAction id,
                        ActionGroup &group, const char *slot);
 
-    KrMainWindow *_mainWindow;
+    AbstractMainWindow *_mainWindow;
 };
 
 #endif // __ACTIONSBASE_H__

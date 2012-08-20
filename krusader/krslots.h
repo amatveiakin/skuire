@@ -38,7 +38,7 @@
 #include <kio/netaccess.h>
 #include "krglobal.h"
 
-class KrMainWindow;
+class AbstractMainWindow;
 class KUrl;
 
 class KrProcess: public KProcess
@@ -117,7 +117,7 @@ public slots:
     void saveNewToolbarConfig();
 
 protected:
-    KrMainWindow *_mainWindow;
+    AbstractMainWindow *_mainWindow;
 };
 
 #endif
