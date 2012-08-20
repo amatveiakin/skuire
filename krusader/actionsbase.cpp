@@ -18,7 +18,7 @@
 
 #include "actionsbase.h"
 
-#include "krmainwindow.h"
+#include "abstractmainwindow.h"
 
 #include <kactioncollection.h>
 #include <kaction.h>

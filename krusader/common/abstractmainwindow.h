@@ -16,14 +16,14 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __KRMAINWINDOW_H__
-#define __KRMAINWINDOW_H__
+#ifndef __ABSTRACTMAINWINDOW_H__
+#define __ABSTRACTMAINWINDOW_H__
 
 class QWidget;
 class AbstractView;
 class QAction;
 class KActionCollection;
-class ViewActions;
+
 
 // abstract interface to the main window
 class AbstractMainWindow
@@ -35,4 +35,4 @@ public:
     virtual KActionCollection *actions() = 0;
 };
 
-#endif // __KRMAINWINDOW_H__
+#endif // __ABSTRACTMAINWINDOW_H__

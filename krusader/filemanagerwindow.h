@@ -19,7 +19,7 @@
 #ifndef __FILEMANAGERWINDOW_H__
 #define __FILEMANAGERWINDOW_H__
 
-#include "krmainwindow.h"
+#include "abstractmainwindow.h"
 #include "abstractpanelmanager.h"
 
 class ListPanelActions;

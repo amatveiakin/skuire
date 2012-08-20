@@ -31,8 +31,8 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "viewactions.h"
 
 #include "krview.h"
-#include "../krmainwindow.h"
 #include "../krusaderapp.h"
+#include "abstractmainwindow.h"
 
 #include <klocale.h>
 #include <ktoggleaction.h>
