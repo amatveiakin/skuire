@@ -115,23 +115,28 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 class ListPanel::ActionButton : public QToolButton
 {
 public:
-    ActionButton(QWidget *parent, ListPanel *panel, KAction *action, QString text = QString()) :
-            QToolButton(parent),  panel(panel), action(action) {
+    ActionButton(QWidget *parent, ListPanel *panel, QString actionName, QString text = QString()) :
+            QToolButton(parent),  panel(panel), action(0) {
         setText(text);
         setAutoRaise(true);
-        if(KConfigGroup(krConfig, "ListPanelButtons").readEntry("Icons", false) || text.isEmpty())
-            setIcon(action->icon());
-        setToolTip(action->toolTip());
+        action = panel->manager()->mainWindow()->action(actionName);
+        if (action) {
+            if(KConfigGroup(krConfig, "ListPanelButtons").readEntry("Icons", false) || text.isEmpty())
+                setIcon(action->icon());
+            setToolTip(action->toolTip());
+        } else
+            kDebug()<<"no such action:"<<actionName;
     }
 
 protected:
     virtual void mousePressEvent(QMouseEvent *) {
         panel->slotFocusOnMe();
-        action->trigger();
+        if (action)
+            action->trigger();
     }
 
     ListPanel *panel;
-    KAction *action;
+    QAction *action;
 };
 
 
@@ -178,11 +183,11 @@ ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager,
     ADD_WIDGET(status);
 
     // back button
-    backButton = new ActionButton(this, this, _actions->actHistoryBackward);
+    backButton = new ActionButton(this, this, KStandardAction::name(KStandardAction::Back));
     ADD_WIDGET(backButton);
 
     // forward button
-    forwardButton = new ActionButton(this, this, _actions->actHistoryForward);
+    forwardButton = new ActionButton(this, this, KStandardAction::name(KStandardAction::Back));
     ADD_WIDGET(forwardButton);
 
 
@@ -276,17 +281,17 @@ ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager,
 
     // toolbar buttons
 
-    cdOtherButton = new ActionButton(toolbar, this, _actions->actCdToOther, "=");
+    cdOtherButton = new ActionButton(toolbar, this, "cd to other panel", "=");
     cdOtherButton->setFixedSize(20, origin->button()->height());
     toolbarLayout->addWidget(cdOtherButton);
 
-    cdUpButton = new ActionButton(toolbar, this, _actions->actDirUp, "..");
+    cdUpButton = new ActionButton(toolbar, this, KStandardAction::name(KStandardAction::Up), "..");
     toolbarLayout->addWidget(cdUpButton);
 
-    cdHomeButton = new ActionButton(toolbar, this, _actions->actHome, "~");
+    cdHomeButton = new ActionButton(toolbar, this, KStandardAction::name(KStandardAction::Home), "~");
     toolbarLayout->addWidget(cdHomeButton);
 
-    cdRootButton = new ActionButton(toolbar, this, _actions->actRoot, "/");
+    cdRootButton = new ActionButton(toolbar, this, "root", "/");
     toolbarLayout->addWidget(cdRootButton);
 
     // ... creates the button for sync-browsing
