@@ -914,6 +914,11 @@ bool Krusader::queryExit()
     return true;
 }
 
+QAction *Krusader::action(QString name)
+{
+    return actionCollection()->action(name);
+}
+
 AbstractView *Krusader::activeView()
 {
     return activePanel() ? activePanel()->view : 0;

@@ -93,6 +93,7 @@ public:
     virtual KActionCollection *actions() {
         return actionCollection();
     }
+    virtual QAction *action(QString name);
     // AbstractTwinPanelFM implementation
     virtual AbstractPanelManager *activeManager();
     virtual AbstractPanelManager *leftManager();

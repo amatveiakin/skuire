@@ -19,6 +19,9 @@
 #ifndef __ABSTRACTMAINWINDOW_H__
 #define __ABSTRACTMAINWINDOW_H__
 
+#include <QString>
+
+
 class QWidget;
 class AbstractView;
 class QAction;
@@ -33,6 +36,7 @@ public:
     virtual QWidget *widget() = 0;
     virtual AbstractView *activeView() = 0;
     virtual KActionCollection *actions() = 0;
+    virtual QAction *action(QString name) = 0;
 };
 
 #endif // __ABSTRACTMAINWINDOW_H__
