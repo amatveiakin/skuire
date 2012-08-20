@@ -41,7 +41,7 @@
 #include "../kractions.h"
 #include "../Panel/listpanelactions.h"
 
-KFnKeys::KFnKeys(QWidget *parent, FileManagerWindow *mainWindow) :
+KFnKeys::KFnKeys(QWidget *parent, AbstractTwinPanelFM *mainWindow) :
         QWidget(parent), mainWindow(mainWindow)
 {
     ////////////////////////////////

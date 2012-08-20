@@ -46,7 +46,7 @@
 #define BOOKMARKS_FILE "krusader/krbookmarks.xml"
 #define CONNECT_BM(X) { disconnect(X, SIGNAL(activated(const KUrl&)), 0, 0); connect(X, SIGNAL(activated(const KUrl&)), this, SLOT(slotActivated(const KUrl&))); }
 
-KrBookmarkHandler::KrBookmarkHandler(FileManagerWindow *mainWindow) : QObject(mainWindow->widget()),
+KrBookmarkHandler::KrBookmarkHandler(AbstractTwinPanelFM *mainWindow) : QObject(mainWindow->widget()),
         _mainWindow(mainWindow), _middleClick(false), _mainBookmarkPopup(0), _specialBookmarks()
 {
     // create our own action collection and make the shortcuts apply only to parent

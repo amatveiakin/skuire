@@ -52,7 +52,7 @@
 /**
  * A widget containing the konsolepart for the Embedded terminal emulator
  */
-TerminalDock::TerminalDock(QWidget* parent, FileManagerWindow *mainWindow) : QWidget(parent),
+TerminalDock::TerminalDock(QWidget* parent, AbstractTwinPanelFM *mainWindow) : QWidget(parent),
     _mainWindow(mainWindow), konsole_part(0), t(0), initialised(false)
 {
     terminal_hbox = new QHBoxLayout(this);

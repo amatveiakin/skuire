@@ -27,7 +27,7 @@
 #include <klocale.h>
 #include <kaction.h>
 
-TabActions::TabActions(QObject *parent, FileManagerWindow *mainWindow) : ActionsBase(parent, mainWindow)
+TabActions::TabActions(QObject *parent, AbstractTwinPanelFM *mainWindow) : ActionsBase(parent, mainWindow)
 {
     actNewTab = action(i18n("New Tab"), "tab-new", Qt::ALT + Qt::CTRL + Qt::Key_N, SLOT(newTab()), "new tab");
     actDupTab = action(i18n("Duplicate Current Tab"), "tab_duplicate", Qt::ALT + Qt::CTRL + Qt::SHIFT + Qt::Key_N, SLOT(duplicateTab()), "duplicate tab");
@@ -43,7 +43,7 @@ TabActions::TabActions(QObject *parent, FileManagerWindow *mainWindow) : Actions
 inline PanelManager *TabActions::activeManager()
 {
     return static_cast<PanelManager*>(
-        static_cast<FileManagerWindow*>(_mainWindow)->activeManager());
+        static_cast<AbstractTwinPanelFM*>(_mainWindow)->activeManager());
 }
 
 void TabActions::refreshActions()
@@ -68,7 +68,7 @@ void TabActions::newTab()
 
 void TabActions::duplicateTab()
 {
-    AbstractListPanel *activePanel = static_cast<FileManagerWindow*>(_mainWindow)->activePanel();
+    AbstractListPanel *activePanel = static_cast<AbstractTwinPanelFM*>(_mainWindow)->activePanel();
     activeManager()->newTab(activePanel->virtualPath(), activePanel);
 }
 

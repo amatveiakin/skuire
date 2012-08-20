@@ -247,7 +247,7 @@ void KrFileTreeView::setRootUrl(const KUrl &url)
     mSourceModel->dirLister()->openUrl(url);
 }
 
-PanelPopup::PanelPopup(QSplitter *parent, bool left, FileManagerWindow *mainWindow) : QWidget(parent),
+PanelPopup::PanelPopup(QSplitter *parent, bool left, AbstractTwinPanelFM *mainWindow) : QWidget(parent),
         _left(left), _hidden(true), _mainWindow(mainWindow), stack(0), viewer(0), pjob(0), splitterSizes()
 {
     splitter = parent;

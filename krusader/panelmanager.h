@@ -35,7 +35,7 @@ class KConfig;
 class QStackedWidget;
 class QToolButton;
 class CurrentViewCallback;
-class FileManagerWindow;
+class AbstractTwinPanelFM;
 class TabActions;
 
 
@@ -53,7 +53,7 @@ public:
      * (self, other, active), which enables it to manage pointers held by the panels transparently.
      * It also receives a bool (left) which is true if the manager is the left one, or false otherwise.
      */
-    PanelManager(QWidget *parent, FileManagerWindow* mainWindow, bool left,
+    PanelManager(QWidget *parent, AbstractTwinPanelFM* mainWindow, bool left,
                  CurrentPanelCallback *currentPanelCb,
                  CurrentViewCallback *currentViewCb);
     void init();
@@ -136,7 +136,7 @@ private:
     void disconnectPanel(AbstractListPanel *p);
 
     PanelManager *_otherManager;
-    FileManagerWindow* _mainWindow;
+    AbstractTwinPanelFM* _mainWindow;
     AbstractListPanel *_currentPanel;
     CurrentPanelCallback *_currentPanelCb;
     CurrentViewCallback *_currentViewCb;

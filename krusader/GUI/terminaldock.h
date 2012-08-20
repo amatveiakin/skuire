@@ -28,7 +28,7 @@
 #include <QString>
 #include <QObject>
 
-class FileManagerWindow;
+class AbstractTwinPanelFM;
 
 /**
  * This is a class to make the work with the embedded terminal emulator easier.
@@ -43,7 +43,7 @@ class TerminalDock : public QWidget
 public slots:
     void killTerminalEmulator();
 public:
-    TerminalDock(QWidget* parent, FileManagerWindow *mainWindow);
+    TerminalDock(QWidget* parent, AbstractTwinPanelFM *mainWindow);
     virtual ~TerminalDock();
     void sendInput(const QString& input);
     void sendCd(const QString& path);
@@ -57,7 +57,7 @@ public:
         return konsole_part;
     }
 private:
-    FileManagerWindow *_mainWindow;
+    AbstractTwinPanelFM *_mainWindow;
     QString lastPath;                       // path of the last sendCd
     QHBoxLayout *terminal_hbox;             // hbox for terminal_dock
     KParts::ReadOnlyPart* konsole_part;     // the actual part pointer

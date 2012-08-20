@@ -46,7 +46,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include <kactioncollection.h>
 
 
-ListPanelActions::ListPanelActions(QObject *parent, FileManagerWindow *mainWindow) :
+ListPanelActions::ListPanelActions(QObject *parent, AbstractTwinPanelFM *mainWindow) :
         ActionsBase(parent, mainWindow)
 {
     // set view type
@@ -160,9 +160,9 @@ void ListPanelActions::guiUpdated()
     mainWindow()->plugActionList("view_actionlist", actions);
 }
 
-inline FileManagerWindow *ListPanelActions::mainWindow()
+inline AbstractTwinPanelFM *ListPanelActions::mainWindow()
 {
-    return static_cast<FileManagerWindow*>(_mainWindow);
+    return static_cast<AbstractTwinPanelFM*>(_mainWindow);
 }
 
 inline ListPanel *ListPanelActions::getListPanel(AbstractListPanel *panel)

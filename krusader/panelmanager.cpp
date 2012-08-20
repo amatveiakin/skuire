@@ -40,7 +40,7 @@
 
 #define HIDE_ON_SINGLE_TAB  false
 
-PanelManager::PanelManager(QWidget *parent, FileManagerWindow* mainWindow, bool left,
+PanelManager::PanelManager(QWidget *parent, AbstractTwinPanelFM* mainWindow, bool left,
                 CurrentPanelCallback *currentPanelCb, CurrentViewCallback *currentViewCb) :
         QWidget(parent),
         _otherManager(0),

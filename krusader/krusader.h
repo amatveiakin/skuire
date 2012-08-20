@@ -75,7 +75,7 @@ class TabActions;
 class ActionsBase;
 
 
-class Krusader : public KParts::MainWindow, public FileManagerWindow,
+class Krusader : public KParts::MainWindow, public AbstractTwinPanelFM,
                  public CurrentViewCallback, public CurrentPanelCallback
 {
     Q_OBJECT
@@ -93,7 +93,7 @@ public:
     virtual KActionCollection *actions() {
         return actionCollection();
     }
-    // FileManagerWindow implementation
+    // AbstractTwinPanelFM implementation
     virtual AbstractPanelManager *activeManager();
     virtual AbstractPanelManager *leftManager();
     virtual AbstractPanelManager *rightManager();

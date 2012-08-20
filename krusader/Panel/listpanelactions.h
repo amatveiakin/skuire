@@ -38,7 +38,7 @@
 #include <kaction.h>
 
 
-class FileManagerWindow;
+class AbstractTwinPanelFM;
 class AbstractListPanel;
 class ListPanel;
 class ListPanelFunc;
@@ -47,7 +47,7 @@ class ListPanelActions : public ActionsBase
 {
     Q_OBJECT
 public:
-    ListPanelActions(QObject *parent, FileManagerWindow *mainWindow);
+    ListPanelActions(QObject *parent, AbstractTwinPanelFM *mainWindow);
 
 public slots:
     // set view type
@@ -83,7 +83,7 @@ protected:
     ListPanel *rightPanel();
     ListPanelFunc *activeFunc();
     ListPanel *getListPanel(AbstractListPanel *panel);
-    FileManagerWindow *mainWindow();
+    AbstractTwinPanelFM *mainWindow();
 
     ActionGroup _gui, _func;
 };
