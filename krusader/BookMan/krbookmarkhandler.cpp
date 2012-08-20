@@ -355,7 +355,6 @@ void KrBookmarkHandler::buildMenu(KrBookmark *parent, KMenu *menu)
         bool hasTrash       = group.readEntry("BM Trash",        true);
         bool hasLan         = group.readEntry("BM Lan",          true);
         bool hasVirtualFS   = group.readEntry("BM Virtual FS",   true);
-        bool hasJumpback    = group.readEntry("BM Jumpback",     true);
 
         if (hasPopularURLs) {
             menu->addSeparator();
@@ -390,7 +389,7 @@ void KrBookmarkHandler::buildMenu(KrBookmark *parent, KMenu *menu)
 
         // do we need to add special bookmarks?
         if (SPECIAL_BOOKMARKS) {
-            if (hasTrash || hasLan || hasVirtualFS || hasJumpback)
+            if (hasTrash || hasLan || hasVirtualFS)
                 menu->addSeparator();
 
             KrBookmark *bm;
@@ -416,20 +415,9 @@ void KrBookmarkHandler::buildMenu(KrBookmark *parent, KMenu *menu)
                 _specialBookmarks.append(bm);
                 CONNECT_BM(bm);
             }
-
-            if (hasJumpback) {
-                // add the jump-back button
-                ListPanelActions *actions = _mainWindow->listPanelActions();
-                menu->addAction(actions->actJumpBack);
-                _specialBookmarks.append(actions->actJumpBack);
-                menu->addSeparator();
-                menu->addAction(actions->actSetJumpBack);
-                _specialBookmarks.append(actions->actSetJumpBack);
-            }
         }
 
-        if (!hasJumpback)
-            menu->addSeparator();
+        menu->addSeparator();
 
         QAction *bmAddAct = menu->addAction(krLoader->loadIcon("bookmark-new", KIconLoader::Small),
                                             i18n("Bookmark Current"), this, SLOT(slotBookmarkCurrent()));
@@ -509,7 +497,6 @@ bool KrBookmarkHandler::eventFilter(QObject *obj, QEvent *ev)
 #define TRASH_ID               100101
 #define LAN_ID                 100103
 #define VIRTUAL_FS_ID          100102
-#define JUMP_BACK_ID           100104
 
 void KrBookmarkHandler::rightClickOnSpecialBookmark()
 {
@@ -518,7 +505,6 @@ void KrBookmarkHandler::rightClickOnSpecialBookmark()
     bool hasTrash       = group.readEntry("BM Trash",      true);
     bool hasLan         = group.readEntry("BM Lan",          true);
     bool hasVirtualFS   = group.readEntry("BM Virtual FS",   true);
-    bool hasJumpback    = group.readEntry("BM Jumpback",     true);
 
     QMenu menu(_mainBookmarkPopup);
     menu.setTitle(i18n("Enable special bookmarks"));
@@ -541,10 +527,6 @@ void KrBookmarkHandler::rightClickOnSpecialBookmark()
     act->setData(QVariant(VIRTUAL_FS_ID));
     act->setCheckable(true);
     act->setChecked(hasVirtualFS);
-    act = menu.addAction(i18n("Jump back"));
-    act->setData(QVariant(JUMP_BACK_ID));
-    act->setCheckable(true);
-    act->setChecked(hasJumpback);
 
     connect(_mainBookmarkPopup, SIGNAL(highlighted(int)), &menu, SLOT(close()));
     connect(_mainBookmarkPopup, SIGNAL(activated(int)), &menu, SLOT(close()));
@@ -568,9 +550,6 @@ void KrBookmarkHandler::rightClickOnSpecialBookmark()
         break;
     case VIRTUAL_FS_ID:
         group.writeEntry("BM Virtual FS", !hasVirtualFS);
-        break;
-    case JUMP_BACK_ID:
-        group.writeEntry("BM Jumpback", !hasJumpback);
         break;
     default:
         doCloseMain = false;
