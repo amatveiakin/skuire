@@ -33,10 +33,12 @@
 #include "krpreviewpopup.h"
 #include "../UserAction/useractionpopupmenu.h"
 
-class KActionCollection;
 class ListPanel;
+class AbstractMainWindow;
 
 class QSignalMapper;
+class KActionCollection;
+
 
 // should be renamed to KrContextMenu or similar
 class KrPopupMenu : public KMenu
@@ -62,6 +64,7 @@ protected:
     void addAction(QAction *action) {
         KMenu::addAction(action);
     }
+    void addMainWindowAction(QString name);
 
     enum ID {
         OPEN_ID,
@@ -102,6 +105,7 @@ private:
     static void execMenu(KrPopupMenu *menu, QPoint pos);
 
     ListPanel *panel;
+    AbstractMainWindow *mainWindow;
     bool empty, multipleSelections;
     KMenu linkPopup, createNewPopup;
     KrPreviewPopup preview;

@@ -95,6 +95,7 @@ void KrPopupMenu::run(QPoint pos, ListPanel *panel, bool onlyOpenWith)
 KrPopupMenu::KrPopupMenu(ListPanel *panel, QWidget *parent, bool onlyOpenWith) :
         KMenu(parent),
         panel(panel),
+        mainWindow(panel->manager()->mainWindow()),
         empty(false),
         multipleSelections(false),
         actions(0),
@@ -235,7 +236,7 @@ KrPopupMenu::KrPopupMenu(ListPanel *panel, QWidget *parent, bool onlyOpenWith) :
 
     // ---------- calculate space
     if (isLocalDir && (item.isDir() || multipleSelections))
-        addAction(panel->actions()->actCalculate);
+        addMainWindowAction("calculate");
 
     // ---------- mount/umount/eject
     if (isLocalDir && item.isDir() && !multipleSelections) {
@@ -269,7 +270,7 @@ KrPopupMenu::KrPopupMenu(ListPanel *panel, QWidget *parent, bool onlyOpenWith) :
     addSeparator();
 
     // --------- properties
-    addAction(panel->actions()->actProperties);
+    addMainWindowAction("properties");
 }
 
 KrPopupMenu::~KrPopupMenu()
@@ -288,6 +289,12 @@ QAction *KrPopupMenu::addAction(int id, QString text, KMenu *menu)
     connect(action, SIGNAL(triggered()), mapper, SLOT(map()));
     mapper->setMapping(action, id);
     return action;
+}
+
+void KrPopupMenu::addMainWindowAction(QString name)
+{
+    if (QAction *act = mainWindow->action(name))
+        addAction(act);
 }
 
 void KrPopupMenu::addEmptyMenuEntries()
