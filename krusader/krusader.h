@@ -69,7 +69,6 @@ class UserMenu;
 class UserAction;
 class PopularUrls;
 class QueueManager;
-class ViewActions;
 class ListPanelActions;
 class TabActions;
 class ActionsBase;
