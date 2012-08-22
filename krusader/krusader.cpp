@@ -307,6 +307,9 @@ Krusader::Krusader() : KParts::MainWindow(0,
     //HACK - used by [ListerTextArea|KrSearchDialog|LocateDlg]:keyPressEvent()
     KrGlobal::copyShortcut = _listPanelActions->actCopy->shortcut();
 
+    foreach(ActionsBase *actions, _allActions)
+        actions->refreshActions();
+
     //HACK: make sure the active view becomes focused
     // for some reason sometimes the active view cannot be focused immediately at this point,
     // so queue it for the main loop

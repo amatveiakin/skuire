@@ -36,7 +36,7 @@ public:
     TabActions(QObject *parent, AbstractTwinPanelFM *mainWindow);
 
 public slots:
-    void refreshActions();
+    virtual void refreshActions();
 
 protected slots:
     void newTab();

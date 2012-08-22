@@ -49,6 +49,9 @@ class ListPanelActions : public ActionsBase
 public:
     ListPanelActions(QObject *parent, AbstractTwinPanelFM *mainWindow);
 
+    //FIXME - implement this
+    virtual void refreshActions() {}
+
 public slots:
     // set view type
     void setView(int id);

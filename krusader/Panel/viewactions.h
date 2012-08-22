@@ -50,6 +50,9 @@ public:
     }
 
 public slots:
+    virtual void refreshActions();
+    void configChanged();
+
     //zoom 
     void zoomIn();
     void zoomOut();
@@ -75,9 +78,6 @@ public slots:
     void quickFilter();
     void showPreviews(bool show);
     void showHidden(bool show);
-
-    void refreshActions();
-    void configChanged();
 
 protected:
     KAction *actZoomIn, *actZoomOut, *actDefaultZoom;
