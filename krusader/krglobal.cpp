@@ -67,16 +67,3 @@ KShortcut KrGlobal::copyShortcut()
     }
     return KStandardShortcut::copy();
 }
-
-// void KrGlobal::enableAction(const char *name, bool enable)
-// {
-//     getAction(name)->setEnabled(enable);
-// }
-// 
-// QAction* KrGlobal::getAction(const char *name)
-// {
-//     QAction *act = krApp->actionCollection()->action(name);
-//     if(!act)
-//         qFatal("no such action: %s", name);
-//     return act;
-// }
