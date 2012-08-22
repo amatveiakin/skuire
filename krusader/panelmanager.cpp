@@ -163,14 +163,12 @@ void PanelManager::connectPanel(AbstractListPanel *p)
 {
     connect(p, SIGNAL(activate()), this, SLOT(activate()));
     connect(p, SIGNAL(pathChanged(AbstractListPanel*)), this, SIGNAL(pathChanged(AbstractListPanel*)));
-    connect(p, SIGNAL(pathChanged(AbstractListPanel*)), _tabbar, SLOT(updateTab(AbstractListPanel*)));
 }
 
 void PanelManager::disconnectPanel(AbstractListPanel *p)
 {
     disconnect(p, SIGNAL(activate()), this, 0);
     disconnect(p, SIGNAL(pathChanged(AbstractListPanel*)), this, 0);
-    disconnect(p, SIGNAL(pathChanged(AbstractListPanel*)), _tabbar, 0);
 }
 
 AbstractListPanel* PanelManager::createPanel(bool setCurrent, KConfigGroup cfg, AbstractListPanel *nextTo)
