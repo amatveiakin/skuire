@@ -170,7 +170,7 @@ void KrusaderView::updateGUI(KConfigGroup &cfg)
         KrActions::actToggleCmdline->setChecked(true);
     }
     // update the Fn bar to the shortcuts selected by the user
-    fnKeys()->updateShortcuts();
+    fnKeys()->updateButtons();
     if (!cfg.readEntry("Show FN Keys", _ShowFNkeys)) {
         fnKeys()->hide();
         KrActions::actToggleFnkeys->setChecked(false);

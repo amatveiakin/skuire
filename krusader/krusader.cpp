@@ -556,7 +556,7 @@ void Krusader::configChanged(bool isGUIRestartNeeded)
     }
 
     //FIXME - move to KrusaderView - FIXME - really ugly, but reload the Fn keys just in case
-    MAIN_VIEW->fnKeys()->updateShortcuts();
+    MAIN_VIEW->fnKeys()->updateButtons();
 
     KConfigGroup group(krConfig, "Look&Feel");
     bool minimizeToTray = group.readEntry("Minimize To Tray", _MinimizeToTray);

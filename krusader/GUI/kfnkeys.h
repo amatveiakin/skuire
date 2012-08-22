@@ -46,7 +46,7 @@ class KFnKeys : public QWidget
 public:
     // constructor
     KFnKeys(QWidget *parent, AbstractMainWindow *mainWindow);
-    void updateShortcuts();
+    void updateButtons();
 
 private:
     struct Button;

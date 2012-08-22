@@ -72,26 +72,23 @@ KFnKeys::KFnKeys(QWidget *parent, AbstractMainWindow *mainWindow) :
     addButton(i18n("Delete"), "F8_Delete");
     addButton(i18n("Rename"), "F9_Rename");
     addButton(i18n("Quit"), "F10_Quit");
-
-    updateShortcuts();
 }
 
 void KFnKeys::addButton(QString label, QString actionName)
 {
     Button *button = new Button(this, label, actionName);
-    if (QAction *action = mainWindow->action(button->actionName))
-        connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
-    else
-        kDebug()<<"no such action:"<<actionName;
     buttons << button;
     layout->addWidget(button);
 }
 
-void KFnKeys::updateShortcuts()
+void KFnKeys::updateButtons()
 {
     foreach(Button *button, buttons) {
-        if (QAction *action = mainWindow->action(button->actionName))
+        if (QAction *action = mainWindow->action(button->actionName)) {
             button->setText(action->shortcut().toString() + ' ' + button->label);
+            disconnect(button, 0, 0, 0);
+            connect(button, SIGNAL(clicked()), action, SLOT(trigger()));
+        }
         else
             kDebug()<<"no such action:"<<button->actionName;
     }
