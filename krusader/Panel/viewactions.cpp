@@ -90,8 +90,6 @@ inline KrView *ViewActions::activeView()
 void ViewActions::onViewCreated(AbstractView *view)
 {
     connect(view->emitter(), SIGNAL(refreshActions()), SLOT(refreshActions()));
-    if (activeView() == view)
-        refreshActions();
 }
 
 // zoom
