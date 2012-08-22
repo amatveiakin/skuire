@@ -458,8 +458,6 @@ void ListPanel::createView()
 
     view->setDirLister(func->dirLister);
 
-    func->refreshActions();
-
     _currentViewCb->onViewCreated(view);
     _currentViewCb->onCurrentViewChanged(view);
 }
@@ -703,8 +701,6 @@ void ListPanel::slotFocusOnMe()
 void ListPanel::activeStateChanged()
 {
     if(isActive()) {
-        _actions->activePanelChanged(); //FIXME move
-        func->refreshActions();
         updatePopupPanel(view->currentItem());
         view->prepareForActive();
     } else
@@ -712,6 +708,7 @@ void ListPanel::activeStateChanged()
 
     origin->setActive(isActive());
     refreshColors();
+    updateButtons();
 }
 
 // this is used to start the panel
@@ -745,7 +742,8 @@ void ListPanel::slotStartUpdate()
     if (func->files() ->vfs_getType() == vfs::VFS_NORMAL)
         _realPath = virtualPath();
     this->origin->setUrl(virtualPath().pathOrUrl());
-    emit pathChanged(this);
+
+    onUrlRefreshed();
 
     slotGetStats(virtualPath());
     if (compareMode)
@@ -1255,7 +1253,7 @@ void ListPanel::saveSettings(KConfigGroup cfg, bool localOnly, bool saveHistory)
 {
     QString url = (localOnly ? realPath() : virtualPath().pathOrUrl());
     cfg.writeEntry("Url", url);
-    cfg.writeEntry("Type", getType());
+    cfg.writeEntry("Type", type());
     cfg.writeEntry("Properties", getProperties());
     if(popup) {
         popup->saveSizes(); //FIXME use this cfg group
@@ -1348,4 +1346,10 @@ void ListPanel::requestDelete()
 {
     connect(func->files(), SIGNAL(deleteAllowed()), this, SLOT(deleteLater()));
     func->files()->vfs_requestDelete();
+}
+
+void ListPanel::onUrlRefreshed()
+{
+    emit pathChanged(this);
+    updateButtons();
 }

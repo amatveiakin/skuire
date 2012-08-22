@@ -368,7 +368,7 @@ void ListPanelFunc::doRefresh()
 
     urlManuallyEntered = false;
 
-    refreshActions();
+    panel->onUrlRefreshed();
 }
 
 void ListPanelFunc::redirectLink()
@@ -1253,47 +1253,6 @@ void ListPanelFunc::properties()
     dlg->show();
 }
 
-void ListPanelFunc::refreshActions()
-{
-    panel->updateButtons();
-
-    if(!panel->isActive())
-        return;
-
-    vfs::VFS_TYPE vfsType = files() ->vfs_getType();
-
-    QString protocol = files()->vfs_getOrigin().protocol();
-    krRemoteEncoding->setEnabled(protocol == "ftp" || protocol == "sftp" || protocol == "fish" || protocol == "krarc");
-    //krMultiRename->setEnabled( vfsType == vfs::VFS_NORMAL );  // batch rename
-    //krProperties ->setEnabled( vfsType == vfs::VFS_NORMAL || vfsType == vfs::VFS_FTP ); // file properties
-
-    /*
-      krUnpack->setEnabled(true);                            // unpack archive
-      krTest->setEnabled(true);                              // test archive
-      krSelect->setEnabled(true);                            // select a group by filter
-      krSelectAll->setEnabled(true);                         // select all files
-      krUnselect->setEnabled(true);                          // unselect by filter
-      krUnselectAll->setEnabled( true);                      // remove all selections
-      krInvert->setEnabled(true);                            // invert the selection
-      krFTPConnect->setEnabled(true);                        // connect to an ftp
-      krFTPNew->setEnabled(true);                            // create a new connection
-      krAllFiles->setEnabled(true);                          // show all files in list
-      krCustomFiles->setEnabled(true);                       // show a custom set of files
-      krRoot->setEnabled(true);                              // go all the way up
-          krExecFiles->setEnabled(true);                         // show only executables
-    */
-
-    panel->_actions->setViewActions[panel->panelType]->setChecked(true);
-    panel->_actions->actFTPDisconnect->setEnabled(vfsType == vfs::VFS_FTP);       // disconnect an FTP session
-    panel->_actions->actCreateChecksum->setEnabled(vfsType == vfs::VFS_NORMAL);
-    panel->_actions->actDirUp->setEnabled(!files()->isRoot());
-    panel->_actions->actRoot->setEnabled(!panel->virtualPath().equals(KUrl(ROOT_DIR),
-                                         KUrl::CompareWithoutTrailingSlash));
-    panel->_actions->actHome->setEnabled(!atHome());
-    panel->_actions->actHistoryBackward->setEnabled(history->canGoBack());
-    panel->_actions->actHistoryForward->setEnabled(history->canGoForward());
-}
-
 vfs* ListPanelFunc::files()
 {
     if (!vfsP)
@@ -1428,6 +1387,16 @@ void ListPanelFunc::syncOtherPanel()
 bool ListPanelFunc::atHome()
 {
     return KUrl(QDir::homePath()).equals(panel->virtualPath(), KUrl::CompareWithoutTrailingSlash);
+}
+
+bool ListPanelFunc::canGoBack()
+{
+    return history->canGoBack();
+}
+
+bool ListPanelFunc::canGoForward()
+{
+    return history->canGoForward();
 }
 
 #include "panelfunc.moc"

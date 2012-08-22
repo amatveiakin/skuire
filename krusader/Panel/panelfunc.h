@@ -112,13 +112,14 @@ public:
         return files()->vfs_search(name);
     }
 
-    void refreshActions();
     void redirectLink();
     void runService(const KService &service, KUrl::List urls);
     void displayOpenWithDialog(KUrl::List urls);
 
     ListPanelFunc* otherFunc();
     bool atHome();
+    bool canGoBack();
+    bool canGoForward();
 
 protected slots:
     void doRefresh();

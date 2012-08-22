@@ -34,8 +34,9 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "listpanel.h"
 #include "panelfunc.h"
 
-#include "../Dialogs/krdialogs.h"
-#include "../KViewer/krviewer.h"
+#include "../kractions.h" //HACK
+#include "../VFS/abstractdirlister.h"
+#include "../defaults.h"
 #include "viewtype.h"
 #include "viewfactory.h"
 #include "abstracttwinpanelfm.h"
@@ -44,6 +45,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include <QActionGroup>
 #include <klocale.h>
 #include <kactioncollection.h>
+#include <kdebug.h>
 
 
 ListPanelActions::ListPanelActions(QObject *parent, AbstractTwinPanelFM *mainWindow) :
@@ -146,10 +148,25 @@ ListPanelActions::ListPanelActions(QObject *parent, AbstractTwinPanelFM *mainWin
     actF9->setToolTip(i18n("Rename file, directory, etc."));
 }
 
-void ListPanelActions::activePanelChanged()
+void ListPanelActions::onPanelCreated(AbstractListPanel *panel)
 {
+    connect(panel, SIGNAL(pathChanged(AbstractListPanel*)),
+                   SLOT(slotPathChanged(AbstractListPanel*)));
+}
+
+void ListPanelActions::onActivePanelChanged()
+{
+    kDebug();
     _gui.reconnect(activePanel());
     _func.reconnect(activePanel()->func);
+    refreshActions();
+}
+
+void ListPanelActions::slotPathChanged(AbstractListPanel *panel)
+{
+    kDebug();
+    if (activePanel() == panel)
+        refreshActions();
 }
 
 void ListPanelActions::guiUpdated()
@@ -227,4 +244,25 @@ void ListPanelActions::openLeftMedia()
 void ListPanelActions::openRightMedia()
 {
     rightPanel()->openMedia();
+}
+
+void ListPanelActions::refreshActions()
+{
+    kDebug();
+    ListPanel *panel = activePanel();
+    ListPanelFunc *func = panel->func;
+    bool isLocalDir = panel->url().isLocalFile();
+    QString protocol = panel->url().protocol();
+
+    krRemoteEncoding->setEnabled(protocol == "ftp" || protocol == "sftp" || protocol == "fish" || protocol == "krarc");
+
+    setViewActions[panel->type()]->setChecked(true);
+    actFTPDisconnect->setEnabled(!isLocalDir); // disconnect an FTP session
+    actCreateChecksum->setEnabled(isLocalDir);
+    actDirUp->setEnabled(!panel->dirLister()->isRoot());
+    actRoot->setEnabled(!panel->url().equals(KUrl(ROOT_DIR),
+                                         KUrl::CompareWithoutTrailingSlash));
+    actHome->setEnabled(!func->atHome());
+    actHistoryBackward->setEnabled(func->canGoBack());
+    actHistoryForward->setEnabled(func->canGoForward());
 }

@@ -305,8 +305,8 @@ void KrusaderView::setActiveManager(PanelManager *manager)
     inactiveManager()->activeStateChanged();
     activeManager()->activeStateChanged();
 
-    _currentPanelCb->onCurrentPanelChanged(manager->currentPanel());
     _currentViewCb->onCurrentViewChanged(manager->currentPanel()->view);
+    _currentPanelCb->onCurrentPanelChanged(manager->currentPanel());
 
     slotPathChanged(manager->currentPanel());
 

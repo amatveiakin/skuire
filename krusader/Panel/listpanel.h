@@ -126,7 +126,7 @@ public:
         return qobject_cast<ListPanel*>(AbstractListPanel::otherPanel());
     }
 
-    int getType() {
+    int type() {
         return panelType;
     }
     void changeType(int);
@@ -212,6 +212,8 @@ signals:
     void refreshColors(bool active);
 
 protected:
+    void onUrlRefreshed();
+
     int panelType;
     KUrl _realPath; // named with _ to keep realPath() compatibility
     KUrl _jumpBackURL;

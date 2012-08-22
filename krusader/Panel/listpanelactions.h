@@ -49,8 +49,9 @@ class ListPanelActions : public ActionsBase
 public:
     ListPanelActions(QObject *parent, AbstractTwinPanelFM *mainWindow);
 
-    //FIXME - implement this
-    virtual void refreshActions() {}
+    virtual void onPanelCreated(AbstractListPanel*);
+    virtual void onActivePanelChanged();
+    virtual void refreshActions();
 
 public slots:
     // set view type
@@ -64,8 +65,8 @@ public slots:
     void openLeftMedia();
     void openRightMedia();
 
-    void activePanelChanged();
     void guiUpdated();
+    void slotPathChanged(AbstractListPanel*);
 
 public:
     KAction *actF2, *actF3, *actF4, *actF5, *actF6, *actF7, *actF8, *actF9;
