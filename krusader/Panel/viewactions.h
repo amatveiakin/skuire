@@ -45,7 +45,7 @@ public:
     ViewActions(QObject *parent, AbstractMainWindow *mainWindow);
 
     virtual void onViewCreated(AbstractView *view);
-    virtual void onViewChanged() {
+    virtual void onActiveViewChanged() {
         refreshActions();
     }
 
