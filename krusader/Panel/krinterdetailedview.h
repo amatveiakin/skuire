@@ -65,7 +65,7 @@ protected slots:
 
 protected:
     // Don't do anything, selections are handled by the mouse handler
-    virtual void setSelection(const QRect &rect, QItemSelectionModel::SelectionFlags command) {}
+    virtual void setSelection(const QRect &rect, QItemSelectionModel::SelectionFlags command) { Q_UNUSED(rect); Q_UNUSED(command); }
     virtual void selectAll() {}
 
     virtual void keyPressEvent(QKeyEvent *e);

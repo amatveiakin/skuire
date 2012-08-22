@@ -1,4 +1,3 @@
-#if 1
 /*****************************************************************************
  * Copyright (C) 2009 Csaba Karai <cskarai@freemail.hu>                      *
  *                                                                           *
@@ -332,7 +331,7 @@ bool KrMouseHandler::dragMoveEvent(QDragMoveEvent *e)
     return true;
 }
 
-bool KrMouseHandler::dragLeaveEvent(QDragLeaveEvent*)
+bool KrMouseHandler::dragLeaveEvent(QDragLeaveEvent * /*e*/)
 {
     return false;
 }
@@ -342,4 +341,3 @@ bool KrMouseHandler::dropEvent(QDropEvent *e)
     _emitter->emitGotDrop(e);
     return true;
 }
-#endif

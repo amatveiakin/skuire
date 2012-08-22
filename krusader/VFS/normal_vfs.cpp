@@ -177,7 +177,6 @@ void normal_vfs::vfs_delFiles(QStringList *fileNames, bool reallyDelete)
     KUrl::List filesUrls;
     KUrl url;
     QDir local(vfs_workingDir());
-    vfile* vf;
 
 //  if( watcher ) watcher->stopScan(); // we will refresh manually this time...
     if (watcher) {
@@ -188,7 +187,6 @@ void normal_vfs::vfs_delFiles(QStringList *fileNames, bool reallyDelete)
     // names -> urls
     for (int i = 0 ; i < fileNames->count(); ++i) {
         QString filename = (*fileNames)[i];
-        vf = vfs_search(filename);
         url.setPath(vfs_workingDir() + '/' + filename);
         filesUrls.append(url);
     }
@@ -306,6 +304,7 @@ vfile* normal_vfs::vfileFromName(const QString& name, char * rawName)
 
 void normal_vfs::getACL(vfile *file, QString &acl, QString &defAcl)
 {
+    Q_UNUSED(file);
     acl.clear();
     defAcl.clear();
 #ifdef HAVE_POSIX_ACL
@@ -324,6 +323,8 @@ void normal_vfs::getACL(vfile *file, QString &acl, QString &defAcl)
 
 QString normal_vfs::getACL(const QString & path, int type)
 {
+    Q_UNUSED(path);
+    Q_UNUSED(type);
 #ifdef HAVE_POSIX_ACL
     acl_t acl = 0;
     // do we have an acl for the file, and/or a default acl for the dir, if it is one?

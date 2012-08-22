@@ -939,19 +939,6 @@
             <entry>
               <para>
                 <keycombo action="simul">&Ctrl;
-                <keycap>=</keycap></keycombo>
-              </para>
-            </entry>
-            <entry>
-              <para>
-              <link linkend="view-menu">Compare
-              directories.</link>(Compare Mode)</para>
-            </entry>
-          </row>
-          <row>
-            <entry>
-              <para>
-                <keycombo action="simul">&Ctrl;
                 <keycap>.</keycap></keycombo>
               </para>
             </entry>
@@ -1078,6 +1065,17 @@
             </entry>
             <entry>
               <para>Up one directory.</para>
+            </entry>
+          </row>
+	  <row>
+            <entry>
+              <para>
+                <keycombo action="simul">&Ctrl;
+                <keycap>=</keycap></keycombo>
+              </para>
+            </entry>
+            <entry>
+              <para>Go to the directory from other panel.</para>
             </entry>
           </row>
         </tbody>

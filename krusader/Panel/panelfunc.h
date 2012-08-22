@@ -69,6 +69,7 @@ public slots:
     void refresh();
     void home();
     void root();
+    void cdToOtherPanel();
     void FTPDisconnect();
     void newFTPconnection();
     void terminal();

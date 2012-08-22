@@ -46,6 +46,7 @@ class KrPanel
 public:
     KrPanel(AbstractPanelManager *manager) :
         gui(0), func(0), view(0), _manager(manager) {}
+    virtual ~KrPanel() {}
 
     //TODO: remove this
     KUrl virtualPath() const {

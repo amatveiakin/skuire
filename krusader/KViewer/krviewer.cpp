@@ -141,8 +141,19 @@ KrViewer::~KrViewer()
                this, SLOT(createGUI(KParts::Part*)));
 
     viewers.removeAll(this);
+
+    // close tabs before deleting tab bar - this avoids Qt bug 26115
+    // https://bugreports.qt-project.org/browse/QTBUG-26115
+    while(tabBar.count())
+        tabCloseRequest();
+
     delete printAction;
     delete copyAction;
+}
+
+void KrViewer::configureDeps()
+{
+    PanelEditor::configureDeps();
 }
 
 void KrViewer::createGUI(KParts::Part* part)
@@ -247,7 +258,7 @@ KrViewer* KrViewer::getViewer(bool new_window)
             viewers.prepend(new KrViewer());   // add to first (active)
         } else {
             if (viewers.first()->isMinimized()) { // minimized? -> show it again
-                viewers.first()->setWindowState(viewers.first()->windowState() & ~Qt::WindowMinimized | Qt::WindowActive);
+                viewers.first()->setWindowState((viewers.first()->windowState() & ~Qt::WindowMinimized) | Qt::WindowActive);
                 viewers.first()->show();
             }
             viewers.first()->raise();
@@ -623,7 +634,7 @@ PanelViewerBase * KrViewer::getPanelViewerBase(KParts::Part * part)
     return 0;
 }
 
-void KrViewer::updateActions(PanelViewerBase * pvb)
+void KrViewer::updateActions(PanelViewerBase * /*pvb*/)
 {
     QList<QAction *> actList = toolBar()->actions();
     bool hasPrint = false, hasCopy = false;
@@ -644,7 +655,7 @@ bool KrViewer::isValidPart(KParts::Part* part)
     return manager.parts().contains(part);
 }
 
-void KrViewer::partDestroyed(PanelViewerBase * pvb)
+void KrViewer::partDestroyed(PanelViewerBase * /*pvb*/)
 {
     /* not yet used */
 }

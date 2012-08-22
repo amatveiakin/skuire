@@ -29,6 +29,7 @@ class ViewActions;
 class KrMainWindow
 {
 public:
+    virtual ~KrMainWindow() {}
     virtual QWidget *widget() = 0;
     virtual View *activeView() = 0;
     virtual ViewActions *viewActions() = 0;

@@ -65,7 +65,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 
 static int __delayedIdx; // ugly: pass the processEvents deadlock
 
-KMountMan::KMountMan(QWidget *parent) : QObject(), parentWindow(parent), Operational(false), waiting(false), mountManGui(0)
+KMountMan::KMountMan(QWidget *parent) : QObject(), Operational(false), waiting(false), mountManGui(0), parentWindow(parent)
 {
     _actions = 0L;
 
@@ -195,7 +195,7 @@ void KMountMan::mount(QString mntPoint, bool blocking)
                 return;
         }
 
-        KIO::SimpleJob *job = KIO::mount(false, m->mountType().toLocal8Bit(), m->mountedFrom(), m->mountPoint(), false);
+        KIO::SimpleJob *job = KIO::mount(false, m->mountType().toLocal8Bit(), m->mountedFrom(), m->mountPoint(), KIO::DefaultFlags);
         job->setUiDelegate(new KIO::JobUiDelegate());
         KIO::getJobTracker()->registerJob(job);
         connect(job, SIGNAL(result(KJob*)), this, SLOT(jobResult(KJob*)));
@@ -238,7 +238,7 @@ void KMountMan::unmount(QString mntPoint, bool blocking)
                 return;
         }
 
-        KIO::SimpleJob *job = KIO::unmount(mntPoint, false);
+        KIO::SimpleJob *job = KIO::unmount(mntPoint, KIO::DefaultFlags);
         job->setUiDelegate(new KIO::JobUiDelegate());
         KIO::getJobTracker()->registerJob(job);
         connect(job, SIGNAL(result(KJob*)), this, SLOT(jobResult(KJob*)));
@@ -510,7 +510,7 @@ QString KMountMan::pathForUdi(QString udi)
         return QString();
 }
 
-void KMountMan::slotTeardownDone(Solid::ErrorType error, QVariant errorData, const QString &udi)
+void KMountMan::slotTeardownDone(Solid::ErrorType error, QVariant errorData, const QString& /*udi*/)
 {
     waiting = false;
     if (error != Solid::NoError && errorData.isValid()) {
@@ -518,7 +518,7 @@ void KMountMan::slotTeardownDone(Solid::ErrorType error, QVariant errorData, con
     }
 }
 
-void KMountMan::slotSetupDone(Solid::ErrorType error, QVariant errorData, const QString &udi)
+void KMountMan::slotSetupDone(Solid::ErrorType error, QVariant errorData, const QString& /*udi*/)
 {
     waiting = false;
     if (error != Solid::NoError && errorData.isValid()) {

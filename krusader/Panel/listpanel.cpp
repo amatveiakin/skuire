@@ -138,10 +138,10 @@ protected:
 //      The list panel constructor       //
 /////////////////////////////////////////////////////
 ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager, KConfigGroup cfg) :
-        KrPanel(manager),
-        QWidget(parent), panelType(-1), colorMask(255), compareMode(false), statsAgent(0),
-        quickSearch(0), cdRootButton(0), cdUpButton(0), popupBtn(0), popup(0), inlineRefreshJob(0),
-        _locked(false), previewJob(0), vfsError(0)
+        QWidget(parent), KrPanel(manager),
+        panelType(-1), colorMask(255), compareMode(false), statsAgent(0),
+        previewJob(0), inlineRefreshJob(0), quickSearch(0), cdRootButton(0), cdUpButton(0),
+        popupBtn(0), popup(0), vfsError(0), _locked(false)
 {
     if(cfg.isValid())
         panelType = cfg.readEntry("Type", -1);
@@ -274,13 +274,9 @@ ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager, KConfigGrou
 
     // toolbar buttons
 
-    cdOtherButton = new QToolButton(toolbar);
-    cdOtherButton->setAutoRaise(true);
-    cdOtherButton->setFixedSize(20, origin->button() ->height());
-    cdOtherButton->setText(i18n("="));
+    cdOtherButton = new ActionButton(toolbar, this, _actions->actCdToOther, "=");
+    cdOtherButton->setFixedSize(20, origin->button()->height());
     toolbarLayout->addWidget(cdOtherButton);
-    cdOtherButton->setToolTip(i18n("Equal"));
-    connect(cdOtherButton, SIGNAL(clicked()), this, SLOT(slotFocusAndCDOther()));
 
     cdUpButton = new ActionButton(toolbar, this, _actions->actDirUp, "..");
     toolbarLayout->addWidget(cdUpButton);
@@ -603,12 +599,6 @@ void ListPanel::setButtons()
 void ListPanel::slotUpdateTotals()
 {
     totals->setText(view->statistics());
-}
-
-void ListPanel::slotFocusAndCDOther()
-{
-    slotFocusOnMe();
-    func->openUrl(otherPanel()->func->files() ->vfs_getOrigin());
 }
 
 //TODO move this to panelfunc ?
@@ -948,7 +938,7 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
     }
 }
 
-void ListPanel::vfs_refresh(KJob *job)
+void ListPanel::vfs_refresh(KJob* /*job*/)
 {
     if (func)
         func->refresh();
@@ -1100,12 +1090,12 @@ void ListPanel::slotPreviewJobStarted(KJob *job)
     connect(job, SIGNAL(result(KJob*)), SLOT(slotPreviewJobResult(KJob*)));
 }
 
-void ListPanel::slotPreviewJobPercent(KJob *job, unsigned long percent)
+void ListPanel::slotPreviewJobPercent(KJob* /*job*/, unsigned long percent)
 {
     previewProgress->setValue(percent);
 }
 
-void ListPanel::slotPreviewJobResult(KJob *job)
+void ListPanel::slotPreviewJobResult(KJob* /*job*/)
 {
     previewJob = 0;
     previewProgress->hide();

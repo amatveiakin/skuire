@@ -106,13 +106,13 @@ void KrVfsModel::clear()
 
 int KrVfsModel::rowCount(const QModelIndex& parent) const
 {
-    (void)parent;
+    Q_UNUSED(parent)
     return _items.count();
 }
 
 int KrVfsModel::columnCount(const QModelIndex &parent) const
 {
-    (void)parent;
+    Q_UNUSED(parent)
     return KrViewProperties::MAX_COLUMNS;
 }
 

@@ -36,7 +36,7 @@ A
 #include "../defaults.h"
 
 
-KrPreviews::KrPreviews(KrView *view) :  _view(view), _job(0)
+KrPreviews::KrPreviews(KrView *view) :  _job(0), _view(view)
 {
     connect(&KrColorCache::getColorCache(), SIGNAL(colorsRefreshed()), SLOT(slotRefreshColors()));
 }

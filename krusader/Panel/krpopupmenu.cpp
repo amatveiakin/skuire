@@ -92,8 +92,13 @@ void KrPopupMenu::run(QPoint pos, KrPanel *panel, bool onlyOpenWith)
     execMenu(&menu, pos);
 }
 
-KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) : KMenu(parent), panel(thePanel), empty(false),
-        multipleSelections(false), actions(0), mapper(new QSignalMapper(this))
+KrPopupMenu::KrPopupMenu(KrPanel *thePanel, QWidget *parent, bool onlyOpenWith) :
+        KMenu(parent),
+        panel(thePanel),
+        empty(false),
+        multipleSelections(false),
+        actions(0),
+        mapper(new QSignalMapper(this))
 {
 #ifdef __LIBKONQ__
     konqMenu = 0;

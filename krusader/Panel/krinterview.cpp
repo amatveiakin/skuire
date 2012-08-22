@@ -772,6 +772,7 @@ void KrInterView::copySettingsFrom(KrView *other)
     if(other->instance() == instance()) { // the other view is of the same type
         KrInterView *v = static_cast<KrInterView*>(other);
         _widget->copySettingsFrom(v->_widget);
+        setFileIconSize(v->fileIconSize());
         _widget->setSortMode(v->properties()->sortColumn, v->_model->lastSortDir());
     }
 }

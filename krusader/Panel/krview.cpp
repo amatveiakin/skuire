@@ -530,10 +530,9 @@ const KrView::IconSizes KrView::iconSizes;
 
 KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
     _instance(instance), _dirLister(0), _config(cfg), _mainWindow(0),
-    _properties(0), _focused(false),
+    _properties(0), _operator(0), _emitter(new Emitter()), _focused(false),
     _previews(0), _fileIconSize(0), _updateDefaultSettings(false)
 {
-    _emitter = new Emitter();
 }
 
 KrView::~KrView()
@@ -944,7 +943,7 @@ void KrView::applySettingsToOthers()
         if(this != view) {
             bool tmp = view->_updateDefaultSettings;
             view->_updateDefaultSettings = false;
-            _instance.m_objects[i]->copySettingsFrom(this);
+            view->copySettingsFrom(this);
             view->_updateDefaultSettings = tmp;
         }
     }

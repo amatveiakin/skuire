@@ -139,20 +139,16 @@ KParts::ReadOnlyPart* PanelViewer::getHexPart()
 {
     KParts::ReadOnlyPart* part = 0;
 
-    if (mimes->find(QLatin1String("libkhexedit2part")) == mimes->end()) {
-        KPluginFactory* factory = KLibLoader::self()->factory("libkhexedit2part");
-        if (factory) {
-            // Create the part
-            part = (KParts::ReadOnlyPart *) factory->create(this, "KParts::ReadOnlyPart");
-            mimes->insert(QLatin1String("libkhexedit2part"), part);
+    if (mimes->find("oktetapart") == mimes->end()) {
+        KPluginLoader loader("oktetapart");
+        if (KPluginFactory *factory = loader.factory()) {
+            if ((part = factory->create<KParts::ReadOnlyPart>(this, this)))
+                mimes->insert("oktetapart", part);
         }
     } else
-        part = (*mimes)[ QLatin1String("libkhexedit2part")];
+        part = (*mimes)["oktetapart"];
 
-    if(!part)
-        part = getListerPart(true);
-
-    return part;
+    return part ? part : getListerPart(true);
 }
 
 KParts::ReadOnlyPart* PanelViewer::getTextPart()
@@ -160,7 +156,7 @@ KParts::ReadOnlyPart* PanelViewer::getTextPart()
     KParts::ReadOnlyPart* part = getPart("text/plain");
     if(!part)
         part = getPart("all/allfiles");
-    return part;
+    return part ? part : getListerPart();
 }
 
 KParts::ReadOnlyPart* PanelViewer::getDefaultPart(const KUrl &url, QString mimetype, bool isBinary)
@@ -177,8 +173,7 @@ KParts::ReadOnlyPart* PanelViewer::getDefaultPart(const KUrl &url, QString mimet
 
     KFileItem item = readFileInfo(url);
     KIO::filesize_t fileSize = item.isNull() ? 0 : item.size();
-    KIO::filesize_t limit = (KIO::filesize_t)group.readEntry("Lister Limit", _ListerLimit);
-    limit *= 0x100000;
+    KIO::filesize_t limit = (KIO::filesize_t)group.readEntry("Lister Limit", _ListerLimit) * 0x100000;
 
     KParts::ReadOnlyPart* part = 0;
 
@@ -187,13 +182,15 @@ KParts::ReadOnlyPart* PanelViewer::getDefaultPart(const KUrl &url, QString mimet
         if((mimetype.startsWith(QLatin1String("text/")) ||
             mimetype.startsWith(QLatin1String("all/"))) &&
                 fileSize > limit) {
-            part = isBinary ? getHexPart() : getListerPart();
+            part = getListerPart(isBinary);
             break;
-        } else if(part = getPart(mimetype))
+        } else if((part = getPart(mimetype)))
             break;
     case KrViewer::Text:
-        if(fileSize > limit || isBinary)
-            part = isBinary ? getHexPart() : getListerPart();
+        if (fileSize > limit)
+            part =  getListerPart(isBinary);
+        else if (isBinary)
+            part = getHexPart();
         else
             part = getTextPart();
         break;
@@ -201,7 +198,10 @@ KParts::ReadOnlyPart* PanelViewer::getDefaultPart(const KUrl &url, QString mimet
         part = getListerPart(isBinary);
         break;
     case KrViewer::Hex:
-        part = getHexPart();
+        if (fileSize > limit)
+            part = getListerPart(true);
+        else
+            part = getHexPart();
         break;
     default:
         abort();
@@ -272,27 +272,15 @@ bool PanelViewer::closeUrl()
 KParts::ReadOnlyPart* PanelViewer::createPart(QString mimetype)
 {
     KParts::ReadOnlyPart * part = 0;
-    KPluginFactory *factory = 0;
     KService::Ptr ptr = KMimeTypeTrader::self()->preferredService(mimetype, "KParts/ReadOnlyPart");
     if (ptr) {
-        QStringList args;
+        QVariantList args;
         QVariant argsProp = ptr->property("X-KDE-BrowserView-Args");
-        if (argsProp.isValid()) {
-            QString argStr = argsProp.toString();
-            args = argStr.split(' ');
-        }
+        if (argsProp.isValid())
+            args << argsProp;
         QVariant prop = ptr->property("X-KDE-BrowserView-AllowAsDefault");
-        if (!prop.isValid() || prop.toBool()) {   // defaults to true
-            factory = KLibLoader::self() ->factory(ptr->library().toLatin1());
-            if (factory) {
-                if (ptr->serviceTypes().contains("Browser/View"))
-                    part = static_cast<KParts::ReadOnlyPart *>(factory->create(this,
-                            QString("Browser/View").toLatin1(), args));
-                if (!part)
-                    part = static_cast<KParts::ReadOnlyPart *>(factory->create(this,
-                            QString("KParts::ReadOnlyPart").toLatin1(), args));
-            }
-        }
+        if (!prop.isValid() || prop.toBool()) // defaults to true
+            part = ptr->createInstance<KParts::ReadOnlyPart>(this, this, args);
     }
     if (part) {
         KParts::BrowserExtension * ext = KParts::BrowserExtension::childObject(part);
@@ -316,6 +304,23 @@ PanelEditor::~PanelEditor()
 {
 }
 
+void PanelEditor::configureDeps()
+{
+    KService::Ptr ptr = KMimeTypeTrader::self()->preferredService("text/plain", "KParts/ReadWritePart");
+    if (!ptr)
+        ptr = KMimeTypeTrader::self()->preferredService("all/allfiles", "KParts/ReadWritePart");
+    if (!ptr)
+        KMessageBox::sorry(0, missingKPartMsg(), i18n("Missing Plugin"), KMessageBox::AllowLink);
+
+}
+
+QString PanelEditor::missingKPartMsg()
+{
+    return i18n("No text editor plugin available.<br/>Internal editor won't work without this.<br/>"
+                "You can fix this by installing Kate:<br/>") +
+                QString("<a href='%1'>%1</a>").arg("http://www.kde.org/applications/utilities/kate");
+}
+
 KParts::ReadOnlyPart* PanelEditor::openUrl(const KUrl &url, KrViewer::Mode mode)
 {
     emit urlChanged(this, url);
@@ -325,7 +330,7 @@ KParts::ReadOnlyPart* PanelEditor::openUrl(const KUrl &url, KrViewer::Mode mode)
     KFileItem item = readFileInfo(url);
     KIO::filesize_t fileSize = item.isNull() ? 0 : item.size();
     KConfigGroup group(krConfig, "General");
-    KIO::filesize_t limit = (KIO::filesize_t)group.readEntry("Lister Limit", _ListerLimit);
+    KIO::filesize_t limitMB = (KIO::filesize_t)group.readEntry("Lister Limit", _ListerLimit);
 
     KMimeType::Ptr mt = KMimeType::findByUrl(curl);
     QString mimetype = mt->name();
@@ -333,11 +338,11 @@ KParts::ReadOnlyPart* PanelEditor::openUrl(const KUrl &url, KrViewer::Mode mode)
     if (mode == KrViewer::Generic)
         cpart = getPart(mimetype);
 
-    if(fileSize > limit * 0x100000) {
+    if(fileSize > limitMB * 0x100000) {
         if(!cpart || mimetype.startsWith(QLatin1String("text/")) ||
                 mimetype.startsWith(QLatin1String("all/"))) {
             if(KMessageBox::Cancel == KMessageBox::warningContinueCancel(this,
-                  i18n("%1 is bigger than %2 MB" , curl.pathOrUrl(), limit))) {
+                  i18n("%1 is bigger than %2 MB" , curl.pathOrUrl(), limitMB))) {
                 setCurrentWidget(fallback);
                 return 0;
             }
@@ -360,11 +365,13 @@ KParts::ReadOnlyPart* PanelEditor::openUrl(const KUrl &url, KrViewer::Mode mode)
             connect(cpart, SIGNAL(destroyed()), this, SLOT(slotCPartDestroyed()));
             return cpart;
         }
-
     }
 
+    KMessageBox::sorry(this, missingKPartMsg(), i18n("Can't edit %1", curl.pathOrUrl()),
+                       KMessageBox::AllowLink);
     setCurrentWidget(fallback);
     return 0;
+
 }
 
 bool PanelEditor::queryClose()
@@ -387,23 +394,15 @@ bool PanelEditor::closeUrl()
 KParts::ReadOnlyPart* PanelEditor::createPart(QString mimetype)
 {
     KParts::ReadWritePart * part = 0L;
-    KPluginFactory *factory = 0;
     KService::Ptr ptr = KMimeTypeTrader::self()->preferredService(mimetype, "KParts/ReadWritePart");
     if (ptr) {
-        QStringList args;
+        QVariantList args;
         QVariant argsProp = ptr->property("X-KDE-BrowserView-Args");
-        if (argsProp.isValid()) {
-            QString argStr = argsProp.toString();
-            args = argStr.split(' ');
-        }
+        if (argsProp.isValid())
+            args << argsProp;
         QVariant prop = ptr->property("X-KDE-BrowserView-AllowAsDefault");
-        if (!prop.isValid() || prop.toBool()) {  // defaults to true
-            factory = KLibLoader::self() ->factory(ptr->library().toLatin1());
-            if (factory) {
-                part = static_cast<KParts::ReadWritePart *>(factory->create(this,
-                        QString("KParts::ReadWritePart").toLatin1(), args));
-            }
-        }
+        if (!prop.isValid() || prop.toBool()) // defaults to true
+            part = ptr->createInstance<KParts::ReadWritePart>(this, this, args);
     }
     if (part) {
         KParts::BrowserExtension * ext = KParts::BrowserExtension::childObject(part);

@@ -1416,6 +1416,11 @@ void ListPanelFunc::root()
     openUrl(KUrl(ROOT_DIR));
 }
 
+void ListPanelFunc::cdToOtherPanel()
+{
+    openUrl(panel->otherPanel()->virtualPath());
+}
+
 void ListPanelFunc::syncOtherPanel()
 {
     otherFunc()->openUrl(panel->virtualPath());
