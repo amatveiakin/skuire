@@ -68,7 +68,6 @@ namespace KIO
 }
 
 class vfs;
-class KrView;
 class UrlRequester;
 class KrQuickSearch;
 class QuickFilter;
@@ -81,7 +80,7 @@ class ListPanelFunc;
 class QSplitter;
 class KDiskFreeSpace;
 class KrErrorDisplay;
-class ListPanelActions;
+
 
 class ListPanel : public AbstractListPanel
 {
@@ -223,7 +222,6 @@ protected:
     KDiskFreeSpace* statsAgent;
     KJob *previewJob;
     KIO::Job *inlineRefreshJob;
-    ListPanelActions *_actions;
     CurrentViewCallback *_currentViewCb;
 
     QPixmap currDragPix;

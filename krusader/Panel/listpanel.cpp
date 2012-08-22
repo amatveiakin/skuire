@@ -156,7 +156,6 @@ ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager,
     if (panelType == -1)
         panelType = defaultPanelType();
     func = new ListPanelFunc(this);
-    _actions = krApp->listPanelActions();
 
     setAcceptDrops(true);
 
@@ -516,7 +515,8 @@ bool ListPanel::eventFilter(QObject * watched, QEvent * e)
             if(ke->key() == Qt::Key_Escape && ke->modifiers() == Qt::NoModifier) {
                 // if the cancel refresh action has no shortcut assigned,
                 // we need this event ourselves to cancel refresh
-                if(_actions->actCancelRefresh->shortcut().isEmpty()) {
+                QAction *actCancelRefresh = _manager->mainWindow()->action("cancel refresh");
+                if (!actCancelRefresh || actCancelRefresh->shortcut().isEmpty()) {
                     e->accept();
                     return true;
                 }

@@ -1224,7 +1224,6 @@ void ListPanelFunc::FTPDisconnect()
 {
     // you can disconnect only if connected !
     if (files() ->vfs_getType() == vfs::VFS_FTP) {
-        panel->_actions->actFTPDisconnect->setEnabled(false);
         panel->view->setUrlToMakeCurrent(KUrl());
         openUrl(panel->realPath());   // open the last local URL
     }
@@ -1237,7 +1236,6 @@ void ListPanelFunc::newFTPconnection()
     if (url.isEmpty())
         return ;
 
-    panel->_actions->actFTPDisconnect->setEnabled(true);
     openUrl(url);
 }
 
