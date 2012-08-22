@@ -141,7 +141,8 @@ bool TerminalDock::applyShortcuts(QKeyEvent * ke)
         krSwitchFullScreenTE->activate(QAction::Trigger);
         return true;
     }
-
+//FIXME
+#if 0
     if (_mainWindow->listPanelActions()->actPaste->shortcut().contains(pressedKey)) {
         QString text = QApplication::clipboard()->text();
         if (! text.isEmpty()) {
@@ -150,7 +151,7 @@ bool TerminalDock::applyShortcuts(QKeyEvent * ke)
         }
         return true;
     }
-
+#endif
     //insert current to the terminal
     if ((ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return)
             && ((ke->modifiers() & ~Qt::ShiftModifier) == Qt::ControlModifier)) {
