@@ -18,8 +18,12 @@
 
 #include "krkeydialog.h"
 
+#include "../krglobal.h"
+
 #include <QtGui/QLayout>
 #include <QtCore/QTextStream>
+#include <QAction>
+
 #include <klocale.h>
 #include <kpushbutton.h>
 #include <kmessagebox.h>
@@ -27,19 +31,20 @@
 #include <kglobal.h>
 #include <kstandarddirs.h>
 #include <kconfig.h>
-#include <kdebug.h>
 #include <kactioncollection.h>
 
-#include "../krusader.h"
-#include "../krglobal.h"
 
 //This is the filter in the KFileDialog of Import/Export:
 static const char* FILE_FILTER = I18N_NOOP("*.keymap|Krusader keymaps\n*|all files");
 
 
-KrKeyDialog::KrKeyDialog(QWidget * parent) : KShortcutsDialog(KShortcutsEditor::AllActions, KShortcutsEditor::LetterShortcutsDisallowed /* allow letter shortcuts */, parent)
+KrKeyDialog::KrKeyDialog(QWidget *parent, KActionCollection *actionCollection) : 
+        KShortcutsDialog(KShortcutsEditor::AllActions,
+                         KShortcutsEditor::LetterShortcutsDisallowed, // allow letter shortcuts
+                         parent),
+        _actionCollection(actionCollection)
 {
-    addCollection(krApp->actionCollection());
+    addCollection(_actionCollection);
 
     // HACK This fetches the layout of the buttonbox from KDialog, although it is not accessable with KDialog's API
     // None the less it's quite safe to use since this implementation hasn't changed since KDE-3.3 (I haven't looked at earlier
@@ -59,8 +64,6 @@ KrKeyDialog::KrKeyDialog(QWidget * parent) : KShortcutsDialog(KShortcutsEditor::
 
     // Also quite HACK 'isch but unfortunately KKeyDialog don't giveus access to this widget
     _chooser = qobject_cast<KShortcutsEditor*>(mainWidget());
-
-    configure(true /* SaveSettings */);   // this runs the dialog
 }
 
 KrKeyDialog::~KrKeyDialog()
@@ -104,7 +107,7 @@ void KrKeyDialog::importLegacyShortcuts(const QString& file)
     if (info.open(QIODevice::ReadOnly)) {
         QTextStream stream(&info);
         QStringList infoText = stream.readAll().split('\n');
-        if (KMessageBox::questionYesNoList(krApp, i18n("The following information was attached to the keymap. Do you really want to import this keymap?"), infoText) != KMessageBox::Yes)
+        if (KMessageBox::questionYesNoList(this, i18n("The following information was attached to the keymap. Do you really want to import this keymap?"), infoText) != KMessageBox::Yes)
             return;
     }
 
@@ -120,7 +123,7 @@ void KrKeyDialog::importLegacyShortcuts(const QString& file)
     QAction *action;
     while (!stream.atEnd()) {
         stream >> actionName >> key;
-        action = krApp->actionCollection()->action(actionName);
+        action = _actionCollection->action(actionName);
         if (action) {
             action->setShortcut(key);
 //   krOut << "set shortcut for " << actionName <<endl;
@@ -163,8 +166,8 @@ void KrKeyDialog::slotExportShortcuts()
     KConfigGroup cg = conf.group("Shortcuts");
 
     // unfortunately we can't use this function since it only writes the actions which are different from default.
-    //krApp->actionCollection()->writeShortcutSettings( "Shortcuts", &conf );
-    krApp->actionCollection()->writeSettings(&cg, true /* write all actions */);
+    //_actionCollection->writeShortcutSettings( "Shortcuts", &conf );
+    _actionCollection->writeSettings(&cg, true /* write all actions */);
     // That does KActionShortcutList::writeSettings for us
     //conf.sync(); // write back all changes
 }

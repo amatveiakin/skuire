@@ -82,6 +82,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "krglobal.h"
 #include "kractions.h"
 #include "panelmanager.h"
+
 #include "Panel/listpanelactions.h"
 #include "UserAction/kraction.h"
 #include "UserAction/expander.h"
@@ -90,6 +91,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "Dialogs/popularurls.h"
 #include "Dialogs/checksumdlg.h"
 #include "Dialogs/krpleasewait.h"
+#include "Dialogs/krkeydialog.h"
 #include "GUI/krremoteencodingmenu.h"
 #include "GUI/kfnkeys.h"
 #include "GUI/kcmdline.h"
@@ -102,6 +104,7 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "Konfigurator/kgprotocols.h"
 #include "BookMan/krbookmarkhandler.h"
 #include "KViewer/krviewer.h"
+
 #include "module.h"
 #include "abstractview.h"
 
@@ -916,6 +919,27 @@ bool Krusader::queryExit()
 {
     krConfig->sync();
     return true;
+}
+
+void Krusader::configureShortcuts()
+{
+    KrKeyDialog dlg(this, actionCollection());
+    connect(&dlg, SIGNAL(saved()), SLOT(slotShortcutsConfigured()));
+    dlg.configure(true /* SaveSettings */);   // this runs the dialog
+}
+
+void Krusader::slotShortcutsConfigured()
+{
+    MAIN_VIEW->fnKeys()->updateButtons();
+#if 0 //TODO enable when krusader supports multuple main windows
+    // make other main windows re-read shortcuts from xml
+    foreach(Krusader *instance, _allInstances) {
+        if (this != instance) {
+            instance->factory()->refreshActionProperties();
+            instance->_mainView->fnKeys()->updateButtons();
+        }
+    }
+#endif
 }
 
 QAction *Krusader::action(QString name)

@@ -24,11 +24,11 @@
 /**
  * @short KDE's KKeyDialog extended by the ability to export/import shortcuts
  */
-class KrKeyDialog : protected KShortcutsDialog
+class KrKeyDialog : public KShortcutsDialog
 {
     Q_OBJECT
 public:
-    KrKeyDialog(QWidget* parent = 0);
+    KrKeyDialog(QWidget* parent, KActionCollection *actionCollection);
     ~KrKeyDialog();
 
 private slots:
@@ -37,7 +37,9 @@ private slots:
 
 private:
     void importLegacyShortcuts(const QString& file);
+
     KShortcutsEditor* _chooser;
+    KActionCollection *_actionCollection;
 };
 
 #endif

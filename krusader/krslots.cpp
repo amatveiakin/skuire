@@ -57,7 +57,6 @@
 #include "Panel/listpanel.h"
 #include "Dialogs/krdialogs.h"
 #include "Dialogs/krspwidgets.h"
-#include "Dialogs/krkeydialog.h"
 #include "GUI/krusaderstatus.h"
 #include "Panel/panelfunc.h"
 #include "MountMan/kmountman.h"
@@ -445,11 +444,6 @@ void KRslots::saveNewToolbarConfig()
     KConfigGroup cg(KGlobal::config(), QString());
     krApp->applyMainWindowSettings(cg);
     krApp->updateGUI();
-}
-
-void KRslots::configKeys()
-{
-    KrKeyDialog d(MAIN_VIEW);
 }
 
 // misc

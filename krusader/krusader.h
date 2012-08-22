@@ -146,6 +146,8 @@ public slots:
 
 protected slots:
     void doOpenUrl();
+    void configureShortcuts();
+    void slotShortcutsConfigured();
 
 protected:
     bool queryExit();
