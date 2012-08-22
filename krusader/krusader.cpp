@@ -307,10 +307,6 @@ Krusader::Krusader() : KParts::MainWindow(0,
     KrTrashHandler::startWatcher();
     isStarting = false;
 
-    //HACK - used by [ListerTextArea|KrSearchDialog|LocateDlg]:keyPressEvent()
-    //       in the long run, these should use their own actions and make them configurable
-    KrGlobal::copyShortcut = _listPanelActions->actCopy->shortcut();
-
     foreach(ActionsBase *actions, _allActions)
         actions->refreshActions();
 

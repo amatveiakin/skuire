@@ -66,7 +66,7 @@ public:
     static AbstractListPanel *activePanel();
 
     //HACK - used by [ListerTextArea|KrSearchDialog|LocateDlg]:keyPressEvent()
-    static KShortcut copyShortcut;
+    static KShortcut copyShortcut();
 
 //     static void enableAction(const char *name, bool enable);
 //     static QAction *getAction(const char *name);

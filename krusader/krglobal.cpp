@@ -46,7 +46,6 @@ KrusaderView *KrGlobal::mainView = 0;
 QWidget *KrGlobal::mainWindow = 0;
 UserAction *KrGlobal::userAction = 0;
 // ListPanel *KrGlobal::activePanel = 0;
-KShortcut KrGlobal::copyShortcut;
 
 
 AbstractListPanel *KrGlobal::activePanel()
@@ -56,6 +55,17 @@ AbstractListPanel *KrGlobal::activePanel()
         return mainView->activeManager()->currentPanel();
     else
         return 0;
+}
+
+KShortcut KrGlobal::copyShortcut()
+{
+    //HACK - used by [ListerTextArea|KrSearchDialog|LocateDlg]:keyPressEvent()
+    //       in the long run, these should use their own actions and make them configurable
+    if (QAction *actCopy = krApp->actionCollection()->action(KStandardAction::name(KStandardAction::Copy))) {
+        if (KAction *kAct = qobject_cast<KAction*>(actCopy))
+            return kAct->shortcut();
+    }
+    return KStandardShortcut::copy();
 }
 
 // void KrGlobal::enableAction(const char *name, bool enable)
