@@ -137,8 +137,8 @@ void KrusaderView::init(KConfigGroup &cfg, bool restoreSettings, QStringList lef
     leftPanel()->start(leftUrl);
     rightPanel()->start(rightUrl);
 
-    inactiveManager()->activeStateChanged();
-    activeManager()->activeStateChanged();
+    inactiveManager()->onActiveStateChanged();
+    activeManager()->onActiveStateChanged();
 
     for (int i = 1; i < leftTabs.count(); i++)
         leftMng->slotNewTab(leftTabs[ i ], false);
@@ -302,8 +302,8 @@ void KrusaderView::setActiveManager(PanelManager *manager)
 
     activeMng = manager;
 
-    inactiveManager()->activeStateChanged();
-    activeManager()->activeStateChanged();
+    inactiveManager()->onActiveStateChanged();
+    activeManager()->onActiveStateChanged();
 
     _currentViewCb->onCurrentViewChanged(manager->currentPanel()->view);
     _currentPanelCb->onCurrentPanelChanged(manager->currentPanel());

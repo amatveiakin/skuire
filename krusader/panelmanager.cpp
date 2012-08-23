@@ -103,9 +103,9 @@ bool PanelManager::isActive()
     return _mainWindow->activeManager() == this;
 }
 
-void PanelManager::activeStateChanged()
+void PanelManager::onActiveStateChanged()
 {
-    _currentPanel->activeStateChanged();
+    _currentPanel->onActiveStateChanged();
 }
 
 void PanelManager::tabsCountChanged()
@@ -147,8 +147,8 @@ void PanelManager::slotCurrentTabChanged(int index)
     _stack->setCurrentWidget(_currentPanel);
 
     if(prev)
-        prev->activeStateChanged();
-    _currentPanel->activeStateChanged();
+        prev->onActiveStateChanged();
+    _currentPanel->onActiveStateChanged();
 
     _currentViewCb->onCurrentViewChanged(_currentPanel->view);
     _currentPanelCb->onCurrentPanelChanged(_currentPanel);
@@ -156,7 +156,7 @@ void PanelManager::slotCurrentTabChanged(int index)
     emit pathChanged(p);
 
     if(otherManager() && otherManager()->currentPanel())
-        otherManager()->currentPanel()->otherPanelChanged();
+        otherManager()->currentPanel()->onOtherPanelChanged();
 }
 
 void PanelManager::connectPanel(AbstractListPanel *p)

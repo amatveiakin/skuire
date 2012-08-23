@@ -73,7 +73,7 @@ public:
     void setOtherManager(PanelManager *other) {
         _otherManager = other;
     }
-    void activeStateChanged();
+    void onActiveStateChanged();
 
     // AbstractPanelManager implementation
     virtual bool isActive();

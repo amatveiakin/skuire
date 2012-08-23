@@ -695,10 +695,10 @@ void ListPanel::slotFocusOnMe()
         emit activate();
     Q_ASSERT(isActive());
 
-    activeStateChanged(); // can't hurt
+    onActiveStateChanged(); // can't hurt
 }
 
-void ListPanel::activeStateChanged()
+void ListPanel::onActiveStateChanged()
 {
     if(isActive()) {
         updatePopupPanel(view->currentItem());
@@ -1301,7 +1301,7 @@ void ListPanel::updatePopupPanel(KFileItem item)
     p->update(item);
 }
 
-void ListPanel::otherPanelChanged()
+void ListPanel::onOtherPanelChanged()
 {
     func->syncURL = KUrl();
 }

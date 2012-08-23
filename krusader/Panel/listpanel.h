@@ -106,7 +106,7 @@ public:
     virtual KUrl url() const;
     virtual AbstractDirLister *dirLister();
 
-    virtual void otherPanelChanged();
+    virtual void onOtherPanelChanged();
 
     virtual bool isLocked() {
         return _locked;
@@ -118,7 +118,7 @@ public:
     virtual void restoreSettings(KConfigGroup cfg);
     virtual void start(KUrl url = KUrl(), bool immediate = false);
     virtual void reparent(QWidget *parent, AbstractPanelManager *manager);
-    virtual void activeStateChanged(); // to be called by panel manager
+    virtual void onActiveStateChanged(); // to be called by panel manager
     virtual void getFocusCandidates(QVector<QWidget*> &widgets);
 
     ListPanel *otherPanel() {

@@ -73,9 +73,9 @@ public:
     virtual void restoreSettings(KConfigGroup cfg) = 0;
     virtual void start(KUrl url = KUrl(), bool immediate = false) = 0;
     virtual void reparent(QWidget *parent, AbstractPanelManager *manager) = 0;
-    virtual void activeStateChanged() = 0; // to be called by panel manager
     virtual void getFocusCandidates(QVector<QWidget*> &widgets) = 0;
-
+    virtual void onActiveStateChanged() = 0; // to be called by panel manager
+    virtual void onOtherPanelChanged() = 0; // to be called by panel manager
 
     AbstractPanelManager *manager() {
         return _manager;
@@ -86,7 +86,6 @@ public:
     bool isLeft() const {
         return _manager->isLeft();
     }
-    virtual void otherPanelChanged() {}
 
     ListPanelFunc *func;
     AbstractView *view;
