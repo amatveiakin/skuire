@@ -80,6 +80,8 @@ class Krusader : public KParts::MainWindow, public AbstractTwinPanelFM,
     Q_CLASSINFO("D-Bus Interface", "org.krusader.Instance")
 
 public:
+    using KXMLGUIClient::action;
+
     Krusader();
     virtual ~Krusader();
 
