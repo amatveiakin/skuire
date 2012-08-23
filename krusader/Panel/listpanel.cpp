@@ -378,9 +378,9 @@ ListPanel::~ListPanel()
 {
     inlineRefreshCancel();
     // otherwise eventFilter() might be called during destruction and crash
-    view->widget()->removeEventFilter(this);
-    delete view;
-    view = 0;
+    _view->widget()->removeEventFilter(this);
+    delete _view;
+    _view = 0;
     delete func;
     delete status;
     delete bookmarksButton;
@@ -419,73 +419,73 @@ int ListPanel::defaultPanelType()
 
 void ListPanel::createView()
 {
-    view = ViewFactory::self()->createView(panelType, splt, krConfig, krApp, quickSearch, quickFilter);
+    _view = ViewFactory::self()->createView(panelType, splt, krConfig, krApp, quickSearch, quickFilter);
 
     // ViewFactory may create a different view type than requested
-    panelType = view->type()->id();
+    panelType = _view->type()->id();
 
     if(isActive())
-        view->prepareForActive();
+        _view->prepareForActive();
     else
-        view->prepareForPassive();
-    view->refreshColors();
+        _view->prepareForPassive();
+    _view->refreshColors();
 
-    splt->insertWidget(0, view->widget());
+    splt->insertWidget(0, _view->widget());
 
-    view->widget()->installEventFilter(this);
+    _view->widget()->installEventFilter(this);
 
-    connect(view->emitter(), SIGNAL(calcSpace(KFileItem)), func, SLOT(calcSpace(KFileItem)));
-    connect(view->emitter(), SIGNAL(goHome()), func, SLOT(home()));
-    connect(view->emitter(), SIGNAL(dirUp()), func, SLOT(dirUp()));
-    connect(view->emitter(), SIGNAL(deleteFiles(bool)), func, SLOT(deleteFiles(bool)));
-    connect(view->emitter(), SIGNAL(middleButtonClicked(KFileItem, bool)), SLOT(newTab(KFileItem, bool)));
-    connect(view->emitter(), SIGNAL(currentChanged(KFileItem)), SLOT(updatePopupPanel(KFileItem)));
-    connect(view->emitter(), SIGNAL(renameItem(KFileItem, QString)),
+    connect(_view->emitter(), SIGNAL(calcSpace(KFileItem)), func, SLOT(calcSpace(KFileItem)));
+    connect(_view->emitter(), SIGNAL(goHome()), func, SLOT(home()));
+    connect(_view->emitter(), SIGNAL(dirUp()), func, SLOT(dirUp()));
+    connect(_view->emitter(), SIGNAL(deleteFiles(bool)), func, SLOT(deleteFiles(bool)));
+    connect(_view->emitter(), SIGNAL(middleButtonClicked(KFileItem, bool)), SLOT(newTab(KFileItem, bool)));
+    connect(_view->emitter(), SIGNAL(currentChanged(KFileItem)), SLOT(updatePopupPanel(KFileItem)));
+    connect(_view->emitter(), SIGNAL(renameItem(KFileItem, QString)),
             func, SLOT(rename(KFileItem, QString)));
-    connect(view->emitter(), SIGNAL(executed(KFileItem)), func, SLOT(execute(KFileItem)));
-    connect(view->emitter(), SIGNAL(goInside(KFileItem)), func, SLOT(goInside(KFileItem)));
-    connect(view->emitter(), SIGNAL(needFocus()), this, SLOT(slotFocusOnMe()));
-    connect(view->emitter(), SIGNAL(selectionChanged()), this, SLOT(slotUpdateTotals()));
-    connect(view->emitter(), SIGNAL(itemDescription(QString)), krApp, SLOT(statusBarUpdate(QString)));
-    connect(view->emitter(), SIGNAL(contextMenu(const QPoint &)), this, SLOT(popRightClickMenu(const QPoint &)));
-    connect(view->emitter(), SIGNAL(emptyContextMenu(const QPoint &)),
+    connect(_view->emitter(), SIGNAL(executed(KFileItem)), func, SLOT(execute(KFileItem)));
+    connect(_view->emitter(), SIGNAL(goInside(KFileItem)), func, SLOT(goInside(KFileItem)));
+    connect(_view->emitter(), SIGNAL(needFocus()), this, SLOT(slotFocusOnMe()));
+    connect(_view->emitter(), SIGNAL(selectionChanged()), this, SLOT(slotUpdateTotals()));
+    connect(_view->emitter(), SIGNAL(itemDescription(QString)), krApp, SLOT(statusBarUpdate(QString)));
+    connect(_view->emitter(), SIGNAL(contextMenu(const QPoint &)), this, SLOT(popRightClickMenu(const QPoint &)));
+    connect(_view->emitter(), SIGNAL(emptyContextMenu(const QPoint &)),
             this, SLOT(popEmptyRightClickMenu(const QPoint &)));
-    connect(view->emitter(), SIGNAL(letsDrag(KUrl::List, QPixmap)), this, SLOT(startDragging(KUrl::List, QPixmap)));
-    connect(view->emitter(), SIGNAL(gotDrop(QDropEvent *)), this, SLOT(handleDropOnView(QDropEvent *)));
-    connect(view->emitter(), SIGNAL(previewJobStarted(KJob*)), this, SLOT(slotPreviewJobStarted(KJob*)));
-    connect(view->emitter(), SIGNAL(currentChanged(KFileItem)), func->history, SLOT(saveCurrentItem()));
+    connect(_view->emitter(), SIGNAL(letsDrag(KUrl::List, QPixmap)), this, SLOT(startDragging(KUrl::List, QPixmap)));
+    connect(_view->emitter(), SIGNAL(gotDrop(QDropEvent *)), this, SLOT(handleDropOnView(QDropEvent *)));
+    connect(_view->emitter(), SIGNAL(previewJobStarted(KJob*)), this, SLOT(slotPreviewJobStarted(KJob*)));
+    connect(_view->emitter(), SIGNAL(currentChanged(KFileItem)), func->history, SLOT(saveCurrentItem()));
 
-    view->setDirLister(func->dirLister);
+    _view->setDirLister(func->dirLister);
 
-    _currentViewCb->onViewCreated(view);
-    _currentViewCb->onCurrentViewChanged(view);
+    _currentViewCb->onViewCreated(_view);
+    _currentViewCb->onCurrentViewChanged(_view);
 }
 
 void ListPanel::changeType(int type)
 {
     if (panelType != type) {
-        KFileItem current = view->currentItem();
-        KUrl::List selection = view->getSelectedUrls(false);
+        KFileItem current = _view->currentItem();
+        KUrl::List selection = _view->getSelectedUrls(false);
 //FIXME
-//         bool filterApplysToDirs = view->properties()->filterApplysToDirs;
-//         KrViewProperties::FilterSpec filter = view->filter();
-//         FilterSettings filterSettings = view->properties()->filterSettings;
+//         bool filterApplysToDirs = _view->properties()->filterApplysToDirs;
+//         KrViewProperties::FilterSpec filter = _view->filter();
+//         FilterSettings filterSettings = _view->properties()->filterSettings;
 
         quickSearch->setFocusProxy(0);
 
         // otherwise eventFilter() might be called during destruction and crash
-        view->widget()->removeEventFilter(this);
-        delete view;
+        _view->widget()->removeEventFilter(this);
+        delete _view;
 
         panelType = type;
 
         createView();
 //FIXME
-//         view->setFilter(filter, filterSettings, filterApplysToDirs);
-        view->refresh();
-        view->setSelection(selection);
-        view->setCurrentItem(current);
-        view->makeItemVisible(view->currentUrl());
+//         _view->setFilter(filter, filterSettings, filterApplysToDirs);
+        _view->refresh();
+        _view->setSelection(selection);
+        _view->setCurrentItem(current);
+        _view->makeItemVisible(_view->currentUrl());
     }
 }
 
@@ -507,7 +507,7 @@ void ListPanel::setProperties(int prop)
 
 bool ListPanel::eventFilter(QObject * watched, QEvent * e)
 {
-    if(view && watched == view->widget()) {
+    if(_view && watched == _view->widget()) {
         if(e->type() == QEvent::FocusIn && !isActive() && !isHidden())
             slotFocusOnMe();
         else if(e->type() == QEvent::ShortcutOverride) {
@@ -568,7 +568,7 @@ void ListPanel::togglePanelPopup()
         lst << height() << 0;
         dynamic_cast<QSplitter*>(popup->parent())->setSizes(lst);
         if (ACTIVE_PANEL)
-            ACTIVE_PANEL->view->widget()->setFocus();
+            ACTIVE_PANEL->view()->widget()->setFocus();
     }
 }
 
@@ -606,7 +606,7 @@ void ListPanel::setButtons()
 
 void ListPanel::slotUpdateTotals()
 {
-    totals->setText(view->statistics());
+    totals->setText(_view->statistics());
 }
 
 //TODO move this to panelfunc ?
@@ -617,8 +617,8 @@ void ListPanel::compareDirs(bool otherPanelToo)
     KConfigGroup group(krConfig, "Look&Feel");
     bool selectDirs = group.readEntry("Mark Dirs", false);
 
-    KFileItemList items = view->getItems();
-    KFileItemList otherItems = otherPanel()->view->getItems();
+    KFileItemList items = _view->getItems();
+    KFileItemList otherItems = otherPanel()->_view->getItems();
 
     QHash<QString, KFileItem> otherItemsDict;
     foreach(KFileItem otherItem, otherItems) {
@@ -677,7 +677,7 @@ void ListPanel::compareDirs(bool otherPanelToo)
         }
     }
 
-    view->setSelection(newSelection);
+    _view->setSelection(newSelection);
 
     if(otherPanelToo)
         otherPanel()->compareDirs(false);
@@ -685,7 +685,7 @@ void ListPanel::compareDirs(bool otherPanelToo)
 
 void ListPanel::refreshColors()
 {
-    view->refreshColors();
+    _view->refreshColors();
     emit refreshColors(isActive());
 }
 
@@ -701,10 +701,10 @@ void ListPanel::slotFocusOnMe()
 void ListPanel::onActiveStateChanged()
 {
     if(isActive()) {
-        updatePopupPanel(view->currentItem());
-        view->prepareForActive();
+        updatePopupPanel(_view->currentItem());
+        _view->prepareForActive();
     } else
-        view->prepareForPassive();
+        _view->prepareForPassive();
 
     origin->setActive(isActive());
     refreshColors();
@@ -747,7 +747,7 @@ void ListPanel::slotStartUpdate()
 
     slotGetStats(virtualPath());
     if (compareMode)
-        otherPanel()->view->refresh();
+        otherPanel()->_view->refresh();
 
     // return cursor to normal arrow
     setCursor(Qt::ArrowCursor);
@@ -841,7 +841,7 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
     KFileItem item;
     bool itemIsUpUrl = false;
     if (!widget) {
-        item = view->itemAt(e->pos(), &itemIsUpUrl);
+        item = _view->itemAt(e->pos(), &itemIsUpUrl);
         widget = this;
     }
 
@@ -938,8 +938,8 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
     tempFiles->vfs_addFiles(&URLs, mode, notify, dir);
     if(KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
         AbstractListPanel *p = (dragFromThisPanel ? this : otherPanel());
-        p->view->saveSelection();
-        p->view->unselect(KRQuery("*"));
+        p->view()->saveSelection();
+        p->view()->unselect(KRQuery("*"));
     }
 }
 
@@ -973,7 +973,7 @@ void ListPanel::popEmptyRightClickMenu(const QPoint &loc)
 
 QString ListPanel::getCurrentName()
 {
-    QString name = view->getCurrentItem();
+    QString name = _view->getCurrentItem();
     if (name != "..")
         return name;
     else
@@ -987,11 +987,11 @@ void ListPanel::keyPressEvent(QKeyEvent *e)
     case Qt::Key_Return :
         if (e->modifiers() & Qt::ControlModifier) {
             if (e->modifiers() & Qt::AltModifier) {
-                KFileItem item = view->currentItem();
+                KFileItem item = _view->currentItem();
                 if (!item.isNull()) {
                     if (item.isDir())
                         newTab(item.url(), true);
-                } else if (view->currentItemIsUpUrl())
+                } else if (_view->currentItemIsUpUrl())
                     newTab(func->files()->vfs_getOrigin().upUrl(), true);
             } else {
                 SLOTS->insertFileName((e->modifiers() & Qt::ShiftModifier) != 0);
@@ -1005,13 +1005,13 @@ void ListPanel::keyPressEvent(QKeyEvent *e)
             // directory otherwise as this one
             if ((isLeft() && e->key() == Qt::Key_Right) || (!isLeft() && e->key() == Qt::Key_Left)) {
                 KUrl newPath;
-                KFileItem item = view->currentItem();
+                KFileItem item = _view->currentItem();
                 if (!item.isNull()) {
                     if (item.isDir())
                         newPath = item.url();
                     else
                         newPath = func->files() ->vfs_getOrigin();
-                } else if (view->currentItemIsUpUrl())
+                } else if (_view->currentItemIsUpUrl())
                     newPath = func->files()->vfs_getOrigin().upUrl();
                 otherPanel()->func->openUrl(newPath);
             } else
@@ -1261,7 +1261,7 @@ void ListPanel::saveSettings(KConfigGroup cfg, bool localOnly, bool saveHistory)
     }
     if(saveHistory)
         func->history->save(KConfigGroup(&cfg, "History"));
-    view->saveSettings(KConfigGroup(&cfg, "View"));
+    _view->saveSettings(KConfigGroup(&cfg, "View"));
 }
 
 void ListPanel::restoreSettings(KConfigGroup cfg)
@@ -1269,7 +1269,7 @@ void ListPanel::restoreSettings(KConfigGroup cfg)
     changeType(cfg.readEntry("Type", defaultPanelType()));
 
     setProperties(cfg.readEntry("Properties", 0));
-    view->restoreSettings(KConfigGroup(&cfg, "View"));
+    _view->restoreSettings(KConfigGroup(&cfg, "View"));
 
     func->files()->vfs_enableRefresh(true);
 
@@ -1310,8 +1310,8 @@ void ListPanel::getFocusCandidates(QVector<QWidget*> &widgets)
 {
     if(origin->lineEdit()->isVisible())
         widgets << origin->lineEdit();
-    if(view->widget()->isVisible())
-        widgets << view->widget();
+    if(_view->widget()->isVisible())
+        widgets << _view->widget();
     if(popup && popup->isVisible())
         widgets << popup;
 }

@@ -50,7 +50,7 @@ A
 
 KrCalcSpaceDialog::KrCalcSpaceDialog(QWidget *parent, AbstractListPanel * panel, KUrl::List items, bool autoclose) :
         KDialog(parent), m_autoClose(autoclose), m_canceled(false), 
-                m_timerCounter(0), m_items(items), m_view(panel->view)
+                m_timerCounter(0), m_items(items), m_view(panel->view())
 {
     setButtons(KDialog::Ok | KDialog::Cancel);
     setDefaultButton(KDialog::Ok);

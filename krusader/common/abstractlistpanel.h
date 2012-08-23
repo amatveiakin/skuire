@@ -54,7 +54,7 @@ signals:
 public:
     AbstractListPanel(QWidget *parent, AbstractPanelManager *manager) :
         QWidget(parent),
-        view(0), _manager(manager) {}
+        _view(0), _manager(manager) {}
     virtual ~AbstractListPanel() {}
 
     //TODO: remove this
@@ -77,22 +77,24 @@ public:
     virtual void onActiveStateChanged() = 0; // to be called by panel manager
     virtual void onOtherPanelChanged() = 0; // to be called by panel manager
 
-    AbstractPanelManager *manager() {
+    AbstractView *view() const {
+        return _view;
+    }
+    AbstractPanelManager *manager() const {
         return _manager;
     }
-    AbstractListPanel *otherPanel() {
+    AbstractListPanel *otherPanel() const {
         return _manager->otherManager()->currentPanel();
     }
     bool isLeft() const {
         return _manager->isLeft();
     }
 
-    AbstractView *view;
-
 public slots:
     virtual void refresh() = 0;
 
 protected:
+    AbstractView *_view;
     AbstractPanelManager *_manager;
 };
 

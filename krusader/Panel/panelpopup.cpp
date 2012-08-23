@@ -507,8 +507,8 @@ void PanelPopup::handleOpenUrlRequest(const KUrl &url)
 void PanelPopup::tabSelected(int id)
 {
     KFileItem item;
-    if (ACTIVE_PANEL && ACTIVE_PANEL->view)
-        item = ACTIVE_PANEL->view->currentItem();
+    if (ACTIVE_PANEL && ACTIVE_PANEL->view())
+        item = ACTIVE_PANEL->view()->currentItem();
 
     // if tab is tree, set something logical in the data line
     switch (id) {

@@ -312,7 +312,7 @@ Krusader::Krusader() : KParts::MainWindow(0,
     //HACK: make sure the active view becomes focused
     // for some reason sometimes the active view cannot be focused immediately at this point,
     // so queue it for the main loop
-    QTimer::singleShot(0, ACTIVE_PANEL->view->widget(), SLOT(setFocus()));
+    QTimer::singleShot(0, ACTIVE_PANEL->view()->widget(), SLOT(setFocus()));
 
     _openUrlTimer.setSingleShot(true);
     connect(&_openUrlTimer, SIGNAL(timeout()), SLOT(doOpenUrl()));
@@ -905,7 +905,7 @@ void Krusader::doOpenUrl()
         ACTIVE_MNG->setActiveTab(tab);
     else if((tab = OTHER_MNG->findTab(url)) >= 0) {
         OTHER_MNG->setActiveTab(tab);
-        OTHER_MNG->currentPanel()->view->widget()->setFocus();
+        OTHER_MNG->currentPanel()->view()->widget()->setFocus();
     } else
         ACTIVE_MNG->slotNewTab(url);
 }
@@ -944,7 +944,7 @@ QAction *Krusader::action(QString name)
 
 AbstractView *Krusader::activeView()
 {
-    return activePanel() ? activePanel()->view : 0;
+    return activePanel() ? activePanel()->view() : 0;
 }
 
 AbstractListPanel *Krusader::activePanel()

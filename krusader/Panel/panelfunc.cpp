@@ -253,8 +253,8 @@ void ListPanelFunc::doRefresh()
 
     if (!isEqualUrl) {
         panel->setCursor(Qt::WaitCursor);
-        panel->view->stopQuickFilter(false);
-        panel->view->clearSavedSelection();
+        panel->view()->stopQuickFilter(false);
+        panel->view()->clearSavedSelection();
     }
 
     if(panel->vfsError)
@@ -309,10 +309,10 @@ void ListPanelFunc::doRefresh()
             // if the url we're refreshing into is the current one, then the
             // partial refresh will not generate the needed signals to actually allow the
             // view to use urlToMakeCurrent. do it here instead (patch by Thomas Jarosch)
-            panel->view->setCurrentItem(history->currentItem());
-            panel->view->makeItemVisible(panel->view->currentUrl());
+            panel->view()->setCurrentItem(history->currentItem());
+            panel->view()->makeItemVisible(panel->view()->currentUrl());
         }
-        panel->view->setUrlToMakeCurrent(history->currentItem());
+        panel->view()->setUrlToMakeCurrent(history->currentItem());
 
         int savedHistoryState = history->state();
 
@@ -325,7 +325,7 @@ void ListPanelFunc::doRefresh()
 
         refreshFailed = true;
 
-        panel->view->setUrlToMakeCurrent(KUrl());
+        panel->view()->setUrlToMakeCurrent(KUrl());
 
         if(history->state() != savedHistoryState) // don't go back if the history was touched
             break;
@@ -342,7 +342,7 @@ void ListPanelFunc::doRefresh()
         vfsP->vfs_setQuiet(true);
     }
     vfsP->vfs_setQuiet(false);
-    panel->view->setUrlToMakeCurrent(KUrl());
+    panel->view()->setUrlToMakeCurrent(KUrl());
     panel->origin->setStartDir(panel->url().prettyUrl());
 
     panel->setCursor(Qt::ArrowCursor);
@@ -545,7 +545,7 @@ void ListPanelFunc::moveFiles(bool enqueue)
     PreserveMode pmode = PM_DEFAULT;
     bool queue = enqueue;
 
-    KUrl::List urls = panel->view->getSelectedUrls(true);
+    KUrl::List urls = panel->view()->getSelectedUrls(true);
     if(urls.isEmpty())
         return ;  // safety
 
@@ -634,15 +634,15 @@ void ListPanelFunc::moveFiles(bool enqueue)
         otherFunc() ->files() ->vfs_addFiles(&urls, KIO::CopyJob::Move, files(), "", pmode);
     }
     if(KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
-        panel->view->saveSelection();
-        panel->view->unselect(KRQuery("*"));
+        panel->view()->saveSelection();
+        panel->view()->unselect(KRQuery("*"));
     }
 }
 
 // called from rename action to begin the renaming process
 void ListPanelFunc::rename()
 {
-    panel->view->renameCurrentItem();
+    panel->view()->renameCurrentItem();
 }
 
 // called by signal itemRenamed() from the view to complete the renaming process
@@ -650,7 +650,7 @@ void ListPanelFunc::rename(KFileItem item, QString newname)
 {
     if (item.name() == newname)
         return ; // do nothing
-    panel->view->setNameToMakeCurrentIfAdded(newname);
+    panel->view()->setNameToMakeCurrentIfAdded(newname);
     // as always - the vfs do the job
     files() ->vfs_rename(item.name(), newname);
 }
@@ -689,7 +689,7 @@ void ListPanelFunc::mkdir()
             }
         }
 
-        panel->view->setUrlToMakeCurrent(*it);
+        panel->view()->setUrlToMakeCurrent(*it);
         // as always - the vfs do the job
         files() ->vfs_mkdir(*it);
         if (dirTree.count() > 1)
@@ -702,7 +702,7 @@ KUrl ListPanelFunc::getVirtualBaseURL()
     if (files()->vfs_getType() != vfs::VFS_VIRT || otherFunc()->files()->vfs_getType() == vfs::VFS_VIRT)
         return KUrl();
 
-    KUrl::List urls = panel->view->getSelectedUrls(true);
+    KUrl::List urls = panel->view()->getSelectedUrls(true);
     if (urls.isEmpty())
         return KUrl();
 
@@ -734,7 +734,7 @@ void ListPanelFunc::copyFiles(bool enqueue)
     PreserveMode pmode = PM_DEFAULT;
     bool queue = enqueue;
 
-    KUrl::List urls = panel->view->getSelectedUrls(true);
+    KUrl::List urls = panel->view()->getSelectedUrls(true);
     if (urls.isEmpty())
         return;
 
@@ -815,8 +815,8 @@ void ListPanelFunc::copyFiles(bool enqueue)
         otherFunc() ->files() ->vfs_addFiles(&urls, KIO::CopyJob::Copy, 0, "", pmode);
     }
     if(KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
-        panel->view->saveSelection();
-        panel->view->unselect(KRQuery("*"));
+        panel->view()->saveSelection();
+        panel->view()->unselect(KRQuery("*"));
     }
 }
 
@@ -828,7 +828,7 @@ void ListPanelFunc::deleteFiles(bool reallyDelete)
         return ;
     }
 
-    KFileItemList items = panel->view->getSelectedItems(true);
+    KFileItemList items = panel->view()->getSelectedItems(true);
     if (items.isEmpty())
         return;
 
@@ -972,7 +972,7 @@ void ListPanelFunc::displayOpenWithDialog(KUrl::List urls)
 
 void ListPanelFunc::openWith()
 {
-    KUrl::List urls = panel->view->getSelectedUrls(true);
+    KUrl::List urls = panel->view()->getSelectedUrls(true);
     if(urls.count())
         displayOpenWithDialog(urls);
 }
@@ -997,7 +997,7 @@ void ListPanelFunc::execute(KFileItem item)
     }
 
     if (item.isDir()) {
-        panel->view->setUrlToMakeCurrent(KUrl());
+        panel->view()->setUrlToMakeCurrent(KUrl());
         openUrl(url);
     } else if (!protocol.isEmpty()) {
         url.setProtocol(protocol);
@@ -1017,7 +1017,7 @@ void ListPanelFunc::execute(KFileItem item)
 
 void ListPanelFunc::pack()
 {
-    KUrl::List urls = panel->view->getSelectedUrls(true);
+    KUrl::List urls = panel->view()->getSelectedUrls(true);
     if (urls.isEmpty())
         return ; // nothing to pack
 
@@ -1099,7 +1099,7 @@ void ListPanelFunc::pack()
 
 void ListPanelFunc::testArchive()
 {
-    KUrl::List urls = panel->view->getSelectedUrls(true);
+    KUrl::List urls = panel->view()->getSelectedUrls(true);
     if (urls.isEmpty())
         return;
 
@@ -1115,7 +1115,7 @@ void ListPanelFunc::testArchive()
 
 void ListPanelFunc::unpack()
 {
-    KUrl::List urls = panel->view->getSelectedUrls(true);
+    KUrl::List urls = panel->view()->getSelectedUrls(true);
     if (urls.isEmpty())
         return ; // nothing to unpack
 
@@ -1159,7 +1159,7 @@ void ListPanelFunc::unpack()
 // code (maybe except 3) from createChecksum and matchChecksum
 static void checksum_wrapper(ListPanel *panel, QStringList& args, bool &folders)
 {
-    KFileItemList items = panel->view->getSelectedItems(true);
+    KFileItemList items = panel->view()->getSelectedItems(true);
     if (items.isEmpty())
         return ; // nothing to do
 
@@ -1194,9 +1194,9 @@ void ListPanelFunc::matchChecksum()
 
 void ListPanelFunc::calcSpace()
 {
-    KUrl::List urls = panel->view->getSelectedUrls(false);
+    KUrl::List urls = panel->view()->getSelectedUrls(false);
     if (urls.isEmpty()) {
-        urls = panel->view->getItems().urlList();
+        urls = panel->view()->getItems().urlList();
         if (urls.isEmpty())
             return ; // nothing to do
     }
@@ -1224,7 +1224,7 @@ void ListPanelFunc::FTPDisconnect()
 {
     // you can disconnect only if connected !
     if (files() ->vfs_getType() == vfs::VFS_FTP) {
-        panel->view->setUrlToMakeCurrent(KUrl());
+        panel->view()->setUrlToMakeCurrent(KUrl());
         openUrl(panel->realPath());   // open the last local URL
     }
 }
@@ -1241,7 +1241,7 @@ void ListPanelFunc::newFTPconnection()
 
 void ListPanelFunc::properties()
 {
-    KFileItemList items = panel->view->getSelectedItems(true);
+    KFileItemList items = panel->view()->getSelectedItems(true);
     if (items.isEmpty())
         return ;
 
@@ -1276,7 +1276,7 @@ void ListPanelFunc::copyToClipboard(bool move)
         return;
     }
 
-    KUrl::List urls = panel->view->getSelectedUrls(true);
+    KUrl::List urls = panel->view()->getSelectedUrls(true);
     if (urls.count()) {
         QMimeData *mimeData = new QMimeData;
         mimeData->setData("application/x-kde-cutselection", move ? "1" : "0");
@@ -1319,8 +1319,8 @@ void ListPanelFunc::pasteFromClipboard()
     KUrl destUrl = panel->virtualPath();
 
     if(origin && KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
-        origin->panel->view->saveSelection();
-        origin->panel->view->changeSelection(urls, false, false);
+        origin->panel->view()->saveSelection();
+        origin->panel->view()->changeSelection(urls, false, false);
     }
 
     files()->vfs_addFiles(&urls, move ? KIO::CopyJob::Move : KIO::CopyJob::Copy, otherFunc()->files(),

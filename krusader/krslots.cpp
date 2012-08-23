@@ -154,8 +154,8 @@ void KRslots::sendFileByEmail(const KUrl::List &urls)
 //TODO move this to panelfunc ?
 void KRslots::compareContent()
 {
-    KFileItemList lstLeft = LEFT_PANEL->view->getSelectedItems(true);
-    KFileItemList lstRight = RIGHT_PANEL->view->getSelectedItems(true);
+    KFileItemList lstLeft = LEFT_PANEL->view()->getSelectedItems(true);
+    KFileItemList lstRight = RIGHT_PANEL->view()->getSelectedItems(true);
     KFileItemList* lstActive = (ACTIVE_PANEL->isLeft() ? &lstLeft : &lstRight);
 
     KFileItem item1, item2;
@@ -168,11 +168,11 @@ void KRslots::compareContent()
         // next try: are in the current panel exacty 2 files selected?
         item1 = (*lstActive)[0];
         item2 = (*lstActive)[1];
-    } else if (!ACTIVE_PANEL->view->currentItem().isNull() &&
-               !OTHER_PANEL->dirLister()->findByName(ACTIVE_PANEL->view->currentItem().name()).isNull()) {
+    } else if (!ACTIVE_PANEL->view()->currentItem().isNull() &&
+               !OTHER_PANEL->dirLister()->findByName(ACTIVE_PANEL->view()->currentItem().name()).isNull()) {
         // next try: is in the other panel a file with the same name?
-        item1 = ACTIVE_PANEL->view->currentItem();
-        item2 = OTHER_PANEL->dirLister()->findByName(ACTIVE_PANEL->view->currentItem().name());
+        item1 = ACTIVE_PANEL->view()->currentItem();
+        item2 = OTHER_PANEL->dirLister()->findByName(ACTIVE_PANEL->view()->currentItem().name());
     } else  {
         // if we got here, then we can't be sure what file to diff
         KMessageBox::detailedError(0, i18n("Don't know which files to compare."), "<qt>" + i18n("To compare two files by content, you can either:<ul><li>Select one file in the left panel, and one in the right panel.</li><li>Select exactly two files in the active panel.</li><li>Make sure there is a file in the other panel, with the same name as the current file in the active panel.</li></ul>") + "</qt>");

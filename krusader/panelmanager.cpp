@@ -159,7 +159,7 @@ void PanelManager::slotCurrentTabChanged(int index)
         prev->onActiveStateChanged();
     _currentPanel->onActiveStateChanged();
 
-    _currentViewCb->onCurrentViewChanged(_currentPanel->view);
+    _currentViewCb->onCurrentViewChanged(_currentPanel->view());
     _currentPanelCb->onCurrentPanelChanged(_currentPanel);
 
     emit pathChanged(p);

@@ -293,7 +293,7 @@ void KrusaderView::cmdLineFocus()    // command line receive's keyboard focus
 
 void KrusaderView::cmdLineUnFocus()   // return focus to the active panel
 {
-    ACTIVE_PANEL->view->widget()->setFocus();
+    ACTIVE_PANEL->view()->widget()->setFocus();
 }
 
 void KrusaderView::setActiveManager(PanelManager *manager)
@@ -305,7 +305,7 @@ void KrusaderView::setActiveManager(PanelManager *manager)
     inactiveManager()->onActiveStateChanged();
     activeManager()->onActiveStateChanged();
 
-    _currentViewCb->onCurrentViewChanged(manager->currentPanel()->view);
+    _currentViewCb->onCurrentViewChanged(manager->currentPanel()->view());
     _currentPanelCb->onCurrentPanelChanged(manager->currentPanel());
 
     slotPathChanged(manager->currentPanel());
@@ -358,7 +358,7 @@ void KrusaderView::slotTerminalEmulator(bool show)
     static bool menuBarShown = true;
 
     if (!show) {    // hiding the terminal
-        ACTIVE_PANEL->view->widget()->setFocus();
+        ACTIVE_PANEL->view()->widget()->setFocus();
         if (_terminalDock->isTerminalVisible() && !fullscreen)
             verticalSplitterSizes = vert_splitter->sizes();
 

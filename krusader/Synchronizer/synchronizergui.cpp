@@ -1958,7 +1958,7 @@ void SynchronizerGUI::closeDialog()
     if (wasSync) {
         LEFT_PANEL->refresh();
         RIGHT_PANEL->refresh();
-        ACTIVE_PANEL->view->widget()->setFocus(); //FIXME probably unneccesary
+        ACTIVE_PANEL->view()->widget()->setFocus(); //FIXME probably unneccesary
     }
 }
 

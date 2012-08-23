@@ -156,7 +156,7 @@ bool TerminalDock::applyShortcuts(QKeyEvent * ke)
     if ((ke->key() == Qt::Key_Enter || ke->key() == Qt::Key_Return)
             && ((ke->modifiers() & ~Qt::ShiftModifier) == Qt::ControlModifier)) {
 
-        QString filename = ACTIVE_PANEL->view->getCurrentItem();
+        QString filename = ACTIVE_PANEL->view()->getCurrentItem();
         if (filename.isEmpty()) {
             return true;
         }

@@ -58,7 +58,7 @@ TagString ViewExpPlaceholder::expFunc(const AbstractListPanel* panel, const TagS
         return QString();
     }
 
-    if (KrView *view = qobject_cast<KrView*>(panel->view->self()))
+    if (KrView *view = qobject_cast<KrView*>(panel->view()->self()))
         return expFuncImpl(view, lst, exp);
     else {
         setError(exp, Error(Error::exp_S_FATAL, Error::exp_C_WORLD,

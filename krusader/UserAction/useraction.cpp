@@ -61,7 +61,7 @@ void UserAction::removeKrAction(KrAction* action)
 
 void UserAction::setAvailability()
 {
-    setAvailability(ACTIVE_PANEL->view->currentUrl());
+    setAvailability(ACTIVE_PANEL->view()->currentUrl());
 }
 
 void UserAction::setAvailability(const KUrl& currentURL)

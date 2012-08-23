@@ -75,13 +75,13 @@ QStringList exp_placeholder::fileList(const AbstractListPanel* const panel, cons
 {
     KFileItemList items;
     if (type.isEmpty() || type == "all")
-        items = panel->view->getItems(mask);
+        items = panel->view()->getItems(mask);
     else if (type == "files")
-        items = panel->view->getItems(mask, false, true);
+        items = panel->view()->getItems(mask, false, true);
     else if (type == "dirs")
-        items = panel->view->getItems(mask, true, false);
+        items = panel->view()->getItems(mask, true, false);
     else if (type == "selected")
-        items = panel->view->getSelectedItems(true);
+        items = panel->view()->getSelectedItems(true);
     else {
         setError(exp, Error(Error::exp_S_FATAL, Error::exp_C_ARGUMENT, i18n("Expander: Bad argument to %1: %2 is not valid item specifier", error, type)));
         return QStringList();
@@ -294,13 +294,13 @@ TagString exp_Count::expFunc(const AbstractListPanel* panel, const QStringList& 
 
     int n = -1;
     if (parameter.count() == 0 || parameter[ 0 ].isEmpty() || parameter[ 0 ].toLower() == "all")
-        n = panel->view->count();
+        n = panel->view()->count();
     else if (parameter[ 0 ].toLower() == "files")
-        n = panel->view->count() - panel->view->calcNumDirs();
+        n = panel->view()->count() - panel->view()->calcNumDirs();
     else if (parameter[ 0 ].toLower() == "dirs")
-        n = panel->view->calcNumDirs();
+        n = panel->view()->calcNumDirs();
     else if (parameter[ 0 ].toLower() == "selected")
-        n = panel->view->numSelected();
+        n = panel->view()->numSelected();
     else {
         setError(exp, Error(Error::exp_S_FATAL, Error::exp_C_ARGUMENT, i18n("Expander: Bad argument to Count: %1 is not valid item specifier", parameter[0])));
         return QString();
@@ -322,7 +322,7 @@ TagString exp_Current::expFunc(const AbstractListPanel* panel, const QStringList
 {
     NEED_PANEL
 
-    KFileItem item = panel->view->currentItem();
+    KFileItem item = panel->view()->currentItem();
 
     QString result;
 
@@ -444,12 +444,12 @@ TagString exp_Select::expFunc(const AbstractListPanel* panel, const QStringList&
         mask = KRQuery(parameter[0]);
 
     if (parameter.count() > 1 && parameter[1].toLower() == "list-add")
-        panel->view->select(mask);
+        panel->view()->select(mask);
     else if (parameter.count() > 1 && parameter[1].toLower() == "list-remove")
-        panel->view->unselect(mask);
+        panel->view()->unselect(mask);
     else { // parameter[1].toLower() == "set" or isEmpty() or whatever
-        panel->view->unselect(KRQuery("*"));
-        panel->view->select(mask);
+        panel->view()->unselect(KRQuery("*"));
+        panel->view()->select(mask);
     }
 
     return QString();  // this doesn't return anything, that's normal!
@@ -486,7 +486,7 @@ TagString exp_Goto::expFunc(const AbstractListPanel* panel, const QStringList& p
         //FIXME - why is panel passed const anyway ?
         setError(exp, Error(Error::exp_S_FATAL, Error::exp_C_ARGUMENT, "currently disabled - FIXME"));
 //         panel->openUrl(parameter[0], KUrl());
-//         panel->view->widget()->setFocus();
+//         panel->view()->widget()->setFocus();
     }
 
     return QString();  // this doesn't return anything, that's normal!

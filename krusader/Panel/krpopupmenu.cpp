@@ -62,7 +62,7 @@ void KrPopupMenu::run(ListPanel *panel, bool onlyOpenWith)
     if(menu.item.isNull())
         return;
 
-    QRect itemRect = panel->view->itemRectGlobal(menu.item.url());
+    QRect itemRect = panel->view()->itemRectGlobal(menu.item.url());
     QPoint pos = itemRect.bottomLeft();
 
     QSize menuSize = menu.sizeHint();
@@ -109,7 +109,7 @@ KrPopupMenu::KrPopupMenu(ListPanel *panel, QWidget *parent, bool onlyOpenWith) :
 
     bool isLocalDir = panel->url().isLocalFile();
 
-    items = panel->view->getSelectedItems(true);
+    items = panel->view()->getSelectedItems(true);
     if (items.isEmpty()) {
         addCreateNewMenu();
         addSeparator();
@@ -258,7 +258,7 @@ KrPopupMenu::KrPopupMenu(ListPanel *panel, QWidget *parent, bool onlyOpenWith) :
     }
 
     // --------- synchronize
-    if (panel->view->numSelected())
+    if (panel->view()->numSelected())
         addAction(SYNC_SELECTED_ID, i18n("Synchronize Selected Files..."));
 
     // --------- copy/paste
@@ -426,8 +426,8 @@ void KrPopupMenu::performAction(int id)
         QStringList selectedNames; //FIXME remove this; update syncronizer to take urls as argument
         foreach(KFileItem item, items)
             selectedNames << item.name();
-        if (panel->otherPanel()->view->numSelected()) {
-            KFileItemList otherItems = panel->otherPanel()->view->getSelectedItems(true);
+        if (panel->otherPanel()->view()->numSelected()) {
+            KFileItemList otherItems = panel->otherPanel()->view()->getSelectedItems(true);
             foreach(KFileItem otherItem, otherItems) {
                 if (!selectedNames.contains(otherItem.name()))
                     selectedNames.append(otherItem.name());

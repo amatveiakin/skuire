@@ -30,8 +30,9 @@
 
 #include "krtrashhandler.h"
 
-#include <QByteArray>
-#include <QDataStream>
+#include "krglobal.h"
+#include "kractions.h"
+#include "abstractlistpanel.h"
 
 #include <kconfig.h>
 #include <kconfiggroup.h>
@@ -44,9 +45,9 @@
 #include <kstandarddirs.h>
 #include <kdirwatch.h>
 
-#include "krglobal.h"
-#include "kractions.h"
-#include "abstractlistpanel.h"
+#include <QByteArray>
+#include <QDataStream>
+#include <QTimer>
 
 
 KrTrashWatcher * KrTrashHandler::_trashWatcher = 0;
