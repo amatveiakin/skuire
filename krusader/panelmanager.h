@@ -37,6 +37,7 @@ class QToolButton;
 class CurrentViewCallback;
 class AbstractTwinPanelFM;
 class TabActions;
+class AbstractListPanelFactory;
 
 
 /**
@@ -143,6 +144,7 @@ private:
     AbstractListPanel *_currentPanel;
     CurrentPanelCallback *_currentPanelCb;
     CurrentViewCallback *_currentViewCb;
+    AbstractListPanelFactory *panelFactory;
     TabActions *_actions;
     QGridLayout *_layout;
     QHBoxLayout *_barLayout;

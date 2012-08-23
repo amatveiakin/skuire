@@ -16,29 +16,26 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __LISTPANELMODULE_H__
-#define __LISTPANELMODULE_H__
+#ifndef __ABSTRACTLISTPANELFACTORY_H__
+#define __ABSTRACTLISTPANELFACTORY_H__
 
-#include "module.h"
-#include "abstractlistpanelfactory.h"
+#include <kconfiggroup.h>
+
+class QWidget;
+class AbstractPanelManager;
+class AbstractListPanel;
+class CurrentViewCallback;
 
 
-class ListPanelModule : public Module, public AbstractListPanelFactory
+class AbstractListPanelFactory
 {
-    Q_OBJECT
-    Q_INTERFACES(AbstractListPanelFactory)
-
 public:
-    // Module implementation
-    virtual QString name() {
-        return "ListPanel";
-    }
-    virtual ActionsBase *createActions(QObject *parent, AbstractMainWindow *mainWindow);
-
-    // AbstractListPanelFactory implementation
+    virtual ~AbstractListPanelFactory() {}
     virtual AbstractListPanel *createPanel(QWidget *parent, AbstractPanelManager *manager,
-                    CurrentViewCallback *currentViewCb, KConfigGroup cfg = KConfigGroup());
+                    CurrentViewCallback *currentViewCb, KConfigGroup cfg = KConfigGroup()) = 0;
 
 };
 
-#endif // __LISTPANELMODULE_H__
+Q_DECLARE_INTERFACE (AbstractListPanelFactory, "org.krusader.AbstractListPanelFactory/0.1")
+
+#endif // __ABSTRACTLISTPANELFACTORY_H__

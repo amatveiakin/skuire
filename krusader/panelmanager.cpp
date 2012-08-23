@@ -22,23 +22,28 @@
 #include "defaults.h"
 #include "tabactions.h"
 #include "krusaderview.h"
-#include "Panel/listpanel.h"
-#include "Panel/panelfunc.h"
+#include "krusaderapp.h"
 #include "abstracttwinpanelfm.h"
+#include "abstractlistpanelfactory.h"
+#include "module.h"
 
 #include <qstackedwidget.h>
 #include <QtGui/QToolButton>
-#include <QGridLayout>
 #include <QtGui/QImage>
+#include <QGridLayout>
+#include <QTimer>
+#include <QDir>
 
 #include <klocale.h>
 #include <kdebug.h>
 #include <kconfig.h>
 #include <kiconloader.h>
 
-#include <assert.h>
+//HACK
+#include "Panel/listpanel.h"
 
 #define HIDE_ON_SINGLE_TAB  false
+
 
 PanelManager::PanelManager(QWidget *parent, AbstractTwinPanelFM* mainWindow, bool left,
                 CurrentPanelCallback *currentPanelCb, CurrentViewCallback *currentViewCb) :
@@ -56,6 +61,10 @@ PanelManager::PanelManager(QWidget *parent, AbstractTwinPanelFM* mainWindow, boo
 
 void PanelManager::init()
 {
+    Module *listPanelModule = KrusaderApp::self()->module("ListPanel");
+    panelFactory = qobject_cast<AbstractListPanelFactory*>(listPanelModule);
+    Q_ASSERT(panelFactory);
+
     _layout = new QGridLayout(this);
     _layout->setContentsMargins(0, 0, 0, 0);
     _layout->setSpacing(0);
@@ -174,7 +183,7 @@ void PanelManager::disconnectPanel(AbstractListPanel *p)
 AbstractListPanel* PanelManager::createPanel(bool setCurrent, KConfigGroup cfg, AbstractListPanel *nextTo)
 {
     // create the panel and add it into the widgetstack
-    ListPanel * p = new ListPanel(_stack, this, _currentViewCb, cfg);
+    AbstractListPanel * p = panelFactory->createPanel(_stack, this, _currentViewCb, cfg);
     _currentPanelCb->onPanelCreated(p);
 
     addPanel(p, setCurrent, nextTo);

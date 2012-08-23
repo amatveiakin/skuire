@@ -19,6 +19,8 @@
 #include "listpanelmodule.h"
 
 #include "listpanelactions.h"
+#include "listpanel.h"
+
 #include "abstracttwinpanelfm.h"
 
 
@@ -34,4 +36,10 @@ ActionsBase *ListPanelModule::createActions(QObject *parent, AbstractMainWindow 
         return new ListPanelActions(parent, fm);
     else
         return 0;
+}
+
+AbstractListPanel *ListPanelModule::createPanel(QWidget *parent, AbstractPanelManager *manager,
+                    CurrentViewCallback *currentViewCb, KConfigGroup cfg)
+{
+    return new ListPanel(parent, manager, currentViewCb, cfg);
 }
