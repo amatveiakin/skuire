@@ -26,11 +26,13 @@
 
 
 Module *ViewModule_create();
+Module *ListPanelModule_create();
 
 
 KrusaderApp::KrusaderApp(): KApplication()
 {
     _modules << ViewModule_create();
+    _modules << ListPanelModule_create();
 }
 
 KrusaderApp::~KrusaderApp()

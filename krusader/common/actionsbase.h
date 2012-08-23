@@ -38,6 +38,7 @@ public:
     virtual void onActiveViewChanged() {}
     virtual void onPanelCreated(AbstractListPanel*) {}
     virtual void onActivePanelChanged()  {}
+    virtual void onGUIUpdated() {}
     virtual void refreshActions() {}
 
 protected:

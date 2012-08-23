@@ -69,7 +69,6 @@ class UserMenu;
 class UserAction;
 class PopularUrls;
 class QueueManager;
-class ListPanelActions;
 class TabActions;
 class ActionsBase;
 
@@ -111,9 +110,6 @@ public:
     }
     virtual KrActions *krActions() {
         return _krActions;
-    }
-    virtual ListPanelActions *listPanelActions() {
-        return _listPanelActions;
     }
     virtual TabActions *tabActions() {
         return _tabActions;
@@ -197,7 +193,6 @@ private:
                               QStringList names, QString confName);
 
     KrActions *_krActions;
-    ListPanelActions *_listPanelActions;
     QList<ActionsBase*> _allActions;
     TabActions *_tabActions;
     KSystemTrayIcon *sysTray;

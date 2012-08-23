@@ -1,4 +1,5 @@
 set(Panel_SRCS
+    listpanelmodule.cpp
     viewconfigtab.cpp
     selectionmodeconfigtab.cpp
     calcspacethread.cpp

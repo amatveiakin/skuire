@@ -1,5 +1,5 @@
 /*****************************************************************************
- * Copyright (C) 2010 Jan Lepper <dehtris@yahoo.de>                          *
+ * Copyright (C) 2012 Jan Lepper <jan_lepper@gmx.de>                         *
  *                                                                           *
  * This program is free software; you can redistribute it and/or modify      *
  * it under the terms of the GNU General Public License as published by      *
@@ -16,41 +16,22 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __ABSTRACTTWINPANELFM_H__
-#define __ABSTRACTTWINPANELFM_H__
+#include "listpanelmodule.h"
 
-#include "abstractmainwindow.h"
-#include "abstractpanelmanager.h"
+#include "listpanelactions.h"
+#include "abstracttwinpanelfm.h"
 
-class ListPanelActions;
-class TabActions;
-class AbstractListPanel;
-class KrActions;
-class PopularUrls;
 
-class AbstractTwinPanelFM : public AbstractMainWindow
+Module *ListPanelModule_create()
 {
-public:
-    virtual AbstractPanelManager *activeManager() = 0;
-    virtual AbstractPanelManager *leftManager() = 0;
-    virtual AbstractPanelManager *rightManager() = 0;
-    virtual PopularUrls *popularUrls() = 0;
-    virtual KrActions *krActions() = 0;
-    virtual TabActions *tabActions() = 0;
-    virtual void plugActionList(const char *name, QList<QAction*> &list) = 0;
+    return new ListPanelModule();
+}
 
-    // reimplemented from AbstractMainWindow
-    virtual AbstractTwinPanelFM *toTwinPanelFM() { return this; }
 
-    AbstractListPanel *activePanel() {
-        return activeManager()->currentPanel();
-    }
-    AbstractListPanel *leftPanel() {
-        return leftManager()->currentPanel();
-    }
-    AbstractListPanel *rightPanel() {
-        return rightManager()->currentPanel();
-    }
-};
-
-#endif // __ABSTRACTTWINPANELFM_H__
+ActionsBase *ListPanelModule::createActions(QObject *parent, AbstractMainWindow *mainWindow)
+{
+    if (AbstractTwinPanelFM *fm = mainWindow->toTwinPanelFM())
+        return new ListPanelActions(parent, fm);
+    else
+        return 0;
+}

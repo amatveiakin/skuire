@@ -26,6 +26,7 @@ class QWidget;
 class AbstractView;
 class QAction;
 class KActionCollection;
+class AbstractTwinPanelFM;
 
 
 // abstract interface to the main window
@@ -37,6 +38,7 @@ public:
     virtual AbstractView *activeView() = 0;
     virtual KActionCollection *actions() = 0;
     virtual QAction *action(QString name) = 0;
+    virtual AbstractTwinPanelFM *toTwinPanelFM() { return 0; }
 };
 
 #endif // __ABSTRACTMAINWINDOW_H__

@@ -169,7 +169,7 @@ void ListPanelActions::slotPathChanged(AbstractListPanel *panel)
         refreshActions();
 }
 
-void ListPanelActions::guiUpdated()
+void ListPanelActions::onGUIUpdated()
 {
     QList<QAction*> actions;
     foreach(QAction *action, setViewActions.values())

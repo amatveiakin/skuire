@@ -83,7 +83,6 @@ YP   YD 88   YD ~Y8888P' `8888Y' YP   YP Y8888D' Y88888P 88   YD
 #include "kractions.h"
 #include "panelmanager.h"
 
-#include "Panel/listpanelactions.h"
 #include "UserAction/kraction.h"
 #include "UserAction/expander.h"
 #include "UserAction/useraction.h"
@@ -128,7 +127,7 @@ KAction *Krusader::actShowJSConsole = 0;
 // construct the views, statusbar and menu bars and prepare Krusader to start
 Krusader::Krusader() : KParts::MainWindow(0,
                 Qt::Window | Qt::WindowTitleHint | Qt::WindowContextHelpButtonHint),
-        status(0), _listPanelActions(0), sysTray(0), isStarting(true),
+        status(0), sysTray(0), isStarting(true),
         isExiting(false), directExit(false)
 {
 
@@ -439,9 +438,8 @@ void Krusader::resizeEvent(QResizeEvent *e) {
 void Krusader::setupActions() {
     KrActions::setupActions(this);
     _krActions = new KrActions(this);
-    _listPanelActions = new ListPanelActions(this, this);
     _tabActions = new TabActions(this, this);
-    _allActions << _listPanelActions << _tabActions;
+    _allActions << _tabActions;
 
     foreach(Module *module, KrusaderApp::self()->modules()) {
         if (ActionsBase *actions = module->createActions(this, this))
@@ -742,7 +740,8 @@ void Krusader::updateGUI(bool enforce) {
 
     // this needs to be called AFTER createGUI() !!!
     updateUserActions();
-    _listPanelActions->guiUpdated();
+    foreach(ActionsBase *actions, _allActions)
+        actions->onGUIUpdated();
 
     KConfigGroup cfg_toolbar(krConfig, "Main Toolbar");
     toolBar()->applySettings(cfg_toolbar);

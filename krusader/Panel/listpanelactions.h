@@ -51,6 +51,7 @@ public:
 
     virtual void onPanelCreated(AbstractListPanel*);
     virtual void onActivePanelChanged();
+    virtual void onGUIUpdated();
     virtual void refreshActions();
 
 public slots:
@@ -65,7 +66,6 @@ public slots:
     void openLeftMedia();
     void openRightMedia();
 
-    void guiUpdated();
     void slotPathChanged(AbstractListPanel*);
 
 public:
