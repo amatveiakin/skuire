@@ -54,7 +54,7 @@ public:
     virtual void onGUIUpdated();
     virtual void refreshActions();
 
-public slots:
+protected slots:
     // set view type
     void setView(int id);
 
@@ -68,7 +68,16 @@ public slots:
 
     void slotPathChanged(AbstractListPanel*);
 
-public:
+protected:
+    ListPanel *activePanel();
+    ListPanel *leftPanel();
+    ListPanel *rightPanel();
+    ListPanelFunc *activeFunc();
+    ListPanel *getListPanel(AbstractListPanel *panel);
+    AbstractTwinPanelFM *mainWindow();
+
+    QHash<int/*id*/, KAction*> setViewActions;
+    ActionGroup _gui, _func;
     KAction *actF2, *actF3, *actF4, *actF5, *actF6, *actF7, *actF8, *actF9;
     KAction *actShiftF5, *actShiftF6;
     KAction *actProperties, *actPack, *actUnpack, *actTest,  *actCompDirs, *actCalculate, *actSync;
@@ -78,18 +87,6 @@ public:
     KAction *actCopy, *actPaste;
     KAction *actHistoryBackward, *actHistoryForward, *actDirUp, *actRoot, *actHome, *actCdToOther;
     KAction *actSyncBrowse, *actCancelRefresh;
-
-    QHash<int/*id*/, KAction*> setViewActions;
-
-protected:
-    ListPanel *activePanel();
-    ListPanel *leftPanel();
-    ListPanel *rightPanel();
-    ListPanelFunc *activeFunc();
-    ListPanel *getListPanel(AbstractListPanel *panel);
-    AbstractTwinPanelFM *mainWindow();
-
-    ActionGroup _gui, _func;
 };
 
 #endif // __LISTPANELACTIONS_H__
