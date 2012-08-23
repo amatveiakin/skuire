@@ -39,7 +39,6 @@
 #include <QWidget>
 
 
-class ListPanelFunc;
 class AbstractView;
 class AbstractDirLister;
 
@@ -55,7 +54,7 @@ signals:
 public:
     AbstractListPanel(QWidget *parent, AbstractPanelManager *manager) :
         QWidget(parent),
-        func(0), view(0), _manager(manager) {}
+        view(0), _manager(manager) {}
     virtual ~AbstractListPanel() {}
 
     //TODO: remove this
@@ -72,6 +71,7 @@ public:
     virtual void saveSettings(KConfigGroup cfg, bool localOnly, bool saveHistory = false) = 0;
     virtual void restoreSettings(KConfigGroup cfg) = 0;
     virtual void start(KUrl url = KUrl(), bool immediate = false) = 0;
+    virtual void openUrl(KUrl url, KUrl itemToMakeCurrent = KUrl()) = 0;
     virtual void reparent(QWidget *parent, AbstractPanelManager *manager) = 0;
     virtual void getFocusCandidates(QVector<QWidget*> &widgets) = 0;
     virtual void onActiveStateChanged() = 0; // to be called by panel manager
@@ -87,8 +87,10 @@ public:
         return _manager->isLeft();
     }
 
-    ListPanelFunc *func;
     AbstractView *view;
+
+public slots:
+    virtual void refresh() = 0;
 
 protected:
     AbstractPanelManager *_manager;

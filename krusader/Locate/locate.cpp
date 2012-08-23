@@ -33,7 +33,6 @@
 #include "../krglobal.h"
 #include "../krslots.h"
 #include "../krusaderview.h"
-#include "../Panel/panelfunc.h"
 #include "../GUI/krtreewidget.h"
 #include "../defaults.h"
 #include "../krservices.h"
@@ -426,14 +425,15 @@ void LocateDlg::slotDoubleClick(QTreeWidgetItem *item)
         return;
 
     QString dirName = item->text(0);
-    QString fileName;
+
+    KUrl dirUrl = KUrl(dirName), fileUrl;
 
     if (!QDir(dirName).exists()) {
-        fileName = dirName.mid(dirName.lastIndexOf('/') + 1);
-        dirName.truncate(dirName.lastIndexOf('/'));
+        fileUrl = dirUrl;
+        dirUrl = dirUrl.upUrl();
     }
 
-    ACTIVE_FUNC->openUrl(KUrl(dirName), fileName);
+    ACTIVE_PANEL->openUrl(dirUrl, fileUrl);
     KDialog::accept();
 }
 

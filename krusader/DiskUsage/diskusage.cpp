@@ -61,7 +61,6 @@
 #include "../kicons.h"
 #include "../defaults.h"
 #include "../krglobal.h"
-#include "../Panel/panelfunc.h"
 #include "filelightParts/Config.h"
 #include "dulines.h"
 #include "dulistview.h"
@@ -843,7 +842,7 @@ void DiskUsage::executeAction(int action, File * fileItem)
             uri = fileItem->fullPath();
         else
             uri = currentDirectory->fullPath();
-        ACTIVE_FUNC->openUrl(KUrl(uri));
+        ACTIVE_PANEL->openUrl(KUrl(uri));
     }
     break;
     case LINES_VIEW_ID:

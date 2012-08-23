@@ -33,7 +33,6 @@
 #include "../defaults.h"
 #include "../krusaderview.h"
 #include "../Panel/listpanel.h"
-#include "../Panel/panelfunc.h"
 #include "../VFS/krpermhandler.h"
 #include "../KViewer/krviewer.h"
 #include "../Dialogs/krspwidgets.h"
@@ -1957,8 +1956,8 @@ void SynchronizerGUI::closeDialog()
     this->deleteLater();
 
     if (wasSync) {
-        LEFT_PANEL->func->refresh();
-        RIGHT_PANEL->func->refresh();
+        LEFT_PANEL->refresh();
+        RIGHT_PANEL->refresh();
         ACTIVE_PANEL->view->widget()->setFocus(); //FIXME probably unneccesary
     }
 }

@@ -70,7 +70,6 @@
 #include "../VFS/krquery.h"
 #include "../KViewer/krviewer.h"
 #include "../Panel/quickfilter.h"
-#include "../Panel/panelfunc.h"
 #include "../Filter/filtertabs.h"
 #include "../Filter/generalfilter.h"
 #include "viewfactory.h"
@@ -492,7 +491,7 @@ void KrSearchDialog::stopSearch()
 
 void KrSearchDialog::executed(KFileItem item)
 {
-    ACTIVE_FUNC->openUrl(item.url().upUrl(), item.url());
+    ACTIVE_PANEL->openUrl(item.url().upUrl(), item.url());
     showMinimized();
 }
 

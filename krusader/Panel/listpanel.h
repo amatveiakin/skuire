@@ -33,8 +33,10 @@
 #ifndef LISTPANEL_H
 #define LISTPANEL_H
 
-#include "../Dialogs/krsqueezedtextlabel.h"
 #include "abstractlistpanel.h"
+
+#include "panelfunc.h"
+#include "../Dialogs/krsqueezedtextlabel.h"
 
 #include <kfileitem.h>
 #include <kurl.h>
@@ -117,6 +119,12 @@ public:
     virtual void saveSettings(KConfigGroup cfg, bool localOnly, bool saveHistory = false);
     virtual void restoreSettings(KConfigGroup cfg);
     virtual void start(KUrl url = KUrl(), bool immediate = false);
+    virtual void openUrl(KUrl url, KUrl itemToMakeCurrent) {
+        func->openUrl(url, itemToMakeCurrent);
+    }
+    virtual void refresh() {
+        func->refresh();
+    }
     virtual void reparent(QWidget *parent, AbstractPanelManager *manager);
     virtual void onActiveStateChanged(); // to be called by panel manager
     virtual void getFocusCandidates(QVector<QWidget*> &widgets);
@@ -141,6 +149,9 @@ public:
     bool isActive() {
         return _manager->isActive() && this == _manager->currentPanel();
     }
+
+    //FIXME
+    ListPanelFunc *func;
 
 public slots:
     void gotStats(const QString &mountPoint, quint64 kBSize, quint64 kBUsed, quint64 kBAvail);  // displays filesystem status

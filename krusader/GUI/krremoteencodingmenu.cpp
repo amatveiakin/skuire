@@ -27,7 +27,6 @@
 #include <kio/scheduler.h>
 
 #include "../krglobal.h"
-#include "../Panel/panelfunc.h"
 #include "../kicons.h"
 #include "abstractlistpanel.h"
 
@@ -212,7 +211,7 @@ void KrRemoteEncodingMenu::updateKIOSlaves()
     KIO::Scheduler::emitReparseSlaveConfiguration();
 
     // Reload the page with the new charset
-    QTimer::singleShot(500, ACTIVE_FUNC, SLOT(refresh()));
+    QTimer::singleShot(500, ACTIVE_PANEL, SLOT(refresh()));
 }
 
 #include "krremoteencodingmenu.moc"

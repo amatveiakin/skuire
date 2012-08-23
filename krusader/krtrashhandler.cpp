@@ -46,7 +46,6 @@
 
 #include "krglobal.h"
 #include "kractions.h"
-#include "Panel/panelfunc.h"
 #include "abstractlistpanel.h"
 
 
@@ -72,7 +71,7 @@ void KrTrashHandler::emptyTrash()
     KIO::Job *job = KIO::special(KUrl("trash:/"), packedArgs);
     KNotification::event("Trash: emptied", QString() , QPixmap() , 0l, KNotification::DefaultEvent);
     job->ui()->setWindow(krMainWindow);
-    QObject::connect(job, SIGNAL(result(KJob *)), ACTIVE_PANEL->func, SLOT(refresh()));
+    QObject::connect(job, SIGNAL(result(KJob *)), ACTIVE_PANEL, SLOT(refresh()));
 }
 
 void KrTrashHandler::restoreTrashedFiles(const KUrl::List &urls)
@@ -80,7 +79,7 @@ void KrTrashHandler::restoreTrashedFiles(const KUrl::List &urls)
     KonqMultiRestoreJob* job = new KonqMultiRestoreJob(urls);
     job->ui()->setWindow(krMainWindow);
     KIO::getJobTracker()->registerJob(job);
-    QObject::connect(job, SIGNAL(result(KJob *)), ACTIVE_PANEL->func, SLOT(refresh()));
+    QObject::connect(job, SIGNAL(result(KJob *)), ACTIVE_PANEL, SLOT(refresh()));
 }
 
 void KrTrashHandler::startWatcher()

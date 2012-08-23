@@ -23,7 +23,6 @@
 #include "../krusaderview.h"
 #include "../panelmanager.h"
 #include "../Panel/listpanel.h"
-#include "../Panel/panelfunc.h"
 #include "../Synchronizer/synchronizergui.h"
 #include "../Search/krsearchdialog.h"
 #include "../GUI/profilemanager.h"
@@ -484,8 +483,10 @@ TagString exp_Goto::expFunc(const AbstractListPanel* panel, const QStringList& p
         else
             MAIN_VIEW->rightManager()->slotNewTab(parameter[0]);
     } else {
-        panel->func->openUrl(parameter[0], KUrl());
-        panel->view->widget()->setFocus();
+        //FIXME - why is panel passed const anyway ?
+        setError(exp, Error(Error::exp_S_FATAL, Error::exp_C_ARGUMENT, "currently disabled - FIXME"));
+//         panel->openUrl(parameter[0], KUrl());
+//         panel->view->widget()->setFocus();
     }
 
     return QString();  // this doesn't return anything, that's normal!

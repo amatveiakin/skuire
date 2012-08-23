@@ -58,7 +58,6 @@
 #include "Dialogs/krdialogs.h"
 #include "Dialogs/krspwidgets.h"
 #include "GUI/krusaderstatus.h"
-#include "Panel/panelfunc.h"
 #include "MountMan/kmountman.h"
 #include "defaults.h"
 #include "resources.h"
@@ -292,7 +291,7 @@ void KRslots::insertFileName(bool full_path)
 
 void KRslots::refresh(const KUrl& u)
 {
-    ACTIVE_FUNC->openUrl(u);
+    ACTIVE_PANEL->openUrl(u);
 }
 
 void KRslots::swapPanels()
@@ -300,8 +299,8 @@ void KRslots::swapPanels()
     KUrl leftURL = LEFT_PANEL->url();
     KUrl rightURL = RIGHT_PANEL->url();
 
-    LEFT_PANEL->func->openUrl(rightURL);
-    RIGHT_PANEL->func->openUrl(leftURL);
+    LEFT_PANEL->openUrl(rightURL);
+    RIGHT_PANEL->openUrl(leftURL);
 }
 
 void KRslots::toggleSwapSides()
@@ -494,7 +493,7 @@ void KRslots::slotSplit()
         split.split(splitterGUI.getSplitSize());
 
         if (splitToOtherPanel)
-            ACTIVE_PANEL->otherPanel()->func->refresh();
+            ACTIVE_PANEL->otherPanel()->refresh();
     }
 }
 
@@ -603,7 +602,7 @@ void KRslots::slotCombine()
     combine.combine();
 
     if (combineToOtherPanel)
-        ACTIVE_PANEL->otherPanel()->func->refresh();
+        ACTIVE_PANEL->otherPanel()->refresh();
 }
 
 void KRslots::userMenu()
@@ -706,7 +705,7 @@ void KRslots::trashBin()
         result = res->data().toInt();
 
     if (result == OPEN_ID) {
-        ACTIVE_FUNC->openUrl(KUrl("trash:/"));
+        ACTIVE_PANEL->openUrl(KUrl("trash:/"));
     } else if (result == EMPTY_TRASH_ID) {
         KrTrashHandler::emptyTrash();
     }
