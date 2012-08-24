@@ -4,7 +4,9 @@
 
     CHANGED: option: Panel > Flat Origin Bar -> Panel > Address bar > Flat address bar
 
-    FIXED:  [ 293370 ]  After a file deletion old file name is still shown
+    FIXED: .desktop files are opened in editor,
+            instead of the application specified by it being launched
+    FIXED: [ 293370 ]  After a file deletion old file name is still shown
                         in the status bar 
 
 

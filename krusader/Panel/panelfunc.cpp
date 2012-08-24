@@ -1002,6 +1002,9 @@ void ListPanelFunc::execute(KFileItem item)
     } else if (!protocol.isEmpty()) {
         url.setProtocol(protocol);
         openUrl(url);
+    } else if (item.isDesktopFile() &&
+               KDesktopFile::isAuthorizedDesktopFile(item.localPath())) {
+        runService(KService(item.localPath()), KUrl::List());
     } else {
         if (KRun::isExecutableFile(url, mime))
             runCommand(KShell::quoteArg(url.path()));
