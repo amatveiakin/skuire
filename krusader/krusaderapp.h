@@ -21,7 +21,10 @@
 #define KRUSADERAPP_H
 
 #include <kapplication.h>
+
 #include <QList>
+
+#include <kstartupinfo.h>
 
 class QFocusEvent;
 
@@ -53,6 +56,7 @@ public:
 signals:
     void windowActive();
     void windowInactive();
+
     void configChanged();
 
 public slots:
@@ -62,6 +66,8 @@ public slots:
 
 protected slots:
     void slotConfigChanged(bool isGUIRestartNeeded);
+    void slotGotNewStartup(const KStartupInfoId &id, const KStartupInfoData &data);
+    void slotGotRemoveStartup(const KStartupInfoId &id, const KStartupInfoData &data);
 
 protected:
     QList<Module*> _modules;

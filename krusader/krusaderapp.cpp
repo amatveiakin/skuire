@@ -21,9 +21,9 @@
 
 #include "Konfigurator/konfigurator.h"
 #include "module.h"
-// #include "viewfactory.h"
 #include "krusader.h"
 
+#include <kstartupinfo.h>
 
 Module *ViewModule_create();
 Module *ListPanelModule_create();
@@ -33,6 +33,12 @@ KrusaderApp::KrusaderApp(): KApplication()
 {
     _modules << ViewModule_create();
     _modules << ListPanelModule_create();
+
+    KStartupInfo *startupInfo = new KStartupInfo(0, this);
+    connect(startupInfo, SIGNAL(gotNewStartup (const KStartupInfoId&, const KStartupInfoData&)),
+            SLOT(slotGotNewStartup(const KStartupInfoId&, const KStartupInfoData&)));
+    connect(startupInfo, SIGNAL(gotRemoveStartup(const KStartupInfoId&, const KStartupInfoData&)),
+            SLOT(slotGotRemoveStartup(const KStartupInfoId&, const KStartupInfoData&)));
 }
 
 KrusaderApp::~KrusaderApp()
@@ -98,4 +104,18 @@ void KrusaderApp::slotConfigChanged(bool isGUIRestartNeeded)
     krApp->configChanged(isGUIRestartNeeded);
 
     emit configChanged();
+}
+
+void KrusaderApp::slotGotNewStartup(const KStartupInfoId &id, const KStartupInfoData &data)
+{
+    Q_UNUSED(id)
+    Q_UNUSED(data)
+    setOverrideCursor(Qt::BusyCursor);
+}
+
+void KrusaderApp::slotGotRemoveStartup(const KStartupInfoId &id, const KStartupInfoData &data)
+{
+    Q_UNUSED(id)
+    Q_UNUSED(data)
+    restoreOverrideCursor();
 }
