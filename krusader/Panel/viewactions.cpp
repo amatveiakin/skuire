@@ -50,6 +50,8 @@ ViewActions::ViewActions(QObject *parent, AbstractMainWindow *mainWindow) :
     //actExecFilter = new KAction( i18n( "&Executables" ), SHIFT + Qt::Key_F11,
     //                             SLOTS, SLOT( execFilter() ), actionCollection(), "exec files" );
     action(i18n("&Custom"), 0, Qt::SHIFT + Qt::Key_F12, SLOT(customFilter()), "custom files");
+    actToggleGlobalFilter = toggleAction(i18n("Enable Global Filter"), 0, 0, SLOT(toggleGlobalFilter(bool)), "toggle_global_filter");
+    actSetGlobalFilter = action(i18n("Set Global Filter"), 0, 0, SLOT(setGlobalFilter()), "set_global_filter");
 
     // selection
     actSelect = action(i18n("Select &Group..."), "kr_select", Qt::CTRL + Qt::Key_Plus, SLOT(markGroup()), "select group");
@@ -195,6 +197,17 @@ void ViewActions::showHidden(bool show)
     KrView::showHidden(show);
 }
 
+void ViewActions::toggleGlobalFilter(bool toggle)
+{
+    KrView::enableGlobalFilter(toggle);
+}
+
+void ViewActions::setGlobalFilter()
+{
+    KrView::setGlobalFilter();
+    refreshActions();
+}
+
 void ViewActions::refreshActions()
 {
     actDefaultZoom->setEnabled(activeView()->defaultFileIconSize() != activeView()->fileIconSize());
@@ -204,6 +217,8 @@ void ViewActions::refreshActions()
     actRestoreSelection->setEnabled(activeView()->canRestoreSelection());
     actTogglePreviews->setChecked(activeView()->previewsShown());
     actToggleHidden->setChecked(KrView::isShowHidden());
+    actToggleGlobalFilter->setChecked(KrView::isGlobalFilterEnabled());
+    actToggleGlobalFilter->setEnabled(KrView::isGlobalFilterSet());
 }
 
 void ViewActions::configChanged()

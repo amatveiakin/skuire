@@ -266,8 +266,14 @@ public:
 
     static bool isShowHidden();
     static void showHidden(bool show);
+    static bool isGlobalFilterEnabled();
+    static bool isGlobalFilterSet();
 
+    static void initGlobal();
     static void refreshAllViews();
+    static void enableGlobalFilter(bool enable);
+    static void setGlobalFilter();
+
 
     /////////////////////////////////////////////////////////////
     // deprecated functions start                              //
@@ -330,6 +336,9 @@ protected:
     Operator* op() const {
         return _operator;
     }
+
+    static KRQuery _globalFilter;
+    static FilterSettings _globalFilterSettings;
 
     KrViewInstance &_instance;
     AbstractDirLister *_dirLister;

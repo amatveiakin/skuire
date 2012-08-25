@@ -62,6 +62,8 @@ public slots:
     void allFilter();
     //void execFilter();
     void customFilter();
+    void toggleGlobalFilter(bool toggle);
+    void setGlobalFilter();
 
     // selection
     void markAll();
@@ -82,7 +84,8 @@ public slots:
 protected:
     KAction *actZoomIn, *actZoomOut, *actDefaultZoom;
     KAction *actSelect, *actUnselect, *actSelectAll, *actUnselectAll, *actInvert, *actRestoreSelection;
-    KToggleAction *actTogglePreviews, *actToggleHidden;
+    KAction *actSetGlobalFilter;
+    KToggleAction *actTogglePreviews, *actToggleHidden, *actToggleGlobalFilter;
 
     KrView *activeView();
 };

@@ -526,6 +526,61 @@ QPixmap KrView::Item::processIcon(QPixmap icon, bool active) const
 // ----------------------------- KrView
 
 const KrView::IconSizes KrView::iconSizes;
+KRQuery KrView::_globalFilter;
+FilterSettings KrView::_globalFilterSettings;
+
+
+void KrView::initGlobal()
+{
+    KConfigGroup viewGrp(KGlobal::config(), "View");
+    _globalFilterSettings.load(KConfigGroup(&viewGrp, "GlobalFilterSettings"));
+    if (viewGrp.readEntry("GlobalFilterEnabled", false))
+        _globalFilter = _globalFilterSettings.toQuery();
+}
+
+bool KrView::isGlobalFilterEnabled()
+{
+    return !_globalFilter.isNull();
+}
+
+bool KrView::isGlobalFilterSet()
+{
+    return _globalFilterSettings.isValid();
+}
+
+void KrView::enableGlobalFilter(bool enable)
+{
+    if (enable != isGlobalFilterEnabled()) {
+        if (enable)
+            _globalFilter = _globalFilterSettings.toQuery();
+        else
+            _globalFilter = KRQuery();
+        refreshAllViews();
+        KConfigGroup(KGlobal::config(), "View").writeEntry("GlobalFilterEnabled", enable);
+    }
+}
+
+void KrView::setGlobalFilter()
+{
+    FilterDialog dialog(0, i18n("Don't show files that match these parameters"),
+                        QStringList(), false);
+    dialog.applySettings(_globalFilterSettings);
+    dialog.exec();
+
+    FilterSettings s = dialog.getSettings();
+    if(!s.isValid()) // if the user canceled - quit
+        return;
+
+    _globalFilterSettings = s;
+
+    if (isGlobalFilterEnabled()) {
+        _globalFilter = s.toQuery();
+        refreshAllViews();
+    }
+    
+    KConfigGroup viewGrp(KGlobal::config(), "View");
+    s.save(KConfigGroup(&viewGrp, "GlobalFilterSettings"));
+}
 
 
 KrView::KrView(KrViewInstance &instance, KConfig *cfg) :
@@ -985,7 +1040,9 @@ void KrView::restoreSortMode(KConfigGroup &group)
 
 bool KrView::isFiltered(const KFileItem &item) const
 {
-    if (_quickFilterMask.isValid() && _quickFilterMask.indexIn(item.name()) == -1)
+    if ((!_globalFilter.isNull() && _globalFilter.match(item)) ||
+            (!_quickFilterMask.isEmpty() && _quickFilterMask.isValid() &&
+            _quickFilterMask.indexIn(item.name()) == -1))
         return true;
 
     bool filteredOut = false;

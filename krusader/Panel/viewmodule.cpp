@@ -38,6 +38,7 @@ Module *ViewModule_create()
 void ViewModule::init()
 {
     ViewExpPlaceholders::init();
+    KrView::initGlobal();
     connect(KrusaderApp::self(), SIGNAL(configChanged()), this, SLOT(configChanged()));
 }
 

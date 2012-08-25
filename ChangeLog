@@ -1,3 +1,7 @@
+    ADDED: global filter: 
+            - applies to every view
+            - filters out any file that matches the parameters
+            - actions: View > Enable Global Filter / Set Global Filter
     ADDED: option: Panel > Address bar > Shorten home path
     ADDED: action: Open With Menu - shortcut: CTRL + Enter
     ADDED: action: Open With... - shortcut: CTRL + O

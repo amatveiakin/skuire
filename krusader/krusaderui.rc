@@ -67,6 +67,8 @@
    <ActionList name="view_actionlist" />
    <Separator/>
    <Action name="toggle hidden files" />
+   <Action name="toggle_global_filter" />
+   <Action name="set_global_filter" />
    <Action name="all files" />
    <Action name="exec files" />
    <Action name="custom files" />
