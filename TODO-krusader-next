@@ -1,0 +1,17 @@
+new source tree layout:
+
+common/
+extensions/
+core/
+    common/
+    modules/
+        view/
+        commonfileoperations/
+    filemanager/
+        common/
+        modules/
+            panel/
+            twinpanelfileoperations/
+    filedialog/
+    ...
+...
