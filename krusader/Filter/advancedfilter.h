@@ -42,6 +42,9 @@
 #include <KComboBox>
 #include <KLineEdit>
 
+class QGridLayout;
+class QGroupBox;
+class QLabel;
 class QSpinBox;
 
 class AdvancedFilter : public QWidget, public FilterBase
@@ -98,21 +101,22 @@ public:
     QCheckBox* belongsToGroupEnabled;
     KComboBox* belongsToGroupData;
 
-    QCheckBox* permissionsEnabled;
+    QGroupBox *permissionsGroup;
 
-    KComboBox* ownerW;
-    KComboBox* ownerR;
-    KComboBox* ownerX;
-    KComboBox* groupW;
-    KComboBox* groupR;
-    KComboBox* groupX;
-    KComboBox* allW;
-    KComboBox* allX;
-    KComboBox* allR;
+    QCheckBox* ownerW;
+    QCheckBox* ownerR;
+    QCheckBox* ownerX;
+    QCheckBox* groupW;
+    QCheckBox* groupR;
+    QCheckBox* groupX;
+    QCheckBox* otherW;
+    QCheckBox* otherX;
+    QCheckBox* otherR;
 
     FilterTabs *fltTabs;
 
 private:
+    void createPermissionsCheckbox(QWidget* parent, QGridLayout* layout, QCheckBox*& checkbox, int row, int col);
     void changeDate(KLineEdit *p);
     void fillList(KComboBox *list, QString filename);
     void invalidDateMessage(KLineEdit *p);

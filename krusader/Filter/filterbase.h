@@ -35,6 +35,7 @@
 #include "../VFS/krquery.h"
 
 #include <QtCore/QString>
+#include <QCheckBox>
 #include <QComboBox>
 
 class FilterTabs;
@@ -51,9 +52,30 @@ public:
     virtual void            applySettings(const FilterSettings&) = 0;
 
 protected:
-    static void setComboBoxValue(QComboBox *cb, QString value) {
-        int idx = cb->findText(value);
-        cb->setCurrentIndex(idx < 0 ? 0 : idx);
+    static QString getPermissionsString(const QCheckBox* checkbox, const QString& perm) {
+        switch (checkbox->checkState()) {
+            case Qt::Unchecked:
+                return QString("-");
+            case Qt::PartiallyChecked:
+                return QString("?");
+            case Qt::Checked:
+                return perm;
+        }
+        return "?";
+    }
+
+    static void setCheckBoxValue(QCheckBox *checkbox, QString value) {
+        if (value == "-")
+            checkbox->setCheckState(Qt::Unchecked);
+        else if (value == "?")
+            checkbox->setCheckState(Qt::PartiallyChecked);
+        else
+            checkbox->setCheckState(Qt::Checked);
+    }
+
+    static void setComboBoxValue(QComboBox *combobox, QString value) {
+        int idx = combobox->findText(value);
+        combobox->setCurrentIndex(idx < 0 ? 0 : idx);
     }
 };
 

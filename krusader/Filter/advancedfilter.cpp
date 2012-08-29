@@ -116,7 +116,7 @@ AdvancedFilter::AdvancedFilter(FilterTabs *tabs, QWidget *parent) : QWidget(pare
     maxSizeType->setEnabled(false);
     sizeLayout->addWidget(maxSizeType, 0, 5);
 
-    filterLayout->addWidget(sizeGroup, 0, 0);
+    filterLayout->addWidget(sizeGroup, 0, 0, 1, 2);
 
     // Options for date
 
@@ -232,136 +232,94 @@ AdvancedFilter::AdvancedFilter(FilterTabs *tabs, QWidget *parent) : QWidget(pare
     modifiedInTheLastLayout->addWidget(notModifiedInTheLastType);
     dateLayout->addLayout(modifiedInTheLastLayout, 4, 1);
 
-    filterLayout->addWidget(dateGroup, 1, 0);
+    filterLayout->addWidget(dateGroup, 1, 0, 1, 2);
 
     // Options for ownership
 
     QGroupBox *ownershipGroup = new QGroupBox(this);
     ownershipGroup->setTitle(i18n("Ownership"));
+
     QGridLayout *ownershipLayout = new QGridLayout(ownershipGroup);
     ownershipLayout->setAlignment(Qt::AlignTop);
     ownershipLayout->setSpacing(6);
     ownershipLayout->setContentsMargins(11, 11, 11, 11);
 
-    QHBoxLayout *hboxLayout = new QHBoxLayout();
-    hboxLayout->setSpacing(6);
-    hboxLayout->setContentsMargins(0, 0, 0, 0);
-
     belongsToUserEnabled = new QCheckBox(ownershipGroup);
     belongsToUserEnabled->setText(i18n("Belongs to &user"));
-    hboxLayout->addWidget(belongsToUserEnabled);
+    ownershipLayout->addWidget(belongsToUserEnabled, 0, 0);
 
     belongsToUserData = new KComboBox(ownershipGroup);
     belongsToUserData->setEnabled(false);
     belongsToUserData->setEditable(false);
-    hboxLayout->addWidget(belongsToUserData);
+    ownershipLayout->addWidget(belongsToUserData, 0, 1);
 
     belongsToGroupEnabled = new QCheckBox(ownershipGroup);
     belongsToGroupEnabled->setText(i18n("Belongs to gr&oup"));
-    hboxLayout->addWidget(belongsToGroupEnabled);
+    ownershipLayout->addWidget(belongsToGroupEnabled, 1, 0);
 
     belongsToGroupData = new KComboBox(ownershipGroup);
     belongsToGroupData->setEnabled(false);
     belongsToGroupData->setEditable(false);
-    hboxLayout->addWidget(belongsToGroupData);
+    ownershipLayout->addWidget(belongsToGroupData, 1, 1);
 
-    ownershipLayout->addLayout(hboxLayout, 0, 0, 1, 4);
-
-    permissionsEnabled = new QCheckBox(ownershipGroup);
-    permissionsEnabled->setText(i18n("P&ermissions"));
-    ownershipLayout->addWidget(permissionsEnabled, 1, 0);
-
-    QGroupBox *ownerGroup = new QGroupBox(ownershipGroup);
-    QHBoxLayout *ownerHBox = new QHBoxLayout(ownerGroup);
-    ownerGroup->setTitle(i18n("O&wner"));
-
-    ownerR = new KComboBox(ownerGroup);
-    ownerR->addItem(i18n("?"));
-    ownerR->addItem(i18n("r"));
-    ownerR->addItem(i18n("-"));
-    ownerR->setEnabled(false);
-    ownerHBox->addWidget(ownerR);
-
-    ownerW = new KComboBox(ownerGroup);
-    ownerW->addItem(i18n("?"));
-    ownerW->addItem(i18n("w"));
-    ownerW->addItem(i18n("-"));
-    ownerW->setEnabled(false);
-    ownerHBox->addWidget(ownerW);
-
-    ownerX = new KComboBox(ownerGroup);
-    ownerX->addItem(i18n("?"));
-    ownerX->addItem(i18n("x"));
-    ownerX->addItem(i18n("-"));
-    ownerX->setEnabled(false);
-    ownerHBox->addWidget(ownerX);
-
-    ownershipLayout->addWidget(ownerGroup, 1, 1);
-
-    QGroupBox *groupGroup = new QGroupBox(ownershipGroup);
-    QHBoxLayout *groupHBox = new QHBoxLayout(groupGroup);
-    groupGroup->setTitle(i18n("Grou&p"));
-
-    groupR = new KComboBox(groupGroup);
-    groupR->addItem(i18n("?"));
-    groupR->addItem(i18n("r"));
-    groupR->addItem(i18n("-"));
-    groupR->setEnabled(false);
-    groupHBox->addWidget(groupR);
-
-    groupW = new KComboBox(groupGroup);
-    groupW->addItem(i18n("?"));
-    groupW->addItem(i18n("w"));
-    groupW->addItem(i18n("-"));
-    groupW->setEnabled(false);
-    groupHBox->addWidget(groupW);
-
-    groupX = new KComboBox(groupGroup);
-    groupX->addItem(i18n("?"));
-    groupX->addItem(i18n("x"));
-    groupX->addItem(i18n("-"));
-    groupX->setEnabled(false);
-    groupHBox->addWidget(groupX);
-
-    ownershipLayout->addWidget(groupGroup, 1, 2);
-
-    QGroupBox *allGroup = new QGroupBox(ownershipGroup);
-    QHBoxLayout *allHBox = new QHBoxLayout(allGroup);
-    allGroup->setTitle(i18n("A&ll"));
-
-    allR = new KComboBox(allGroup);
-    allR->addItem(i18n("?"));
-    allR->addItem(i18n("r"));
-    allR->addItem(i18n("-"));
-    allR->setEnabled(false);
-    allHBox->addWidget(allR);
-
-    allW = new KComboBox(allGroup);
-    allW->addItem(i18n("?"));
-    allW->addItem(i18n("w"));
-    allW->addItem(i18n("-"));
-    allW->setEnabled(false);
-    allHBox->addWidget(allW);
-
-    allX = new KComboBox(allGroup);
-    allX->addItem(i18n("?"));
-    allX->addItem(i18n("x"));
-    allX->addItem(i18n("-"));
-    allX->setEnabled(false);
-    allHBox->addWidget(allX);
-
-    ownershipLayout->addWidget(allGroup, 1, 3);
-
-    QLabel *infoLabel = new QLabel(ownershipGroup);
-    QFont infoLabel_font(infoLabel->font());
-    infoLabel_font.setFamily("adobe-helvetica");
-    infoLabel_font.setItalic(true);
-    infoLabel->setFont(infoLabel_font);
-    infoLabel->setText(i18n("Note: a '?' is a wildcard"));
-
-    ownershipLayout->addWidget(infoLabel, 2, 0, 1, 4, Qt::AlignRight);
+    ownershipLayout->setColumnStretch(0, 0);
+    ownershipLayout->setColumnStretch(1, 1);
 
     filterLayout->addWidget(ownershipGroup, 2, 0);
+
+    // Options for permissions
+
+    permissionsGroup = new QGroupBox(this);
+    permissionsGroup->setTitle(i18n("P&ermissions"));
+    permissionsGroup->setCheckable(true);
+    permissionsGroup->setChecked(false);
+
+    QGridLayout *permissionsGridLayout = new QGridLayout();
+    permissionsGridLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+
+    permissionsGridLayout->addWidget(new QLabel(i18n("Owner")),  1, 1);
+    permissionsGridLayout->addWidget(new QLabel(i18n("Group")),  2, 1);
+    permissionsGridLayout->addWidget(new QLabel(i18n("Others")), 3, 1);
+
+    QLabel *readPermLabel = new QLabel(i18n("r"));
+    readPermLabel->setToolTip(i18n("Permission to read a file or list a directory's contents"));
+    QLabel *writePermLabel = new QLabel(i18n("w"));
+    writePermLabel->setToolTip(i18n("Permission to write to a file or directory"));
+    QLabel *executePermLabel = new QLabel(i18n("x"));
+    executePermLabel->setToolTip(i18n("Permission to execute a file or recurse a directory tree"));
+
+    permissionsGridLayout->addWidget(readPermLabel,    0, 2);
+    permissionsGridLayout->addWidget(writePermLabel,   0, 3);
+    permissionsGridLayout->addWidget(executePermLabel, 0, 4);
+
+    createPermissionsCheckbox(permissionsGroup, permissionsGridLayout, ownerR, 1, 2);
+    createPermissionsCheckbox(permissionsGroup, permissionsGridLayout, ownerW, 1, 3);
+    createPermissionsCheckbox(permissionsGroup, permissionsGridLayout, ownerX, 1, 4);
+
+    createPermissionsCheckbox(permissionsGroup, permissionsGridLayout, groupR, 2, 2);
+    createPermissionsCheckbox(permissionsGroup, permissionsGridLayout, groupW, 2, 3);
+    createPermissionsCheckbox(permissionsGroup, permissionsGridLayout, groupX, 2, 4);
+
+    createPermissionsCheckbox(permissionsGroup, permissionsGridLayout, otherR, 3, 2);
+    createPermissionsCheckbox(permissionsGroup, permissionsGridLayout, otherW, 3, 3);
+    createPermissionsCheckbox(permissionsGroup, permissionsGridLayout, otherX, 3, 4);
+
+    QVBoxLayout *permissionsVLayout = new QVBoxLayout(permissionsGroup);
+    permissionsVLayout->setAlignment(Qt::AlignTop | Qt::AlignHCenter);
+    permissionsVLayout->addLayout(permissionsGridLayout);
+    permissionsVLayout->addSpacing(fontMetrics().height() / 2);
+    permissionsVLayout->addWidget(new QLabel(i18n("<i>Partially checked permissions act as wildcard.</i>")));
+
+    filterLayout->addWidget(permissionsGroup, 2, 1);
+
+    // Set topmost layout stretch
+
+    filterLayout->setRowStretch(0, 3);  // Name
+    filterLayout->setRowStretch(1, 5);  // Date
+    filterLayout->setRowStretch(2, 4);  // Ownership & Permissions
+
+    filterLayout->setColumnStretch(0, 3);  // Ownership
+    filterLayout->setColumnStretch(1, 2);  // Permissions
 
     // Connection table
 
@@ -381,15 +339,6 @@ AdvancedFilter::AdvancedFilter(FilterTabs *tabs, QWidget *parent) : QWidget(pare
     connect(modifiedInTheLastEnabled, SIGNAL(toggled(bool)), notModifiedInTheLastType, SLOT(setEnabled(bool)));
     connect(belongsToUserEnabled, SIGNAL(toggled(bool)), belongsToUserData, SLOT(setEnabled(bool)));
     connect(belongsToGroupEnabled, SIGNAL(toggled(bool)), belongsToGroupData, SLOT(setEnabled(bool)));
-    connect(permissionsEnabled, SIGNAL(toggled(bool)), ownerR, SLOT(setEnabled(bool)));
-    connect(permissionsEnabled, SIGNAL(toggled(bool)), ownerW, SLOT(setEnabled(bool)));
-    connect(permissionsEnabled, SIGNAL(toggled(bool)), ownerX, SLOT(setEnabled(bool)));
-    connect(permissionsEnabled, SIGNAL(toggled(bool)), groupR, SLOT(setEnabled(bool)));
-    connect(permissionsEnabled, SIGNAL(toggled(bool)), groupW, SLOT(setEnabled(bool)));
-    connect(permissionsEnabled, SIGNAL(toggled(bool)), groupX, SLOT(setEnabled(bool)));
-    connect(permissionsEnabled, SIGNAL(toggled(bool)), allR, SLOT(setEnabled(bool)));
-    connect(permissionsEnabled, SIGNAL(toggled(bool)), allW, SLOT(setEnabled(bool)));
-    connect(permissionsEnabled, SIGNAL(toggled(bool)), allX, SLOT(setEnabled(bool)));
     connect(modifiedBetweenBtn1, SIGNAL(clicked()), this, SLOT(modifiedBetweenSetDate1()));
     connect(modifiedBetweenBtn2, SIGNAL(clicked()), this, SLOT(modifiedBetweenSetDate2()));
     connect(notModifiedAfterBtn, SIGNAL(clicked()), this, SLOT(notModifiedAfterSetDate()));
@@ -415,17 +364,17 @@ AdvancedFilter::AdvancedFilter(FilterTabs *tabs, QWidget *parent) : QWidget(pare
     setTabOrder(belongsToUserEnabled, belongsToUserData);
     setTabOrder(belongsToUserData, belongsToGroupEnabled);
     setTabOrder(belongsToGroupEnabled, belongsToGroupData);
-    setTabOrder(belongsToGroupData, permissionsEnabled);
-    setTabOrder(permissionsEnabled, ownerR);
+    setTabOrder(belongsToGroupData, permissionsGroup);
+    setTabOrder(permissionsGroup, ownerR);
     setTabOrder(ownerR, ownerW);
     setTabOrder(ownerW, ownerX);
     setTabOrder(ownerX, groupR);
     setTabOrder(groupR, groupW);
     setTabOrder(groupW, groupX);
-    setTabOrder(groupX, allR);
-    setTabOrder(allR, allW);
-    setTabOrder(allW, allX);
-    setTabOrder(allX, minSizeType);
+    setTabOrder(groupX, otherR);
+    setTabOrder(otherR, otherW);
+    setTabOrder(otherW, otherX);
+    setTabOrder(otherX, minSizeType);
     setTabOrder(minSizeType, maxSizeType);
     setTabOrder(maxSizeType, modifiedInTheLastType);
     setTabOrder(modifiedInTheLastType, notModifiedInTheLastType);
@@ -444,6 +393,14 @@ void AdvancedFilter::modifiedBetweenSetDate2()
 void AdvancedFilter::notModifiedAfterSetDate()
 {
     changeDate(notModifiedAfterData);
+}
+
+void AdvancedFilter::createPermissionsCheckbox(QWidget* parent, QGridLayout* layout, QCheckBox*& checkbox, int row, int col)
+{
+    checkbox = new QCheckBox(parent);
+    checkbox->setTristate(true);
+    checkbox->setCheckState(Qt::PartiallyChecked);
+    layout->addWidget(checkbox, row, col);
 }
 
 void AdvancedFilter::changeDate(KLineEdit *p)
@@ -559,10 +516,10 @@ bool AdvancedFilter::getSettings(FilterSettings &s)
     s.groupEnabled = belongsToGroupEnabled->isChecked();
     s.group = belongsToGroupData->currentText();
 
-    s.permissionsEnabled = permissionsEnabled->isChecked();
-    s.permissions = ownerR->currentText() + ownerW->currentText() + ownerX->currentText() +
-                    groupR->currentText() + groupW->currentText() + groupX->currentText() +
-                    allR->currentText()   + allW->currentText()   + allX->currentText();
+    s.permissionsEnabled = permissionsGroup->isChecked();
+    s.permissions = getPermissionsString(ownerR, "r") + getPermissionsString(ownerW, "w") + getPermissionsString(ownerX, "x") +
+                    getPermissionsString(groupR, "r") + getPermissionsString(groupW, "w") + getPermissionsString(groupX, "x") +
+                    getPermissionsString(otherR, "r") + getPermissionsString(otherW, "w") + getPermissionsString(otherX, "x");
 
     return true;
 }
@@ -605,19 +562,19 @@ void AdvancedFilter::applySettings(const FilterSettings &s)
     belongsToGroupEnabled->setChecked(s.groupEnabled);
     setComboBoxValue(belongsToGroupData, s.group);
 
-    permissionsEnabled->setChecked(s.permissionsEnabled);
+    permissionsGroup->setChecked(s.permissionsEnabled);
     QString perm = s.permissions;
     if (perm.length() != 9)
         perm = "?????????";
-    setComboBoxValue(ownerR, QString(perm[0]));
-    setComboBoxValue(ownerW, QString(perm[1]));
-    setComboBoxValue(ownerX, QString(perm[2]));
-    setComboBoxValue(groupR, QString(perm[3]));
-    setComboBoxValue(groupW, QString(perm[4]));
-    setComboBoxValue(groupX, QString(perm[5]));
-    setComboBoxValue(allR, QString(perm[6]));
-    setComboBoxValue(allW, QString(perm[7]));
-    setComboBoxValue(allX, QString(perm[8]));
+    setCheckBoxValue(ownerR, QString(perm[0]));
+    setCheckBoxValue(ownerW, QString(perm[1]));
+    setCheckBoxValue(ownerX, QString(perm[2]));
+    setCheckBoxValue(groupR, QString(perm[3]));
+    setCheckBoxValue(groupW, QString(perm[4]));
+    setCheckBoxValue(groupX, QString(perm[5]));
+    setCheckBoxValue(otherR, QString(perm[6]));
+    setCheckBoxValue(otherW, QString(perm[7]));
+    setCheckBoxValue(otherX, QString(perm[8]));
 }
 
 #include "advancedfilter.moc"
