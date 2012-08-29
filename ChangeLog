@@ -17,11 +17,13 @@
 master
 ==========================
 
+    ADDED: splitter option: Overwrite files without confirmation
     ADDED: action: Go to Other Panel's Directory - shortcut: CTRL+=
 
     CHANGED: user action manager starts with the "Basic Properties" tab active
     CHANGED: detailed view: "Automatically Resize Columns" setting is remembered
 
+    FIXED: splitter overwrites files without confirmation
     FIXED: [ 274483 ] crash when selecting items from popup-menu
     FIXED: [ 285778 ] View or edit files doesn't work
     FIXED: viewer tries to load obsolete libkhexedit2 part as hex viewer -
