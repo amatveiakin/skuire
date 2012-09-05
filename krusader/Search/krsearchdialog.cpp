@@ -405,7 +405,7 @@ void KrSearchDialog::found(QString what, QString where, KIO::filesize_t size, ti
     where = where.replace(QRegExp("\\\\"), "#"); //FIXME ? why is that done ?
     QString path =  where.endsWith('/') ? (where + what) : (where + "/" + what);
     result->addItem(path, size, mtime, perm, foundText);
-    foundLabel->setText(i18n("Found %1 matches.", result->numItems()));
+    foundLabel->setText(i18np("Found %1 match.", "Found %1 matches.", result->numItems()));
 }
 
 bool KrSearchDialog::gui2query()
