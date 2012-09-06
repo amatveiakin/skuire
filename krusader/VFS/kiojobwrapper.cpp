@@ -74,7 +74,7 @@ bool KrJobStarter::event(QEvent * e)
     return QObject::event(e);
 }
 
-KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url) : QObject(0),
+KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url) :
         m_autoErrorHandling(false), m_started(false),
         m_suspended(false)
 {
@@ -83,7 +83,7 @@ KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url) : QObject(
     m_url = url;
 }
 
-KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, void * userData) : QObject(0),
+KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, void * userData) :
         m_autoErrorHandling(false), m_started(false),
         m_suspended(false)
 {
@@ -94,7 +94,7 @@ KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, void * use
 }
 
 KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, const KUrl::List &list,
-                             int pmode, bool showp) : QObject(0),
+                             int pmode, bool showp) :
         m_autoErrorHandling(false), m_started(false),
         m_suspended(false)
 {
@@ -107,7 +107,7 @@ KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, const KUrl
 }
 
 KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, const KUrl &dest, const QStringList &names,
-                             bool showp, const QString &atype, const QMap<QString, QString> &packProps) : QObject(0),
+                             bool showp, const QString &atype, const QMap<QString, QString> &packProps) :
         m_urlList(), m_autoErrorHandling(false), m_started(false),
         m_suspended(false)
 {

@@ -31,6 +31,8 @@
 #ifndef KIOJOBWRAPPER_H
 #define KIOJOBWRAPPER_H
 
+#include "vfs/abstractjobwrapper.h"
+
 #include <QtCore/QObject>
 #include <QtCore/QPointer>
 #include <QMap>
@@ -52,7 +54,7 @@ enum KIOJobWrapperType {
     Unpack = 8
 };
 
-class KIOJobWrapper : public QObject
+class KIOJobWrapper : public AbstractJobWrapper
 {
     Q_OBJECT
     friend class KrJobStarter;

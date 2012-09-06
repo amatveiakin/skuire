@@ -1,4 +1,6 @@
 set(common_SRCS
+    vfs/copy.cpp
+    vfs/virt.cpp
     module.cpp
     actionsbase.cpp
     viewtype.cpp
