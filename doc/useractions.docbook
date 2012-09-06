@@ -159,8 +159,8 @@
     <emphasis role="bold">Basic Properties</emphasis>
   </para>
   <para>
-  <guimenuitem>"Identifier", "Title" and "Command
-  line"</guimenuitem> are always required, all the other properties
+  <guimenuitem>Identifier</guimenuitem>, <guimenuitem>Title</guimenuitem>
+  and <guimenuitem>Command line</guimenuitem> are always required, all the other properties
   are optional.</para> 
   <itemizedlist>
     <listitem>
@@ -188,7 +188,7 @@
     <listitem>
       <para>
       <guimenuitem>Tooltip</guimenuitem>: A tooltip for your
-      UserAction, e.g. displayed in the toolbar on
+      UserAction, &eg; displayed in the toolbar on
       mouseover.</para>
     </listitem>
     <listitem>
@@ -263,9 +263,9 @@
       </itemizedlist>
     </listitem>
     <!--    Not yet implemented, but will be after 1.50 stable is released
-        <listitem><para><guimenuitem>"On multiple selection"</guimenuitem>:  </para>
+        <listitem><para><guimenuitem>On multiple selection</guimenuitem>:  </para>
         <itemizedlist>
-   <listitem><para><guimenuitem>"separate call for each file"</guimenuitem>: executes the command for each selected file.
+   <listitem><para><guimenuitem>Separate call for each file</guimenuitem>: executes the command for each selected file.
              </para></listitem>
          </itemizedlist>
       </listitem> -->
@@ -290,7 +290,7 @@
   panel. This is done using placeholders. A placeholder begins with
   a percent-sign ('%') and is followed by a panel indicator ('a'
   for the active, 'o' for the other, 'l' for the left and 'r' for
-  the right panel. If the placeholder doesn't need a panel to
+  the right panel. If the placeholder does not need a panel to
   operate on, you have to indicate this by an underscore ('_')).
   Then comes the name of the placeholder (see the list below),
   which may get some parameters enclosed in quotes. Finally, again
@@ -525,7 +525,7 @@
       <orderedlist>
         <listitem>
           <para>Parameter (optional): A
-          integer value, e.g., 80 makes the active panel use 80% of
+          integer value, &eg;, 80 makes the active panel use 80% of
           &krusader;'s width (height in vertical mode),
           omitting the parameter means 50%.</para>
         </listitem>
@@ -558,10 +558,10 @@
           <filename>$(kde-config
           - -localprefix)/share/apps/</filename> or 
           <filename>$(kde-config - -prefix)/share/apps/</filename>,
-          for those who don't know where to copy the
+          for those who do not know where to copy the
           scripts/extensions. If all the needed files (normally 
           <filename>.js</filename> and maybe 
-          <filename>.ui</filename>) are in one of these dirs it's
+          <filename>.ui</filename>) are in one of these dirs it is
           sufficient to give the file name only as &lt;first parameter&gt;.
           </para>
         </listitem>
@@ -636,7 +636,7 @@
   <itemizedlist>
     <listitem>
       <para>Configures if the action is valid for a Protocol, Path,
-      Mime type or File name.</para>
+      MIME type or File name.</para>
     </listitem>
     <listitem>
       <para>Tweaking the command line before being executed.</para>

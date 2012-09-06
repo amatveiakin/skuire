@@ -1202,7 +1202,7 @@ QString KrView::itemDescription(KUrl url, bool itemIsUpUrl)
     if (item->isLink()) {
         QString tmp;
         if (item->isBrokenLink())
-            tmp = i18n("(Broken Link!)");
+            tmp = i18n("(Broken Link)");
         else if (comment.isEmpty())
             tmp = i18n("Symbolic Link") ;
         else

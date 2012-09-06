@@ -128,18 +128,16 @@
       <para><link linkend="useractions">UserActions</link> and
       <link linkend="bookman">Bookmarks</link> can be "plugged" into the
       <guilabel>Actions Toolbar</guilabel>. To show it, use
-      <emphasis role="bold">
         <menuchoice>
           <guimenu>Settings</guimenu>
           <guimenuitem>Show Actions Toolbar</guimenuitem>
         </menuchoice>
-      </emphasis>. To add user actions, use
-      <emphasis role="bold">
+      . To add user actions, use
         <menuchoice>
           <guimenu>Settings</guimenu>
           <guimenuitem>Configure Toolbars</guimenuitem>
         </menuchoice>
-      </emphasis> and select Actions Toolbar. You can, for example,
+      and select Actions Toolbar. You can, for example,
       drag the Actions Toolbar to the right side using the
       mouse.</para>
     </sect2>
@@ -381,11 +379,12 @@
           <link linkend="useractions">UserActions</link> set a keybinding for the
           Column Headers. The default
           <guilabel>Column Headers</guilabel> are:
-          <guilabel>Name, Ext, Size, Modified, rwx</guilabel>.
+          <guilabel>Name</guilabel>, <guilabel>Ext</guilabel>,
+          <guilabel>Size</guilabel>, <guilabel>Modified</guilabel>, <guilabel>rwx</guilabel>.
           Predefined <link linkend="konfig-general">Atomic extensions</link> like
-          <filename>tar.gz</filename> are shown as one part in the
+          <literal role="extension">.tar.gz</literal> are shown as one part in the
           <guilabel>Ext</guilabel> Column. More
-          optional Column Headers are available with the Right Mouse Button.
+          optional Column Headers are available with the &RMB;.
           The width
           <guilabel>Column Headers</guilabel> can be changed with
           the mouse by single clicking and moving the divider line
@@ -511,7 +510,7 @@
           </emphasis>: is used to quickly select files,
           &eg; enter
           <literal role="extension">*.png</literal> and click on the
-          <guibutton>"Go"</guibutton> button. The "floppy" button
+          <guibutton>Go</guibutton> button. The "floppy" button
           stores the current selection. The "select group dialog"
           is also available.</para>
         </listitem>
@@ -585,18 +584,18 @@
     input to enter commands, it also features three buttons:</para>
      <itemizedlist>
         <listitem>
-          <para><guibutton>"command history"</guibutton> (down arrow) to quick open previous used commands
+          <para><guibutton>command history</guibutton> (down arrow) to quick open previous used commands
           </para>
         </listitem>
 
         <listitem>
-          <para><guibutton>"Useraction expander"</guibutton> (green plus button) to add easy
+          <para><guibutton>Useraction expander</guibutton> (green plus button) to add easy
                 <link linkend="useractions">Useraction placeholders</link>
           </para>
         </listitem>
 
         <listitem>
-          <para><guibutton>"run in terminal mode"</guibutton> (console icon) button with the next options:
+          <para><guibutton>run in terminal mode</guibutton> (console icon) button with the next options:
          <itemizedlist>
           <listitem><para>Start and Forget</para>
           </listitem>
@@ -674,7 +673,7 @@
       <command>cd</command>
     </userinput> command. The terminal emulator will follow the
     active panel directory. You can drag a file from the
-    <interface>"List Panel"</interface> and name of file will pasted
+    <interface>List Panel</interface> and name of file will pasted
     into Terminal Emulator. If you drag multiple files, the names will
     pasted into Terminal Emulator. A full-screen terminal emulator can
     be used when <link linkend="konfig-panel">configured</link> or
@@ -801,7 +800,7 @@
         <keycap>Right-click</keycap> on the tab and select
         <guimenuitem>Close Current Tab</guimenuitem>, or use the &MMB;, or
         use the Folder tab
-        <guibutton>"red cross"</guibutton> button, or use
+        <guibutton>red cross</guibutton> button, or use
         <keycombo action="simul">&Ctrl;
         <keycap>W</keycap></keycombo>.</para>
       </listitem>

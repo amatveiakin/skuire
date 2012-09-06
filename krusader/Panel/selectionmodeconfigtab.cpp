@@ -64,7 +64,7 @@ SelectionModeConfigTab::SelectionModeConfigTab(QWidget* parent, KonfiguratorPage
         { i18n("Konqueror Mode"), "1", i18n("Pressing the left mouse button selects files - you can click and select multiple files. Right-click menu is invoked using a short click on the right mouse button.") },
         { i18n("Total-Commander Mode"), "2", i18n("The left mouse button does not select, but sets the current file without affecting the current selection. The right mouse button selects multiple files and the right-click menu is invoked by pressing and holding the right mouse button.") },
         { i18n("Ergonomic Mode"), "4", i18n("The left mouse button does not select, but sets the current file without affecting the current selection. The right mouse button invokes the context-menu. You can select with Ctrl key and the left button.") },
-        { i18n("Custom Selection Mode"), "3", i18n("Design your own selection mode!") }
+        { i18n("Custom Selection Mode"), "3", i18n("Design your own selection mode.") }
     };
     mouseRadio = page->createRadioButtonGroup("Look&Feel", "Mouse Selection", "0", 1, 5, mouseSelection, 5, mouseGeneralGroup, true, tabId);
     mouseRadio->layout()->setContentsMargins(0, 0, 0, 0);
@@ -105,7 +105,7 @@ SelectionModeConfigTab::SelectionModeConfigTab(QWidget* parent, KonfiguratorPage
          i18n("If checked, left clicking an item will select it, but will not unselect other, already selected items.") },
         {"Custom Selection Mode",  "ShiftCtrl Left Selects",  _ShiftCtrlLeft,
          i18n("Shift/Ctrl-Left mouse button selects"), true,
-         i18n("If checked, shift/ctrl left clicking will select items. \nNote: This is meaningless if 'Left Button Selects' is checked.") },
+         i18n("If checked, Shift/Ctrl left clicking will select items.\nNote: this is meaningless if 'Left Button Selects' is checked.") },
         {"Custom Selection Mode",  "Right Selects",  _RightSelects,
          i18n("Right mouse button selects"), true,
          i18n("If checked, right clicking an item will select it.") },
@@ -114,19 +114,19 @@ SelectionModeConfigTab::SelectionModeConfigTab(QWidget* parent, KonfiguratorPage
          i18n("If checked, right clicking an item will select it, but will not unselect other, already selected items.") },
         {"Custom Selection Mode",  "ShiftCtrl Right Selects",  _ShiftCtrlRight,
          i18n("Shift/Ctrl-Right mouse button selects"), true,
-         i18n("If checked, shift/ctrl right clicking will select items. \nNote: This is meaningless if 'Right Button Selects' is checked.") },
+         i18n("If checked, Shift/Ctrl right clicking will select items.\nNote: this is meaningless if 'Right Button Selects' is checked.") },
         {"Custom Selection Mode",  "Space Moves Down",  _SpaceMovesDown,
          i18n("Spacebar moves down"), true,
-         i18n("If checked, pressing the spacebar will select the current item and move down. \nOtherwise, current item is selected, but remains the current item.") },
+         i18n("If checked, pressing the spacebar will select the current item and move down.\nOtherwise, current item is selected, but remains the current item.") },
         {"Custom Selection Mode",  "Space Calc Space",  _SpaceCalcSpace,
          i18n("Spacebar calculates disk space"), true,
-         i18n("If checked, pressing the spacebar while the current item is a directory, will (except from selecting the directory) \ncalculate space occupied of the directory (recursively).") },
+         i18n("If checked, pressing the spacebar while the current item is a directory, will (except from selecting the directory)\ncalculate space occupied of the directory (recursively).") },
         {"Custom Selection Mode",  "Insert Moves Down",  _InsertMovesDown,
          i18n("Insert moves down"), true,
-         i18n("If checked, pressing INSERT will select the current item, and move down to the next item. \nOtherwise, current item is not changed.") },
+         i18n("If checked, pressing Insert will select the current item, and move down to the next item.\nOtherwise, current item is not changed.") },
         {"Custom Selection Mode",  "Immediate Context Menu",  _ImmediateContextMenu,
          i18n("Right clicking pops context menu immediately"), true,
-         i18n("If checked, right clicking will result in an immediate showing of the context menu. \nOtherwise, user needs to click and hold the right mouse button for 500ms.") },
+         i18n("If checked, right clicking will result in an immediate showing of the context menu.\nOtherwise, user needs to click and hold the right mouse button for 500ms.") },
     };
 
 

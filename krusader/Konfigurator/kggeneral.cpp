@@ -226,8 +226,8 @@ void KgGeneral::createGeneralTab()
 
 
     KonfiguratorCheckBox *checkBox = createCheckBox("General", "Mimetype Magic", _MimetypeMagic,
-                                     i18n("Use mimetype magic"), generalGrp, false,
-                                     i18n("Mimetype magic allows better distinction of file types, but is slower."), PAGE_GENERAL);
+                                     i18n("Use MIME type magic"), generalGrp, false,
+                                     i18n("MIME type magic allows better distinction of file types, but is slower."), PAGE_GENERAL);
     generalGrid->addWidget(checkBox, 1, 0, 1, 1);
 
 
@@ -244,7 +244,7 @@ void KgGeneral::createGeneralTab()
     hbox->addWidget(urlReq3);
     generalGrid->addLayout(hbox, 13, 0, 1, 1);
 
-    QLabel *label4 = new QLabel(i18n("Note: you must have full permissions for the temporary directory!"),
+    QLabel *label4 = new QLabel(i18n("Note: you must have full permissions for the temporary directory."),
                                 generalGrp);
     generalGrid->addWidget(label4, 14, 0, 1, 1);
 
@@ -281,7 +281,7 @@ void KgGeneral::createGeneralTab()
     terminalGrid->addWidget(urlReq2, 0, 1);
 
     KONFIGURATOR_CHECKBOX_PARAM terminal_settings[] = { //   cfg_class  cfg_name     default        text            restart tooltip
-        {"General", "Send CDs", _SendCDs, i18n("Terminal Emulator sends Chdir on panel change"), false, i18n("When checked, whenever the panel is changed (for example, by pressing TAB), krusader changes the current directory in the terminal emulator.") },
+        {"General", "Send CDs", _SendCDs, i18n("Terminal Emulator sends Chdir on panel change"), false, i18n("When checked, whenever the panel is changed (for example, by pressing Tab), Krusader changes the current directory in the terminal emulator.") },
         {"Look&Feel", "Fullscreen Terminal Emulator", false, i18n("Fullscreen terminal (mc-style)"), false,  i18n("Terminal is shown instead of the Krusader window (full screen).") },
     };
     cbs = createCheckBoxGroup(1, 0, terminal_settings, 2 /*count*/, terminalGrp, PAGE_GENERAL);
@@ -319,7 +319,7 @@ void KgGeneral::slotAddExtension()
 
     if (ok) {
         if (!atomExt.startsWith('.') || atomExt.indexOf('.', 1) == -1)
-            KMessageBox::error(krMainWindow, i18n("Atomic extensions must start with '.'\n and must contain at least one more '.' character"), i18n("Error"));
+            KMessageBox::error(krMainWindow, i18n("Atomic extensions must start with '.' and must contain at least one more '.' character."), i18n("Error"));
         else
             listBox->addItem(atomExt);
     }

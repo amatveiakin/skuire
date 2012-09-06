@@ -359,12 +359,12 @@
       (note: updates from within the modules directory do
       not need the -d parameter)</para>
       <para>If you want to check out a specific version of
-      &krusader; from CVS (e.g.
+      &krusader; from CVS (&eg;
       &krusader;-1.60.0) : 
       <screen><prompt>$</prompt> <userinput><command>cvs</command> <option>-z3 -d:pserver:anonymous@krusader.cvs.sourceforge.net:/cvsroot/krusader co -rversion_1_60_0 krusader_kde3</option></userinput></screen>
       </para>
       <para>If you want to check out a specific date of
-      &krusader; from CVS (e.g.
+      &krusader; from CVS (&eg;
       &krusader;-2006-10-29) : 
       <screen><prompt>$</prompt> <userinput><command>cvs</command> <option>-z3 -d:pserver:anonymous@krusader.cvs.sourceforge.net:/cvsroot/krusader co -D2006-10-29 krusader_kde3</option></userinput></screen>
       </para>
@@ -448,9 +448,9 @@
         <para>From version &krusader;-2.0.0 and higher is &kde;-4 only.</para>
       </note>
  
-<para>"krusader_kde4.tar.gz" is the supposed name of the krusader tarball (it will be probably a different one ;)</para>
+<para><filename>krusader_kde4.tar.gz</filename> is the supposed name of the krusader tarball (it will be probably a different one ;)</para>
 
-<para>You can download the latest available krusader-2.x <link linkend="krusader_git">from Git</link>.</para>
+<para>You can download the latest available &krusader;-2.x <link linkend="krusader_git">from Git</link>.</para>
 
 
 <sect2>
@@ -560,7 +560,7 @@ distros will probably use similar names.</para>
 <sect2>
 <title>Compilation requirements</title>
 <para>The next packages are needed for compiling Krusader,
-if you only run a Krusader binary you don't need these packages.</para>
+if you only run a Krusader binary you do not need these packages.</para>
 <para>
     <itemizedlist>
       <listitem>
@@ -593,7 +593,7 @@ if you only run a Krusader binary you don't need these packages.</para>
 </sect1>
 
 <sect1 id="kde4_lin_install">
-   <title>Installing on Linux and BSD platforms</title>
+   <title>Installing on &Linux; and &BSD; platforms</title>
 
       <note>
        <para>Please read the 
@@ -639,7 +639,7 @@ if you only run a Krusader binary you don't need these packages.</para>
         file of the Krusader sources, it contains all latest installation instructions.</para>
       </note>
 
-<para>With &kde;-4 Krusader runs natively on &MacOS;-X, using it's Aqua user interface (No more X11 needed!).</para>
+<para>With &kde;-4 Krusader runs natively on &MacOS;-X, using its Aqua user interface (No more X11 needed!).</para>
 
 <para>With the help of <ulink url="http://www.macports.org/">macports.org</ulink> , &krusader; is ported to &MacOS;-X,
       the port is maintained by <ulink url="http://www.krusader.org/developers.php">Jonas B&auml;hr</ulink>.
@@ -664,7 +664,7 @@ if you only run a Krusader binary you don't need these packages.</para>
 
 <para>Tested on &Windows; XP, not yet tested on &Windows; Vista but it should work.</para>
 
-<para>With Krusader-2.0.0 it's the first time that Krusader compiles on &Windows;,
+<para>With Krusader-2.0.0 it is the first time that Krusader compiles on &Windows;,
       some work needs to be done to make Krusader more usable on the &Windows; platform.
       All feedback is welcome!</para>
 
@@ -684,7 +684,7 @@ if you only run a Krusader binary you don't need these packages.</para>
     </userinput> (lower case) at a command prompt. You can create
     shortcut on your desktop or create an entry in the
     (&kde;) menu. Read the previous page and the
-    <link linkend="faq">FAQ</link> if &krusader; doesn't
+    <link linkend="faq">FAQ</link> if &krusader; does not
     start.</para>
     <para>When &krusader; is started from the
     command line, various options can be specified to modify its
@@ -708,7 +708,7 @@ if you only run a Krusader binary you don't need these packages.</para>
     <guibutton>Run</guibutton> button.</para>
     <para>If &krusader; is installed by an RPM or DEB
     package then usually &krusader; can be started from
-    the &kmenu;. e.g. on
+    the &kmenu;. &eg; on
     KUbuntu click on the
     &kicon; button and choose 
     <emphasis role="bold">
