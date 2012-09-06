@@ -16,32 +16,29 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __VFS_VFS_P_H__
-#define __VFS_VFS_P_H__
+#include "virtualaddjob.h"
 
-#include <kurl.h>
+#include "../../VFS/virt_vfs.h"
 
+//TODO: move virt_vfs code here
 
 namespace VFS
 {
 
-inline bool isVirtUrl(const KUrl &url)
+VirtualAddJob::VirtualAddJob(KUrl::List srcUrls, QString destDir) :
+    _srcUrls(srcUrls),
+    _destDir(destDir)
 {
-    return (url.isValid() && url.protocol() == "virt") ? true : false;
 }
 
-inline QString virtualDirFromUrl(const KUrl &url)
+void VirtualAddJob::slotStart()
 {
-    if (isVirtUrl(url)) {
-        if (url.upUrl().path() == "/")
-            return url.fileName();
-    }
-    return QString();
+    virt_vfs virtfs(0, false);
+    if (virtfs.vfs_refresh(KUrl(QString("virt:/") + _destDir)))
+        virtfs.vfs_addFiles(&_srcUrls, KIO::CopyJob::Copy, 0);
+    else
+        abort();
+    emitResult();
 }
-
-KUrl getVirtualBaseURL(KUrl srcBaseUrl, KUrl::List srcUrls, KUrl dest);
-
 
 } // namespace VFS
-
-#endif // __VFS_VFS_P_H__

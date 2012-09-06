@@ -36,8 +36,6 @@ A
 
 #include "../../VFS/preservingcopyjob.h"
 #include "../../VFS/kiojobwrapper.h"
-#include "../../VFS/virtualcopyjob.h"
-#include "../../VFS/virt_vfs.h"
 #include "../../defaults.h"
 #include "../../Dialogs/krdialogs.h"
 #include "../../Queue/queue_mgr.h"
@@ -96,14 +94,13 @@ AbstractJobWrapper *copy(KFileItemList files, KUrl &dest, bool confirm, KUrl src
     if (!virtualBaseURL.isEmpty()) {
         job = KIOJobWrapper::virtualCopy(files, dest, virtualBaseURL, pmode, true);
     } else if (isVirtUrl(dest)) {
-        //FIXME return a job wrapper
-        virt_vfs virtfs(0, false);
-        if (virtfs.vfs_refresh(dest))
-            virtfs.vfs_addFiles(&urls, KIO::CopyJob::Copy, 0);
-        else
-            KMessageBox::error(0, i18n("Virtual directory %1 does not exist.",
-                                       dest.prettyUrl()));
-        return 0;
+        QString destDir = virtualDirFromUrl(dest);
+        if (!destDir.isEmpty())
+            job = KIOJobWrapper::virtualAdd(urls, destDir);
+        else {
+            KMessageBox::sorry(0, i18n("%1 is not a virtual directory.", dest.prettyUrl()));
+            return 0;
+        }
     } else {
         // you can rename only *one* file not a batch,
         // so a batch dest must alwayes be a directory

@@ -16,32 +16,31 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
-#ifndef __VFS_VFS_P_H__
-#define __VFS_VFS_P_H__
+#ifndef __VFS_VIRTUALADDJOB_H__
+#define __VFS_VIRTUALADDJOB_H__
 
+#include <kio/job.h>
 #include <kurl.h>
-
 
 namespace VFS
 {
 
-inline bool isVirtUrl(const KUrl &url)
+class VirtualAddJob : public KIO::Job
 {
-    return (url.isValid() && url.protocol() == "virt") ? true : false;
-}
+    Q_OBJECT
 
-inline QString virtualDirFromUrl(const KUrl &url)
-{
-    if (isVirtUrl(url)) {
-        if (url.upUrl().path() == "/")
-            return url.fileName();
-    }
-    return QString();
-}
+public:
+    VirtualAddJob(KUrl::List srcUrls, QString destDir);
 
-KUrl getVirtualBaseURL(KUrl srcBaseUrl, KUrl::List srcUrls, KUrl dest);
+public slots:
+    void slotStart();
+
+private:
+    KUrl::List _srcUrls;
+    QString _destDir;
+};
 
 
 } // namespace VFS
 
-#endif // __VFS_VFS_P_H__
+#endif // __VFS_VIRTUALADDJOB_H__

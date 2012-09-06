@@ -44,9 +44,12 @@
 #include <kio/jobuidelegate.h>
 #include <kio/job.h>
 #include <klocale.h>
+#include <kdebug.h>
 
 #include "virtualcopyjob.h"
 #include "packjob.h"
+
+#include "vfs/virtualaddjob.h"
 
 class JobStartEvent : public QEvent
 {
@@ -141,11 +144,17 @@ void KIOJobWrapper::createJob()
         break;
     case VirtualMove:
     case VirtualCopy: {
-        VirtualCopyJob * vcj = (VirtualCopyJob *)m_userData;
-        vcj->slotStart();
-        job = vcj;
-    }
-    break;
+            VirtualCopyJob * vcj = (VirtualCopyJob *)m_userData;
+            QTimer::singleShot(0, vcj, SLOT(slotStart()));
+            job = vcj;
+        }
+        break;
+    case VirtualAdd: {
+            VFS::VirtualAddJob * vcj = (VFS::VirtualAddJob *)m_userData;
+            QTimer::singleShot(0, vcj, SLOT(slotStart()));
+            job = vcj;
+        }
+        break;
     case Copy:
         job = PreservingCopyJob::createCopyJob((PreserveMode)m_pmode, m_urlList, m_url, KIO::CopyJob::Copy, false, m_showProgress);
         break;
@@ -197,6 +206,12 @@ KIOJobWrapper * KIOJobWrapper::move(int pmode, KUrl::List &list, KUrl &url, bool
     return new KIOJobWrapper(Move, url, list, pmode, showProgress);
 }
 
+KIOJobWrapper * KIOJobWrapper::virtualAdd(KUrl::List urls, QString destDir)
+{
+    return new KIOJobWrapper(VirtualAdd, KUrl(),
+                             new VFS::VirtualAddJob(urls, destDir));
+}
+
 KIOJobWrapper * KIOJobWrapper::virtualCopy(const KFileItemList &files, KUrl& dest,
         const KUrl& baseURL, int pmode, bool showProgressInfo)
 {
@@ -246,6 +261,7 @@ QString KIOJobWrapper::typeStr()
         return i18nc("Job type", "Directory Size");
     case Copy:
     case VirtualCopy:
+    case VirtualAdd:
         return i18nc("Job type", "Copy");
     case Move:
     case VirtualMove:

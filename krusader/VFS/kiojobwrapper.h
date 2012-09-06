@@ -51,7 +51,8 @@ enum KIOJobWrapperType {
     VirtualCopy = 5,
     VirtualMove = 6,
     Pack = 7,
-    Unpack = 8
+    Unpack = 8,
+    VirtualAdd = 9
 };
 
 class KIOJobWrapper : public AbstractJobWrapper
@@ -128,6 +129,7 @@ public:
     static KIOJobWrapper * directorySize(KUrl &url);
     static KIOJobWrapper * copy(int pmode, KUrl::List &list, KUrl &url, bool showProgress);
     static KIOJobWrapper * move(int pmode, KUrl::List &list, KUrl &url, bool showProgress);
+    static KIOJobWrapper * virtualAdd(KUrl::List urls, QString destDir);
     static KIOJobWrapper * virtualCopy(const KFileItemList &files, KUrl& dest,
                                        const KUrl& baseURL, int pmode, bool showProgressInfo);
     static KIOJobWrapper * virtualMove(const KFileItemList &files, KUrl& dest,
