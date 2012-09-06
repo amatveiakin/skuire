@@ -29,8 +29,6 @@
  ***************************************************************************/
 
 #include "virtualcopyjob.h"
-#include "vfs.h"
-#include "vfile.h"
 #include <kio/global.h>
 #include <kio/jobclasses.h>
 #include <kio/directorysizejob.h>
@@ -113,7 +111,7 @@ private:
     VirtualCopyJob * copyJobRef;
 };
 
-VirtualCopyJob::VirtualCopyJob(const QStringList *names, vfs * vfs, const KUrl& dest, const KUrl& baseURL,
+VirtualCopyJob::VirtualCopyJob(const KFileItemList &srcFiles, const KUrl& dest, const KUrl& baseURL,
                                PreserveMode pmode, KIO::CopyJob::CopyMode mode, bool showProgressInfo, bool autoStart) : KIO::Job(), m_overwriteAll(false),
         m_skipAll(false), m_multi(false), m_totalSize(0), m_totalFiles(0), m_totalSubdirs(0),
         m_processedSize(0), m_processedFiles(0), m_processedSubdirs(0), m_tempSize(0), m_tempFiles(0),
@@ -124,35 +122,32 @@ VirtualCopyJob::VirtualCopyJob(const QStringList *names, vfs * vfs, const KUrl& 
 
     m_dest.adjustPath(KUrl::AddTrailingSlash);
 
-    vfile * file = vfs->vfs_getFirstFile();
-    while (file) {
-        if (names->contains(file->vfile_getName())) {
-            QString relativeDir = KUrl::relativeUrl(baseURL, file->vfile_getUrl().upUrl());
+    foreach(KFileItem file, srcFiles) {
+        QString relativeDir = KUrl::relativeUrl(baseURL, file.url().upUrl());
 
-            if (m_filesToCopy.find(relativeDir) == m_filesToCopy.end()) {
-                m_filesToCopy.insert(relativeDir, new KUrl::List());
-                // initialize the dir content
-                m_size[ relativeDir ] = 0;
-                m_filenum[ relativeDir ] = 0;
-                m_subdirs[ relativeDir ] = 0;
-            }
-            KUrl::List *list = m_filesToCopy[ relativeDir ];
-
-            if (!list->contains(file->vfile_getUrl())) {
-                if (file->vfile_isDir()) {
-                    m_dirsToGetSize.append(file->vfile_getUrl());
-                    m_totalSubdirs++;
-                    m_subdirs[ relativeDir ]++;
-                } else {
-                    m_totalFiles++;
-                    m_filenum[ relativeDir ]++;
-                    m_totalSize += file->vfile_getSize();
-                    m_size[ relativeDir ] += file->vfile_getSize();
-                }
-                list->append(file->vfile_getUrl());
-            }
+        if (m_filesToCopy.find(relativeDir) == m_filesToCopy.end()) {
+            m_filesToCopy.insert(relativeDir, new KUrl::List());
+            // initialize the dir content
+            m_size[ relativeDir ] = 0;
+            m_filenum[ relativeDir ] = 0;
+            m_subdirs[ relativeDir ] = 0;
         }
-        file = vfs->vfs_getNextFile();
+
+        KUrl::List *list = m_filesToCopy[ relativeDir ];
+
+        if (!list->contains(file.url())) {
+            if (file.isDir()) {
+                m_dirsToGetSize.append(file.url());
+                m_totalSubdirs++;
+                m_subdirs[ relativeDir ]++;
+            } else {
+                m_totalFiles++;
+                m_filenum[ relativeDir ]++;
+                m_totalSize += file.size();
+                m_size[ relativeDir ] += file.size();
+            }
+            list->append(file.url());
+        }
     }
 
     if (showProgressInfo) {

@@ -37,10 +37,9 @@
 #include <qmap.h>
 
 #include <kio/job.h>
+#include <kfileitem.h>
 
 #include "preservingcopyjob.h"
-
-class vfs;
 
 typedef enum {
     ST_STARTING               = 0,
@@ -54,7 +53,7 @@ class VirtualCopyJob : public KIO::Job
     Q_OBJECT
 
 public:
-    VirtualCopyJob(const QStringList *names, vfs * vfs, const KUrl& dest, const KUrl& baseURL,
+    VirtualCopyJob(const KFileItemList &srcFiles, const KUrl& dest, const KUrl& baseURL,
                    PreserveMode pmode, KIO::CopyJob::CopyMode mode, bool showProgressInfo,
                    bool autoStart = true);
     virtual ~VirtualCopyJob();

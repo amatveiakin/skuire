@@ -37,9 +37,9 @@
 
 #include <kurl.h>
 #include <kio/jobclasses.h>
+#include <kfileitem.h>
 
 class QEvent;
-class vfs;
 
 enum KIOJobWrapperType {
     Stat = 1,
@@ -126,9 +126,9 @@ public:
     static KIOJobWrapper * directorySize(KUrl &url);
     static KIOJobWrapper * copy(int pmode, KUrl::List &list, KUrl &url, bool showProgress);
     static KIOJobWrapper * move(int pmode, KUrl::List &list, KUrl &url, bool showProgress);
-    static KIOJobWrapper * virtualCopy(const QStringList *names, vfs * vfs, KUrl& dest,
+    static KIOJobWrapper * virtualCopy(const KFileItemList &files, KUrl& dest,
                                        const KUrl& baseURL, int pmode, bool showProgressInfo);
-    static KIOJobWrapper * virtualMove(const QStringList *names, vfs * vfs, KUrl& dest,
+    static KIOJobWrapper * virtualMove(const KFileItemList &files, KUrl& dest,
                                        const KUrl& baseURL, int pmode, bool showProgressInfo);
     static KIOJobWrapper * pack(const KUrl &srcUrl, const KUrl &destUrl, const QStringList & fileNames,
                                 const QString &type, const QMap<QString, QString> &packProps,

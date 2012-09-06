@@ -197,18 +197,18 @@ KIOJobWrapper * KIOJobWrapper::move(int pmode, KUrl::List &list, KUrl &url, bool
     return new KIOJobWrapper(Move, url, list, pmode, showProgress);
 }
 
-KIOJobWrapper * KIOJobWrapper::virtualCopy(const QStringList *names, vfs * vfs, KUrl& dest,
+KIOJobWrapper * KIOJobWrapper::virtualCopy(const KFileItemList &files, KUrl& dest,
         const KUrl& baseURL, int pmode, bool showProgressInfo)
 {
     return new KIOJobWrapper(VirtualCopy, dest,
-                             new VirtualCopyJob(names, vfs, dest, baseURL, (PreserveMode)pmode, KIO::CopyJob::Copy, showProgressInfo, false));
+                             new VirtualCopyJob(files, dest, baseURL, (PreserveMode)pmode, KIO::CopyJob::Copy, showProgressInfo, false));
 }
 
-KIOJobWrapper * KIOJobWrapper::virtualMove(const QStringList *names, vfs * vfs, KUrl& dest,
+KIOJobWrapper * KIOJobWrapper::virtualMove(const KFileItemList &files, KUrl& dest,
         const KUrl& baseURL, int pmode, bool showProgressInfo)
 {
     return new KIOJobWrapper(VirtualMove, dest,
-                             new VirtualCopyJob(names, vfs, dest, baseURL, (PreserveMode)pmode, KIO::CopyJob::Move, showProgressInfo, false));
+                             new VirtualCopyJob(files, dest, baseURL, (PreserveMode)pmode, KIO::CopyJob::Move, showProgressInfo, false));
 }
 
 KIOJobWrapper * KIOJobWrapper::pack(const KUrl &srcUrl, const KUrl &destUrl, const QStringList & fileNames,

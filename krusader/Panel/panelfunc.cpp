@@ -545,9 +545,11 @@ void ListPanelFunc::moveFiles(bool enqueue)
     PreserveMode pmode = PM_DEFAULT;
     bool queue = enqueue;
 
-    KUrl::List urls = panel->view()->getSelectedUrls(true);
-    if(urls.isEmpty())
-        return ;  // safety
+    KFileItemList files = panel->view()->getSelectedItems(true);
+
+    KUrl::List urls = files.urlList();
+    if (urls.isEmpty())
+        return;
 
     QStringList fileNames; //TODO: remove this
     foreach(const KUrl &url, urls)
@@ -586,7 +588,7 @@ void ListPanelFunc::moveFiles(bool enqueue)
     if (queue) {
         KIOJobWrapper *job = 0;
         if (!virtualBaseURL.isEmpty()) {
-            job = KIOJobWrapper::virtualMove(&fileNames, files(), dest, virtualBaseURL, pmode, true);
+            job = KIOJobWrapper::virtualMove(files, dest, virtualBaseURL, pmode, true);
             job->connectTo(SIGNAL(result(KJob*)), this, SLOT(refresh()));
             if (dest.equals(panel->otherPanel()->virtualPath(), KUrl::CompareWithoutTrailingSlash))
                 job->connectTo(SIGNAL(result(KJob*)), panel->otherPanel()->func, SLOT(refresh()));
@@ -606,7 +608,7 @@ void ListPanelFunc::moveFiles(bool enqueue)
         QueueManager::currentQueue()->enqueue(job);
     } else if (!virtualBaseURL.isEmpty()) {
         // keep the directory structure for virtual paths
-        VirtualCopyJob *vjob = new VirtualCopyJob(&fileNames, files(), dest, virtualBaseURL, pmode, KIO::CopyJob::Move, true);
+        VirtualCopyJob *vjob = new VirtualCopyJob(files, dest, virtualBaseURL, pmode, KIO::CopyJob::Move, true);
         connect(vjob, SIGNAL(result(KJob*)), this, SLOT(refresh()));
         if (dest.equals(panel->otherPanel()->virtualPath(), KUrl::CompareWithoutTrailingSlash))
             connect(vjob, SIGNAL(result(KJob*)), panel->otherPanel()->func, SLOT(refresh()));
@@ -631,7 +633,7 @@ void ListPanelFunc::moveFiles(bool enqueue)
             return ;
         }
         // finally..
-        otherFunc() ->files() ->vfs_addFiles(&urls, KIO::CopyJob::Move, files(), "", pmode);
+        otherFunc() ->files() ->vfs_addFiles(&urls, KIO::CopyJob::Move, this->files(), "", pmode);
     }
     if(KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
         panel->view()->saveSelection();
@@ -734,7 +736,9 @@ void ListPanelFunc::copyFiles(bool enqueue)
     PreserveMode pmode = PM_DEFAULT;
     bool queue = enqueue;
 
-    KUrl::List urls = panel->view()->getSelectedUrls(true);
+    KFileItemList files = panel->view()->getSelectedItems(true);
+
+    KUrl::List urls = files.urlList();
     if (urls.isEmpty())
         return;
 
@@ -770,7 +774,7 @@ void ListPanelFunc::copyFiles(bool enqueue)
     if (queue) {
         KIOJobWrapper *job = 0;
         if (!virtualBaseURL.isEmpty()) {
-            job = KIOJobWrapper::virtualCopy(&fileNames, files(), dest, virtualBaseURL, pmode, true);
+            job = KIOJobWrapper::virtualCopy(files, dest, virtualBaseURL, pmode, true);
             job->connectTo(SIGNAL(result(KJob*)), this, SLOT(refresh()));
             if (dest.equals(panel->otherPanel()->virtualPath(), KUrl::CompareWithoutTrailingSlash))
                 job->connectTo(SIGNAL(result(KJob*)), panel->otherPanel()->func, SLOT(refresh()));
@@ -788,7 +792,7 @@ void ListPanelFunc::copyFiles(bool enqueue)
         QueueManager::currentQueue()->enqueue(job);
     } else if (!virtualBaseURL.isEmpty()) {
         // keep the directory structure for virtual paths
-        VirtualCopyJob *vjob = new VirtualCopyJob(&fileNames, files(), dest, virtualBaseURL, pmode, KIO::CopyJob::Copy, true);
+        VirtualCopyJob *vjob = new VirtualCopyJob(files, dest, virtualBaseURL, pmode, KIO::CopyJob::Copy, true);
         connect(vjob, SIGNAL(result(KJob*)), this, SLOT(refresh()));
         if (dest.equals(panel->otherPanel()->virtualPath(), KUrl::CompareWithoutTrailingSlash))
             connect(vjob, SIGNAL(result(KJob*)), panel->otherPanel()->func, SLOT(refresh()));
