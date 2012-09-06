@@ -46,7 +46,6 @@
 #include <kurl.h>
 #include <ksqueezedtextlabel.h>
 
-#include "../VFS/vfs.h"
 #include "filelightParts/fileTree.h"
 
 #define VIEW_LINES      0
@@ -61,6 +60,8 @@ class DULines;
 class DUFilelight;
 class KMenu;
 class LoaderWidget;
+class vfs;
+class vfile;
 
 class DiskUsage : public QStackedWidget
 {

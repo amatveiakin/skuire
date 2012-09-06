@@ -47,6 +47,9 @@
 #include "../VFS/vfile.h"
 #include "../VFS/krpermhandler.h"
 #include "../VFS/krarchandler.h"
+#include "../VFS/ftp_vfs.h"
+#include "../VFS/virt_vfs.h"
+
 
 #define  EVENT_PROCESS_DELAY     250
 

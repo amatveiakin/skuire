@@ -37,7 +37,6 @@
 #include <QtGui/QLabel>
 #include <qprogressbar.h>
 
-#include "../VFS/vfs.h"
 #include "synchronizer.h"
 
 class SynchronizeDialog : QDialog

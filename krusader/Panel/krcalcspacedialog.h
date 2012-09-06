@@ -42,7 +42,6 @@
 #include <QtCore/QThread>
 #include <QLabel>
 // Krusader Includes
-#include "../VFS/vfs.h"
 #include "calcspacethread.h"
 
 class AbstractListPanel;

@@ -40,12 +40,12 @@
 #include <time.h>
 #include <kio/global.h>
 #include <kurl.h>
-#include "../VFS/ftp_vfs.h"
-#include "../VFS/virt_vfs.h"
 
 
 class KRQuery;
 class ftp_vfs;
+class virt_vfs;
+
 
 class KRSearchMod : public QObject
 {

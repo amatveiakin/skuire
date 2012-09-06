@@ -31,14 +31,16 @@
 #ifndef KRSEARCHDIALOG_H
 #define KRSEARCHDIALOG_H
 
-#include <sys/types.h>
-#include <time.h>
+#include "krsearchmod.h"
+
+#include <kfileitem.h>
 
 #include <QtCore/QString>
 #include <QtCore/QStringList>
 #include <QtGui/QDialog>
 
-#include "krsearchmod.h"
+#include <sys/types.h>
+#include <time.h>
 
 
 class QLabel;
@@ -50,6 +52,7 @@ class GeneralFilter;
 class KTabWidget;
 class KSqueezedTextLabel;
 class KrSqueezedTextLabel;
+
 
 class KrSearchDialog : public QDialog
 {

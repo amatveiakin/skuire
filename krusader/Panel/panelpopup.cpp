@@ -45,6 +45,7 @@
 #include <klocale.h>
 #include <klineedit.h>
 #include <kio/jobclasses.h>
+#include <kio/copyjob.h>
 #include <kcolorscheme.h>
 #include <kdirlister.h>
 #include <kdirmodel.h>
