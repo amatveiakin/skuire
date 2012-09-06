@@ -272,6 +272,8 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
 
     emit layoutAboutToBeChanged();
 
+    int count = _items.count();
+
     QModelIndexList oldPersistentList = persistentIndexList();
 
     KrSort::Sorter sorter = createSorter();
@@ -283,9 +285,9 @@ void KrVfsModel::sort(int column, Qt::SortOrder order)
 
 #if QT_VERSION >= 0x040700
     _items.reserve(count);
+#endif
     _itemIndex.reserve(count);
     _urlNdx.reserve(count);
-#endif
 
     bool sortOrderChanged = false;
     QHash<int, int> changeMap;
