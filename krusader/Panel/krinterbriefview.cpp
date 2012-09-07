@@ -71,7 +71,7 @@ KrInterBriefView::~KrInterBriefView()
 void KrInterBriefView::setModel(QAbstractItemModel *model)
 {
     QAbstractItemView::setModel(model);
-    connect(_model, SIGNAL(layoutChanged()), SLOT(updateGeometries()));
+    connect(model, SIGNAL(layoutChanged()), SLOT(updateGeometries()));
 
     _header->setModel(model);
     _header->hideSection(KrViewProperties::Type);
