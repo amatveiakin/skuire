@@ -18,7 +18,12 @@
 
 #include "virtualaddjob.h"
 
+#include "vfs_p.h"
+
 #include "../../VFS/virt_vfs.h"
+
+#include <kmessagebox.h>
+#include <klocale.h>
 
 //TODO: move virt_vfs code here
 
@@ -33,6 +38,14 @@ VirtualAddJob::VirtualAddJob(KUrl::List srcUrls, QString destDir) :
 
 void VirtualAddJob::slotStart()
 {
+    foreach(KUrl url, _srcUrls) {
+        if (isVirtUrl(url)) {
+            KMessageBox::sorry(0, i18n("Adding virtual urls to virtual directory is not possible."));
+            emitResult();
+            return;
+        }
+    }
+
     virt_vfs virtfs(0, false);
     if (virtfs.vfs_refresh(KUrl(QString("virt:/") + _destDir)))
         virtfs.vfs_addFiles(&_srcUrls, KIO::CopyJob::Copy, 0);
