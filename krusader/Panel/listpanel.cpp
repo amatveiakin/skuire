@@ -703,8 +703,12 @@ void ListPanel::onActiveStateChanged()
     if(isActive()) {
         updatePopupPanel(_view->currentItem());
         _view->prepareForActive();
-    } else
+    } else {
+        // in case a new url was entered but not refreshed to,
+        // reset origin bar to the current url
+        origin->setUrl(url().prettyUrl());
         _view->prepareForPassive();
+    }
 
     origin->setActive(isActive());
     refreshColors();
