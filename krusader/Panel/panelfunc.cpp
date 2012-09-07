@@ -544,99 +544,25 @@ void ListPanelFunc::slotFileCreated(KJob *job)
 
 void ListPanelFunc::moveFiles(bool enqueue)
 {
-    PreserveMode pmode = PM_DEFAULT;
-    bool queue = enqueue;
-
     KFileItemList files = panel->view()->getSelectedItems(true);
 
-    KUrl::List urls = files.urlList();
-    if (urls.isEmpty())
+    // confirm move
+    bool confirm = KConfigGroup(krConfig, "Advanced").readEntry("Confirm Copy", _ConfirmCopy);
+
+    KUrl dest = panel->otherPanel()->url();
+
+    AbstractJobWrapper *job = VFS::move(files, dest, confirm, panel->url());
+    if (!job)
         return;
 
-    QStringList fileNames; //TODO: remove this
-    foreach(const KUrl &url, urls)
-        fileNames << url.fileName();
-
-    KUrl dest = panel->otherPanel()->virtualPath();
-    KUrl virtualBaseURL;
-
-    QString destProtocol = dest.protocol();
-    if (destProtocol == "krarc" || destProtocol == "tar" || destProtocol == "zip") {
-        KMessageBox::sorry(krMainWindow, i18n("Moving into archive is disabled"));
-        return ;
-    }
-
-    KConfigGroup group(krConfig, "Advanced");
-    if (group.readEntry("Confirm Move", _ConfirmMove)) {
-        bool preserveAttrs = group.readEntry("PreserveAttributes", _PreserveAttributes);
-        QString s;
-
-        if (urls.count() == 1)
-            s = i18n("Move %1 to:", urls.first().fileName());
-        else
-            s = i18np("Move %1 file to:", "Move %1 files to:", urls.count());
-
-        // ask the user for the copy dest
-        virtualBaseURL = getVirtualBaseURL();
-        dest = KChooseDir::getDir(s, dest, panel->virtualPath(), queue, preserveAttrs, virtualBaseURL);
-        if (dest.isEmpty())
-            return ;   // the user canceled
-        if (preserveAttrs)
-            pmode = PM_PRESERVE_ATTR;
-        else
-            pmode = PM_NONE;
-    }
-
-    if (queue) {
-        KIOJobWrapper *job = 0;
-        if (!virtualBaseURL.isEmpty()) {
-            job = KIOJobWrapper::virtualMove(files, dest, virtualBaseURL, pmode, true);
+    if (dest.equals(panel->url(), KUrl::CompareWithoutTrailingSlash) ||
+        panel->url().isParentOf(dest))
             job->connectTo(SIGNAL(result(KJob*)), this, SLOT(refresh()));
-            if (dest.equals(panel->otherPanel()->virtualPath(), KUrl::CompareWithoutTrailingSlash))
-                job->connectTo(SIGNAL(result(KJob*)), panel->otherPanel()->func, SLOT(refresh()));
-        } else {
-            // you can rename only *one* file not a batch,
-            // so a batch dest must alwayes be a directory
-            if (urls.count() > 1) dest.adjustPath(KUrl::AddTrailingSlash);
-            job = KIOJobWrapper::move(pmode, urls, dest, true);
-            job->setAutoErrorHandlingEnabled(true);
-            // refresh our panel when done
-            job->connectTo(SIGNAL(result(KJob*)), this, SLOT(refresh()));
-            if (dest.equals(panel->virtualPath(), KUrl::CompareWithoutTrailingSlash) ||
-                    dest.upUrl().equals(panel->virtualPath(), KUrl::CompareWithoutTrailingSlash))
-                // refresh our panel when done
-                job->connectTo(SIGNAL(result(KJob*)), this, SLOT(refresh()));
-        }
-        QueueManager::currentQueue()->enqueue(job);
-    } else if (!virtualBaseURL.isEmpty()) {
-        // keep the directory structure for virtual paths
-        VirtualCopyJob *vjob = new VirtualCopyJob(files, dest, virtualBaseURL, pmode, KIO::CopyJob::Move, true);
-        connect(vjob, SIGNAL(result(KJob*)), this, SLOT(refresh()));
-        if (dest.equals(panel->otherPanel()->virtualPath(), KUrl::CompareWithoutTrailingSlash))
-            connect(vjob, SIGNAL(result(KJob*)), panel->otherPanel()->func, SLOT(refresh()));
-    }
-    // if we are not moving to the other panel :
-    else if (!dest.equals(panel->otherPanel()->virtualPath(), KUrl::CompareWithoutTrailingSlash)) {
-        // you can rename only *one* file not a batch,
-        // so a batch dest must alwayes be a directory
-        if (urls.count() > 1) dest.adjustPath(KUrl::AddTrailingSlash);
-        KIO::Job* job = PreservingCopyJob::createCopyJob(pmode, urls, dest, KIO::CopyJob::Move, false, true);
-        job->ui()->setAutoErrorHandlingEnabled(true);
-        // refresh our panel when done
-        connect(job, SIGNAL(result(KJob*)), this, SLOT(refresh()));
-        // and if needed the other panel as well
-        if (dest.equals(panel->otherPanel()->virtualPath(), KUrl::CompareWithoutTrailingSlash))
-            connect(job, SIGNAL(result(KJob*)), panel->otherPanel()->func, SLOT(refresh()));
 
-    } else { // let the other panel do the dirty job
-        //check if copy is supported
-        if (!otherFunc() ->files() ->vfs_isWritable()) {
-            KMessageBox::sorry(krMainWindow, i18n("You cannot move files to this file system"));
-            return ;
-        }
-        // finally..
-        otherFunc() ->files() ->vfs_addFiles(&urls, KIO::CopyJob::Move, this->files(), "", pmode);
-    }
+    if (dest.equals(panel->otherPanel()->url(), KUrl::CompareWithoutTrailingSlash) ||
+        panel->otherPanel()->url().isParentOf(dest))
+            job->connectTo(SIGNAL(result(KJob*)), panel->otherPanel()->func, SLOT(refresh()));
+
     if(KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
         panel->view()->saveSelection();
         panel->view()->unselect(KRQuery("*"));

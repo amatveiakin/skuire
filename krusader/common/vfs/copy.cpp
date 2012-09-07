@@ -91,9 +91,9 @@ AbstractJobWrapper *copy(KFileItemList files, KUrl &dest, bool confirm, KUrl src
 
     KIOJobWrapper *job = 0;
 
-    if (!virtualBaseURL.isEmpty()) {
+    if (!virtualBaseURL.isEmpty())
         job = KIOJobWrapper::virtualCopy(files, dest, virtualBaseURL, pmode, true);
-    } else if (isVirtUrl(dest)) {
+    else if (isVirtUrl(dest)) {
         QString destDir = virtualDirFromUrl(dest);
         if (!destDir.isEmpty())
             job = KIOJobWrapper::virtualAdd(urls, destDir);
@@ -107,8 +107,9 @@ AbstractJobWrapper *copy(KFileItemList files, KUrl &dest, bool confirm, KUrl src
         if (fileNames.count() > 1)
             dest.adjustPath(KUrl::AddTrailingSlash);
         job = KIOJobWrapper::copy(pmode, urls, dest, true);
-        job->setAutoErrorHandlingEnabled(true);
     }
+
+    job->setAutoErrorHandlingEnabled(true);
 
     if (queue)
         QueueManager::currentQueue()->enqueue(job);
@@ -118,5 +119,69 @@ AbstractJobWrapper *copy(KFileItemList files, KUrl &dest, bool confirm, KUrl src
     return job;
 }
 
+AbstractJobWrapper *move(KFileItemList files, KUrl &dest, bool confirm, KUrl srcBaseUrl)
+{
+    PreserveMode pmode = PM_DEFAULT;
+    bool queue = false;
+
+    KUrl::List urls = files.urlList();
+
+    if (urls.isEmpty() || !dest.isValid())
+        return 0;
+
+    QStringList fileNames; //TODO: remove this
+    foreach(const KUrl &url, urls)
+        fileNames << url.fileName();
+
+    KUrl virtualBaseURL;
+
+    KConfigGroup group(KGlobal::config(), "Advanced");
+
+    // confirm copy
+    if (confirm) {
+        bool preserveAttrs = group.readEntry("PreserveAttributes", _PreserveAttributes);
+        QString s;
+
+        if (fileNames.count() == 1)
+            s = i18n("Move %1 to:", fileNames.first());
+        else
+            s = i18n("Move %1 files to:", fileNames.count());
+
+        // ask the user for the copy dest
+        virtualBaseURL = getVirtualBaseURL(srcBaseUrl, urls, dest);
+        kDebug()<<virtualBaseURL;
+        dest = KChooseDir::getDir(s, dest, srcBaseUrl, queue, preserveAttrs, virtualBaseURL);
+        if (dest.isEmpty())
+            return 0;   // the user canceled
+        if (preserveAttrs)
+            pmode = PM_PRESERVE_ATTR;
+        else
+            pmode = PM_NONE;
+    }
+
+    KIOJobWrapper *job = 0;
+
+    if (!virtualBaseURL.isEmpty())
+        job = KIOJobWrapper::virtualMove(files, dest, virtualBaseURL, pmode, true);
+    else if (isVirtUrl(dest)) {
+        KMessageBox::sorry(0, i18n("Moving into virtual directory is not possible."));
+        return 0;
+    } else {
+        // you can rename only *one* file not a batch,
+        // so a batch dest must alwayes be a directory
+        if (fileNames.count() > 1)
+            dest.adjustPath(KUrl::AddTrailingSlash);
+        job = KIOJobWrapper::move(pmode, urls, dest, true);
+    }
+
+    job->setAutoErrorHandlingEnabled(true);
+
+    if (queue)
+        QueueManager::currentQueue()->enqueue(job);
+    else
+        job->start();
+
+    return job;
+}
 
 } // namespace VFS
