@@ -101,6 +101,8 @@ void KrusaderApp::runKonfigurator(bool firstTime)
 
 void KrusaderApp::slotConfigChanged(bool isGUIRestartNeeded)
 {
+    KGlobal::config()->sync();
+
     krApp->configChanged(isGUIRestartNeeded);
 
     emit configChanged();
