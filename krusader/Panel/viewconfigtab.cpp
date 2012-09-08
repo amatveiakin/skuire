@@ -45,16 +45,8 @@
 
 
 ViewConfigTab::ViewConfigTab(QWidget* parent, KonfiguratorPage *page, int tabId) :
-//         ConfigTab(parent, page, tabId)
         QWidget(parent)
 {
-//     QScrollArea *scrollArea = new QScrollArea(tabWidget);
-//     QWidget *this = new QWidget(scrollArea);
-//     scrollArea->setFrameStyle(QFrame::NoFrame);
-//     scrollArea->setWidget(this);
-//     scrollArea->setWidgetResizable(true);
-//     tabWidget->addTab(scrollArea, i18n("View"));
-
     QGridLayout *panelLayout = new QGridLayout(this);
     panelLayout->setSpacing(6);
     panelLayout->setContentsMargins(11, 11, 11, 11);
