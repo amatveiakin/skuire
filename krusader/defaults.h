@@ -134,7 +134,7 @@
 // Default Sort Method
 #define _DefaultSortMethod KrViewProperties::Krusader
 // Show splashscreen
-#define _ShowSplashScreen true
+#define _ShowSplashScreen false
 // Single instance mode
 #define _SingleInstanceMode false
 
