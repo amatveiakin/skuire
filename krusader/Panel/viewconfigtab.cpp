@@ -106,7 +106,7 @@ ViewConfigTab::ViewConfigTab(QWidget* parent, KonfiguratorPage *page, int tabId)
         { i18n("Alphabetical and numbers"),    QString::number(KrViewProperties::AlphabeticalNumbers) },
         { i18n("Character code"),              QString::number(KrViewProperties::CharacterCode) },
         { i18n("Character code and numbers"),  QString::number(KrViewProperties::CharacterCodeNumbers) },
-        { i18n("Krusader"),                    QString::number(KrViewProperties::Krusader) }
+        { i18nc("Krusader sort", "Krusader"),  QString::number(KrViewProperties::Krusader) }
     };
     KonfiguratorComboBox *cmb = page->createComboBox("Look&Feel", "Sort method", QString::number(_DefaultSortMethod),
                             sortMethods, 5, panelGrp, true, false, tabId);
