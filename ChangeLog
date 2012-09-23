@@ -9,7 +9,7 @@
     CHANGED: option: Panel > Flat Origin Bar -> Panel > Address bar > Flat address bar
 
     FIXED: .desktop files are opened in editor,
-            instead of the application specified by it being launched
+           instead of the application specified by it being launched
     FIXED: [ 293370 ]  After a file deletion old file name is still shown
                         in the status bar 
 
@@ -17,6 +17,8 @@
 master
 ==========================
 
+    ADDED: option: General > Viewer/Editor > Viewer > Use Okteta As Hex Viewer
+           (default: on)
     ADDED: option: Archives > krarc > Enable Write Support
     ADDED: splitter option: Overwrite files without confirmation
     ADDED: action: Go to Other Panel's Directory - shortcut: CTRL+=
@@ -25,6 +27,9 @@ master
     CHANGED: user action manager starts with the "Basic Properties" tab active
     CHANGED: detailed view: "Automatically Resize Columns" setting is remembered
 
+    FIXED: [ 280946 ] viewer: incorrect tab's file names when moving tabs
+    FIXED: user actions: "run in the embedded terminal emulator" setting is not saved
+    FIXED: mountman: mount list is not refreshed if /etc/mtab is a symlink to /proc/mounts
     FIXED: [ 148866 ] create new directory: spaces are stripped out
     FIXED: [ 305069 ] list panel is not autoscrolled to the cursor (in brief view)
     FIXED: [ 173690 ] file ACLs are not displayed correctly in properties dialog
