@@ -1255,8 +1255,9 @@ void ListPanel::editLocation()
 
 void ListPanel::saveSettings(KConfigGroup cfg, bool localOnly, bool saveHistory)
 {
-    QString url = (localOnly ? realPath() : virtualPath().pathOrUrl());
-    cfg.writeEntry("Url", url);
+    KUrl tmpUrl = url();
+    tmpUrl.setPass(QString()); // make sure no password is saved
+    cfg.writeEntry("Url", tmpUrl.pathOrUrl());
     cfg.writeEntry("Type", type());
     cfg.writeEntry("Properties", getProperties());
     if(popup) {
