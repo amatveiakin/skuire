@@ -1031,6 +1031,8 @@ static const char * const swap_sides_data[] = {
     "                                                      "
 };
 
+
+
 class SynchronizerListView : public KrTreeWidget
 {
 private:
@@ -1083,6 +1085,7 @@ public:
         drag->start();
     }
 };
+
 
 SynchronizerGUI::SynchronizerGUI(QWidget* parent,  KUrl leftURL, KUrl rightURL, QStringList selList) :
         QDialog(parent)
@@ -2062,13 +2065,13 @@ void SynchronizerGUI::addFile(SynchronizerFileItem *item)
 
     if (item->existsInLeft()) {
         leftName = item->leftName();
-        leftSize = isDir ? i18n("<DIR>") + ' ' : KRpermHandler::parseSize(item->leftSize());
+        leftSize = isDir ? dirLabel() + ' ' : KRpermHandler::parseSize(item->leftSize());
         leftDate = SynchronizerGUI::convertTime(item->leftDate());
     }
 
     if (item->existsInRight()) {
         rightName = item->rightName();
-        rightSize = isDir ? i18n("<DIR>") + ' ' : KRpermHandler::parseSize(item->rightSize());
+        rightSize = isDir ? dirLabel() + ' ' : KRpermHandler::parseSize(item->rightSize());
         rightDate = SynchronizerGUI::convertTime(item->rightDate());
     }
 
@@ -2113,13 +2116,13 @@ void SynchronizerGUI::markChanged(SynchronizerFileItem *item, bool ensureVisible
 
             if (item->existsInLeft()) {
                 leftName = item->leftName();
-                leftSize = isDir ? i18n("<DIR>") + ' ' : KRpermHandler::parseSize(item->leftSize());
+                leftSize = isDir ? dirLabel() + ' ' : KRpermHandler::parseSize(item->leftSize());
                 leftDate = SynchronizerGUI::convertTime(item->leftDate());
             }
 
             if (item->existsInRight()) {
                 rightName = item->rightName();
-                rightSize = isDir ? i18n("<DIR>") + ' ' : KRpermHandler::parseSize(item->rightSize());
+                rightSize = isDir ? dirLabel() + ' ' : KRpermHandler::parseSize(item->rightSize());
                 rightDate = SynchronizerGUI::convertTime(item->rightDate());
             }
 
@@ -2568,6 +2571,14 @@ void SynchronizerGUI::copyToClipboard(bool isLeft)
     urls.populateMimeData(mimeData);
 
     QApplication::clipboard()->setMimeData(mimeData, QClipboard::Clipboard);
+}
+
+QString SynchronizerGUI::dirLabel()
+{
+    //HACK add <> brackets AFTER translating - otherwise KUIT thinks it's a tag
+    static QString label = QString("<") +
+        i18nc("'DIR' instead of file size in detailed view (for directories)", "DIR") + ">";
+    return label;
 }
 
 #include "synchronizergui.moc"

@@ -436,6 +436,11 @@ void Krusader::resizeEvent(QResizeEvent *e) {
 
 // <patch> Moving from Pixmap actions to generic filenames - thanks to Carsten Pfeiffer
 void Krusader::setupActions() {
+    KAction *bringToTopAct = new KAction(i18n("Bring Main Window to Top"), this);
+    actionCollection()->addAction("bring_main_window_to_top", bringToTopAct);
+    bringToTopAct->setGlobalShortcut(KShortcut());
+    connect(bringToTopAct, SIGNAL(triggered()), SLOT(moveToTop()));
+
     KrActions::setupActions(this);
     _krActions = new KrActions(this);
     _tabActions = new TabActions(this, this);

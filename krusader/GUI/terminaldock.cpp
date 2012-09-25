@@ -35,6 +35,7 @@
 #include <kservice.h>
 #include <ktoggleaction.h>
 #include <kurl.h>
+#include <kmessagebox.h>
 
 #include "../kractions.h"
 #include "../krusaderapp.h"
@@ -65,16 +66,13 @@ TerminalDock::~TerminalDock()
 bool TerminalDock::initialise()
 {
     if (! initialised) { // konsole part is not yet loaded or it has already failed
-        KPluginFactory* factory = NULL;
         KService::Ptr service = KService::serviceByDesktopName("konsolepart");
-        if( service ) {
-            factory = KPluginLoader(service->library()).factory();
-        }
 
-        if (factory) {
+        if (service) {
             QWidget *focusW = qApp->focusWidget();
             // Create the part
-            konsole_part = factory->create<KParts::ReadOnlyPart>((QObject *)this);
+            QString error;
+            konsole_part = service->createInstance<KParts::ReadOnlyPart>(this, this, QVariantList(), &error);
 
             if (konsole_part) { //loaded successfully
                 terminal_hbox->addWidget(konsole_part->widget());
@@ -90,7 +88,10 @@ bool TerminalDock::initialise()
                     lastPath = QDir::currentPath();
                     t->showShellInDir(lastPath);
                 }
-            }
+                initialised = true;
+            } else
+                KMessageBox::error(0, i18n("<b>Cannot create embedded terminal.</b><br/>"
+                                           "The reported error was: %1", error));
             // the Terminal Emulator may be hidden (if we are creating it only
             // to send command there and see the results later)
             if (focusW) {
@@ -98,8 +99,13 @@ bool TerminalDock::initialise()
             } else {
                 _mainWindow->activeView()->widget()->setFocus();
             }
-        }
-        initialised = true;
+        } else
+            KMessageBox::sorry(0, i18nc("missing program - arg1 is a URL",
+                                        "<b>Cannot create embedded terminal.</b><br>"
+                                        "You can fix this by installing Konsole:<br/>%1",
+                                        QString("<a href='%1'>%1</a>").arg(
+                                            "http://www.kde.org/applications/system/konsole")),
+                               0, KMessageBox::AllowLink);
     }
     return isInitialised();
 }

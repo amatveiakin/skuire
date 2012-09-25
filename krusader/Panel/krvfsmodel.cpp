@@ -144,8 +144,12 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
             switch (index.column()) {
             case KrViewProperties::Name:
                 return "..";
-            case KrViewProperties::Size:
-                return i18n("<DIR>");
+            case KrViewProperties::Size: {
+                //HACK add <> brackets AFTER translating - otherwise KUIT thinks it's a tag
+                static QString label = QString("<") +
+                    i18nc("'DIR' instead of file size in detailed view (for directories)", "DIR") + ">";
+                return label;
+            }
             default:
                 return QString();
             }
