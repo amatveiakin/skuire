@@ -48,7 +48,7 @@ public slots:
     void slotDeviceAdded(const QString&);
     void slotDeviceRemoved(const QString&);
     void showMenu();
-    void slotTimeout();
+    void slotCheckMounts();
     void mountPointChanged(QString mp);
 
 signals:
@@ -62,19 +62,21 @@ protected:
 
 private:
     void createMediaList();
-
-    QList<Solid::Device> storageDevices;
-
+    void toggleMount(QString udi);
+    void getStatus(QString udi, bool &mounted, QString *mountPointOut = 0, bool *ejectableOut = 0);
     void mount(QString, bool open = false, bool newtab = false);
     void umount(QString);
     void eject(QString);
+    void rightClickMenu(QString udi, QPoint pos);
 
-    void rightClickMenu(QString);
+    QList<Solid::Device> storageDevices;
 
 private slots:
     void slotSetupDone(Solid::ErrorType error, QVariant errorData, const QString &udi);
 
 private:
+    static QString remotePrefix;
+
     QMenu  *popupMenu;
     QMenu  *rightMenu;
     QString udiToOpen;

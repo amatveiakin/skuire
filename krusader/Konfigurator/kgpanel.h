@@ -50,8 +50,8 @@ public:
 protected:
     KonfiguratorCheckBoxGroup *cbs;
     KonfiguratorCheckBoxGroup* quicksearchCheckboxes;
-    KonfiguratorCheckBoxGroup *pnlcbs;
-    KonfiguratorCheckBoxGroup *panelToolbarActive;
+    KonfiguratorCheckBoxGroup *panelToolbarButtonsCheckboxes;
+    KonfiguratorCheckBoxGroup *buttonsCheckboxes;
 
 protected slots:
     void slotDisable();
@@ -60,8 +60,9 @@ protected slots:
 private:
     void setupMiscTab();
     void setupPanelTab();
-    void setupPanelToolbarTab();
+    void setupButtonsTab();
     void setupMouseModeTab();
+    void setupMediaMenuTab();
     void setupLayoutTab();
     void setupView(ViewType *instance, QWidget *parent);
     ViewConfigUI *viewConfigUI();
