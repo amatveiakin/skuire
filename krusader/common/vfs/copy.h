@@ -25,6 +25,7 @@ class AbstractJobWrapper;
 
 namespace VFS
 {
+    // WARNING call these from main thread only
     AbstractJobWrapper *copy(KFileItemList files, KUrl &dest, bool confirm, KUrl srcBaseUrl = KUrl());
     AbstractJobWrapper *move(KFileItemList files, KUrl &dest, bool confirm, KUrl srcBaseUrl = KUrl());
 }
