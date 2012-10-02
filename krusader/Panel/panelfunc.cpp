@@ -97,6 +97,7 @@ A
 #include "abstractview.h"
 #include "abstractpanelmanager.h"
 #include "vfs/copy.h"
+#include "vfs/rename.h"
 #include "vfs/abstractjobwrapper.h"
 
 //HACK
@@ -590,8 +591,12 @@ void ListPanelFunc::rename(KFileItem item, QString newname)
     if (item.name() == newname)
         return ; // do nothing
     panel->view()->setNameToMakeCurrentIfAdded(newname);
-    // as always - the vfs do the job
-    files() ->vfs_rename(item.name(), newname);
+
+    //TODO RenameJob class - or use KIO::SimpleJob::url() if possible
+    // and remove KrView::setNameToMakeCurrentIfAdded()
+    KJob *job = VFS::rename(item, newname);
+    if (job)
+        connect(job, SIGNAL(result(KJob*)), this, SLOT(refresh()));
 }
 
 void ListPanelFunc::mkdir()

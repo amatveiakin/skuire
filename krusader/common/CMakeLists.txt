@@ -1,7 +1,9 @@
 set(common_SRCS
     vfs/copy.cpp
+    vfs/rename.cpp
     vfs/virt.cpp
     vfs/virtualaddjob.cpp
+    vfs/virtualrenamejob.cpp
     module.cpp
     actionsbase.cpp
     viewtype.cpp
