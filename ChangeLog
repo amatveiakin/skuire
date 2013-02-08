@@ -17,6 +17,14 @@
 master
 ==========================
 
+    FIXED: [ 309119 ] Wrong "New directory" dialog behavior: can't clear all typed text
+    FIXED: [ 309159 ] Crash in video files preview on F3
+
+
+2.4.0-beta3 "Single Step"
+=========================
+
+    FIXED: crash when trying to open/(un)mount ejectable device via media menu
 
 
 2.4.0-beta2 "Giant Steps"
