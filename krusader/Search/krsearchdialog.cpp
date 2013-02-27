@@ -102,13 +102,16 @@ public:
     }
 
     //FIXME change this to take a KFileItem as parameter
-    void addItem(QString url, KIO::filesize_t size, time_t mtime, QString perm, QString foundText)
+    void addItem(QString url, KIO::filesize_t size, time_t mtime, QString perm,
+                 uid_t uid, gid_t gid, QString foundText)
     {
         Q_UNUSED(perm)
         KIO::UDSEntry entry;
         entry.insert(KIO::UDSEntry::UDS_NAME, url);
         entry.insert(KIO::UDSEntry::UDS_MODIFICATION_TIME, mtime);
         entry.insert(KIO::UDSEntry::UDS_SIZE , size);
+        entry.insert(KIO::UDSEntry::UDS_USER, uid);
+        entry.insert(KIO::UDSEntry::UDS_GROUP, gid);
 
         KUrl u(url);
         u.cleanPath();
@@ -400,11 +403,12 @@ void KrSearchDialog::resizeEvent(QResizeEvent *e)
     }
 }
 
-void KrSearchDialog::found(QString what, QString where, KIO::filesize_t size, time_t mtime, QString perm, QString foundText)
+void KrSearchDialog::found(QString what, QString where, KIO::filesize_t size, time_t mtime, QString perm,
+                           uid_t uid, gid_t gid, QString foundText)
 {
     where = where.replace(QRegExp("\\\\"), "#"); //FIXME ? why is that done ?
     QString path =  where.endsWith('/') ? (where + what) : (where + "/" + what);
-    result->addItem(path, size, mtime, perm, foundText);
+    result->addItem(path, size, mtime, perm, uid, gid, foundText);
     foundLabel->setText(i18np("Found %1 match.", "Found %1 matches.", result->numItems()));
 }
 
@@ -458,8 +462,8 @@ void KrSearchDialog::startSearch()
     searcher  = new KRSearchMod(query);
     connect(searcher, SIGNAL(searching(const QString&)),
             searchingLabel, SLOT(setText(const QString&)));
-    connect(searcher, SIGNAL(found(QString, QString, KIO::filesize_t, time_t, QString, QString)),
-            this, SLOT(found(QString, QString, KIO::filesize_t, time_t, QString, QString)));
+    connect(searcher, SIGNAL(found(QString, QString, KIO::filesize_t, time_t, QString, uid_t, gid_t, QString)),
+            this, SLOT(found(QString, QString, KIO::filesize_t, time_t, QString, uid_t, gid_t, QString)));
     connect(searcher, SIGNAL(finished()), this, SLOT(stopSearch()));
 
     searcher->start();

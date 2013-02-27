@@ -287,13 +287,6 @@ bool itemGreaterThan(SortProps *sp, SortProps *sp2)
 }
 
 
-void sort(QVector<SortProps*> &sorting, bool descending)
-{
-    qStableSort(sorting.begin(), sorting.end(),
-                descending ? &itemGreaterThan : &itemLessThan);
-}
-
-
 Sorter::Sorter(int reserveItems, const KrViewProperties *viewProperties,
         LessThanFunc lessThanFunc, LessThanFunc greaterThanFunc) :
     _viewProperties(viewProperties),
@@ -303,7 +296,6 @@ Sorter::Sorter(int reserveItems, const KrViewProperties *viewProperties,
     _items.reserve(reserveItems);
     _itemStore.reserve(reserveItems);
  }
- 
 
 void Sorter::addItem(const KrView::Item *item, bool isDummy, int idx, QVariant customData)
 {

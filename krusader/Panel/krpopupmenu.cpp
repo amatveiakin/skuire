@@ -257,9 +257,11 @@ KrPopupMenu::KrPopupMenu(ListPanel *panel, QWidget *parent, bool onlyOpenWith) :
         addAction(EMPTY_TRASH_ID, i18n("Empty Trash"));
     }
 
+#ifdef ENABLE_SYNCHRONIZER
     // --------- synchronize
     if (panel->view()->numSelected())
         addAction(SYNC_SELECTED_ID, i18n("Synchronize Selected Files..."));
+#endif
 
     // --------- copy/paste
     addSeparator();
@@ -422,6 +424,7 @@ void KrPopupMenu::performAction(int id)
     case NEW_TEXT_FILE_ID:
         panel->func->editNew();
         break;
+#ifdef ENABLE_SYNCHRONIZER
     case SYNC_SELECTED_ID : {
         QStringList selectedNames; //FIXME remove this; update syncronizer to take urls as argument
         foreach(KFileItem item, items)
@@ -436,6 +439,7 @@ void KrPopupMenu::performAction(int id)
         SLOTS->slotSynchronizeDirs(selectedNames);
     }
     break;
+#endif
     case OPEN_TERM_ID : {
         QStringList args;
         if (!item.isDir())

@@ -23,13 +23,16 @@
 #include "../krusaderview.h"
 #include "../panelmanager.h"
 #include "../Panel/listpanel.h"
-#include "../Synchronizer/synchronizergui.h"
 #include "../Search/krsearchdialog.h"
 #include "../GUI/profilemanager.h"
 #include "../VFS/preservingcopyjob.h"
 #include "../KViewer/krviewer.h"
 #include "../krservices.h"
 #include "abstractview.h"
+
+#ifdef ENABLE_SYNCHRONIZER
+#include "../Synchronizer/synchronizergui.h"
+#endif
 
 #ifdef __KJSEMBED__
 #include "../KrJS/krjs.h"
@@ -182,10 +185,12 @@ PLACEHOLDER_CLASS(exp_Copy);
   */
 PLACEHOLDER_CLASS(exp_Move);
 
+#ifdef ENABLE_SYNCHRONIZER
 /**
   * This opens the synchronizer with a given profile
   */
 SIMPLE_PLACEHOLDER_CLASS(exp_Sync);
+#endif
 
 /**
   * This opens the searchmodule with a given profile
@@ -652,6 +657,7 @@ TagString exp_Move::expFunc(const AbstractListPanel*, const TagStringList& param
     return QString();  // this doesn't return anything, that's normal!
 }
 
+#ifdef ENABLE_SYNCHRONIZER
 exp_Sync::exp_Sync()
 {
     _expression = "Sync";
@@ -671,6 +677,7 @@ TagString exp_Sync::expFunc(const AbstractListPanel*, const QStringList& paramet
 
     return QString();  // this doesn't return everything, that's normal!
 }
+#endif
 
 exp_NewSearch::exp_NewSearch()
 {
@@ -1088,7 +1095,9 @@ QList<const exp_placeholder*>& Expander::_placeholder()
         ret << new exp_Each;
         ret << new exp_Profile;
         ret << new exp_NewSearch;
+#ifdef ENABLE_SYNCHRONIZER
         ret << new exp_Sync;
+#endif
         ret << new exp_Move;
         ret << new exp_Copy;
         ret << new exp_Goto;

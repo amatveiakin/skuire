@@ -44,6 +44,7 @@
 #include <KMessageBox>
 #include <KEditToolBar>
 #include <KCmdLineArgs>
+#include <kshell.h>
 
 #ifdef __KJSEMBED__
 #include <kjsembed/jsconsolewidget.h>
@@ -82,7 +83,6 @@
 #include "UserMenu/usermenu.h"
 #include "Panel/panelpopup.h"
 #include "Dialogs/krspecialwidgets.h"
-#include "Synchronizer/synchronizergui.h"
 #include "DiskUsage/diskusagegui.h"
 #include "krservices.h"
 #include "Queue/queuedialog.h"
@@ -90,6 +90,10 @@
 #include "BookMan/krbookmarkhandler.h"
 #include "BookMan/krbookmarkbutton.h"
 #include "abstractview.h"
+
+#ifdef ENABLE_SYNCHRONIZER
+    #include "Synchronizer/synchronizergui.h"
+#endif
 
 
 #define ACTIVE_VIEW _mainWindow->activeView()
@@ -347,7 +351,13 @@ void KRslots::runTerminal(const QString & dir, const QStringList & args)
     proc.setWorkingDirectory(dir);
     KConfigGroup group(krConfig, "General");
     QString term = group.readEntry("Terminal", _Terminal);
-    QStringList sepdArgs = KrServices::separateArgs(term);
+    QStringList sepdArgs = KShell::splitArgs(term, KShell::TildeExpand);
+    if (sepdArgs.isEmpty()) {
+        KMessageBox::error(krMainWindow,
+                           i18nc("Arg is a string containing the bad quoting.",
+                                 "Bad quoting in terminal command:\n%1", term));
+        return;
+    }
     for (int i = 0; i != sepdArgs.size(); i++)
         if (sepdArgs[ i ] == "%d")
             sepdArgs[ i ] = dir;
@@ -617,11 +627,13 @@ void KRslots::manageUseractions()
     ActionMan actionMan(MAIN_VIEW);
 }
 
+#ifdef ENABLE_SYNCHRONIZER
 void KRslots::slotSynchronizeDirs(QStringList selected)
 {
     new SynchronizerGUI(0, LEFT_PANEL->url(),
                         RIGHT_PANEL->url(), selected);
 }
+#endif
 
 void KRslots::compareSetup()
 {

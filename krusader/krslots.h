@@ -107,7 +107,9 @@ public slots:
     void slotCombine();
     void userMenu();
     void manageUseractions();
+#ifdef ENABLE_SYNCHRONIZER
     void slotSynchronizeDirs(QStringList selected = QStringList());
+#endif
     void slotDiskUsage();
     void slotQueueManager();
     void windowActive(); // called when krusader's window becomes focused
