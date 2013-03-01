@@ -80,6 +80,8 @@ void KrColorSettingNames::initialize()
     s_colorNames["Inactive Background"] = true;
     s_colorNames["Alternate Marked Background"] = true;
     s_colorNames["Inactive Alternate Marked Background"] = true;
+    s_colorNames["Drop Target Frame"] = true;
+    s_colorNames["Inactive Drop Target Frame"] = true;
     s_colorNames["Dim Target Color"] = true;
 
     s_numNames["Dim Factor"] = true;
@@ -373,6 +375,7 @@ class KrColorCacheImpl
     QColor getCurrentForegroundColor(bool isActive) const;
     QColor getCurrentBackgroundColor(bool isActive) const;
     QColor getCurrentMarkedForegroundColor(bool isActive) const;
+    QColor getDropTargetFrameColor(bool isActive) const;
     QColor dimColor(QColor color, bool isBackgroundColor) const;
 };
 
@@ -630,6 +633,24 @@ QColor KrColorCacheImpl::getCurrentMarkedForegroundColor(bool isActive) const
     return m_colorSettings.getColorValue(colorName);
 }
 
+QColor KrColorCacheImpl::getDropTargetFrameColor(bool isActive) const
+{
+    if (m_colorSettings.getBoolValue("KDE Default", _KDEDefaultColors))
+        return KColorScheme(QPalette::Active, KColorScheme::View).foreground().color();
+
+    QString colorName = isActive ? "Drop Target Frame" : "Inactive Drop Target Frame";
+    if (m_colorSettings.getColorTextValue(colorName) == "transparent")
+        return Qt::transparent;
+    if (isActive &&  (m_colorSettings.getColorTextValue(colorName).isEmpty()
+                   || m_colorSettings.getColorTextValue(colorName) == "Foreground"))
+        return getForegroundColor(true);
+    if (!isActive && m_colorSettings.getColorTextValue(colorName).isEmpty())
+        return getDropTargetFrameColor(true);
+    if (!isActive && m_colorSettings.getColorTextValue(colorName) == "Inactive Foreground")
+        return getForegroundColor(false);
+    return m_colorSettings.getColorValue(colorName);
+}
+
 QColor KrColorCacheImpl::dimColor(QColor color, bool /* isBackgroundColor */) const
 {
     int dimFactor = m_colorSettings.getNumValue("Dim Factor", 100);
@@ -706,13 +727,12 @@ void KrColorCache::getColors(KrColorGroup  & result, const KrColorItemType & typ
         m_impl->m_cachedColors[hashKey] = m_impl->getColors(type);
 
     // get color group from cache
-    const KrColorGroup & col = m_impl->m_cachedColors[hashKey];
+    result = m_impl->m_cachedColors[hashKey];
+}
 
-    // copy colors in question to result color group
-    result.setBackground(col.background());
-    result.setText(col.text());
-    result.setHighlightedText(col.highlightedText());
-    result.setHighlight(col.highlight());
+QColor KrColorCache::getDropTargetFrameColor(bool isActive) const
+{
+    return m_impl->getDropTargetFrameColor(isActive);
 }
 
 bool KrColorCache::getDimSettings(QColor & dimColor, int & dimFactor)

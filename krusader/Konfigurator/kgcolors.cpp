@@ -118,8 +118,9 @@ KgColors::KgColors(bool first, QWidget* parent) :
     addColorSelector("Alternate Marked Background", i18n("Alternate selected background:"), getColorSelector("Marked Background")->getColor(), i18n("Same as selected background"), &sameAsAltern, 1);
     addColorSelector("Current Foreground",         i18n("Current foreground:"),          Qt::white,                                    i18n("Not used"));
     ADDITIONAL_COLOR sameAsMarkedForegnd = { i18n("Same as selected foreground"), getColorSelector("Marked Foreground")->getColor(), "Marked Foreground" };
-    addColorSelector("Marked Current Foreground",         i18n("Selected current foreground:"),          Qt::white,                                    i18n("Not used"), &sameAsMarkedForegnd, 1);
+    addColorSelector("Marked Current Foreground",  i18n("Selected current foreground:"), Qt::white,                                    i18n("Not used"), &sameAsMarkedForegnd, 1);
     addColorSelector("Current Background",         i18n("Current background:"),          Qt::white, i18n("Not used"), &sameAsBckgnd, 1);
+    addColorSelector("Drop Target Frame",          i18n("Drag&drop target frame:"),      getColorSelector("Foreground")->getColor(),   i18n("Same as foreground"), &transparent, 1);
 
     colorsGrid->addWidget(createSpacer(colorsGrp), itemList.count() - offset, 1);
 
@@ -156,8 +157,10 @@ KgColors::KgColors(bool first, QWidget* parent) :
     addColorSelector("Inactive Alternate Marked Background", i18n("Alternate selected background:"), getColorSelector("Alternate Marked Background")->getColor(), i18n("Same as active"), sameAsInactAltern, 2);
     addColorSelector("Inactive Current Foreground",          i18n("Current foreground:"),          getColorSelector("Current Foreground")->getColor(), i18n("Same as active"));
     ADDITIONAL_COLOR sameAsInactMarkedForegnd = { i18n("Same as selected foreground"), getColorSelector("Inactive Marked Foreground")->getColor(), "Inactive Marked Foreground" };
-    addColorSelector("Inactive Marked Current Foreground",          i18n("Selected current foreground:"),          getColorSelector("Marked Current Foreground")->getColor(), i18n("Same as active"), &sameAsInactMarkedForegnd, 1);
+    addColorSelector("Inactive Marked Current Foreground",   i18n("Selected current foreground:"), getColorSelector("Marked Current Foreground")->getColor(), i18n("Same as active"), &sameAsInactMarkedForegnd, 1);
     addColorSelector("Inactive Current Background",          i18n("Current background:"),          getColorSelector("Current Background")->getColor(), i18n("Same as active"), &sameAsInactBckgnd, 1);
+    ADDITIONAL_COLOR sameAsInactForegndOrTransp[] = { sameAsInactForegnd, transparent };
+    addColorSelector("Inactive Drop Target Frame",           i18n("Drag&drop target frame:"),      getColorSelector("Drop Target Frame")->getColor(), i18n("Same as active"), sameAsInactForegndOrTransp, 2);
 
     colorsGrid->addWidget(createSpacer(normalInactiveWidget), itemList.count() - offset, 1);
 
@@ -372,6 +375,7 @@ void KgColors::slotForegroundChanged()
     getColorSelector("Executable Foreground")->setDefaultColor(color);
     getColorSelector("Symlink Foreground")->setDefaultColor(color);
     getColorSelector("Invalid Symlink Foreground")->setDefaultColor(color);
+    getColorSelector("Drop Target Frame")->setDefaultColor(color);
 }
 
 void KgColors::slotBackgroundChanged()
@@ -403,6 +407,7 @@ void KgColors::slotInactiveForegroundChanged()
     getColorSelector("Inactive Executable Foreground")->changeAdditionalColor(0, color);
     getColorSelector("Inactive Symlink Foreground")->changeAdditionalColor(0, color);
     getColorSelector("Inactive Invalid Symlink Foreground")->changeAdditionalColor(0, color);
+    getColorSelector("Inactive Drop Target Frame")->changeAdditionalColor(0, color);
 }
 
 void KgColors::slotInactiveBackgroundChanged()
@@ -610,6 +615,7 @@ void KgColors::serialize(QDataStream & stream)
     serializeItem(stream, "Directory Foreground");
     serializeItem(stream, "Executable Foreground");
     serializeItem(stream, "Symlink Foreground");
+    serializeItem(stream, "Drop Target Frame");
     serializeItem(stream, "Invalid Symlink Foreground");
     serializeItem(stream, "Inactive Alternate Background");
     serializeItem(stream, "Inactive Alternate Marked Background");
@@ -624,6 +630,7 @@ void KgColors::serialize(QDataStream & stream)
     serializeItem(stream, "Inactive Executable Foreground");
     serializeItem(stream, "Inactive Symlink Foreground");
     serializeItem(stream, "Inactive Invalid Symlink Foreground");
+    serializeItem(stream, "Inactive Drop Target Frame");
     serializeItem(stream, "Dim Inactive Colors");
     serializeItem(stream, "Dim Target Color");
     serializeItem(stream, "Dim Factor");

@@ -157,6 +157,7 @@ public:
     ~KrColorCache();
     static KrColorCache & getColorCache();
     void getColors(KrColorGroup & result, const KrColorItemType & type) const;
+    QColor getDropTargetFrameColor(bool isActive) const;
     bool getDimSettings(QColor & dimColor, int & dimFactor);
     bool dimInactive();
     static QColor dimColor(const QColor & color, int dim, const QColor & targetColor);

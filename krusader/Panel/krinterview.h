@@ -43,6 +43,7 @@ public:
     virtual void settingsChanged(KrViewProperties::PropertyType properties) = 0;
     virtual void visibleColumnsChanged() = 0;
     virtual void toggleSelected(QModelIndexList indexes) = 0;
+    virtual void drawAdditionalDescorations(QAbstractItemView* view, QPainter& painter) = 0;
 };
 
 
@@ -59,7 +60,7 @@ public:
     virtual QRect itemRect(const QModelIndex &index) = 0;
     virtual int itemsPerPage() = 0;
     virtual bool isColumnHidden(int column) = 0;
-    virtual void renameCurrentItem() = 0; 
+    virtual void renameCurrentItem() = 0;
     virtual void showContextMenu(const QPoint &p) = 0;
     virtual void setSortMode(KrViewProperties::ColumnType sortColumn, bool descending) = 0;
     virtual void saveSettings(KConfigGroup grp, KrViewProperties::PropertyType properties) = 0;
@@ -122,6 +123,7 @@ public:
     virtual void makeItemVisible(KUrl url);
     virtual void selectRegion(KUrl item1, KUrl item2, bool select, bool clearFirst);
     virtual KFileItem itemAt(const QPoint &pos, bool *isUpUrl, bool includingUpUrl);
+    virtual bool itemIsUpUrl(KFileItem item);
     virtual bool isItemVisible(KUrl url);
     virtual QRect itemRectGlobal(KUrl url);
     virtual QPixmap icon(KUrl url);
@@ -137,6 +139,9 @@ public:
     virtual uint numSelected() const {
         return _selection.count();
     }
+    virtual bool isDraggedOver() const;
+    virtual KFileItem getDragAndDropTarget();
+    virtual void setDragState(bool isDraggedOver, KFileItem target);
     virtual QString getCurrentItem() const;
     virtual void renameCurrentItem();
     virtual void clear();
@@ -170,6 +175,7 @@ public:
     AbstractDirLister *dirLister() {
         return _dirLister;
     }
+    void drawAdditionalDescorations(QAbstractItemView* view, QPainter& painter);
 
 protected:
     class DummySelectionModel : public QItemSelectionModel
@@ -223,13 +229,15 @@ protected:
     void setCurrentIndex(QModelIndex index);
     KrView::Item *currentViewItem();
 
-
     KrVfsModel *_model;
     QAbstractItemView *_itemView;
     KrMouseHandler *_mouseHandler;
 
     QWidget *_parentWidget;
     ViewWidget *_widget;
+
+    bool _isDraggedOver;
+    KFileItem _dragAndDropTarget;
 
 private:
     QSet<const Item*> _selection;

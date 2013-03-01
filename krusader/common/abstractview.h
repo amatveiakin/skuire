@@ -29,6 +29,8 @@
 
 
 class QDropEvent;
+class QDragLeaveEvent;
+class QDragMoveEvent;
 
 class CalcSpaceClient;
 class KrQuickSearch;
@@ -65,6 +67,9 @@ public:
     virtual bool isItemSelected(KUrl url) = 0;
     virtual void saveSelection() = 0;
     virtual void clearSavedSelection() = 0;
+    virtual bool isDraggedOver() const = 0;
+    virtual KFileItem getDragAndDropTarget() = 0;
+    virtual void setDragState(bool isDraggedOver, KFileItem target) = 0;
     // first item after ".."
     virtual KFileItem firstItem() = 0;
     virtual KFileItem lastItem() = 0;
@@ -77,6 +82,7 @@ public:
     virtual QRect itemRectGlobal(KUrl url) = 0;
     virtual void makeItemVisible(KUrl url) = 0;
     virtual KFileItem itemAt(const QPoint &pos, bool *isUpUrl = 0, bool includingUpUrl = false) = 0;
+    virtual bool itemIsUpUrl(KFileItem item) = 0;
     virtual QPixmap icon(KUrl url) = 0;
     virtual QString currentDescription() = 0;
     virtual void makeCurrentVisible() = 0;
@@ -174,6 +180,8 @@ signals:
     void selectionChanged();
     void gotDrop(QDropEvent *e);
     void letsDrag(KUrl::List urls, QPixmap icon);
+    void dragMove(QDragMoveEvent *e);
+    void dragLeave(QDragLeaveEvent *e);
     void itemDescription(QString desc);
     void contextMenu(const QPoint &point);
     void emptyContextMenu(const QPoint& point);

@@ -18,6 +18,9 @@
  * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA *
  *****************************************************************************/
 
+#include <KColorScheme>
+#include <QPainter>
+
 #include "krinterview.h"
 #include "krvfsmodel.h"
 #include "krcolorcache.h"
@@ -59,7 +62,8 @@ KrInterView::KrInterView(QWidget *parent, KrViewInstance &instance, KConfig *cfg
         _itemView(0),
         _mouseHandler(0),
         _parentWidget(parent),
-        _widget(0)
+        _widget(0),
+        _isDraggedOver(false)
 {
 }
 
@@ -179,6 +183,25 @@ void KrInterView::prepareForPassive()
     _mouseHandler->cancelTwoClickRename();
     //if ( renameLineEdit() ->isVisible() )
     //renameLineEdit() ->clearFocus();
+}
+
+bool KrInterView::isDraggedOver() const
+{
+    return _isDraggedOver;
+}
+
+KFileItem KrInterView::getDragAndDropTarget()
+{
+    return _dragAndDropTarget;
+}
+
+void KrInterView::setDragState(bool isDraggedOver, KFileItem target)
+{
+    if (_isDraggedOver == isDraggedOver && _dragAndDropTarget == target)
+        return;
+    _isDraggedOver = isDraggedOver;
+    _dragAndDropTarget = target;
+    redraw();
 }
 
 void KrInterView::redraw()
@@ -338,6 +361,11 @@ KFileItem KrInterView::itemAt(const QPoint &pos, bool *isUpUrl, bool includingUp
         return *item;
     else
         return KFileItem();
+}
+
+bool KrInterView::itemIsUpUrl(KFileItem item)
+{
+    return _model->dummyItem() && (item == *_model->dummyItem());
 }
 
 void KrInterView::setCurrentItem(KUrl url)
@@ -754,6 +782,25 @@ void KrInterView::saveSettingsOfType(KConfigGroup grp, KrViewProperties::Propert
 {
     KrView::saveSettingsOfType(grp, properties);
     _widget->saveSettings(grp, properties);
+}
+
+void KrInterView::drawAdditionalDescorations(QAbstractItemView* view, QPainter& painter)
+{
+    if (_isDraggedOver) {
+        painter.save();
+        QRect r;
+        if (!_dragAndDropTarget.isNull()) {
+            QModelIndex index = _model->indexFromUrl(_dragAndDropTarget.url());
+            r = itemRect(index).adjusted(0, 0, -1, -1);
+        }
+        else {
+            r = view->viewport()->contentsRect().adjusted(0, 0, -1, -1);
+        }
+        painter.setPen(KrColorCache::getColorCache().getDropTargetFrameColor(_focused));
+        painter.setBrush(Qt::NoBrush);
+        painter.drawRect(r);
+        painter.restore();
+    }
 }
 
 void KrInterView::doRestoreSettings(KConfigGroup grp)

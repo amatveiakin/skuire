@@ -412,6 +412,8 @@ void KrInterBriefView::paintEvent(QPaintEvent *e)
 
         painter.restore();
     }
+
+    _parent->drawAdditionalDescorations(this, painter);
 }
 
 int KrInterBriefView::getItemHeight() const

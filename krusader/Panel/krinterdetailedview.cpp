@@ -26,6 +26,7 @@
 #include <QHeaderView>
 #include <QApplication>
 #include <QContextMenuEvent>
+#include <QPainter>
 
 #include <klocale.h>
 #include <kdirlister.h>
@@ -41,7 +42,7 @@
 #include "../GUI/krstyleproxy.h"
 
 KrInterDetailedView::KrInterDetailedView(QWidget *parentWidget, ViewWidgetParent *parent,
-                                         KrMouseHandler *mouseHandler, KConfig *cfg) : 
+                                         KrMouseHandler *mouseHandler, KConfig *cfg) :
     QTreeView(parentWidget),
     ViewWidget(parent, mouseHandler),
     _autoResizeColumns(true)
@@ -209,6 +210,13 @@ void KrInterDetailedView::renameCurrentItem()
     edit(nameIndex);
     updateEditorData();
     update(nameIndex);
+}
+
+void KrInterDetailedView::paintEvent(QPaintEvent *ev)
+{
+    QTreeView::paintEvent(ev);
+    QPainter painter(viewport());
+    _parent->drawAdditionalDescorations(this, painter);
 }
 
 bool KrInterDetailedView::eventFilter(QObject *object, QEvent *event)

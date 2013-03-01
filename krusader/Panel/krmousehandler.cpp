@@ -327,13 +327,17 @@ bool KrMouseHandler::dragEnterEvent(QDragEnterEvent *e)
 bool KrMouseHandler::dragMoveEvent(QDragMoveEvent *e)
 {
     KUrl::List URLs = KUrl::List::fromMimeData(e->mimeData());
-    e->setAccepted(!URLs.isEmpty());
+    bool isAccepted = !URLs.isEmpty();
+    e->setAccepted(isAccepted);
+    if (isAccepted)
+        _emitter->emitDragMove(e);
     return true;
 }
 
-bool KrMouseHandler::dragLeaveEvent(QDragLeaveEvent * /*e*/)
+bool KrMouseHandler::dragLeaveEvent(QDragLeaveEvent *e)
 {
-    return false;
+    _emitter->emitDragLeave(e);
+    return true;
 }
 
 bool KrMouseHandler::dropEvent(QDropEvent *e)

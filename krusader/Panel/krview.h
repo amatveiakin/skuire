@@ -177,6 +177,9 @@ public:
     virtual void setUrlToMakeCurrent(KUrl url) {
         _urlToMakeCurrent = url;
     }
+    virtual bool isDraggedOver() const = 0;
+    virtual KFileItem getDragAndDropTarget() = 0;
+    virtual void setDragState(bool isDraggedOver, KFileItem target) = 0;
     virtual void prepareForActive() {
         _focused = true;
     }
@@ -416,6 +419,12 @@ public:
     }
     void emitGotDrop(QDropEvent *e) {
         emit gotDrop(e);
+    }
+    void emitDragMove(QDragMoveEvent *e) {
+        emit dragMove(e);
+    }
+    void emitDragLeave(QDragLeaveEvent *e) {
+        emit dragLeave(e);
     }
     void emitItemDescription(QString desc) {
         emit itemDescription(desc);

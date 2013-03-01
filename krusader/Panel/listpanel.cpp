@@ -143,7 +143,7 @@ protected:
 /////////////////////////////////////////////////////
 //      The list panel constructor       //
 /////////////////////////////////////////////////////
-ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager, 
+ListPanel::ListPanel(QWidget *parent, AbstractPanelManager *manager,
                      CurrentViewCallback *currentViewCb, KConfigGroup cfg) :
         AbstractListPanel(parent, manager),
         panelType(-1), colorMask(255), compareMode(false), statsAgent(0),
@@ -452,6 +452,8 @@ void ListPanel::createView()
             this, SLOT(popEmptyRightClickMenu(const QPoint &)));
     connect(_view->emitter(), SIGNAL(letsDrag(KUrl::List, QPixmap)), this, SLOT(startDragging(KUrl::List, QPixmap)));
     connect(_view->emitter(), SIGNAL(gotDrop(QDropEvent *)), this, SLOT(handleDropOnView(QDropEvent *)));
+    connect(_view->emitter(), SIGNAL(dragMove(QDragMoveEvent *)), this, SLOT(handleDragOverView(QDragMoveEvent *)));
+    connect(_view->emitter(), SIGNAL(dragLeave(QDragLeaveEvent *)), this, SLOT(handleDragLeavesView(QDragLeaveEvent *)));
     connect(_view->emitter(), SIGNAL(previewJobStarted(KJob*)), this, SLOT(slotPreviewJobStarted(KJob*)));
     connect(_view->emitter(), SIGNAL(currentChanged(KFileItem)), func->history, SLOT(saveCurrentItem()));
 
@@ -834,47 +836,36 @@ void ListPanel::gotStats(const QString &mountPoint, quint64 kBSize,
     mediaButton->mountPointChanged(mountPoint);
 }
 
+void ListPanel::handleDragLeavesView(QDragLeaveEvent *)
+{
+    view()->setDragState(false, KFileItem());
+}
+
+void ListPanel::handleDragOverView(QDragMoveEvent *e, QWidget *widget)
+{
+    KFileItem i = widget ? KFileItem() : view()->itemAt(e->pos(), 0, true);
+    KFileItem target = (!i.isNull() && (i.isDir() || view()->itemIsUpUrl(i))) ? i : KFileItem();
+    bool isDraggedOver = (e->source() != this) || !target.isNull();
+    view()->setDragState(isDraggedOver, target);
+}
+
 void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
 {
-    // if copyToPanel is true, then we call a simple vfs_addfiles
-    bool copyToDirInPanel = false;
-    bool dragFromThisPanel = false;
-    bool isWritable = func->files() ->vfs_isWritable();
-
-    vfs* tempFiles = func->files();
-    KFileItem item;
-    bool itemIsUpUrl = false;
-    if (!widget) {
-        item = _view->itemAt(e->pos(), &itemIsUpUrl);
-        widget = this;
+    if (!view()->isDraggedOver()) {
+        e->ignore();
+        return ;
     }
 
-    if (e->source() == this)
-        dragFromThisPanel = true;
+    // if target is null copy to panel, if not null - to dir in the panel
+    KFileItem target = view()->getDragAndDropTarget();
+    bool dragFromThisPanel = (e->source() == this);
+    if (!widget)
+        widget = this;
 
-    if (!item.isNull() || itemIsUpUrl) {
-        if (itemIsUpUrl) {   // trying to drop on the ".."
-            copyToDirInPanel = true;
-        } else if (!item.isNull()) {
-            if (item.isDir()) {
-                copyToDirInPanel = true;
-                isWritable = item.isWritable();
-                if (isWritable) {
-                    // keep the folder_open icon until we're finished, do it only
-                    // if the folder is writeable, to avoid flicker
-                }
-            } else if (e->source() == this)
-                return ; // no dragging onto ourselves
-        }
-    } else    // if dragged from this panel onto an empty spot in the panel...
-        if (dragFromThisPanel) {    // leave!
-            e->ignore();
-            return ;
-        }
-
-    if (!isWritable && getuid() != 0) {
+    if (!func->files()->vfs_isWritable() && getuid() != 0) {
         e->ignore();
         KMessageBox::sorry(0, i18n("Cannot drop here, no write permissions."));
+        view()->setDragState(false, KFileItem());
         return ;
     }
     //////////////////////////////////////////////////////////////////////////////
@@ -882,6 +873,7 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
     KUrl::List URLs = KUrl::List::fromMimeData(e->mimeData());
     if (URLs.isEmpty()) {
         e->ignore(); // not for us to handle!
+        view()->setDragState(false, KFileItem());
         return ;
     }
 
@@ -920,6 +912,8 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
     if (res && res->data().canConvert<int> ())
         result = res->data().toInt();
 
+    view()->setDragState(false, KFileItem());
+
     switch (result) {
     case 1 :
         mode = KIO::CopyJob::Copy;
@@ -934,12 +928,9 @@ void ListPanel::handleDropOnView(QDropEvent *e, QWidget *widget)
         return ;          // or cancel was pressed;
     }
 
-    QString dir = "";
-    if (copyToDirInPanel) {
-        dir = item.name();
-    }
-    QWidget *notify = (!e->source() ? 0 : e->source());
-    tempFiles->vfs_addFiles(&URLs, mode, notify, dir);
+    QString dir = target.isNull() ? "" : target.name();
+    QWidget *notify = e->source();
+    func->files()->vfs_addFiles(&URLs, mode, notify, dir);
     if(KConfigGroup(krConfig, "Look&Feel").readEntry("UnselectBeforeOperation", _UnselectBeforeOperation)) {
         AbstractListPanel *p = (dragFromThisPanel ? this : otherPanel());
         p->view()->saveSelection();
