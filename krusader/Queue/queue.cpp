@@ -119,20 +119,6 @@ void Queue::slotResult(KJob * job)
     }
 }
 
-QList<KIOJobWrapper *> Queue::items()
-{
-    return _jobs;
-}
-
-QList<QString> Queue::itemDescriptions()
-{
-    QList<QString> ret;
-    foreach(KIOJobWrapper *job, _jobs) {
-        ret.append(job->typeStr() + " : " + job->url().prettyUrl());
-    }
-    return ret;
-}
-
 void Queue::suspend()
 {
     _suspended = true;

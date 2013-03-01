@@ -166,6 +166,15 @@ VirtualCopyJob::~VirtualCopyJob()
         delete lit.next().value();
 }
 
+QStringList VirtualCopyJob::filesToCopy()
+{
+    QStringList fileNames;
+    foreach (const KUrl::List* urlList, m_filesToCopy.values())
+        foreach (const KUrl& url, *urlList)
+            fileNames.append(url.pathOrUrl());
+    return fileNames;
+}
+
 void VirtualCopyJob::slotStart()
 {
     connect(&m_reportTimer, SIGNAL(timeout()), this, SLOT(slotReport()));

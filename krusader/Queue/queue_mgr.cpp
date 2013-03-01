@@ -161,15 +161,18 @@ Queue * QueueManager::createQueue(const QString& queueName)
 
 void QueueManager::removeQueue(Queue * queue)
 {
-    if (_queues.count() < 2 && _queues.contains(queue->name()))
+    if (!_queues.contains(queue->name()))
         return;
 
     _self->emit queueDeleted(queue);
     _queues.remove(queue->name());
-
-    QMap<QString, Queue*>::iterator it;
-    _current = _queues.begin().value();
-    _self->emit currentChanged(queue);
-
     delete queue;
+
+    if (_queues.empty()) {
+        createQueue(defaultName());
+    }
+    else {
+        _current = _queues.begin().value();
+        _self->emit currentChanged(_current);
+    }
 }

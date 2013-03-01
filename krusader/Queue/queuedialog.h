@@ -21,11 +21,11 @@
 
 #include <KDialog>
 
-class QPaintEvent;
 class QToolButton;
 class QueueWidget;
 class QLabel;
 class QProgressBar;
+class QStackedWidget;
 class Queue;
 
 class QueueDialog : public KDialog
@@ -43,9 +43,6 @@ public:
     static void everyQueueIsEmpty();
 
 public slots:
-    virtual void accept();
-    virtual void reject();
-
     void slotUpdateToolbar();
     void slotPauseClicked();
     void slotScheduleClicked();
@@ -54,11 +51,8 @@ public slots:
     void slotPercentChanged(Queue *, int);
 
 protected:
-    virtual void paintEvent(QPaintEvent * event);
-    virtual void mousePressEvent(QMouseEvent *me);
-    virtual void mouseMoveEvent(QMouseEvent *me);
     virtual void keyPressEvent(QKeyEvent *ke);
-    virtual void slotButtonClicked(int button);
+    virtual void closeEvent(QCloseEvent *e);
 
     void         saveSettings();
 
@@ -71,11 +65,11 @@ private:
     QToolButton        * _scheduleButton;
 
     QProgressBar       * _progressBar;
+    QWidget            * _progressBarPlaceholder;
+    QStackedWidget     * _progressBarStackedWidget;
     QueueWidget        * _queueWidget;
     QLabel             * _statusLabel;
 
-    QPoint               _clickPos;
-    QPoint               _startPos;
     bool                 _autoHide;
 };
 

@@ -36,6 +36,14 @@ VirtualAddJob::VirtualAddJob(KUrl::List srcUrls, QString destDir) :
 {
 }
 
+QStringList VirtualAddJob::filesToCopy()
+{
+    QStringList fileNames;
+    foreach (const KUrl& url, _srcUrls)
+        fileNames.append(url.pathOrUrl());
+    return fileNames;
+}
+
 void VirtualAddJob::slotStart()
 {
     foreach(KUrl url, _srcUrls) {

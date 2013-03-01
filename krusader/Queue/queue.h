@@ -27,9 +27,6 @@
 
 class KJob;
 
-#define PERCENT_UNUSED  -2
-#define PERCENT_UNKNOWN -1
-
 /**
  * Queue can hold anything which inherits KIO::Job, and schedule it, start it, stop etc...
  * the main reason to hold the Job itself (at least for phase 1) is to keep the code
@@ -41,6 +38,9 @@ class Queue: public QObject
 {
     Q_OBJECT
 public:
+    static const int PERCENT_UNUSED = -2;
+    static const int PERCENT_UNKNOWN = -1;
+
     Queue(const QString& name);
     virtual ~Queue();
 
@@ -60,8 +60,9 @@ public:
     }
     void remove(KIOJobWrapper *);
 
-    QList<QString> itemDescriptions();
-    QList<KIOJobWrapper *> items();
+    QList<KIOJobWrapper *> items() {
+        return _jobs;
+    }
 
 public slots:
     void suspend();

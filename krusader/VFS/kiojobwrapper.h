@@ -42,6 +42,8 @@
 #include <kfileitem.h>
 
 class QEvent;
+class VirtualCopyJob;
+namespace VFS { class VirtualAddJob; }
 
 enum KIOJobWrapperType {
     Stat = 1,
@@ -66,7 +68,8 @@ private:
     KUrl::List                m_urlList;
     bool                      m_showProgress;
     int                       m_pmode;
-    void *                    m_userData;
+    VirtualCopyJob*           m_vcopy_job;
+    VFS::VirtualAddJob*       m_vadd_job;
     bool                      m_autoErrorHandling;
 
     QMap<QString, QString>     m_archiveProperties;
@@ -84,11 +87,14 @@ private:
     bool                      m_suspended;
 
     KIOJobWrapper(KIOJobWrapperType type, const KUrl &url);
-    KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, void * userData);
+    KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, VirtualCopyJob* vcopy_job);
+    KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, VFS::VirtualAddJob* vadd_job);
     KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, const KUrl::List &list, int pmode, bool showp);
     KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, const KUrl &dest, const QStringList &names,
                   bool showp, const QString &atype, const QMap<QString, QString> &packProps);
     void createJob();
+
+    QStringList       sourceItems() const;
 
 public:
     virtual ~KIOJobWrapper();
@@ -103,27 +109,22 @@ public:
     void setAutoErrorHandlingEnabled(bool err) {
         m_autoErrorHandling = err;
     }
-    bool isStarted()             {
+    bool              isStarted()   const {
         return m_started;
     }
-    bool isSuspended()           {
+    bool              isSuspended() const {
         return m_suspended;
     }
 
-    KIO::Job *        job()      {
+    KIO::Job *        job()         const {
         return m_job;
     }
-    KIOJobWrapperType type()     {
+    KIOJobWrapperType type()        const {
         return m_type;
     }
-    QString           typeStr();
-    KUrl              url()      {
-        return m_url;
-    }
-    KUrl::List        urlList()  {
-        return m_urlList;
-    }
-    QString           toolTip();
+    QString           typeStr()     const;
+    QString           description() const;
+    QString           toolTip()     const;
 
     static KIOJobWrapper * stat(KUrl &url);
     static KIOJobWrapper * directorySize(KUrl &url);

@@ -30,6 +30,7 @@
 #include <QtGui/QImage>
 #include <QtGui/QTimeEdit>
 #include <QtGui/QProgressBar>
+#include <QtGui/QStackedWidget>
 #include <QMouseEvent>
 #include <QKeyEvent>
 
@@ -42,46 +43,6 @@
 #include "queuewidget.h"
 #include "queue_mgr.h"
 #include "../krglobal.h"
-
-class KrImageButton : public QToolButton
-{
-public:
-    KrImageButton(QWidget * parent) : QToolButton(parent), _onIcon(false) {
-    }
-
-    virtual QSize sizeHint() const {
-        int size = QFontMetrics(font()).height();
-        return QSize(size, size);
-    }
-
-    virtual void paintEvent(QPaintEvent*) {
-        int size = QFontMetrics(font()).height();
-
-        QPixmap pm = icon().pixmap(size, size);
-
-        if (_onIcon) {
-            QImage img = pm.toImage();
-            KIconEffect::colorize(img, Qt::white, 0.4f);
-            pm = QPixmap::fromImage(img);
-        }
-
-        QPainter paint(this);
-        paint.drawPixmap(QPoint(), pm);
-    }
-
-    virtual void enterEvent(QEvent *) {
-        _onIcon = true;
-        repaint();
-    }
-
-    virtual void leaveEvent(QEvent *) {
-        _onIcon = false;
-        repaint();
-    }
-
-private:
-    bool _onIcon;
-};
 
 class KrTimeDialog : public KDialog
 {
@@ -117,52 +78,18 @@ private:
 
 QueueDialog * QueueDialog::_queueDialog = 0;
 
-QueueDialog::QueueDialog() : KDialog(0, Qt::FramelessWindowHint), _autoHide(true)
+QueueDialog::QueueDialog() : KDialog(), _autoHide(true)
 {
-    setWindowModality(Qt::NonModal);
+    setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     setWindowTitle(i18n("Krusader::Queue Manager"));
-    setSizeGripEnabled(true);
+    setButtons(0);
 
-    setButtons(Close);
-
-    QGridLayout *grid_main = new QGridLayout;
-    grid_main->setContentsMargins(0, 0, 0, 12);
-    grid_main->setSpacing(0);
-
-    QFrame *titleWg = new QFrame(mainWidget());
-    titleWg->setFrameShape(QFrame::Box);
-    titleWg->setFrameShadow(QFrame::Raised);
-    titleWg->setLineWidth(1);    // a nice 3D touch :-)
-    titleWg->setAutoFillBackground(true);
-    titleWg->setContentsMargins(2, 2, 2, 2);
-
-    QPalette palette = titleWg->palette();
-    palette.setColor(QPalette::WindowText, KGlobalSettings::activeTextColor());
-    palette.setColor(QPalette::Window, KGlobalSettings::activeTitleColor());
-    titleWg->setPalette(palette);
-
-    QHBoxLayout * hbox = new QHBoxLayout(titleWg);
-    hbox->setSpacing(0);
-
-    QLabel *title = new QLabel(i18n("Queue Manager"), titleWg);
-    QSizePolicy titlepolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
-    title->setSizePolicy(titlepolicy);
-    title->setAlignment(Qt::AlignHCenter);
-    QFont fnt = title->font();
-    fnt.setBold(true);
-    title->setFont(fnt);
-    hbox->addWidget(title);
-
-    KrImageButton * closeBtn = new KrImageButton(titleWg);
-    closeBtn->setIcon(KIcon("window-close"));
-    closeBtn->setToolTip(i18n("Close"));
-    connect(closeBtn, SIGNAL(clicked()), this, SLOT(reject()));
-    hbox->addWidget(closeBtn);
-
-    grid_main->addWidget(titleWg, 0, 0);
+    QVBoxLayout *vert_main = new QVBoxLayout;
+    vert_main->setContentsMargins(0, 0, 0, 0);
 
     QWidget *toolWg = new QWidget(mainWidget());
     QHBoxLayout * hbox2 = new QHBoxLayout(toolWg);
+    hbox2->setContentsMargins(0, 0, 0, 0);
     hbox2->setSpacing(0);
 
     _newTabButton = new QToolButton(mainWidget());
@@ -183,12 +110,14 @@ QueueDialog::QueueDialog() : KDialog(0, Qt::FramelessWindowHint), _autoHide(true
     hbox2->addWidget(_pauseButton);
 
     _progressBar = new QProgressBar(mainWidget());
-    _progressBar->setMinimum(0);
-    _progressBar->setMaximum(100);
-    _progressBar->setValue(0);
-    _progressBar->setFormat(i18n("unused"));
     _progressBar->setTextVisible(true);
-    hbox2->addWidget(_progressBar);
+    _progressBarPlaceholder = new QWidget(this);
+    _progressBarStackedWidget = new QStackedWidget();
+    _progressBarStackedWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    _progressBarStackedWidget->addWidget(_progressBar);
+    _progressBarStackedWidget->addWidget(_progressBarPlaceholder);
+    _progressBarStackedWidget->setCurrentWidget(_progressBarStackedWidget);
+    hbox2->addWidget(_progressBarStackedWidget);
 
     _scheduleButton = new QToolButton(mainWidget());
     _scheduleButton->setIcon(KIcon("chronometer"));
@@ -196,11 +125,11 @@ QueueDialog::QueueDialog() : KDialog(0, Qt::FramelessWindowHint), _autoHide(true
     connect(_scheduleButton, SIGNAL(clicked()), this, SLOT(slotScheduleClicked()));
     hbox2->addWidget(_scheduleButton);
 
-    grid_main->addWidget(toolWg, 1, 0);
+    vert_main->addWidget(toolWg);
 
     _queueWidget = new QueueWidget(mainWidget());
     connect(_queueWidget, SIGNAL(currentChanged()), this, SLOT(slotUpdateToolbar()));
-    grid_main->addWidget(_queueWidget, 2, 0);
+    vert_main->addWidget(_queueWidget);
 
     _statusLabel = new QLabel(mainWidget());
     QSizePolicy statuspolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
@@ -208,9 +137,9 @@ QueueDialog::QueueDialog() : KDialog(0, Qt::FramelessWindowHint), _autoHide(true
     _statusLabel->setSizePolicy(statuspolicy);
     _statusLabel->setFrameShape(QLabel::StyledPanel);
     _statusLabel->setFrameShadow(QLabel::Sunken);
-    grid_main->addWidget(_statusLabel, 3, 0);
+    vert_main->addWidget(_statusLabel);
 
-    mainWidget()->setLayout(grid_main);
+    mainWidget()->setLayout(vert_main);
 
     KConfigGroup group(krConfig, "QueueManager");
     int sizeX = group.readEntry("Window Width",  -1);
@@ -220,13 +149,8 @@ QueueDialog::QueueDialog() : KDialog(0, Qt::FramelessWindowHint), _autoHide(true
 
     if (sizeX != -1 && sizeY != -1)
         resize(sizeX, sizeY);
-    else
-        resize(300, 400);
-
     if (x != -1 && y != -1)
         move(x, y);
-    else
-        move(20, 20);
 
     slotUpdateToolbar();
 
@@ -261,51 +185,10 @@ void QueueDialog::showDialog(bool autoHide)
         _queueDialog->_autoHide = false;
 }
 
-void QueueDialog::paintEvent(QPaintEvent * event)
-{
-    KDialog::paintEvent(event);
-    QPainter p(this);
-
-    int lineWidth = 2;
-    int midLineWidth = 0;
-
-    QRect rect = contentsRect();
-    rect.adjust(-2, -2, 2, 2);
-
-    QStyleOptionFrame opt;
-    qDrawShadeRect(&p, rect, opt.palette, true, lineWidth, midLineWidth);
-}
-
-void QueueDialog::mousePressEvent(QMouseEvent *me)
-{
-    _clickPos = me->globalPos();
-    _startPos = pos();
-}
-
-
 void QueueDialog::everyQueueIsEmpty()
 {
-    if (_queueDialog->_autoHide && _queueDialog != 0 && !_queueDialog->isHidden())
-        _queueDialog->reject();
-}
-
-
-void QueueDialog::mouseMoveEvent(QMouseEvent *me)
-{
-    move(_startPos + me->globalPos() - _clickPos);
-}
-
-void QueueDialog::accept()
-{
-    // should never be called
-    Q_ASSERT(false);
-}
-
-void QueueDialog::reject()
-{
-    _autoHide = true;
-    saveSettings();
-    KDialog::reject();
+    if (_queueDialog && _queueDialog->_autoHide && !_queueDialog->isHidden())
+        _queueDialog->close();
 }
 
 void QueueDialog::saveSettings()
@@ -343,20 +226,7 @@ void QueueDialog::slotUpdateToolbar()
             _pauseButton->setToolTip(i18n("Pause processing the queue (Ctrl+P)"));
         }
 
-        _closeTabButton->setEnabled(_queueWidget->count() > 1);
-
         slotPercentChanged(currentQueue, currentQueue->getPercent());
-    }
-}
-
-void QueueDialog::slotButtonClicked(int button)
-{
-    switch (button) {
-    case Close:
-        reject();
-        break;
-    default:
-        KDialog::slotButtonClicked(button);
     }
 }
 
@@ -407,7 +277,7 @@ void QueueDialog::slotDeleteCurrentTab()
         if (currentQueue->count() != 0) {
             if (KMessageBox::warningContinueCancel(this,
                                                    i18n("Deleting the queue requires aborting all pending jobs. Do you wish to continue?"),
-                                                   i18n("Warning")) != KMessageBox::Continue) return;
+                                                   i18n("Warning"), KGuiItem(i18n("&Delete"))) != KMessageBox::Continue) return;
         }
         QueueManager::removeQueue(currentQueue);
     }
@@ -417,22 +287,17 @@ void QueueDialog::slotPercentChanged(Queue * queue, int percent)
 {
     if (QueueManager::currentQueue() == queue) {
         switch (percent) {
-        case PERCENT_UNUSED:
-            _progressBar->setMaximum(100);
-            _progressBar->setValue(0);
-            _progressBar->setFormat(i18n("unused"));
+        case Queue::PERCENT_UNUSED:
+            _progressBarStackedWidget->setCurrentWidget(_progressBarPlaceholder);
             break;
-        case PERCENT_UNKNOWN:
-            if (_progressBar->maximum() != 0) {
-                _progressBar->setMaximum(0);
-                _progressBar->setFormat("");
-            }
+        case Queue::PERCENT_UNKNOWN:
+            _progressBarStackedWidget->setCurrentWidget(_progressBar);
+            _progressBar->setRange(0, 0);
             break;
         default:
-            if (_progressBar->maximum() != 100)
-                _progressBar->setMaximum(100);
+            _progressBarStackedWidget->setCurrentWidget(_progressBar);
+            _progressBar->setRange(0, 100);
             _progressBar->setValue(percent);
-            _progressBar->setFormat("%p%");
             break;
         }
     }
@@ -502,3 +367,9 @@ void QueueDialog::keyPressEvent(QKeyEvent *ke)
     KDialog::keyPressEvent(ke);
 }
 
+void QueueDialog::closeEvent(QCloseEvent *e)
+{
+    _autoHide = true;
+    saveSettings();
+    KDialog::closeEvent(e);
+}

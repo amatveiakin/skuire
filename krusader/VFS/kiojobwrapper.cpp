@@ -78,6 +78,7 @@ bool KrJobStarter::event(QEvent * e)
 }
 
 KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url) :
+        m_vcopy_job(0), m_vadd_job(0),
         m_autoErrorHandling(false), m_started(false),
         m_suspended(false)
 {
@@ -86,18 +87,29 @@ KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url) :
     m_url = url;
 }
 
-KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, void * userData) :
+KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, VirtualCopyJob* vcopy_job) :
+        m_vcopy_job(vcopy_job), m_vadd_job(0),
         m_autoErrorHandling(false), m_started(false),
         m_suspended(false)
 {
     moveToThread(QApplication::instance()->thread());
     m_type = type;
     m_url = url;
-    m_userData = userData;
+}
+
+KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, VFS::VirtualAddJob* vadd_job) :
+        m_vcopy_job(0), m_vadd_job(vadd_job),
+        m_autoErrorHandling(false), m_started(false),
+        m_suspended(false)
+{
+    moveToThread(QApplication::instance()->thread());
+    m_type = type;
+    m_url = url;
 }
 
 KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, const KUrl::List &list,
                              int pmode, bool showp) :
+        m_vcopy_job(0), m_vadd_job(0),
         m_autoErrorHandling(false), m_started(false),
         m_suspended(false)
 {
@@ -111,7 +123,8 @@ KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, const KUrl
 
 KIOJobWrapper::KIOJobWrapper(KIOJobWrapperType type, const KUrl &url, const KUrl &dest, const QStringList &names,
                              bool showp, const QString &atype, const QMap<QString, QString> &packProps) :
-        m_urlList(), m_autoErrorHandling(false), m_started(false),
+        m_urlList(), m_vcopy_job(0), m_vadd_job(0),
+        m_autoErrorHandling(false), m_started(false),
         m_suspended(false)
 {
     m_type = type;
@@ -143,17 +156,13 @@ void KIOJobWrapper::createJob()
         job = KIO::directorySize(m_url);
         break;
     case VirtualMove:
-    case VirtualCopy: {
-            VirtualCopyJob * vcj = (VirtualCopyJob *)m_userData;
-            QTimer::singleShot(0, vcj, SLOT(slotStart()));
-            job = vcj;
-        }
+    case VirtualCopy:
+        QTimer::singleShot(0, m_vcopy_job, SLOT(slotStart()));
+        job = m_vcopy_job;
         break;
-    case VirtualAdd: {
-            VFS::VirtualAddJob * vcj = (VFS::VirtualAddJob *)m_userData;
-            QTimer::singleShot(0, vcj, SLOT(slotStart()));
-            job = vcj;
-        }
+    case VirtualAdd:
+        QTimer::singleShot(0, m_vadd_job, SLOT(slotStart()));
+        job = m_vadd_job;
         break;
     case Copy:
         job = PreservingCopyJob::createCopyJob((PreserveMode)m_pmode, m_urlList, m_url, KIO::CopyJob::Copy, false, m_showProgress);
@@ -252,7 +261,31 @@ void KIOJobWrapper::connectTo(const char * signal, const QObject * receiver, con
     m_methods.append(method);
 }
 
-QString KIOJobWrapper::typeStr()
+QStringList KIOJobWrapper::sourceItems() const
+{
+    switch (m_type) {
+    case Stat:
+    case DirectorySize:
+        return QStringList();
+    case Copy:
+    case Move:
+    case Pack:
+    case Unpack: {
+        QStringList srcItems;
+        foreach (const KUrl& url, m_urlList)
+            srcItems.append(url.pathOrUrl());
+        return srcItems;
+    }
+    case VirtualCopy:
+    case VirtualMove:
+        return m_vcopy_job->filesToCopy();
+    case VirtualAdd:
+        return m_vadd_job->filesToCopy();
+    }
+    return QStringList();
+}
+
+QString KIOJobWrapper::typeStr() const
 {
     switch (m_type) {
     case Stat:
@@ -295,15 +328,26 @@ void KIOJobWrapper::abort()
         m_job->kill();
 }
 
-QString KIOJobWrapper::toolTip()
+QString KIOJobWrapper::description() const
+{
+    QStringList srcItems = sourceItems();
+    if (srcItems.empty())
+        return i18n("%1 of %2", typeStr(), Qt::escape(m_url.pathOrUrl()));
+    else if (srcItems.size() == 1)
+        return i18n("%1 %2 to %3", typeStr(), Qt::escape(srcItems[0]), Qt::escape(m_url.pathOrUrl()));
+    else
+        return i18np("%2 %1 item to %3", "%2  %1 items to %3", srcItems.size(), typeStr(), Qt::escape(m_url.pathOrUrl()));
+}
+
+QString KIOJobWrapper::toolTip() const
 {
     QString tip = "<qt><div align=\"center\">";
     tip += "<h3>" + Qt::escape(typeStr()) + "</h3>";
     tip += "<table frame=\"box\" border=\"1\"><tbody>";
-    tip += "<tr><td>" + Qt::escape(i18n("Target")) + "</td><td>" + Qt::escape(url().prettyUrl()) + "</td></tr>";
+    tip += "<tr><td>" + Qt::escape(i18n("Target")) + "</td><td>" + Qt::escape(m_url.pathOrUrl()) + "</td></tr>";
     tip += "<tr><td>" + Qt::escape(i18n("Source")) + "</td><td>";
-    foreach(const KUrl &urlIn, urlList()) {
-        tip += "<li>" + Qt::escape(urlIn.prettyUrl()) + "</li>";
+    foreach(const QString &srcItem, sourceItems()) {
+        tip += "<li>" + Qt::escape(srcItem) + "</li>";
     }
     tip += "</td></tr>";
     tip += "</tbody></table>";

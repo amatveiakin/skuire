@@ -73,6 +73,7 @@ public:
     inline bool isMulti()         {
         return m_multi;
     }
+    QStringList filesToCopy();
 
 protected:
     void statNextDir();

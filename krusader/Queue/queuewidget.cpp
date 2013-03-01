@@ -71,7 +71,7 @@ void QueueWidget::slotQueueDeleted(Queue * queue)
 void QueueWidget::slotCurrentChanged(int index)
 {
     KrQueueListWidget * queueWidget = dynamic_cast<KrQueueListWidget *>(widget(index));
-    if (queueWidget->queue())
+    if (queueWidget && queueWidget->queue())
         QueueManager::setCurrentQueue(queueWidget->queue());
 
     emit currentChanged();
@@ -99,8 +99,8 @@ void QueueWidget::deleteCurrent()
 class KrQueueListWidgetItem : public QListWidgetItem
 {
 public:
-    KrQueueListWidgetItem(const QString & label_, KIOJobWrapper * job_) :
-            QListWidgetItem(label_), _job(job_) {
+    KrQueueListWidgetItem(KIOJobWrapper * job_) :
+            QListWidgetItem(job_->description()), _job(job_) {
         setToolTip(job_->toolTip());
     }
 
@@ -126,10 +126,9 @@ void KrQueueListWidget::slotChanged()
 {
     clear();
     if (_queue) {
-        QList<QString> itdescs = _queue->itemDescriptions();
         QList<KIOJobWrapper *> items = _queue->items();
         for (int i = 0; i != items.count(); i++)
-            addItem(new KrQueueListWidgetItem(itdescs[ i ], items[ i ]));
+            addItem(new KrQueueListWidgetItem(items[ i ]));
     }
 }
 

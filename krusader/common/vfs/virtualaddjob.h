@@ -32,6 +32,8 @@ class VirtualAddJob : public KIO::Job
 public:
     VirtualAddJob(KUrl::List srcUrls, QString destDir);
 
+    QStringList filesToCopy();
+
 public slots:
     void slotStart();
 
