@@ -51,7 +51,7 @@ public:
         return _urlQueue[pos];
     }
     void add(KUrl url, KUrl currentItem);
-    void pushBack(KUrl url, KUrl currentItem);
+    void pushBackRoot(); // add root dir to beginning of history
     bool gotoPos(int pos);
     bool goBack();
     bool goForward();

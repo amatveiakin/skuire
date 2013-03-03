@@ -150,7 +150,7 @@
 // Editor /////////////
 #define _Editor        "internal editor"
 // Use Okteta as Hex viewer ///////
-#define _UseOktetaViewer true
+#define _UseOktetaViewer false
 // Temp Directory /////
 #define _TempDirectory "/tmp/krusader.tmp"
 // Classic Quicksearch

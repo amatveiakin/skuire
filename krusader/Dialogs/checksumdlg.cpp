@@ -349,7 +349,7 @@ CreateChecksumDlg::CreateChecksumDlg(const QStringList& files, bool containFolde
         return;
     }
 
-    ChecksumResultsDlg dlg(stdOut, stdErr, suggestedFilename, mytool->binary, cs_typeToText[mytool->type], mytool->standardFormat);
+    ChecksumResultsDlg dlg(stdOut, stdErr, suggestedFilename, mytool->standardFormat);
     delete tmpOut; // this also unlinks the files
     delete tmpErr;
 }
@@ -549,12 +549,22 @@ VerifyResultDlg::VerifyResultDlg(const QStringList& failed):
 
 // ------------- ChecksumResultsDlg
 
-ChecksumResultsDlg::ChecksumResultsDlg(const QStringList& stdOut, const QStringList& stdErr,
-                                       const QString& suggestedFilename, const QString& binary, const QString& /* type */, bool standardFormat):
-        KDialog(krApp), _binary(binary)
+ChecksumResultsDlg::ChecksumResultsDlg(const QStringList &stdOut, const QStringList &stdErr,
+                                       const QString& suggestedFilename, bool standardFormat):
+        KDialog(krApp), _onePerFile(0), _checksumFileSelector(0), _data(stdOut), _suggestedFilename(suggestedFilename)
 {
-    setButtons(KDialog::Ok | KDialog::Cancel);
-    setDefaultButton(KDialog::Ok);
+    // md5 tools display errors into stderr, so we'll use that to determine the result of the job
+    bool errors = stdErr.size() > 0;
+    bool successes = stdOut.size() > 0;
+
+    if (successes) {
+        setButtons(KDialog::Ok | KDialog::Cancel);
+        setDefaultButton(KDialog::Ok);
+    }  else {
+        setButtons(KDialog::Close);
+        setDefaultButton(KDialog::Close);
+    }
+
     setWindowTitle(i18n("Create Checksum"));
     setWindowModality(Qt::WindowModal);
 
@@ -563,20 +573,18 @@ ChecksumResultsDlg::ChecksumResultsDlg(const QStringList& stdOut, const QStringL
     layout->setContentsMargins(KDialog::marginHint(), KDialog::marginHint(), KDialog::marginHint(), KDialog::marginHint());
     layout->setSpacing(KDialog::spacingHint());
 
-    // md5 tools display errors into stderr, so we'll use that to determine the result of the job
-    bool errors = stdErr.size() > 0;
-    bool successes = stdOut.size() > 0;
     int row = 0;
 
     // create the icon and title
     QHBoxLayout *hlayout = new QHBoxLayout;
     hlayout->setSpacing(KDialog::spacingHint());
     QLabel p(widget);
-    p.setPixmap(krLoader->loadIcon(errors ? "dialog-error" : "dialog-information", KIconLoader::Desktop, 32));
+    p.setPixmap(krLoader->loadIcon(errors || !successes  ?
+                "dialog-error" : "dialog-information", KIconLoader::Desktop, 32));
     hlayout->addWidget(&p);
 
-    QLabel *l1 = new QLabel((errors ? i18n("Errors were detected while creating the checksums") :
-                             i18n("Checksums were created successfully")), widget);
+    QLabel *l1 = new QLabel((errors || !successes ? i18n("Errors were detected while creating the checksums") :
+                                                    i18n("Checksums were created successfully")), widget);
     hlayout->addWidget(l1);
     layout->addLayout(hlayout, row, 0, 1, 2, Qt::AlignLeft);
     ++row;
@@ -635,42 +643,42 @@ ChecksumResultsDlg::ChecksumResultsDlg(const QStringList& stdOut, const QStringL
     }
 
     // save checksum to disk, if any hashes are found
-    KUrlRequester *checksumFile = 0;
-    QCheckBox *saveFileCb = 0;
+
     if (successes) {
         QHBoxLayout *hlayout2 = new QHBoxLayout;
         hlayout2->setSpacing(KDialog::spacingHint());
-        saveFileCb = new QCheckBox(i18n("Save checksum to file:"), widget);
-        saveFileCb->setChecked(true);
-        hlayout2->addWidget(saveFileCb);
+        QLabel *label = new QLabel(i18n("Save checksum to file:"), widget);
+        hlayout2->addWidget(label);
 
-        checksumFile = new KUrlRequester(suggestedFilename, widget);
-        hlayout2->addWidget(checksumFile, Qt::AlignLeft);
+        _checksumFileSelector = new KUrlRequester(suggestedFilename, widget);
+        hlayout2->addWidget(_checksumFileSelector, Qt::AlignLeft);
         layout->addLayout(hlayout2, row, 0, 1, 2, Qt::AlignLeft);
         ++row;
-        connect(saveFileCb, SIGNAL(toggled(bool)), checksumFile, SLOT(setEnabled(bool)));
-        checksumFile->setFocus();
+        _checksumFileSelector->setFocus();
     }
 
-    QCheckBox *onePerFile = 0;
     if (stdOut.size() > 1 && standardFormat) {
-        onePerFile = new QCheckBox(i18n("Checksum file for each source file"), widget);
-        onePerFile->setChecked(false);
-        // clicking this, disables the 'save as' part
-        connect(onePerFile, SIGNAL(toggled(bool)), saveFileCb, SLOT(toggle()));
-        connect(onePerFile, SIGNAL(toggled(bool)), saveFileCb, SLOT(setDisabled(bool)));
-        connect(onePerFile, SIGNAL(toggled(bool)), checksumFile, SLOT(setDisabled(bool)));
-        layout->addWidget(onePerFile, row, 0, 1, 2, Qt::AlignLeft);
+        _onePerFile = new QCheckBox(i18n("Checksum file for each source file"), widget);
+        _onePerFile->setChecked(false);
+        connect(_onePerFile, SIGNAL(toggled(bool)), _checksumFileSelector, SLOT(setDisabled(bool)));
+        layout->addWidget(_onePerFile, row, 0, 1, 2, Qt::AlignLeft);
         ++row;
     }
+
     setMainWidget(widget);
 
-    if (exec() == Accepted && successes) {
-        if (stdOut.size() > 1 && standardFormat && onePerFile->isChecked()) {
-            savePerFile(stdOut, suggestedFilename.mid(suggestedFilename.lastIndexOf('.')));
-        } else if (saveFileCb->isEnabled() && saveFileCb->isChecked() && !checksumFile->url().isEmpty()) {
-            saveChecksum(stdOut, checksumFile->url().pathOrUrl());
-        }
+    exec();
+}
+
+void ChecksumResultsDlg::accept()
+{
+    if (_onePerFile && _onePerFile->isChecked()) {
+        Q_ASSERT(_data.size() > 1);
+        if (savePerFile())
+            KDialog::accept();
+    } else if (!_checksumFileSelector->url().isEmpty()) {
+        if (saveChecksum(_data, _checksumFileSelector->url().pathOrUrl()))
+            KDialog::accept();
     }
 }
 
@@ -682,34 +690,44 @@ bool ChecksumResultsDlg::saveChecksum(const QStringList& data, QString filename)
                                                i18n("Warning"), KGuiItem(i18n("Overwrite"))) != KMessageBox::Continue) {
         // find a better name to save to
         filename = KFileDialog::getSaveFileName(QString(), "*", 0, i18n("Select a file to save to"));
-        if (filename.simplified().isEmpty()) return false;
+        if (filename.simplified().isEmpty())
+            return false;
     }
+
     QFile file(filename);
-    if (!file.open(QIODevice::WriteOnly)) {
-        KMessageBox::detailedError(0, i18n("Error saving file %1", filename),
+    if (file.open(QIODevice::WriteOnly)) {
+        QTextStream stream(&file);
+        for (QStringList::ConstIterator it = data.constBegin(); it != data.constEnd(); ++it)
+            stream << *it << "\n";
+        file.close();
+    }
+
+    if (file.error() != QFile::NoError) {
+        KMessageBox::detailedError(this, i18n("Error saving file %1", filename),
                                    file.errorString());
         return false;
-    }
-    QTextStream stream(&file);
-    for (QStringList::ConstIterator it = data.constBegin(); it != data.constEnd(); ++it)
-        stream << *it << "\n";
-    file.close();
-    return true;
+    } else
+        return true;
+
 }
 
-void ChecksumResultsDlg::savePerFile(const QStringList& data, const QString& type)
+bool ChecksumResultsDlg::savePerFile()
 {
+    QString type = _suggestedFilename.mid(_suggestedFilename.lastIndexOf('.'));
+
     krApp->startWaiting(i18n("Saving checksum files..."), 0);
-    for (QStringList::ConstIterator it = data.begin(); it != data.end(); ++it) {
+    for (QStringList::ConstIterator it = _data.begin(); it != _data.end(); ++it) {
         QString line = (*it);
         QString filename = line.mid(line.indexOf(' ') + 2) + type;
         QStringList l;
         l << line;
         if (!saveChecksum(l, filename)) {
-            KMessageBox::error(0, i18n("Errors occurred while saving multiple checksums. Stopping"));
+            KMessageBox::error(this, i18n("Errors occurred while saving multiple checksums. Stopping"));
             krApp->stopWait();
-            return;
+            return false;
         }
     }
     krApp->stopWait();
+
+    return true;
 }

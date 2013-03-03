@@ -116,7 +116,7 @@ public:
     virtual void setLocked(bool lock) {
         _locked = lock;
     }
-    virtual void saveSettings(KConfigGroup cfg, bool localOnly, bool saveHistory = false);
+    virtual void saveSettings(KConfigGroup cfg, bool saveHistory = false);
     virtual void restoreSettings(KConfigGroup cfg);
     virtual void start(KUrl url = KUrl(), bool immediate = false);
     virtual void openUrl(KUrl url, KUrl itemToMakeCurrent) {
