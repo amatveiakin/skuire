@@ -15,3 +15,11 @@ core/
     filedialog/
     ...
 ...
+
+
+Fix regressions:
+- An in-place renamed file temporary disappears from the view.
+- Files to be removed are shown in random order in the deletion confirmation dialog (they were sorted according to current sort settings earlier).
+- List of files copied by Ctrl+C in unsorted (may be related to the previous bug).
+- The new-created folder is not focused.
+- When an archive is exited (by ".." or a backspace key) there is no more current item (the archive should become the current item, as a folder does).
