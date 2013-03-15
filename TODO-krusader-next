@@ -1,4 +1,5 @@
 new source tree layout:
+--------------------------
 
 common/
 extensions/
@@ -18,9 +19,10 @@ core/
 
 
 Fix regressions:
+------------------
 - An in-place renamed file temporary disappears from the view.
 - Files to be removed are shown in random order in the deletion confirmation dialog (they were sorted according to current sort settings earlier).
-- List of files copied by Ctrl+C in unsorted (may be related to the previous bug).
+- List of files copied by Ctrl+C is unsorted (may be related to the previous bug).
 - The new-created folder is not focused.
 - When an archive is exited (by ".." or a backspace key) there is no more current item (the archive should become the current item, as a folder does).
 - after gui-restart several actions are not connected anymore to KrusaderView
@@ -28,3 +30,12 @@ Fix regressions:
 - autoresize columns is broken
 - ".." isn't colored as dir
 - bug in search result: dirs not fully recognized
+
+
+FIXME in:
+------------------
+VFS::copy()
+TerminalDock::applyShortcuts(QKeyEvent * ke)
+MediaButton::mount(QString udi, bool open, bool newtab)
+listpanel.cpp (filter settings don't persist when changing view type)
+(...)
