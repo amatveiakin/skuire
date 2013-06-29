@@ -133,7 +133,7 @@ vfile::vfile(const KFileItem &item)
     vfile_groupId = 65534; // nogroup
     vfile_userName.clear();
     vfile_perm = item.permissionsString();
-    vfile_time_t = item.time(KIO::UDSEntry::UDS_MODIFICATION_TIME);
+    vfile_time_t = item.time(KFileItem::ModificationTime).toTime_t();
     vfile_symLink = item.isLink();
     vfile_brokenLink = false,
     vfile_mimeType = item.mimetype();
