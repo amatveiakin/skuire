@@ -164,7 +164,7 @@ void KrFileTreeView::slotCurrentChanged(const QModelIndex &currentIndex, const Q
 {
     const KUrl url = urlForProxyIndex(currentIndex);
     if (url.isValid())
-        emit currentChanged(url);
+        emit changedUrls(url);
 }
 
 void KrFileTreeView::slotExpanded(const QModelIndex &baseIndex)
@@ -301,7 +301,7 @@ PanelPopup::PanelPopup(QSplitter *parent, bool left, AbstractTwinPanelFM *mainWi
 
     previewBtn = new QToolButton(this);
     previewBtn->setToolTip(i18n("Preview Panel: display a preview of the current file"));
-    previewBtn->setIcon(krLoader->loadIcon("thumbnail-show", KIconLoader::Toolbar, 16));
+    previewBtn->setIcon(krLoader->loadIcon("view-preview", KIconLoader::Toolbar, 16));
     previewBtn->setFixedSize(20, 20);
     previewBtn->setCheckable(true);
     btns->addButton(previewBtn, Preview);

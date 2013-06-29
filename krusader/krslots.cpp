@@ -298,6 +298,7 @@ void KRslots::refresh(const KUrl& u)
     ACTIVE_PANEL->openUrl(u);
 }
 
+    //FIXME - no need to exec
 void KRslots::swapPanels()
 {
     KUrl leftURL = LEFT_PANEL->url();
