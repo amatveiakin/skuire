@@ -447,6 +447,12 @@ public:
     void emitDirUp() {
         emit dirUp();
     }
+    void emitHistoryBackward() {
+        emit historyBackward();
+    }
+    void emitHistoryForward() {
+        emit historyForward();
+    }
     void emitDeleteFiles(bool reallyDelete) {
         emit deleteFiles(reallyDelete);
     }

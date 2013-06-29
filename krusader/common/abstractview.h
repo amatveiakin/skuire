@@ -190,6 +190,8 @@ signals:
     void goHome();
     void deleteFiles(bool reallyDelete);
     void dirUp();
+    void historyBackward();
+    void historyForward();
     void refreshActions();
 };
 

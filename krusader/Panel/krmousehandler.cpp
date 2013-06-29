@@ -136,6 +136,16 @@ bool KrMouseHandler::mousePressEvent(QMouseEvent *e)
             return true;
         }
     }
+    if (e->button() == Qt::XButton1) {
+        _emitter->emitHistoryBackward();
+        e->accept();
+        return true;
+    }
+    if (e->button() == Qt::XButton2) {
+        _emitter->emitHistoryForward();
+        e->accept();
+        return true;
+    }
     return false;
 }
 

@@ -437,6 +437,8 @@ void ListPanel::createView()
     connect(_view->emitter(), SIGNAL(calcSpace(KFileItem)), func, SLOT(calcSpace(KFileItem)));
     connect(_view->emitter(), SIGNAL(goHome()), func, SLOT(home()));
     connect(_view->emitter(), SIGNAL(dirUp()), func, SLOT(dirUp()));
+    connect(_view->emitter(), SIGNAL(historyForward()), func, SLOT(historyForward()));
+    connect(_view->emitter(), SIGNAL(historyBackward()), func, SLOT(historyBackward()));
     connect(_view->emitter(), SIGNAL(deleteFiles(bool)), func, SLOT(deleteFiles(bool)));
     connect(_view->emitter(), SIGNAL(middleButtonClicked(KFileItem, bool)), SLOT(newTab(KFileItem, bool)));
     connect(_view->emitter(), SIGNAL(currentChanged(KFileItem)), SLOT(updatePopupPanel(KFileItem)));
