@@ -141,13 +141,22 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
     }
     case Qt::ToolTipRole:
     case Qt::DisplayRole: {
-        if(isDummy) {
+        //HACK add <> brackets AFTER translating - otherwise KUIT thinks it's a tag
+        static QString dirStr = QString("<%1>").arg(i18nc("'DIR' instead of file size in detailed view (for directories)", "DIR"));
+        if (isDummy) {
             switch (index.column()) {
             case KrViewProperties::Name:
                 return "..";
-            case KrViewProperties::Size: {
-            if (vf == _dummyVfile)
-                return QVariant();
+            case KrViewProperties::Size:
+                return dirStr;
+            default:
+                return QString();
+            }
+        }
+        switch (index.column()) {
+        case KrViewProperties::Name:
+            return item->nameWithoutExtension();
+        case KrViewProperties::Size: {
 
             QString sizeStr = KRpermHandler::parseSize(vf->vfile_getSize(), properties()->humanReadableSize);
 
@@ -199,7 +208,7 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
                 case vfile::SizeAccurate:
                     return (showProgress ? progressStr + ' ' : "") + sizeStr + ' ';
 
-                case vfile::SizeInaccurate:
+                case vfile::SizeInaccurate: {
                     if (vf->vfile_getSize() <= 0)
                         return (showProgress ? progressStr + ' ' : "") + '?' + ' ';
                     else
@@ -207,19 +216,11 @@ QVariant KrVfsModel::data(const QModelIndex& index, int role) const
 
                     if (showProgress)
                         return progressStr + ' ';
-                    else {
-                        //HACK add <> brackets AFTER translating - otherwise KUIT thinks it's a tag
-                        return (vf->vfile_isDir() ? QString("<%1>").arg(i18nc("'DIR' instead of file size in detailed view (for directories)", "DIR")) : "") + ' ';
-                     }
-                    }
+                    else
+                        return (vf->vfile_isDir() ? dirStr : "") + ' ';
                 }
             }
-            }
-            default:
-                return QString();
-            }
         }
-        switch (index.column()) {
         case KrViewProperties::Name:
             if(_extensionEnabled)
                 return item->nameWithoutExtension();

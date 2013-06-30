@@ -705,16 +705,6 @@ void KrView::updatePreviews()
         _previews->update();
 }
 
-    }
-}
-
-void KrView::getSelectedKFileItems(KFileItemList& fileItems)
-{
-    KrViewItemList viewItems;
-    getSelectedKrViewItems(&viewItems);
-    foreach (KrViewItem* item, viewItems) {
-        vfile* vf = item->getMutableVfile();
-        fileItems.append(KFileItem(vf->vfile_getEntry(), vf->vfile_getUrl()));
 QString KrView::statistics()
 {
     KIO::filesize_t size = calcSize();
@@ -815,9 +805,9 @@ bool KrView::handleKeyEventInt(QKeyEvent *e)
             selectCurrentItem(!isCurrentItemSelected());
 
             // Even if we think we know the current size it's a good idea to recalculate it since folder content may have changed.
-            if (!item->isDummy() && viewItem->getVfile()->vfile_isDir() &&
-                    !(item->getVfile()->vfile_getSizeInfo() & vfile::SizeIsBeingCalculated) &&
-                    KrSelectionMode::getSelectionHandler()->spaceCalculatesDiskSpace() && item->isSelected()) {
+            if (!itemIsUpUrl(item) && item.isDir() &&
+                    /*!(item.getVfile()->vfile_getSizeInfo() & vfile::SizeIsBeingCalculated) &&*/  // TODO
+                    KrSelectionMode::getSelectionHandler()->spaceCalculatesDiskSpace() && isItemSelected(item)) {
                 _emitter->emitCalcSpace(item);
             }
             if (KrSelectionMode::getSelectionHandler()->spaceMovesDown())

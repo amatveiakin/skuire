@@ -199,7 +199,6 @@ public:
     /////////////////////////////////////////////////////////////
     // virtual functions                                       //
     /////////////////////////////////////////////////////////////
-    virtual void getSelectedKFileItems(KFileItemList& fileItems);
     virtual void selectAllIncludingDirs() {
         changeSelection(KRQuery("*"), true, true);
     }

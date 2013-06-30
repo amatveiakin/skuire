@@ -559,7 +559,7 @@ void ListPanelFunc::slotKdsResult(KJob* job)
 {
     KIO::DirectorySizeJob* kds = static_cast<KIO::DirectorySizeJob*>(job);
     Q_ASSERT(kdsFileNameMap.contains(kds));
-    KrViewItem* viewItem = panel->view->findItemByName(kdsFileNameMap.take(kds));
+    KrViewItem* viewItem = panel->getVFile(kdsFileNameMap.take(kds));
     if (viewItem) {
         if (kds->error())
             viewItem->getMutableVfile()->vfile_setSize(0, false);
@@ -1105,14 +1105,14 @@ void ListPanelFunc::matchChecksum()
 
 void ListPanelFunc::calcSpace()
 {
-    KUrl::List urls = panel->view()->getSelectedUrls(false);
-    if (urls.isEmpty()) {
-        urls = panel->view()->getItems().urlList();
-        if (urls.isEmpty())
+    KFileItemList items = panel->view()->getSelectedItems(false);
+    if (items.isEmpty()) {
+        items = panel->view()->getItems();
+        if (items.isEmpty())
             return; // nothing to do
     }
 
-    KrCalcSpaceDialog dlg(krMainWindow, urls);
+    KrCalcSpaceDialog dlg(krMainWindow, items);
     dlg.exec();
     panel->slotUpdateTotals();
 }
@@ -1126,7 +1126,7 @@ void ListPanelFunc::calcSpace(KFileItem item)
     // there's a folder we can't enter (permissions). in that case, the returned
     // size will not be correct.
     //
-    vfile* vf = item->getMutableVfile();
+    vfile* vf = getVFile(item.url().pathOrUrl());  // TODO: Try get vfile somehow else (or not to use vfiles)
     vf->vfile_sizeCalculationBegin();
     item->redraw();
     KIO::DirectorySizeJob* kds = KIO::directorySize(vf->vfile_getUrl());
@@ -1164,7 +1164,7 @@ void ListPanelFunc::newFTPconnection()
 void ListPanelFunc::properties()
 {
     KFileItemList fileItems;
-    panel->view->getSelectedKFileItems(fileItems);
+    panel->view->getSelectedItems(fileItems);
     if (fileItems.isEmpty())
         return;
 

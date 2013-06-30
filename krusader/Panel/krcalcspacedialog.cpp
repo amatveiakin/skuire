@@ -107,7 +107,7 @@ void KrCalcSpaceDialog::calculationFinished(KJob* job)
 void KrCalcSpaceDialog::showResult()
 {
     QString msg;
-    QString fileName = (m_lstItems.count() == 1) ? i18n("Name: %1\n", m_lstItems.first().fileName()) : QString("");
+    QString fileName = (m_lstItems.count() == 1) ? i18n("Name: %1\n", m_lstItems.first().text()) : QString("");
     msg = fileName + i18n("Total occupied space: %1", KIO::convertSize(m_totalSize));
     if (m_totalSize >= 1024)
         msg += i18np(" (%1 byte)", " (%1 bytes)", KRpermHandler::parseSize(m_totalSize));
